@@ -41,6 +41,7 @@ def ass_time(sec: float) -> str:
 
 def clean_text(text: str, uppercase: bool) -> str:
     text = re.sub(r"<[^>]+>", "", text)                 # SRT ichidagi <i>, <b> teglari
+    text = C.strip_markup(text)                         # motion dvigateli belgilari (*, **, !!, _)
     text = text.replace("{", "(").replace("}", ")").replace("\\", "/")
     text = re.sub(r"\s+", " ", text).strip()
     return text.upper() if uppercase else text
@@ -200,14 +201,13 @@ def main() -> int:
         return 0
 
     if not args.approved:
-        if sys.stdin.isatty():
-            answer = input("\nMatn to'g'rimi? Videoga yozaymi? [y/N]: ").strip().lower()
-            if answer not in ("y", "yes", "ha", "h"):
-                C.info(f"To'xtatildi. Matnni {srt} faylida tuzating va qayta ishga tushiring.")
-                return EXIT_NEED_APPROVAL
-        else:
+        answer = C.confirm("\nMatn to'g'rimi? Videoga yozaymi? [y/N]: ")
+        if answer is None:
             C.info("\nTASDIQ KERAK: yuqoridagi matnni foydalanuvchiga ko'rsating. "
                    "U tasdiqlagach, shu buyruqni --approved bilan qayta ishga tushiring.")
+            return EXIT_NEED_APPROVAL
+        if not answer:
+            C.info(f"To'xtatildi. Matnni {srt} faylida tuzating va qayta ishga tushiring.")
             return EXIT_NEED_APPROVAL
 
     out = Path(args.output) if args.output else C.OUTPUT_DIR / f"{C.output_stem(video.stem)}_sub.mp4"

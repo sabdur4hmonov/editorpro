@@ -116,7 +116,38 @@ def main() -> int:
               f"{meta['width']}x{meta['height']}, {meta['duration']:.2f}s, ovoz: {meta['acodec']}"
               + (("; " + "; ".join(problems)) if problems else ""))
 
-    C.info("\n6. pipeline.py (hammasi bitta buyruq bilan)")
+    C.info("\n6. compose.py (motion: subtitr animatsiyasi, elementlar, brend, oxirgi kadr)")
+    msrt = WORK / "motion.srt"
+    msrt.write_text("1\n00:00:00,300 --> 00:00:02,000\nbugun *sinov* qilamiz\n\n"
+                    "2\n00:00:02,200 --> 00:00:04,000\n**3 oyda** natija bo'ladi\n\n"
+                    "3\n00:00:04,200 --> 00:00:06,000\n\u041f\u0440\u0438\u0432\u0435\u0442, !!100%!!\n", encoding="utf-8")
+    mel = WORK / "elements.json"
+    C.write_json({"elements": [
+        {"type": "title", "start": 0.0, "end": 1.5, "text": "TOP 3\n**sinov**"},
+        {"type": "list", "start": 1.5, "end": 4.0, "items": [{"at": 1.6, "text": "birinchi"}, {"at": 2.2, "text": "ikkinchi"}]},
+        {"type": "stat", "start": 4.0, "end": 6.0, "value": 90, "label": "natija"},
+        {"type": "choice", "start": 2.0, "end": 4.0, "y": 0.8, "items": [{"at": 2.0, "text": "to'g'ri javob", "ok": True}]},
+        {"type": "voice", "start": 0.5, "end": 3.0, "y": 0.1},
+        {"type": "sfx", "at": 1.6, "name": "pop"},
+    ]}, mel)
+    shot = WORK / "motion_stills.jpg"
+    shot.unlink(missing_ok=True)
+    p = script("compose.py", base, "--subs", msrt, "--elements", mel, "--brand", "demo",
+               "--stills", "0.8,2.6,5.0", "--stills-out", shot)
+    check("tez ko'rish rasmlari (--stills)", p.returncode == 0 and shot.is_file() and shot.stat().st_size > 20000)
+    mout = C.OUTPUT_DIR / "selftest_motion.mp4"
+    p = script("compose.py", base, "--subs", msrt, "--elements", mel, "--brand", "demo", "-o", mout, expect=3)
+    check("tasdiqsiz motion render yozilmaydi (kod 3)", p.returncode == 3)
+    p = script("compose.py", base, "--subs", msrt, "--elements", mel, "--brand", "demo", "--approved", "-o", mout)
+    if check("motion render bajarildi", p.returncode == 0 and mout.is_file()):
+        brand = C.load_style(brand="demo")
+        want = C.ffprobe_info(base)["duration"] + float(brand["endcard"]["duration"])
+        meta, problems = C.verify_video(mout, W, H, want)
+        check("motion natija formati (oxirgi kadr bilan)", not problems,
+              f"{meta['width']}x{meta['height']}, {meta['duration']:.2f}s"
+              + (("; " + "; ".join(problems)) if problems else ""))
+
+    C.info("\n7. pipeline.py (hammasi bitta buyruq bilan)")
     extra = ["--no-subs", "--no-repeats"] if args.no_whisper else []
     out = C.OUTPUT_DIR / "test_video_final.mp4"
     p = subprocess.run([sys.executable, str(SCRIPTS / "pipeline.py"), str(video), "--force", *extra],
@@ -137,7 +168,7 @@ def main() -> int:
               f"{meta['width']}x{meta['height']}, {meta['duration']:.2f}s, ovoz: {'bor' if meta['has_audio'] else 'yoq'}")
         C.info("    " + "\n    ".join(p.stdout.strip().splitlines()[-9:]))
 
-    C.info("\n7. Xavfsizlik qoidalari")
+    C.info("\n8. Xavfsizlik qoidalari")
     check("asl (test) video o'zgarmadi", before == (video.stat().st_size, video.stat().st_mtime_ns))
     p = script("render.py", video, "-o", C.INPUT_DIR / "bad.mp4", expect=1)
     check("input/ ga yozish rad etiladi", p.returncode == 1 and not (C.INPUT_DIR / "bad.mp4").exists())

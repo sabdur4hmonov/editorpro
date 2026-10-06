@@ -8,9 +8,12 @@ temp/*
 !output/.gitkeep
 !temp/.gitkeep
 .venv/
+jobs/
 *.mp4
 *.mov
 *.mkv
 *.wav
+!assets/sfx/*.wav
+!brands/**/sfx/*.wav
 __pycache__/
 *.pyc

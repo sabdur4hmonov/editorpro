@@ -242,7 +242,7 @@ if (Test-Path -LiteralPath $VenvPy) {
     if ($check -contains 'libs-ok') {
         Say '  Kutubxonalar allaqachon o''rnatilgan.'
         $libsOk = $true
-    } elseif (Ask 'Kutubxonalarni FAQAT .venv ichiga o''rnataymi? (faster-whisper, scenedetect[opencv], opencv-python, numpy; ~0.5 GB)') {
+    } elseif (Ask 'Kutubxonalarni FAQAT .venv ichiga o''rnataymi? (faster-whisper, scenedetect[opencv], opencv-python, numpy, pillow; ~0.5 GB)') {
         [void](Run-Logged "$VenvPy -m pip install --upgrade pip")
         $code = Run-Logged "$VenvPy -m pip install -r requirements.txt"
         if ($code -ne 0) { Problem 'pip install xato bilan tugadi (yuqoridagi qatorlarga qarang).' }
@@ -257,7 +257,7 @@ if ($libsOk) {
     $freeze | Set-Content -LiteralPath (Join-Path $Root 'requirements.lock.txt') -Encoding ASCII
     $pins = @('# Asosiy kutubxonalar (aniq versiyalar setup.ps1 tomonidan yozilgan).',
               '# Barcha bog''liq kutubxonalar: requirements.lock.txt')
-    foreach ($name in @('faster-whisper', 'scenedetect', 'opencv-python', 'numpy')) {
+    foreach ($name in @('faster-whisper', 'scenedetect', 'opencv-python', 'numpy', 'pillow')) {
         $line = $freeze | Where-Object { $_ -match ('^' + [regex]::Escape($name) + '==') } | Select-Object -First 1
         if (-not $line) { $line = $name }
         if ($name -eq 'scenedetect') { $line = $line -replace '^scenedetect', 'scenedetect[opencv]' }

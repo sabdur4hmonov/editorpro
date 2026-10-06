@@ -1,0 +1,10 @@
+{
+  "name": "Demo brend",
+  "_izoh": "Namuna brend. O'zingizniki uchun brands/_shablon papkasidan nusxa oling.",
+  "style": {
+    "captions": {"preset": "clean", "accent": "#FFE600"},
+    "logo": {"file": "logo.png", "position": "top", "width": 0.24},
+    "endcard": {"enabled": true, "duration": 2.2, "text": "Demo brend", "handle": "@demo_brend", "button": "Obuna bo'ling"},
+    "sfx": {"enabled": true}
+  }
+}

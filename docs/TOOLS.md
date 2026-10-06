@@ -40,3 +40,15 @@ Yoqsa `style/style.json` da `whisper.model` ga shu nomni yozing.
 | Silero VAD | Nutq bor joyni aniqlash (faster-whisper ichida allaqachon bor) | https://github.com/snakers4/silero-vad |
 | MoviePy | Python'da murakkab kompozitsiya (rasm ustiga rasm, animatsiya) | https://github.com/Zulko/moviepy |
 | Remotion | React bilan animatsiyali grafika va sarlavhalar | https://github.com/remotion-dev/remotion |
+
+## Motion-grafika uchun (ishlatilmoqda)
+
+| Narsa | Nima uchun | Manba va litsenziya |
+|---|---|---|
+| Pillow | Matn va shakllarni chizish | https://github.com/python-pillow/Pillow (MIT-CMU) |
+| YuNet yuz modeli (`assets/models/face_yunet.onnx`) | Yuzni topish: zoom va 9:16 kesish | https://github.com/ShiqiYu/libfacedetection.train (BSD-3) |
+| Shriftlar (`style/fonts/`): Inter, Montserrat, Onest, Oswald, Unbounded, Playfair Display, Caveat | Subtitr va sarlavhalar; hammasi lotin, kirill va o'zbek harflarini qo'llaydi | https://github.com/google/fonts (SIL OFL, tijoriy ishda bepul; litsenziyalar `style/fonts/LICENSES/`) |
+| Ovoz effektlari (`assets/sfx/`) | pop, click, tick, thud, ding, whoosh, swipe, riser | `scripts/make_sfx.py` bilan noldan generatsiya qilingan, tashqi manba yo'q |
+
+Emoji shrifti (Noto Color Emoji) hozircha ishlatilmaydi: Pillow uning yangi formatini chiza olmaydi.
+Remotion (React) ham ko'rib chiqildi, lekin hozircha kerak emas: hamma grafika Python'da chiziladi.

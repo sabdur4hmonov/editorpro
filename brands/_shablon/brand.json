@@ -1,0 +1,35 @@
+{
+  "name": "Brend nomi",
+  "_izoh": "Yangi brend qo'shish: shu papkadan nusxa olib, nomini o'zgartiring (masalan brands/ilm-markazi). Papka nomi faqat lotin harf, raqam, - va _ bo'lsin. Ichiga logo.png (shaffof fonli), kerak bo'lsa fonts/ (brend shriftlari, .ttf), music/ va sfx/ papkalarini qo'ying. Pastdagi \"style\" ichidagi har bir qiymat style/style.json dagi shu nomli qiymatni almashtiradi; yozilmaganlari style.json dan olinadi. '_' bilan boshlangan kalitlar izoh.",
+  "style": {
+    "captions": {
+      "_izoh": "preset: clean | glow | box | serif. font: style/fonts yoki shu brendning fonts/ papkasidagi shrift oilasi nomi (Inter, Montserrat, Onest, Oswald, Unbounded, Playfair Display, Caveat).",
+      "preset": "clean",
+      "font": "Inter",
+      "color": "#FFFFFF",
+      "accent": "#FFE600",
+      "position_y": 0.64
+    },
+    "logo": {
+      "file": "logo.png",
+      "position": "top",
+      "width": 0.26,
+      "opacity": 0.95
+    },
+    "endcard": {
+      "enabled": true,
+      "duration": 2.2,
+      "text": "Brend nomi",
+      "handle": "@brend_manzili",
+      "button": "Obuna bo'ling"
+    },
+    "audio": {
+      "_izoh": "music_file: shu brend papkasiga nisbatan (masalan music/fon.mp3). Bo'sh bo'lsa musiqa qo'yilmaydi.",
+      "music_file": "",
+      "music_volume_db": -20
+    },
+    "sfx": {
+      "enabled": false
+    }
+  }
+}

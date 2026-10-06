@@ -99,9 +99,24 @@ def find_repeats(keep: list, words: list, similarity: float) -> list:
 
 # ---------------------------------------------------------------- reja
 
+def parse_ranges(text: str | None) -> list:
+    """"10-15,22.5-24" ko'rinishidagi matndan [(10.0, 15.0), (22.5, 24.0)] yasaydi (soniyalarda)."""
+    out = []
+    for part in (text or "").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        m = re.fullmatch(r"(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)", part)
+        if not m or float(m.group(2)) <= float(m.group(1)):
+            raise C.MontajError(f"Oraliq noto'g'ri: {part!r}. To'g'ri ko'rinish: 10-15,22.5-24 (soniyalarda, asl video bo'yicha).")
+        out.append((float(m.group(1)), float(m.group(2))))
+    return out
+
+
 def build_plan(video: Path, style: dict, words: list | None = None,
                silence_db: float | None = None, min_silence: float | None = None,
-               no_repeats: bool = False) -> dict:
+               no_repeats: bool = False, remove: list | None = None, trim: tuple | None = None,
+               no_silence: bool = False) -> dict:
     """Kesish rejasini tuzadi (hali hech narsa kesilmaydi)."""
     cut = style["cut"]
     meta = C.ffprobe_info(video)
@@ -115,7 +130,18 @@ def build_plan(video: Path, style: dict, words: list | None = None,
     min_keep = float(cut.get("min_keep", 0.2))
 
     removals = []
-    if meta["has_audio"]:
+    manual = []
+    if trim:  # faqat shu oraliq qoladi
+        if trim[0] > 0:
+            manual.append({"start": 0.0, "end": min(trim[0], duration), "reason": "qo'lda (trim)"})
+        if trim[1] < duration:
+            manual.append({"start": trim[1], "end": duration, "reason": "qo'lda (trim)"})
+    for s0, e0 in remove or []:
+        if s0 < duration:
+            manual.append({"start": s0, "end": min(e0, duration), "reason": "qo'lda"})
+    if no_silence:
+        pass
+    elif meta["has_audio"]:
         silences = detect_silences(video, noise, min_sil, duration)
         removals = silence_removals(silences, duration, padding)
     else:
@@ -131,6 +157,9 @@ def build_plan(video: Path, style: dict, words: list | None = None,
 
     if words and cut.get("remove_repeats", True) and not no_repeats:
         removals += find_repeats(keep, words, float(cut.get("repeat_similarity", 0.85)))
+        keep = complement(removals, duration)
+    if manual:
+        removals += manual
         keep = complement(removals, duration)
 
     # kadr to'riga moslash: video va ovoz bir xil joydan kesilsin (sinxron buzilmasin)
@@ -263,7 +292,7 @@ def cut_video(video: Path, style: dict, words: list | None = None, out_dir: Path
     result["applied"] = True
     if words is not None:
         C.write_json({"source": result["video"], "words": new_words}, out_dir / "cut.words.json")
-        C.write_srt(C.words_to_cues(new_words, style["subtitles"]), out_dir / "cut.srt")
+        C.write_srt(C.words_to_cues(new_words, C.cue_style(style)), out_dir / "cut.srt")
         result["words"], result["srt_path"] = new_words, str(out_dir / "cut.srt")
     return result
 
@@ -278,6 +307,9 @@ def main() -> int:
     ap.add_argument("--silence-db", type=float, help="Jimlik chegarasi dB (masalan -40). style.json dagini almashtiradi")
     ap.add_argument("--min-silence", type=float, help="Eng qisqa jimlik uzunligi, soniya")
     ap.add_argument("--no-repeats", action="store_true", help="Takrorlarni qidirma")
+    ap.add_argument("--no-silence", action="store_true", help="Jim joylarni kesma (faqat qo'lda berilganlar)")
+    ap.add_argument("--remove", help="Qo'lda olib tashlanadigan oraliqlar, asl video bo'yicha: 10-15,22.5-24")
+    ap.add_argument("--trim", help="Faqat shu oraliq qolsin, asl video bo'yicha: 5-42")
     ap.add_argument("--style", help="Boshqa style.json fayli")
     args = ap.parse_args()
 
@@ -297,12 +329,16 @@ def main() -> int:
         if words is not None:
             new_words = remap_words(words, plan["keep"])
             C.write_json({"source": str(out), "words": new_words}, out_dir / "cut.words.json")
-            C.write_srt(C.words_to_cues(new_words, style["subtitles"]), out_dir / "cut.srt")
+            C.write_srt(C.words_to_cues(new_words, C.cue_style(style)), out_dir / "cut.srt")
         C.info(f"\nKesilgan video: {out}")
         return 0
 
+    trim = parse_ranges(args.trim)
+    if len(trim) > 1:
+        raise C.MontajError("--trim uchun bitta oraliq kerak, masalan: 5-42")
     res = cut_video(video, style, words, args.out_dir, apply=args.apply,
-                    silence_db=args.silence_db, min_silence=args.min_silence, no_repeats=args.no_repeats)
+                    silence_db=args.silence_db, min_silence=args.min_silence, no_repeats=args.no_repeats,
+                    remove=parse_ranges(args.remove), trim=trim[0] if trim else None, no_silence=args.no_silence)
     C.info(f"\nReja saqlandi: {res['plan_path']}")
     if not args.apply:
         C.info("Bu faqat ro'yxat. Kesish uchun shu buyruqqa --apply qo'shing.")

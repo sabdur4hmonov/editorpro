@@ -3,7 +3,7 @@
   "profile": "reels_tiktok_vertical",
 
   "video": {
-    "_izoh": "fit: crop (to'ldirib kesadi) | pad (qora hoshiya) | blur (xira fon) | auto (manba vertikalga yaqin bo'lsa crop, aks holda blur)",
+    "_izoh": "fit: crop (to'ldirib kesadi) | face (yuz atrofidan kesadi) | pad (qora hoshiya) | blur (xira fon) | auto (vertikalga yaqin bo'lsa crop; gorizontal bo'lsa yuz topilsa face, topilmasa blur)",
     "width": 1080,
     "height": 1920,
     "fps": 30,
@@ -64,6 +64,54 @@
     "highlight_enabled": true,
     "highlight_color": "#FFE600",
     "pop_animation": true
+  },
+
+  "brand": "",
+  "_brand_izoh": "Standart brend nomi (brands/<nom>/). Bo'sh bo'lsa faqat shu fayldagi qiymatlar ishlaydi. Buyruqda --brand NOM bilan ham beriladi.",
+
+  "captions": {
+    "_izoh": "Yangi subtitr dvigateli. engine: motion (animatsiyali, tavsiya) | ass (eski, oddiy) | off. preset: clean | glow | box | serif. Matnda belgilar: *katta*, **katta va rangli**, !!juda katta!!, _faqat rangli_. Qolgan sozlamalar (font, size_main, accent, position_y, case, animation ...) ixtiyoriy: yozilsa presetdagini almashtiradi.",
+    "engine": "motion",
+    "preset": "clean",
+    "accent": "#FFE600",
+    "position_y": 0.64,
+    "max_words_per_line": 4,
+    "max_chars_per_line": 26,
+    "auto_numbers": true
+  },
+
+  "zoom": {
+    "_izoh": "Kesish joylarida navbatma-navbat yaqinlashtirish. punch_in: necha marta (1.12 = 12%). slow_push: bo'lak davomida sekin yaqinlashish. face_aware: zoom va kadr kesish yuz atrofida bo'ladi.",
+    "enabled": true,
+    "punch_in": 1.12,
+    "slow_push": 0.03,
+    "min_segment": 0.8,
+    "face_aware": true
+  },
+
+  "logo": {
+    "_izoh": "file bo'sh bo'lsa logotip qo'yilmaydi. position: top | top_left | top_right | bottom | bottom_left | bottom_right. width: kadr kengligiga nisbatan.",
+    "file": "",
+    "position": "top",
+    "width": 0.26,
+    "opacity": 0.95
+  },
+
+  "endcard": {
+    "_izoh": "Video oxiriga qo'shiladigan kadr: logotip, nom, @manzil, tugma.",
+    "enabled": false,
+    "duration": 2.2,
+    "text": "",
+    "handle": "",
+    "button": "Obuna bo'ling"
+  },
+
+  "sfx": {
+    "_izoh": "Ovoz effektlari. enabled true bo'lsa katta so'z va grafik element chiqqanda avtomatik qo'yiladi. Fayllar: assets/sfx/ (pop, click, tick, thud, ding, whoosh, swipe, riser) yoki brend papkasidagi sfx/.",
+    "enabled": false,
+    "volume_db": -12,
+    "on_big_word": "pop",
+    "on_element": "whoosh"
   },
 
   "whisper": {

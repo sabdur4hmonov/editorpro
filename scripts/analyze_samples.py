@@ -120,7 +120,7 @@ def speech_rate(video: Path, style: dict, work: Path, max_sec: float, model) -> 
     if not words:
         return {"words": 0, "words_per_minute": 0, "language": res["language"]}
     speech_span = max(1.0, words[-1]["end"] - words[0]["start"])
-    cues = C.words_to_cues(words, style["subtitles"])
+    cues = C.words_to_cues(words, C.cue_style(style))
     return {"words": len(words), "language": res["language"],
             "analyzed_sec": round(min(max_sec, res["duration"]), 1),
             "words_per_minute": round(len(words) / speech_span * 60, 1),

@@ -10,10 +10,14 @@ Asl video o'zgarmaydi.
 from __future__ import annotations
 
 import argparse
+import os
 import time
 from pathlib import Path
 
 import common as C
+
+# Windows'da keraksiz "symlink" ogohlantirishini o'chiradi (model baribir to'g'ri saqlanadi)
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 
 def extract_audio(video: Path, wav: Path, max_seconds: float | None = None) -> None:
@@ -47,9 +51,24 @@ def load_model(wcfg: dict):
     if device == "cpu":
         kwargs["cpu_threads"] = int(wcfg.get("cpu_threads", 4))
     C.info(f"  Whisper modeli yuklanmoqda: {wcfg['model']} ({device}, {compute})...")
+    mem = C.memory_status()
+    if mem:
+        C.info(f"  Bo'sh xotira: RAM {mem['ram']} GB (jami {mem['total']} GB), dasturlar uchun zaxira {mem['commit']} GB")
+        if min(mem["ram"], mem["commit"]) < 1.5:
+            C.warn("Bo'sh xotira juda kam. Model yuklanmasligi mumkin: og'ir dasturlarni yoping "
+                   "(Docker Desktop, Chrome, boshqa agentlar).")
     try:
         return WhisperModel(str(wcfg["model"]), **kwargs)
     except Exception as exc:  # model yuklab bo'lmadi, internet yo'q, GPU kutubxonasi yo'q va h.k.
+        text = str(exc).lower()
+        if isinstance(exc, MemoryError) or "alloc" in text or "memory" in text:
+            now = C.memory_status()
+            raise C.MontajError(
+                f"Whisper modeliga xotira yetmadi ({wcfg['model']}): {exc}\n"
+                + (f"Hozir bo'sh: RAM {now['ram']} GB, zaxira {now['commit']} GB.\n" if now else "")
+                + "Nima qilish kerak: og'ir dasturlarni yoping (Docker Desktop, Chrome, boshqa agentlar) va qayta "
+                "urining. Yordam bermasa style.json da whisper.model ni 'base' qiling (kam xotira oladi)."
+            ) from exc
         raise C.MontajError(
             f"Whisper modelini yuklab bo'lmadi ({wcfg['model']}, {device}, {compute}): {exc}\n"
             "Tekshiring: internet bormi (model birinchi marta yuklanadi), "
@@ -114,7 +133,7 @@ def transcribe_video(video: Path, style: dict, out_dir: Path | None = None,
         extract_audio(video, wav)
         result = transcribe_audio(wav, style["whisper"], model=model)
     result["source"] = str(video)
-    cues = C.words_to_cues(result["words"], style["subtitles"])
+    cues = C.words_to_cues(result["words"], C.cue_style(style))
     C.write_json(result, json_path)
     C.write_srt(cues, srt_path)
     result["json_path"], result["srt_path"], result["cues"] = str(json_path), str(srt_path), cues

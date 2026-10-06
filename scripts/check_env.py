@@ -13,7 +13,7 @@ import sys
 import common as C
 
 LIBS = [("faster_whisper", "faster-whisper"), ("scenedetect", "scenedetect"),
-        ("cv2", "opencv-python"), ("numpy", "numpy")]
+        ("cv2", "opencv-python"), ("numpy", "numpy"), ("PIL", "pillow")]
 
 
 def main() -> int:

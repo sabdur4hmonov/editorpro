@@ -19,6 +19,7 @@ INPUT_DIR = ROOT / "input"
 OUTPUT_DIR = ROOT / "output"
 TEMP_DIR = ROOT / "temp"
 SAMPLES_DIR = ROOT / "samples"
+BRANDS_DIR = ROOT / "brands"
 
 VIDEO_EXTS = {".mp4", ".mov", ".mkv", ".webm", ".avi", ".m4v"}
 # Windows buyruq qatori chegarasi ~32 ming belgi. Undan uzun filtr grafigi faylga yoziladi.
@@ -48,6 +49,21 @@ def warn(msg: str) -> None:
     print(f"[OGOHLANTIRISH] {msg}", flush=True)
 
 
+def confirm(prompt: str) -> bool | None:
+    """Foydalanuvchidan ha/yo'q so'raydi. True/False - javob; None - so'rab bo'lmaydi.
+
+    Windows'da kirish yopiq (NUL) bo'lsa ham isatty() True qaytaradi, shuning uchun
+    EOF xatosi ham "so'rab bo'lmaydi" deb qabul qilinadi.
+    """
+    try:
+        if sys.stdin is None or not sys.stdin.isatty():
+            return None
+        answer = input(prompt)
+    except (EOFError, OSError, ValueError):
+        return None
+    return answer.strip().lower() in ("y", "yes", "ha", "h")
+
+
 def run_main(main_func) -> None:
     """Skriptning main() funksiyasini ishga tushiradi va xatoni chiroyli ko'rsatadi."""
     setup_console()
@@ -62,10 +78,62 @@ def run_main(main_func) -> None:
     sys.exit(code or 0)
 
 
+def memory_status() -> dict | None:
+    """Bo'sh xotira (GB): 'ram' - bo'sh operativ xotira, 'commit' - dasturlar yana ololadigan jami xotira.
+
+    Aniqlab bo'lmasa None qaytaradi.
+    """
+    try:
+        if sys.platform == "win32":
+            import ctypes
+
+            class MEMORYSTATUSEX(ctypes.Structure):
+                _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
+                            ("ullTotalPhys", ctypes.c_ulonglong), ("ullAvailPhys", ctypes.c_ulonglong),
+                            ("ullTotalPageFile", ctypes.c_ulonglong), ("ullAvailPageFile", ctypes.c_ulonglong),
+                            ("ullTotalVirtual", ctypes.c_ulonglong), ("ullAvailVirtual", ctypes.c_ulonglong),
+                            ("sullAvailExtendedVirtual", ctypes.c_ulonglong)]
+
+            stat = MEMORYSTATUSEX()
+            stat.dwLength = ctypes.sizeof(stat)
+            if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):
+                return None
+            return {"ram": round(stat.ullAvailPhys / 2**30, 1), "commit": round(stat.ullAvailPageFile / 2**30, 1),
+                    "total": round(stat.ullTotalPhys / 2**30, 1)}
+        import os
+        page = os.sysconf("SC_PAGE_SIZE")
+        avail = os.sysconf("SC_AVPHYS_PAGES") * page / 2**30
+        return {"ram": round(avail, 1), "commit": round(avail, 1),
+                "total": round(os.sysconf("SC_PHYS_PAGES") * page / 2**30, 1)}
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------- style.json
 
-def load_style(path: str | Path | None = None) -> dict:
-    """style/style.json ni o'qiydi. Fayl yo'q yoki buzuq bo'lsa aniq xato beradi."""
+def deep_merge(base: dict, over: dict) -> dict:
+    """over dagi qiymatlarni base ustiga qo'yadi (ichma-ich lug'atlar birlashtiriladi)."""
+    out = dict(base)
+    for key, value in over.items():
+        if isinstance(value, dict) and isinstance(out.get(key), dict):
+            out[key] = deep_merge(out[key], value)
+        else:
+            out[key] = value
+    return out
+
+
+def list_brands() -> list:
+    if not BRANDS_DIR.is_dir():
+        return []
+    return sorted(d.name for d in BRANDS_DIR.iterdir() if (d / "brand.json").is_file() and not d.name.startswith("_"))
+
+
+def load_style(path: str | Path | None = None, brand: str | None = None) -> dict:
+    """style/style.json ni o'qiydi, ustiga brend sozlamalarini qo'yadi.
+
+    Brend: brands/<nom>/brand.json ("style" bo'limi style.json dagi istalgan qiymatni almashtiradi).
+    Fayl yo'q yoki buzuq bo'lsa aniq xato beradi.
+    """
     p = Path(path) if path else STYLE_PATH
     if not p.is_file():
         raise MontajError(f"Uslub fayli topilmadi: {p}\nstyle/style.json bo'lishi shart.")
@@ -78,7 +146,33 @@ def load_style(path: str | Path | None = None) -> dict:
     for section in ("video", "audio", "cut", "subtitles", "whisper"):
         if not isinstance(style.get(section), dict):
             raise MontajError(f"{p} ichida \"{section}\" bo'limi yo'q yoki noto'g'ri.")
+    for section in ("captions", "zoom", "logo", "endcard", "sfx"):
+        if not isinstance(style.get(section), dict):
+            style[section] = {}
+
+    name = (brand if brand is not None else style.get("brand") or "").strip()
+    style["_brand"], style["_brand_dir"] = "", ""
+    if name:
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", name):
+            raise MontajError(f"Brend nomi noto'g'ri: {name!r}. Faqat lotin harf, raqam, - va _ bo'lsin.")
+        bfile = BRANDS_DIR / name / "brand.json"
+        if not bfile.is_file():
+            raise MontajError(f"Brend topilmadi: {name} ({bfile} yo'q). Mavjud brendlar: "
+                              + (", ".join(list_brands()) or "hali yo'q"))
+        try:
+            data = json.loads(bfile.read_text(encoding="utf-8-sig"))
+        except json.JSONDecodeError as exc:
+            raise MontajError(f"{bfile} buzuq JSON: {exc.lineno}-qator, {exc.colno}-ustun: {exc.msg}") from exc
+        over = data.get("style", {})
+        if not isinstance(over, dict):
+            raise MontajError(f"{bfile}: \"style\" obyekt bo'lishi kerak.")
+        style = deep_merge(style, over)
+        style["_brand"], style["_brand_dir"] = name, str(bfile.parent)
     return style
+
+
+def brand_dir(style: dict) -> Path | None:
+    return Path(style["_brand_dir"]) if style.get("_brand_dir") else None
 
 
 def style_get(style: dict, section: str, key: str):
@@ -273,6 +367,7 @@ def ffprobe_info(path: str | Path) -> dict:
         "has_audio": a is not None,
         "width": 0, "height": 0, "fps": 0.0, "rotation": 0,
         "vcodec": None, "acodec": None, "sample_rate": 0, "channels": 0,
+        "pix_fmt": None, "color_space": None, "color_transfer": None, "color_range": None,
     }
     if v:
         rotation = 0
@@ -284,6 +379,8 @@ def ffprobe_info(path: str | Path) -> dict:
         w, h = int(v.get("width", 0)), int(v.get("height", 0))
         if abs(rotation) % 180 == 90:  # telefon videosi yonboshlab saqlangan
             w, h = h, w
+        out.update(pix_fmt=v.get("pix_fmt"), color_space=v.get("color_space"),
+                   color_transfer=v.get("color_transfer"), color_range=v.get("color_range"))
         out.update(width=w, height=h, rotation=rotation, vcodec=v.get("codec_name"),
                    fps=round(_rate(v.get("avg_frame_rate")) or _rate(v.get("r_frame_rate")), 3))
     if a:
@@ -390,6 +487,24 @@ def parse_srt(path: str | Path) -> list:
         if body and end > start:
             cues.append({"start": start, "end": end, "text": body})
     return cues
+
+
+def strip_markup(text: str) -> str:
+    """Subtitrdagi belgilarni (*katta*, **rangli**, !!juda katta!!, _rangli_) olib tashlaydi."""
+    text = re.sub(r"(?<!\S)_(?=\S)", "", text)
+    text = re.sub(r"(?<=\S)_(?=$|[\s.,!?;:])", "", text)
+    return re.sub(r"!!|\*+", "", text)
+
+
+def cue_style(style: dict) -> dict:
+    """Subtitr bo'laklarga bo'lish qoidalari. Motion dvigatelida captions dagi qiymatlar ustun turadi."""
+    out = dict(style.get("subtitles", {}))
+    cap = style.get("captions", {})
+    if str(cap.get("engine", "motion")).lower() == "motion":
+        for key in ("max_words_per_line", "max_chars_per_line", "max_cue_duration", "min_cue_duration", "gap_break"):
+            if key in cap:
+                out[key] = cap[key]
+    return out
 
 
 def words_to_cues(words: list, sub_style: dict) -> list:
