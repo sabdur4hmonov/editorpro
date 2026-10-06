@@ -120,7 +120,7 @@ def main() -> int:
     msrt = WORK / "motion.srt"
     msrt.write_text("1\n00:00:00,300 --> 00:00:02,000\nbugun *sinov* qilamiz\n\n"
                     "2\n00:00:02,200 --> 00:00:04,000\n**3 oyda** natija bo'ladi\n\n"
-                    "3\n00:00:04,200 --> 00:00:06,000\n\u041f\u0440\u0438\u0432\u0435\u0442, !!100%!!\n", encoding="utf-8")
+                    "3\n00:00:04,200 --> 00:00:06,000\n\u041f\u0440\u0438\u0432\u0435\u0442, !!100%!! \u2705\n", encoding="utf-8")
     mel = WORK / "elements.json"
     C.write_json({"elements": [
         {"type": "title", "start": 0.0, "end": 1.5, "text": "TOP 3\n**sinov**"},
@@ -128,6 +128,9 @@ def main() -> int:
         {"type": "stat", "start": 4.0, "end": 6.0, "value": 90, "label": "natija"},
         {"type": "choice", "start": 2.0, "end": 4.0, "y": 0.8, "items": [{"at": 2.0, "text": "to'g'ri javob", "ok": True}]},
         {"type": "voice", "start": 0.5, "end": 3.0, "y": 0.1},
+        {"type": "callout", "start": 4.0, "end": 6.0, "text": "shisha panel \U0001F525", "y": 0.2},
+        {"type": "lower_third", "start": 0.3, "end": 2.5, "name": "Ism Familiya", "role": "lavozim"},
+        {"type": "emoji", "start": 4.5, "end": 6.0, "emoji": "\U0001F680", "x": 0.8, "y": 0.35},
         {"type": "sfx", "at": 1.6, "name": "pop"},
     ]}, mel)
     shot = WORK / "motion_stills.jpg"

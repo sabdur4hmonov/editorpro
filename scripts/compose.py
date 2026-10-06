@@ -52,7 +52,58 @@ def crop_window(meta: dict, W: int, H: int, face: dict | None) -> tuple | None:
     return cw, ch, x, y
 
 
-def fit_graph(meta: dict, style: dict, face: dict | None) -> tuple[str, str]:
+LOOK_PRESETS = {
+    "off": {},
+    "natural": {"contrast": 1.04, "saturation": 1.06, "sharpen": 0.35},
+    "warm": {"contrast": 1.05, "saturation": 1.08, "warmth": 0.25, "sharpen": 0.35},
+    "cool": {"contrast": 1.05, "saturation": 1.04, "warmth": -0.2, "sharpen": 0.35},
+    "punchy": {"contrast": 1.10, "saturation": 1.18, "sharpen": 0.5, "vignette": 0.2},
+    "film": {"contrast": 1.06, "saturation": 0.96, "warmth": 0.12, "vignette": 0.3, "grain": 4},
+}
+
+
+def look_filters(style: dict, brand_dir: Path | None) -> tuple[str, str]:
+    """Rang ishlovi (color grade): (YUV bosqichidagi filtrlar, RGB bosqichidagi LUT filtri)."""
+    cfg = dict(style.get("look", {}))
+    if not cfg.get("enabled", True):
+        return "", ""
+    preset = str(cfg.get("preset", "natural"))
+    if preset not in LOOK_PRESETS:
+        raise C.MontajError(f"look.preset noto'g'ri: {preset!r}. Mumkin: {', '.join(LOOK_PRESETS)}")
+    look = dict(LOOK_PRESETS[preset])
+    look.update({k: v for k, v in cfg.items() if k not in ("preset", "enabled") and not k.startswith("_") and v is not None})
+    parts = []
+    eq = []
+    for key, default in (("contrast", 1.0), ("saturation", 1.0), ("brightness", 0.0), ("gamma", 1.0)):
+        value = float(look.get(key, default))
+        if abs(value - default) > 0.001:
+            eq.append(f"{key}={value:.3f}")
+    if eq:
+        parts.append("eq=" + ":".join(eq))
+    warmth = max(-1.0, min(1.0, float(look.get("warmth", 0))))
+    if abs(warmth) > 0.01 and C.has_filter("colortemperature"):
+        parts.append(f"colortemperature=temperature={int(6500 - warmth * 2200)}:mix=1")
+    if float(look.get("sharpen", 0)) > 0.01:
+        parts.append(f"unsharp=5:5:{min(1.5, float(look['sharpen'])):.2f}:5:5:0.0")
+    if float(look.get("vignette", 0)) > 0.01:
+        parts.append(f"vignette=angle={min(1.0, float(look['vignette'])) * 0.8:.3f}")
+    if float(look.get("grain", 0)) > 0.1:
+        parts.append(f"noise=alls={min(12, int(round(float(look['grain']))))}:allf=t+u")
+    lut = ""
+    if look.get("lut"):
+        lp = Path(str(look["lut"]))
+        candidates = [lp] if lp.is_absolute() else ([brand_dir / lp] if brand_dir else []) + [C.ROOT / lp]
+        found = next((c for c in candidates if c.is_file()), None)
+        if found is None:
+            raise C.MontajError(f"LUT fayli topilmadi: {look['lut']} (.cube fayl brend papkasida yoki loyihada bo'lsin)")
+        if not C.has_filter("lut3d"):
+            C.warn("Bu FFmpeg da lut3d filtri yo'q, LUT qo'llanmaydi.")
+        else:
+            lut = "lut3d=file=" + C.filter_path(found, cwd=C.ROOT) + ":interp=tetrahedral"
+    return ",".join(parts), lut
+
+
+def fit_graph(meta: dict, style: dict, face: dict | None, brand_dir: Path | None = None) -> tuple[str, str]:
     """ffmpeg filtr grafigi: manba -> W x H, rgb24. (grafik, tanlangan usul) qaytaradi."""
     v = style["video"]
     W, H = int(C.style_get(style, "video", "width")), int(C.style_get(style, "video", "height"))
@@ -102,7 +153,13 @@ def fit_graph(meta: dict, style: dict, face: dict | None) -> tuple[str, str]:
                 f"[bg][fg]overlay=(W-w)/2:(H-h)/2")
     else:
         raise C.MontajError(f"video.fit noto'g'ri: {fit!r}. Mumkin: auto, crop, face, pad, blur.")
-    return body + f",setsar=1,scale=in_color_matrix={matrix}:in_range={rng},format=rgb24[fit]", fit
+    grade, lut = look_filters(style, brand_dir)
+    if grade:
+        body += "," + grade
+    body += f",setsar=1,scale=in_color_matrix={matrix}:in_range={rng}"
+    if lut:
+        body += ",format=gbrp," + lut
+    return body + ",format=rgb24[fit]", fit
 
 
 def face_in_output(meta: dict, W: int, H: int, face: dict | None, fit: str) -> tuple:
@@ -130,8 +187,9 @@ def zoom_plan(style: dict, cuts: dict | None, base_dur: float) -> list:
     push = float(z.get("slow_push", 0.03))
     min_seg = float(z.get("min_segment", 0.8))
     bounds, pos = [], 0.0
+    speed = float((cuts or {}).get("speed", 1.0)) or 1.0
     for seg in (cuts or {}).get("keep", []) or [{"start": 0.0, "end": base_dur}]:
-        length = float(seg["end"]) - float(seg["start"])
+        length = (float(seg["end"]) - float(seg["start"])) / speed
         bounds.append((pos, pos + length))
         pos += length
     if len(bounds) < 2:
@@ -224,10 +282,46 @@ def build_layers(ctx: E.Ctx, style: dict, cues: list, words: list | None, elemen
     logo = style.get("logo", {})
     if logo.get("file"):
         layers.append(E.LogoLayer(ctx, logo, base_dur))
+    if style.get("progress_bar", {}).get("enabled"):
+        layers.append(E.ProgressLayer(ctx, style["progress_bar"], total))
     if total > base_dur:
         layers.append(E.EndcardLayer(ctx, style.get("endcard", {}), base_dur, total))
     layers.sort(key=lambda layer: layer.z)
     return layers
+
+
+def check_export(path: Path, style: dict, meta: dict | None = None) -> list:
+    """Platforma talablari bo'yicha tekshiruv: [(nom, holat, tafsilot)]. holat: ok | ogoh | xato."""
+    import json as _json
+    import re as _re
+    plat = style.get("platform", {})
+    meta = meta or C.ffprobe_info(path)
+    rows = []
+
+    def row(name: str, ok: bool, detail: str, warn_only: bool = False) -> None:
+        rows.append((name, "ok" if ok else ("ogoh" if warn_only else "xato"), detail))
+
+    W, H = int(style["video"]["width"]), int(style["video"]["height"])
+    row("O'lcham", (meta["width"], meta["height"]) == (W, H), f"{meta['width']}x{meta['height']}")
+    row("Video kodek", meta["vcodec"] in ("h264", "hevc") and meta.get("pix_fmt") == "yuv420p",
+        f"{meta['vcodec']}, {meta.get('pix_fmt')}")
+    row("Kadr tezligi", 23 <= meta["fps"] <= float(plat.get("fps_max", 60)), f"{meta['fps']:g} fps")
+    max_dur = float(plat.get("max_duration", 90))
+    row("Davomiylik", meta["duration"] <= max_dur, f"{meta['duration']:.1f}s (chegara {max_dur:g}s)", warn_only=True)
+    row("Ovoz", meta["has_audio"] and meta["acodec"] == "aac", f"{meta['acodec']}, {meta['sample_rate']} Hz")
+    if meta["has_audio"]:
+        proc = C.run([C.need_tool("ffmpeg"), "-hide_banner", "-nostdin", "-i", str(path), "-vn",
+                      "-af", "loudnorm=print_format=json", "-f", "null", "-"])
+        blocks = _re.findall(r"\{[^{}]*\"input_i\"[^{}]*\}", proc.stderr, _re.S)
+        try:
+            data = _json.loads(blocks[-1])
+            lufs, tp = float(data["input_i"]), float(data["input_tp"])
+            target, tol = float(plat.get("lufs", -14)), float(plat.get("lufs_tolerance", 2.0))
+            row("Balandlik", abs(lufs - target) <= tol, f"{lufs:.1f} LUFS (maqsad {target:g} +-{tol:g})", warn_only=True)
+            row("Eng baland nuqta", tp <= float(plat.get("true_peak", -1.0)) + 0.3, f"{tp:.1f} dBTP", warn_only=True)
+        except (IndexError, KeyError, ValueError):
+            pass  # jim ovoz: o'lchab bo'lmaydi
+    return rows
 
 
 def _read_exact(stream, view: memoryview) -> int:
@@ -269,7 +363,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     elements = read_elements(elements_file)
 
     face = F.detect(video, quiet=True) if style.get("zoom", {}).get("face_aware", True) else None
-    graph, fit = fit_graph(meta, style, face)
+    graph, fit = fit_graph(meta, style, face, brand_dir)
     ctx.anchor = face_in_output(meta, W, H, face, fit)
     plan = zoom_plan(style, cuts, base_dur)
     manual_zoom = [el for el in elements if el.get("type") == "zoom"]
@@ -295,12 +389,16 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
                 src_t = min(t, max(0.0, base_dur - 0.08))
                 proc = subprocess.run([ffmpeg, "-hide_banner", "-nostdin", "-loglevel", "error", "-ss", f"{src_t:.3f}",
                                        "-i", str(video), "-filter_complex", graph, "-map", "[fit]", "-frames:v", "1",
-                                       "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True)
+                                       "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True, cwd=str(C.ROOT))
                 if len(proc.stdout) < size:
                     raise C.MontajError(f"{t:.2f}s dagi kadrni olib bo'lmadi: "
                                         + proc.stderr.decode("utf-8", "replace")[-300:])
                 frame = np.frombuffer(proc.stdout[:size], np.uint8).reshape(H, W, 3).copy()
-                shots.append((t, render_frame(frame, t)))
+                frame = render_frame(frame, t)
+                sf = ctx.safe   # xavfsiz zona chegarasi (faqat ko'rish rasmida chiziladi, videoga tushmaydi)
+                cv2.rectangle(frame, (int(sf["left"] * W), int(sf["top"] * H)),
+                              (int((1 - sf["right"]) * W), int((1 - sf["bottom"]) * H)), (0, 255, 255), 2)
+                shots.append((t, frame))
             stills_out = C.guard_output(stills_out or (work / "stills.jpg"), video)
             th = 720
             tw = int(W * th / H)
@@ -317,7 +415,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             if not ok:
                 raise C.MontajError("Rasmni saqlab bo'lmadi.")
             stills_out.write_bytes(buf.tobytes())
-            return {"stills": str(stills_out), "count": len(shots)}
+            return {"stills": str(stills_out), "count": len(shots), "notes": list(ctx.notes)}
 
         # ---------------- to'liq render
         out_path = C.guard_output(out_path, video)
@@ -338,7 +436,8 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         with open(dec_log, "wb") as dlog, open(enc_log, "wb") as elog:
             dec = subprocess.Popen([ffmpeg, "-hide_banner", "-nostdin", "-loglevel", "error", "-i", str(video),
                                     "-filter_complex", graph, "-map", "[fit]", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
-                                   stdout=subprocess.PIPE, stderr=dlog, stdin=subprocess.DEVNULL, bufsize=size)
+                                   stdout=subprocess.PIPE, stderr=dlog, stdin=subprocess.DEVNULL, bufsize=size,
+                                   cwd=str(C.ROOT))
             enc_cmd = [ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
                        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", f"{fps:g}", "-i", "-",
                        "-i", str(wav), "-map", "0:v", "-map", "1:a",
@@ -394,10 +493,23 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         if problems:
             raise C.MontajError(f"Natija tekshiruvdan o'tmadi ({out_path.name}): " + "; ".join(problems))
         out_meta["seconds"] = round(time.time() - began, 1)
+        out_meta["notes"] = list(ctx.notes)
+        out_meta["checks"] = check_export(out_path, style, out_meta)
         return out_meta
     finally:
         for layer in layers:
             layer.close()
+
+
+def print_report(meta: dict, style: dict) -> None:
+    """Platforma tekshiruvi va joylashuv ogohlantirishlarini chiqaradi."""
+    checks = meta.get("checks") or []
+    if checks:
+        C.info(f"\nPlatforma tekshiruvi ({style.get('platform', {}).get('name', 'Instagram Reels')}):")
+        for name, state, detail in checks:
+            C.info(f"  [{'OK' if state == 'ok' else 'OGOH' if state == 'ogoh' else 'XATO'}] {name}: {detail}")
+    for note in meta.get("notes") or []:
+        C.warn(note)
 
 
 def main() -> int:
@@ -432,6 +544,8 @@ def main() -> int:
         res = compose(video, None, style, srt, words, cuts, elements_file, stills=times,
                       stills_out=Path(args.stills_out) if args.stills_out else None)
         C.info(f"Rasm tayyor ({res['count']} kadr): {res['stills']}")
+        for note in res.get("notes") or []:
+            C.warn(note)
         return 0
 
     if srt and not args.approved:
@@ -453,6 +567,7 @@ def main() -> int:
                    Path(args.music) if args.music else None, True if args.nvenc else None)
     C.info(f"Tayyor ({meta['seconds']}s): {out}\n  {meta['width']}x{meta['height']}, {meta['fps']:g} fps, "
            f"{meta['duration']:.2f}s, ovoz: {'bor' if meta['has_audio'] else 'yoq'} ({meta['acodec']})")
+    print_report(meta, style)
     return 0
 
 

@@ -55,6 +55,11 @@ CAPTION_PRESETS = {
 }
 
 
+# Instagram Reels interfeysi yopadigan chetlar (kadrga nisbatan). Manba: ffmpeg-skill loyihasidagi
+# platforma jadvali (MIT), style.json: platform.safe orqali o'zgartiriladi.
+DEFAULT_SAFE = {"top": 0.08, "bottom": 0.20, "left": 0.05, "right": 0.12}
+
+
 class Ctx:
     """Qatlamlar uchun umumiy ma'lumot: kadr o'lchami, shriftlar, uslub, fayl qidirish."""
 
@@ -70,6 +75,29 @@ class Ctx:
         font_dirs.append(C.ROOT / style.get("subtitles", {}).get("fonts_dir", "style/fonts"))
         self.fonts = M.Fonts(font_dirs)
         self.anchor = (0.5, 0.38)                    # yuz markazi (zoom va bo'lingan ekran uchun)
+        safe = dict(DEFAULT_SAFE)
+        safe.update(style.get("platform", {}).get("safe", {}) or {})
+        self.safe = safe                             # ilova tugmalari yopadigan chetlar (kadrga nisbatan)
+        self.notes: list = []
+
+    def note(self, text: str) -> None:
+        """Render to'xtamaydigan ogohlantirish (oxirida ko'rsatiladi), takrorlanmaydi."""
+        if text not in self.notes:
+            self.notes.append(text)
+
+    def check_safe(self, what: str, left: float, top: float, right: float, bottom: float) -> None:
+        s = self.safe
+        out = []
+        if top < s["top"] * self.H - 2:
+            out.append("tepadan")
+        if bottom > (1 - s["bottom"]) * self.H + 2:
+            out.append("pastdan")
+        if left < s["left"] * self.W - 2:
+            out.append("chapdan")
+        if right > (1 - s["right"]) * self.W + 2:
+            out.append("o'ngdan")
+        if out:
+            self.note(f"{what} xavfsiz zonadan chiqyapti ({', '.join(out)}): Instagram tugmalari yopishi mumkin.")
 
     def asset(self, value: str, what: str = "Fayl") -> Path:
         """Fayl yo'lini topadi: to'liq yo'l, brend papkasi yoki loyiha papkasiga nisbatan."""
@@ -155,6 +183,8 @@ class RichBlock:
                 word = word.rstrip(".,;:").lstrip(",.")
             word = apply_case(word, str(cfg.get("case", "asis")))
             if word:
+                if tokens and not newline and not any(ch.isalnum() for ch in word):
+                    level = tokens[-1]["level"]      # emoji oldingi so'z bilan bir qatorda va bir o'lchamda turadi
                 tokens.append({"text": word, "level": level, "newline": newline})
         emph = any(t["level"] in ("big", "big_accent", "huge") for t in tokens)
         if not emph and cfg.get("auto_numbers") and all(t["level"] == "normal" for t in tokens):
@@ -191,7 +221,7 @@ class RichBlock:
         max_w = float(cfg.get("max_width", 0.84)) * ctx.W
         lines, cur, cur_w = [], [], 0.0
         for t in tokens:
-            t["w"] = M.text_advance(t["font"], t["text"], t["track"])
+            t["w"] = M.measure(t["font"], t["text"], t["track"])
             space = t["font"].getlength(" ") * 0.9 + t["track"]
             add = t["w"] + (space if cur else 0)
             if cur and (t["newline"] or abs(cur[0]["size"] - t["size"]) > 0.5 or cur_w + add > max_w):
@@ -234,7 +264,7 @@ class RichBlock:
                 stroke = None
                 if cfg.get("stroke"):
                     stroke = dict(cfg["stroke"], width=cfg["stroke"].get("width", 4) * ctx.k)
-                spr, _ = M.text_sprite(t["text"], t["font"], t["color"], t["track"], shadow, glow, stroke)
+                spr, _ = M.word_sprite(t["text"], t["font"], t["color"], t["track"], shadow, glow, stroke)
                 self.words.append({"spr": spr, "x": x, "y": baseline, "w": t["w"], "size": size,
                                    "opacity": t["opacity"], "emph": t["emph"], "text": t["text"]})
                 x += t["w"]
@@ -248,17 +278,17 @@ class RichBlock:
     def draw(self, frame, cx: float, cy: float, t: float, times: list | None, cfg: dict,
              start: float, end: float) -> None:
         """Blokni (cx, cy) markazga chizadi. times: har bir so'zning paydo bo'lish vaqti (yoki None)."""
-        ox, oy = cx - self.width / 2, cy - self.height / 2
         anim = max(0.001, float(cfg.get("anim_ms", 220)) / 1000.0)
-        out = clamp_exit(t, end, 0.07)
+        out = clamp_exit(t, end, 0.10)
+        # chiqish kirishdan tezroq: so'nadi va biroz pastga cho'kadi
+        ox, oy = cx - self.width / 2, cy - self.height / 2 + (1 - out) * 8 * self.ctx.k
         mode = str(cfg.get("animation", "blur"))
         reveal = str(cfg.get("reveal", "word"))
         for b in self.boxes:
             t0 = times[b["first"]] if (times and reveal != "cue") else start
-            p = M.ease_back((t - t0) / anim)
             if t >= t0:
                 M.blit(frame, b["spr"], ox + b["x"], oy + b["y"], opacity=out * M.clamp01((t - t0) / (anim * 0.6)),
-                       scale=0.85 + 0.15 * p, anchor=(b["spr"].w / 2, b["spr"].h / 2))
+                       scale=0.7 + 0.3 * M.spring((t - t0) / (anim * 1.6)), anchor=(b["spr"].w / 2, b["spr"].h / 2))
         for i, w in enumerate(self.words):
             t0 = times[i] if (times and reveal in ("word", "dim")) else start
             p = (t - t0) / anim
@@ -272,7 +302,7 @@ class RichBlock:
                 M.blit(frame, w["spr"], ox + w["x"], oy + w["y"], opacity=base_op)
             elif mode == "pop":
                 M.blit(frame, w["spr"], ox + w["x"], oy + w["y"], opacity=base_op * M.clamp01(p * 2.5),
-                       scale=0.72 + 0.28 * M.ease_back(p), anchor=(w["w"] / 2, -w["size"] * 0.35))
+                       scale=0.6 + 0.4 * M.spring(p), anchor=(w["w"] / 2, -w["size"] * 0.35))
             elif mode == "fade":
                 M.blit(frame, w["spr"], ox + w["x"], oy + w["y"], opacity=base_op * e)
             else:  # blur: xiralikdan ochiladi va biroz pastdan ko'tariladi
@@ -284,11 +314,14 @@ def clamp_exit(t: float, end: float, dur: float) -> float:
     return M.clamp01((end - t) / dur) if dur > 0 else 1.0
 
 
-def appear(t: float, start: float, end: float, tin: float = 0.28, tout: float = 0.16) -> tuple:
-    """Element paydo bo'lishi/yo'qolishi: (shaffoflik, masshtab)."""
+def appear(t: float, start: float, end: float, tin: float = 0.42, tout: float = 0.14) -> tuple:
+    """Element paydo bo'lishi/yo'qolishi: (shaffoflik, masshtab).
+
+    Kirish: prujina bilan kattalashib chiqadi. Chiqish: tezroq, biroz kichrayib so'nadi.
+    """
     p_in = (t - start) / tin if tin > 0 else 1.0
-    op = M.clamp01(p_in * 1.8) * clamp_exit(t, end, tout)
-    return op, 0.82 + 0.18 * M.ease_back(p_in)
+    out = clamp_exit(t, end, tout)
+    return M.clamp01(p_in * 4.0) * out, (0.6 + 0.4 * M.spring(p_in)) * (0.92 + 0.08 * out)
 
 
 # ---------------------------------------------------------------- qatlamlar
@@ -331,8 +364,24 @@ class CaptionLayer(Layer):
     def _prepare(self, item: dict) -> None:
         block = RichBlock(self.ctx, item["text"], self.cfg)
         tokens = block.plain_words
+        cx, cy = self.ctx.W / 2, float(self.cfg["position_y"]) * self.ctx.H
+        self.ctx.check_safe(f"Subtitr ({C.fmt_time(item['start'])})", cx - block.width / 2, cy - block.height / 2,
+                            cx + block.width / 2, cy + block.height / 2)
         item["block"] = block
-        item["times"] = self._word_times(item["cue"], tokens, self.words) if tokens else []
+        # emoji va tinish belgilari aytilmaydi: ular oldingi so'z bilan birga chiqadi
+        spoken = [i for i, tok in enumerate(tokens) if any(ch.isalnum() for ch in tok)]
+        times = [item["start"]] * len(tokens)
+        if spoken:
+            got = self._word_times(item["cue"], [tokens[i] for i in spoken], self.words)
+            last = item["start"]
+            pos = dict(zip(spoken, got))
+            for i in range(len(tokens)):
+                if i in pos:
+                    last = pos[i]
+                    times[i] = last
+                else:
+                    times[i] = min(last + 0.06, item["end"])
+        item["times"] = times
 
     def draw(self, frame, t: float) -> None:
         for item in self.items:
@@ -369,19 +418,28 @@ class TextLayer(Layer):
 class VideoReader:
     """Qo'shimcha videodan kadrlarni ketma-ket o'qiydi (ffmpeg orqali, kerakli o'lchamda)."""
 
-    def __init__(self, path: Path, w: int, h: int, fps: float):
+    def __init__(self, path: Path, w: int, h: int, fps: float, cover: bool = True):
         self.path, self.w, self.h, self.fps = Path(path), int(w), int(h), fps
         self.proc, self.pos, self.last = None, -1, None
-        self.duration = C.ffprobe_info(path)["duration"]
+        meta = C.ffprobe_info(path)
+        self.duration = meta["duration"]
+        self.alpha = bool(meta.get("alpha"))        # shaffof fonli video (ProRes 4444, WebM alfa)
+        self.codec = meta.get("vcodec")
+        self.cover = cover
+        self.channels = 4 if self.alpha else 3
 
     def _open(self, offset: float) -> None:
         self.close()
         cmd = [C.need_tool("ffmpeg"), "-hide_banner", "-nostdin", "-loglevel", "error"]
         if offset > 0.01:
             cmd += ["-ss", f"{offset:.3f}"]
-        cmd += ["-i", str(self.path), "-an", "-vf",
-                f"fps={self.fps:g},scale={self.w}:{self.h}:force_original_aspect_ratio=increase,"
-                f"crop={self.w}:{self.h},format=rgb24", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
+        if self.alpha and self.codec in ("vp9", "vp8"):   # WebM alfa kanali faqat libvpx dekoderi bilan o'qiladi
+            cmd += ["-c:v", "libvpx-vp9" if self.codec == "vp9" else "libvpx"]
+        fmt = "rgba" if self.alpha else "rgb24"
+        fit = (f"scale={self.w}:{self.h}:force_original_aspect_ratio=increase,crop={self.w}:{self.h}"
+               if self.cover else f"scale={self.w}:{self.h}")
+        cmd += ["-i", str(self.path), "-an", "-vf", f"fps={self.fps:g},{fit},format={fmt}",
+                "-f", "rawvideo", "-pix_fmt", fmt, "-"]
         self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
         self.pos = int(round(offset * self.fps)) - 1
 
@@ -389,14 +447,27 @@ class VideoReader:
         idx = max(0, int(round(t_rel * self.fps)))
         if self.proc is None or idx < self.pos or idx > self.pos + 3:
             self._open(min(idx / self.fps, max(0.0, self.duration - 0.05)))
-        size = self.w * self.h * 3
+        size = self.w * self.h * self.channels
         while self.pos < idx:
             buf = self.proc.stdout.read(size)
             if len(buf) < size:
                 break  # video tugadi: oxirgi kadr ushlab turiladi
-            self.last = np.frombuffer(buf, np.uint8).reshape(self.h, self.w, 3)
+            self.last = np.frombuffer(buf, np.uint8).reshape(self.h, self.w, self.channels)
             self.pos += 1
         return self.last
+
+    def sprite_at(self, t_rel: float):
+        """Shaffof video kadri sprite sifatida (alfa oldindan ko'paytirilgan). Nuqtasi: markaz."""
+        frame = self.frame_at(t_rel)
+        if frame is None:
+            return None
+        if self.alpha:
+            pix = frame.astype(np.uint16)
+            pix[..., :3] = (pix[..., :3] * pix[..., 3:4] + 127) // 255
+            pix = pix.astype(np.uint8)
+        else:
+            pix = np.dstack([frame, np.full(frame.shape[:2], 255, np.uint8)])
+        return M.Sprite(pix, -self.w / 2, -self.h / 2)
 
     def close(self) -> None:
         if self.proc is not None:
@@ -448,13 +519,20 @@ class BrollLayer(Layer):
         return self.reader.frame_at(self.offset + t - self.start)
 
     def draw(self, frame, t: float) -> None:
-        content = self._content(t)
-        if content is None:
-            return
         W, H = self.ctx.W, self.ctx.H
         op = 1.0
         if self.fade > 0:
             op = M.clamp01((t - self.start) / self.fade) * clamp_exit(t, self.end, self.fade)
+        if self.reader is not None and self.reader.alpha and self.mode == "full":
+            # shaffof fonli video (masalan Remotion yoki After Effects'dan): asosiy video ustiga qo'yiladi
+            spr = self.reader.sprite_at(self.offset + t - self.start)
+            if spr is not None:
+                M.blit(frame, spr, W / 2, H / 2, opacity=op)
+            return
+        content = self._content(t)
+        if content is None:
+            return
+        content = content[..., :3]
         if self.mode == "split":
             # gapiruvchi tepaga: yuz atrofidan W x H/2 bo'lak kesib olinadi
             half = H // 2
@@ -498,7 +576,7 @@ class ImageLayer(Layer):
             meta = C.ffprobe_info(self.path)
             self.vh = max(2, int(self.width * meta["height"] / max(1, meta["width"])) // 2 * 2)
             self.width = self.width // 2 * 2
-            self.reader = VideoReader(self.path, self.width, self.vh, ctx.fps)
+            self.reader = VideoReader(self.path, self.width, self.vh, ctx.fps, cover=False)
             self.spr = None
         else:
             self.spr = M.image_sprite(self.path, width=self.width, radius=self.radius, shadow=self.shadow)
@@ -511,11 +589,11 @@ class ImageLayer(Layer):
             op, scale = 1.0, 1.0
         spr = self.spr
         if self.reader is not None:
-            content = self.reader.frame_at(t - self.start)
-            if content is None:
+            spr = self.reader.sprite_at(t - self.start)
+            if spr is None:
                 return
-            rgba = np.dstack([content, np.full(content.shape[:2], 255, np.uint8)])
-            spr = M.Sprite(rgba, -self.width / 2, -self.vh / 2)
+        elif t - self.start > 1.0:
+            scale *= M.breathe(t - self.start)       # uzoq turgan rasm sekin "nafas oladi"
         M.blit(frame, spr, self.cx, self.cy, opacity=op * self.opacity, scale=scale, anchor=(0, 0))
 
     def close(self) -> None:
@@ -631,7 +709,8 @@ class ChoiceLayer(Layer):
         self.decide = float(el.get("decide", 0.8))
         self.icons = {"cross": icon_sprite("cross", int(self.tile * 0.74)),
                       "check": icon_sprite("check", int(self.tile * 0.74))}
-        self.tile_spr = M.rounded_rect_sprite(self.tile, self.tile, 30 * k, self.color + (215,),
+        self.glass = str(el.get("style", "solid")) == "glass"
+        self.tile_spr = M.rounded_rect_sprite(self.tile, self.tile, 30 * k, self.color + ((0,) if self.glass else (215,)),
                                               border=(255, 255, 255, 150), border_width=max(1, int(3 * k)),
                                               shadow={"blur": 16 * k, "dy": 6 * k, "opacity": 0.28})
         font = ctx.fonts.get(cfg["font"], 58 * k, 600)
@@ -646,7 +725,7 @@ class ChoiceLayer(Layer):
                                   {"blur": 6 * k, "dy": 2 * k, "opacity": 0.35}) for line in lines]
             w = int(max([adv for _, adv in sprs] + [200 * k]) + 70 * k)
             h = int(len(sprs) * 68 * k + 44 * k)
-            card = M.rounded_rect_sprite(w, h, 26 * k, self.color + (215,), border=(255, 255, 255, 150),
+            card = M.rounded_rect_sprite(w, h, 26 * k, self.color + ((0,) if self.glass else (215,)), border=(255, 255, 255, 150),
                                          border_width=max(1, int(3 * k)),
                                          shadow={"blur": 16 * k, "dy": 6 * k, "opacity": 0.28})
             self.items.append({"at": float(item.get("at", self.start)), "end": end, "ok": bool(item.get("ok")),
@@ -677,11 +756,17 @@ class ChoiceLayer(Layer):
         for kind, x in (("cross", self.cx - self.gap / 2 - tile), ("check", self.cx + self.gap / 2)):
             chosen = (kind == "check") == item["ok"]
             dim = 1.0 if chosen else 1.0 - 0.68 * decided
-            M.blit(frame, self.tile_spr, x, top, opacity=op * dim, scale=scale, anchor=(tile / 2, tile / 2))
+            if self.glass:
+                M.glass(frame, int(x), int(top), tile, tile, int(30 * k), opacity=op * dim, tint=self.color, tint_alpha=0.5)
+            M.blit(frame, self.tile_spr, x, top, opacity=op * dim, scale=1.0 if self.glass else scale,
+                   anchor=(tile / 2, tile / 2))
             M.blit(frame, self.icons[kind], x + tile / 2, top + tile / 2, opacity=op * dim,
                    scale=scale * (1.0 + (0.08 * math.sin(min(1.0, decided) * math.pi) if chosen else 0)), anchor=(0, 0))
-        M.blit(frame, item["card"], self.cx - item["w"] / 2, self.cy + 8 * k, opacity=op, scale=scale,
-               anchor=(item["w"] / 2, item["h"] / 2))
+        if self.glass:
+            M.glass(frame, int(self.cx - item["w"] / 2), int(self.cy + 8 * k), item["w"], item["h"], int(26 * k),
+                    opacity=op, tint=self.color, tint_alpha=0.5)
+        M.blit(frame, item["card"], self.cx - item["w"] / 2, self.cy + 8 * k, opacity=op,
+               scale=1.0 if self.glass else scale, anchor=(item["w"] / 2, item["h"] / 2))
         for n, (spr, adv) in enumerate(item["lines"]):
             M.blit(frame, spr, self.cx - adv / 2, self.cy + 8 * k + 22 * k + 50 * k + n * 68 * k, opacity=op)
 
@@ -811,7 +896,7 @@ class LogoLayer(Layer):
         self.spr = M.image_sprite(ctx.asset(cfg["file"], "Logotip"), width=width)
         self.opacity = float(cfg.get("opacity", 0.95))
         pos = str(cfg.get("position", "top"))
-        mx, my = float(cfg.get("margin_x", 0.06)) * ctx.W, float(cfg.get("margin_y", 0.07)) * ctx.H
+        mx, my = float(cfg.get("margin_x", 0.07)) * ctx.W, float(cfg.get("margin_y", 0.09)) * ctx.H
         hw, hh = self.spr.w / 2, self.spr.h / 2
         table = {"top": (ctx.W / 2, my + hh), "top_left": (mx + hw, my + hh), "top_right": (ctx.W - mx - hw, my + hh),
                  "bottom": (ctx.W / 2, ctx.H - my - hh), "bottom_left": (mx + hw, ctx.H - my - hh),
@@ -890,8 +975,134 @@ class EndcardLayer(Layer):
             M.blit(frame, spr, W / 2 - adv / 2, by + bh * 0.66, opacity=op)
 
 
+class CalloutLayer(Layer):
+    """Panel ichidagi matn: shisha (orqasi xira), qora yoki brend rangidagi kartochka."""
+    z = 36
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        k = self.k = ctx.k * float(el.get("size", 1.0))
+        self.kind = str(el.get("style", "glass"))
+        if self.kind not in ("glass", "dark", "accent"):
+            raise C.MontajError(f"callout.style noto'g'ri: {self.kind!r}. Mumkin: glass, dark, accent")
+        width = float(el.get("width", 0.72)) * ctx.W
+        self.pad_x, self.pad_y = 44 * k, 30 * k
+        cap = ctx.caption_cfg({"preset": el.get("preset", "clean")})
+        self.cfg = dict(cap, reveal="cue", animation="fade", case="asis", strip_punct=False, auto_numbers=False,
+                        align=el.get("align", "center"), shadow=None if self.kind == "accent" else cap.get("shadow"),
+                        max_width=(width - 2 * self.pad_x) / ctx.W, size_plain=58, size_sub=50, size_main=72,
+                        color=el.get("color", "#111111" if self.kind == "accent" else "#FFFFFF"))
+        if self.kind == "accent":
+            self.cfg["accent"] = self.cfg["color"]   # rangli panel ustida urg'u so'zi ham matn rangida (faqat kattaroq)
+        self.block = RichBlock(ctx, str(el.get("text", "")), self.cfg, float(el.get("size", 1.0)))
+        self.w = int(self.block.width + 2 * self.pad_x)
+        self.h = int(self.block.height + 2 * self.pad_y)
+        self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.3)) * ctx.H
+        accent = M.rgb(el.get("accent", cap["accent"]))
+        fill = {"glass": (255, 255, 255, 0), "dark": (18, 18, 22, 225), "accent": accent + (255,)}[self.kind]
+        self.radius = int(30 * k)
+        self.panel = M.rounded_rect_sprite(self.w, self.h, self.radius, fill, border=(255, 255, 255, 130),
+                                           border_width=max(1, int(3 * k)) if self.kind != "accent" else 0,
+                                           shadow={"blur": 20 * k, "dy": 8 * k, "opacity": 0.3})
+        ctx.check_safe("Kartochka (callout)", self.cx - self.w / 2, self.cy - self.h / 2,
+                       self.cx + self.w / 2, self.cy + self.h / 2)
+
+    def draw(self, frame, t: float) -> None:
+        op, scale = appear(t, self.start, self.end)
+        x0, y0 = self.cx - self.w / 2, self.cy - self.h / 2
+        if self.kind == "glass":
+            M.glass(frame, int(x0), int(y0), self.w, self.h, self.radius, opacity=op, blur=22 * self.k, tint_alpha=0.16)
+            M.blit(frame, self.panel, x0, y0, opacity=op)
+        else:
+            M.blit(frame, self.panel, x0, y0, opacity=op, scale=scale, anchor=(self.w / 2, self.h / 2))
+        self.block.draw(frame, self.cx, self.cy, t, None, self.cfg, self.start + 0.08, self.end)
+
+
+class LowerThirdLayer(Layer):
+    """Ism va lavozim plashkasi (chap pastda): rangli chiziq, ism qalin, lavozim ingichka."""
+    z = 36
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        k = self.k = ctx.k * float(el.get("size", 1.0))
+        cap = ctx.caption_cfg({"preset": el.get("preset", "clean")})
+        shadow = {"blur": 12 * k, "dy": 3 * k, "opacity": 0.55}
+        self.x, self.y = float(el.get("x", 0.07)) * ctx.W, float(el.get("y", 0.72)) * ctx.H
+        name = fix_apostrophes(str(el.get("name", "")))
+        if not name:
+            raise C.MontajError("lower_third uchun 'name' kerak.")
+        f1 = ctx.fonts.get(cap["font"], 60 * k, 700)
+        self.name = M.word_sprite(name, f1, cap["color"], cap["tracking"] * 60 * k, shadow)
+        self.role = None
+        if el.get("role"):
+            f2 = ctx.fonts.get(cap["font"], 40 * k, 500)
+            self.role = M.word_sprite(fix_apostrophes(str(el["role"])), f2, cap["color"], cap["tracking"] * 40 * k, shadow)
+        bar_h = int((118 if self.role else 66) * k)
+        self.bar = M.rounded_rect_sprite(max(4, int(9 * k)), bar_h, 4 * k, M.rgb(el.get("accent", cap["accent"])) + (255,),
+                                         shadow={"blur": 8 * k, "dy": 2 * k, "opacity": 0.3})
+        self.bar_h = bar_h
+        width = max(self.name[1], self.role[1] if self.role else 0) + 34 * k
+        ctx.check_safe("Ism plashkasi (lower_third)", self.x, self.y, self.x + width, self.y + bar_h)
+
+    def draw(self, frame, t: float) -> None:
+        k = self.k
+        out = clamp_exit(t, self.end, 0.14)
+        p = (t - self.start) / 0.35
+        e = M.ease_out(p)
+        grow = M.ease_out((t - self.start) / 0.22)
+        M.blit(frame, self.bar, self.x, self.y + self.bar_h * (1 - grow) / 2, opacity=out * M.clamp01(p * 4),
+               scale=1.0)
+        tx = self.x + 34 * k - (1 - e) * 36 * k
+        M.blit(frame, self.name[0], tx, self.y + 50 * k, opacity=out * M.clamp01((p - 0.15) * 2.5))
+        if self.role:
+            e2 = M.ease_out((t - self.start - 0.1) / 0.35)
+            M.blit(frame, self.role[0], self.x + 34 * k - (1 - e2) * 36 * k, self.y + 104 * k,
+                   opacity=0.88 * out * M.clamp01(((t - self.start - 0.1) / 0.35 - 0.15) * 2.5))
+
+
+class EmojiLayer(Layer):
+    """Katta emoji: sakrab chiqadi va sekin "nafas oladi"."""
+    z = 37
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        runs = [v for kind, v in M.Emoji.split(str(el.get("emoji", ""))) if kind == "emoji"]
+        if not runs:
+            raise C.MontajError(f"emoji elementida tanilmagan emoji: {el.get('emoji')!r} "
+                                "(bayroqlar va juda yangi emojilar to'plamda yo'q).")
+        size = max(16, int(float(el.get("size", 0.2)) * ctx.W))
+        self.spr = M.pil_sprite(M.Emoji.image(runs[0], size), shadow={"blur": 14 * ctx.k, "dy": 6 * ctx.k, "opacity": 0.3})
+        self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.3)) * ctx.H
+
+    def draw(self, frame, t: float) -> None:
+        op, scale = appear(t, self.start, self.end)
+        M.blit(frame, self.spr, self.cx, self.cy, opacity=op, scale=scale * M.breathe(t - self.start, 0.02, 1.8),
+               anchor=(0, 0))
+
+
+class ProgressLayer(Layer):
+    """Video qayergacha kelganini ko'rsatadigan ingichka chiziq (tepada yoki pastda)."""
+    z = 80
+
+    def __init__(self, ctx: Ctx, cfg: dict, total: float):
+        super().__init__(0, total)
+        self.ctx = ctx
+        self.h = max(2, int(float(cfg.get("height", 8)) * ctx.k))
+        self.color = np.array(M.rgb(cfg.get("color") or ctx.caption_cfg()["accent"]), np.uint8)
+        self.top = str(cfg.get("position", "top")) != "bottom"
+
+    def draw(self, frame, t: float) -> None:
+        w = int(self.ctx.W * M.clamp01(t / max(0.01, self.end)))
+        y = 0 if self.top else self.ctx.H - self.h
+        frame[y:y + self.h, :w] = self.color
+
+
 ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "broll": BrollLayer,
-                 "list": ListLayer, "choice": ChoiceLayer, "stat": StatLayer, "voice": VoiceLayer}
+                 "list": ListLayer, "choice": ChoiceLayer, "stat": StatLayer, "voice": VoiceLayer,
+                 "callout": CalloutLayer, "lower_third": LowerThirdLayer, "emoji": EmojiLayer}
 NON_LAYER_TYPES = {"sfx", "zoom"}
 
 

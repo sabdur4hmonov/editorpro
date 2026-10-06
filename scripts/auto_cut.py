@@ -171,15 +171,19 @@ def build_plan(video: Path, style: dict, words: list | None = None,
         elif e - s >= 1.0 / fps:
             snapped.append([s, e])
     removals.sort(key=lambda r: r["start"])
+    speed = float(cut.get("speed", 1.0) or 1.0)
+    if not 0.5 <= speed <= 2.0:
+        raise C.MontajError(f"cut.speed 0.5 va 2.0 orasida bo'lishi kerak (hozir {speed}).")
     return {
         "source": str(video),
         "duration": duration,
         "fps": fps,
+        "speed": speed,
         "settings": {"silence_db": noise, "min_silence": min_sil, "padding": padding,
                      "fade_ms": float(cut.get("fade_ms", 15))},
         "keep": [{"start": round(s, 4), "end": round(e, 4)} for s, e in snapped],
         "removed": [{**r, "start": round(r["start"], 3), "end": round(r["end"], 3)} for r in removals],
-        "new_duration": round(sum(e - s for s, e in snapped), 3),
+        "new_duration": round(sum(e - s for s, e in snapped) / speed, 3),
     }
 
 
@@ -198,6 +202,8 @@ def print_plan(plan: dict) -> None:
             if r["reason"] == "takror":
                 line += f"\n         olib tashlanadi: \"{r['text']}\"\n         qoladi:          \"{r['kept_text']}\""
             C.info(line)
+    if abs(float(plan.get("speed", 1.0)) - 1.0) > 0.001:
+        C.info(f"  Tezlik: {plan['speed']:g}x")
     saved = plan["duration"] - plan["new_duration"]
     pct = (saved / plan["duration"] * 100) if plan["duration"] else 0
     C.info(f"  Jami: {plan['duration']:.2f}s -> {plan['new_duration']:.2f}s "
@@ -236,10 +242,17 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
             if f > 0:
                 chain += f",afade=t=in:st=0:d={f:.4f},afade=t=out:st={d - f:.4f}:d={f:.4f}"
             parts.append(chain + f"[a{i}]")
+    speed = float(plan.get("speed", 1.0) or 1.0)
+    fast = abs(speed - 1.0) > 0.001
+    vlab, alab = ("[vc]", "[ac]") if fast else ("[vout]", "[aout]")
     if meta["has_audio"]:
-        parts.append("".join(f"[v{i}][a{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=1[vout][aout]")
+        parts.append("".join(f"[v{i}][a{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=1{vlab}{alab}")
     else:
-        parts.append("".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0[vout]")
+        parts.append("".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0{vlab}")
+    if fast:  # butun videoni tezlashtirish/sekinlashtirish (ovoz balandligi o'zgarmaydi)
+        parts.append(f"[vc]setpts=PTS/{speed:.4f},fps={fps:g}[vout]")
+        if meta["has_audio"]:
+            parts.append(f"[ac]atempo={speed:.4f}[aout]")
     graph = ";\n".join(parts)
 
     crf = int(style["cut"].get("intermediate_crf", 16))
@@ -252,17 +265,18 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
     return out_path
 
 
-def remap_words(words: list, keep: list) -> list:
-    """So'z vaqtlarini kesilgan videoning yangi vaqt chizig'iga o'tkazadi."""
+def remap_words(words: list, keep: list, speed: float = 1.0) -> list:
+    """So'z vaqtlarini kesilgan (va tezlashtirilgan) videoning yangi vaqt chizig'iga o'tkazadi."""
     out, offset = [], 0.0
+    speed = float(speed or 1.0)
     for seg in keep:
         s, e = seg["start"], seg["end"]
         for w in words:
             mid = (w["start"] + w["end"]) / 2
             if s <= mid < e:
                 item = dict(w)
-                item["start"] = round(max(s, w["start"]) - s + offset, 3)
-                item["end"] = round(min(e, w["end"]) - s + offset, 3)
+                item["start"] = round((max(s, w["start"]) - s + offset) / speed, 3)
+                item["end"] = round((min(e, w["end"]) - s + offset) / speed, 3)
                 if item["end"] > item["start"]:
                     out.append(item)
         offset += e - s
@@ -282,13 +296,13 @@ def cut_video(video: Path, style: dict, words: list | None = None, out_dir: Path
     if not apply:
         return result
 
-    nothing_to_cut = not plan["removed"]
+    nothing_to_cut = not plan["removed"] and abs(float(plan.get("speed", 1.0)) - 1.0) <= 0.001
     if nothing_to_cut:
         result["video"] = str(video)  # kesadigan joy yo'q: asl fayl keyingi bosqichga o'tadi (nusxa olinmaydi)
         new_words = list(words or [])
     else:
         result["video"] = str(apply_plan(video, plan, out_dir / "cut.mp4", style))
-        new_words = remap_words(words or [], plan["keep"])
+        new_words = remap_words(words or [], plan["keep"], plan.get("speed", 1.0))
     result["applied"] = True
     if words is not None:
         C.write_json({"source": result["video"], "words": new_words}, out_dir / "cut.words.json")
@@ -327,7 +341,7 @@ def main() -> int:
         out_dir = Path(args.out_dir) if args.out_dir else C.job_dir(video)
         out = apply_plan(video, plan, out_dir / "cut.mp4", style)
         if words is not None:
-            new_words = remap_words(words, plan["keep"])
+            new_words = remap_words(words, plan["keep"], plan.get("speed", 1.0))
             C.write_json({"source": str(out), "words": new_words}, out_dir / "cut.words.json")
             C.write_srt(C.words_to_cues(new_words, C.cue_style(style)), out_dir / "cut.srt")
         C.info(f"\nKesilgan video: {out}")

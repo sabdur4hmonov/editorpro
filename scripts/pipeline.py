@@ -87,7 +87,8 @@ def main() -> int:
     if not src["has_video"]:
         raise C.MontajError(f"Faylda video oqimi yo'q: {video}")
     work = C.job_dir(video)
-    out = Path(args.output) if args.output else C.OUTPUT_DIR / f"{C.output_stem(video.stem)}_final.mp4"
+    out_dir = C.OUTPUT_DIR / style["_brand"] if style.get("_brand") else C.OUTPUT_DIR   # har brend o'z papkasida
+    out = Path(args.output) if args.output else out_dir / f"{C.output_stem(video.stem)}_final.mp4"
     C.guard_output(out, video)
     C.info(f"Video: {video}\n  {src['width']}x{src['height']}, {src['fps']:g} fps, {src['duration']:.2f}s, "
            f"ovoz: {'bor' if src['has_audio'] else 'yoq'}\nIsh papkasi: {work}")
@@ -95,6 +96,14 @@ def main() -> int:
     want_subs = bool(style["subtitles"].get("enabled", True)) and not args.no_subs and engine != "off"
     if style.get("_brand"):
         C.info(f"Brend: {style['_brand']}")
+    elif C.list_brands():
+        C.info("Brend tanlanmadi (umumiy uslub ishlatiladi). Mavjud brendlar: " + ", ".join(C.list_brands())
+               + ". Tanlash: --brand NOM")
+
+    def save_result(status: str, **extra) -> None:
+        """Holatni temp/<nom>/result.json ga yozadi (watcher va agentlar shuni o'qiydi)."""
+        C.write_json({"status": status, "video": str(video), "brand": style.get("_brand", ""), **extra},
+                     work / "result.json")
     want_cut = bool(style["cut"].get("enabled", True)) and not args.no_cut
     state_path, subs_srt = work / "job.json", work / "subs.srt"
     state = C.read_json(state_path) if state_path.is_file() else {}
@@ -178,6 +187,9 @@ def main() -> int:
                          C.read_json(words_file).get("words", []) if words_file.is_file() else None,
                          cuts, elements_file, stills=times, stills_out=work / "stills.jpg")
         C.info(f"\nRASM TAYYOR ({res['count']} kadr): {res['stills']}")
+        for note in res.get("notes") or []:
+            C.warn(note)
+        save_result("stills", stills=res["stills"], notes=res.get("notes") or [])
         return 0
 
     # ---- 3. subtitr: tasdiq va ASS
@@ -205,6 +217,7 @@ def main() -> int:
             C.info(f"\nTASDIQ KERAK. Subtitr matni: {subs_srt}\n"
                    "  1) Yuqoridagi matnni foydalanuvchiga ko'rsating, xatolarni shu faylda tuzating.\n"
                    "  2) Tasdiqdan keyin shu buyruqni --approve-subs bilan qayta ishga tushiring.")
+            save_result("need_approval", subs=str(subs_srt))
             return EXIT_NEED_APPROVAL
         subs_ok = True
         if engine == "ass":
@@ -239,6 +252,9 @@ def main() -> int:
     C.info(f"  FPS:         {meta['fps']:g}")
     C.info(f"  Ovoz:        {'bor' if meta['has_audio'] else 'YOQ'} ({meta['acodec']}, {meta['sample_rate']} Hz)")
     C.info(f"  Hajm:        {meta['size_bytes'] / 1e6:.1f} MB")
+    if engine == "motion":
+        CP.print_report(meta, style)
+    save_result("done", output=str(out), notes=meta.get("notes") or [], checks=meta.get("checks") or [])
     C.info(f"\nTAYYOR ({time.time() - total:.1f}s): {out}")
     return 0
 

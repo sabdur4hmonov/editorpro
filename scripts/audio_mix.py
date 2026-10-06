@@ -15,6 +15,19 @@ import render as R
 
 SFX_EXTS = (".wav", ".mp3", ".m4a", ".ogg", ".flac")
 
+# Nutqni tozalash zanjirlari (audio.voice). Claude ovozni eshita olmaydi: qaysi biri yaxshi
+# eshitilishini foydalanuvchi tinglab hal qiladi.
+VOICE_PRESETS = {
+    "off": "",
+    # past shovqinni kesadi, yengil siqadi: ko'p hollarda xavfsiz
+    "clean": "highpass=f=75,acompressor=threshold=-21dB:ratio=2.5:attack=12:release=180:makeup=1.5,deesser=i=0.3",
+    # + shovqinni pasaytirish: shovqinli xona yoki ko'cha uchun
+    "denoise": "highpass=f=80,afftdn=nr=10:nf=-45,acompressor=threshold=-21dB:ratio=2.5:attack=12:release=180:makeup=1.5,deesser=i=0.3",
+    # kuchliroq siqish va tiniqlik: "radio" ovozi
+    "strong": ("highpass=f=90,afftdn=nr=12:nf=-42,acompressor=threshold=-24dB:ratio=3.5:attack=8:release=160:makeup=3,"
+               "deesser=i=0.5,equalizer=f=3500:t=q:w=1.2:g=2"),
+}
+
 
 def find_sfx(name: str, brand_dir: Path | None = None) -> Path:
     """SFX faylini nomi bo'yicha topadi (avval brend papkasi, keyin assets/sfx)."""
@@ -47,8 +60,12 @@ def build_audio(video: Path, out_wav: Path, style: dict, total: float, music: Pa
     idx = 1
     parts = []
     stereo = f"aresample={sr},aformat=sample_fmts=fltp:channel_layouts=stereo"
+    voice = str(a.get("voice", "off")).lower()
+    if voice not in VOICE_PRESETS:
+        raise C.MontajError(f"audio.voice noto'g'ri: {voice!r}. Mumkin: {', '.join(VOICE_PRESETS)}")
     if meta["has_audio"]:
-        parts.append(f"[0:a]{stereo},apad=whole_dur={total:.3f}[voice0]")
+        chain = VOICE_PRESETS[voice]
+        parts.append(f"[0:a]{stereo}" + (f",{chain}" if chain else "") + f",apad=whole_dur={total:.3f}[voice0]")
     else:
         inputs += ["-f", "lavfi", "-t", f"{total:.3f}", "-i", f"anullsrc=r={sr}:cl=stereo"]
         parts.append(f"[{idx}:a]{stereo}[voice0]")

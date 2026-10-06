@@ -27,7 +27,7 @@ from pathlib import Path
 
 import common as C
 
-VERSION = 2
+VERSION = 3
 JOBS = C.ROOT / "jobs"
 INBOX, DONE, LOGS, PREVIEW = JOBS / "inbox", JOBS / "done", JOBS / "logs", JOBS / "preview"
 HEARTBEAT = JOBS / "watcher.json"
@@ -250,6 +250,14 @@ def collect_pipeline(info: dict, result: dict, job_id: str) -> None:
             result["preview"] = str(target)
         return
     out = Path(info["output"])
+    res_file = work / "result.json"
+    if res_file.is_file():   # pipeline yozgan aniq holat (natija yo'li, ogohlantirishlar, platforma tekshiruvi)
+        res = C.read_json(res_file)
+        for key in ("notes", "checks"):
+            if res.get(key):
+                result[key] = res[key]
+        if res.get("status") == "done" and res.get("output"):
+            out = Path(res["output"])
     if result["exit_code"] == 0 and out.is_file():
         result["output"] = str(out)
         result["output_info"] = {k: v for k, v in C.ffprobe_info(out).items() if k != "path"}

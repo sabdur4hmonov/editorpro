@@ -18,18 +18,21 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | Papka / fayl | Vazifasi |
 |---|---|
 | `input/` | Asl videolar. **Faqat o'qiladi.** |
-| `output/` | Tayyor natijalar. Natija faqat shu yerga yoziladi. |
+| `output/` | Tayyor natijalar (brend tanlansa `output/<brend>/`). Natija faqat shu yerga yoziladi. |
 | `temp/` | Oraliq fayllar (har video uchun `temp/<nom>/`). Xohlagan payt o'chirsa bo'ladi. |
-| `samples/` | Uslub namunasi bo'ladigan videolar. Faqat o'qiladi. |
+| `samples/` | Uslub namunasi bo'ladigan videolar (brend bo'yicha `samples/<brend>/`). Faqat o'qiladi. |
 | `style/style.json` | Umumiy (standart) uslub qiymatlari. |
 | `style/fonts/` | Shriftlar: Inter, Montserrat, Onest, Oswald, Unbounded, Playfair Display, Caveat. |
 | `brands/<nom>/` | Brend profili: `brand.json`, `logo.png`, `fonts/`, `music/`, `sfx/`. |
 | `assets/sfx/` | Ovoz effektlari: pop, click, tick, thud, ding, whoosh, swipe, riser. |
 | `assets/models/` | Yuzni topish modeli (YuNet). |
+| `assets/emoji/` | Emoji rasmlari (Noto, bitta zip ichida). |
 | `scripts/` | Montaj skriptlari. |
 | `jobs/` | Watcher topshiriqlari va natijalari (chatdan montaj). |
 | `setup.ps1`, `start_watcher.bat` | Muhitni o'rnatish; watcher'ni ochish. |
 | `docs/TOOLS.md` | Ishlatilgan va qo'shimcha ochiq kodli tool'lar. |
+| `docs/SKILLS_AUDIT.md` | Tashqi skill va plaginlar auditi; Remotion haqida xulosa. |
+| `docs/REMOTION_PROMPT.md` | Remotion'ni maxsus sahnalar uchun qo'shish prompti (ixtiyoriy). |
 
 `input/`, `output/`, `temp/`, `samples/`, `jobs/`, `.venv/` va video fayllar gitga kirmaydi.
 
@@ -43,6 +46,16 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 - Fayl yo'llari (`logo.file`, `audio.music_file`, elementlardagi `file`) avval brend papkasidan,
   keyin loyiha papkasidan qidiriladi.
 - Mijoz brendi haqida bilmagan narsani (rang, shrift, logotip) o'ylab topma: foydalanuvchidan so'ra.
+
+### Yangi mijoz (brend) qo'shish
+
+1. Foydalanuvchidan so'raladigan narsalar: brend nomi, logotip (shaffof fonli PNG), asosiy rang,
+   Instagram manzili, bor bo'lsa shrift va musiqa. Yoqqan videolari bo'lsa `samples/<brend>/` ga.
+2. `.venv\Scripts\python.exe scripts\new_brand.py NOM --title "Nomi" --handle @manzil --logo yo'l\logo.png`
+   Rang berilmasa logotipdan olinadi (natijani foydalanuvchiga ko'rsatib tasdiqlat).
+3. Namunalar bo'lsa: `analyze_samples.py --brand NOM`, kadrlarni ko'rib `brand.json` ni to'ldir
+   (subtitr uslubi, joyi, rang ishlovi). Ovoz haqida taxmin qilma: eshita olmaysan, so'ra.
+4. `--stills` bilan bitta videoda ko'rsatib, foydalanuvchi rozi bo'lgach commit qil.
 
 ## Skriptlar
 
@@ -61,6 +74,7 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `subtitles.py`, `render.py` | Eski oddiy dvigatel (`captions.engine: ass`): ASS subtitr va render. |
 | `audio_mix.py`, `make_sfx.py` | Ovozni yig'ish; ovoz effektlarini generatsiya qilish. |
 | `face.py VIDEO` | Yuz joylashuvini topadi. |
+| `new_brand.py NOM` | Yangi brend papkasi va `brand.json` yaratadi. |
 | `analyze_samples.py` | `samples/` tahlili: `temp/analysis/report.json`. |
 | `selftest.py`, `check_env.py`, `bench_whisper.py` | Sinov, muhit tekshiruvi, whisper tezligi. |
 | `watcher.py` | Chatdan kelgan topshiriqlarni bajaradi. |
@@ -136,6 +150,9 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `broll` | Qo'shimcha kadr: `mode` `full` (to'liq ekran) yoki `split` (tepada gapiruvchi) | `file`, `mode`, `fade`, `offset` |
 | `zoom` | Qo'lda zoom | `scale`, `x`, `y`, `ease` |
 | `sfx` | Ovoz effekti | `at`, `name`, `volume_db` |
+| `callout` | Panel ichidagi matn: `style` `glass` (orqasi xira), `dark`, `accent` | `text`, `x`, `y`, `width`, `style` |
+| `lower_third` | Ism va lavozim plashkasi | `name`, `role`, `x`, `y` |
+| `emoji` | Katta emoji, sakrab chiqadi | `emoji`, `x`, `y`, `size` |
 
 Har elementda `start` va `end` bor. Elementlarni matn mazmuniga qarab qo'ying: nima aytilayotgan
 bo'lsa, o'sha paytda ko'rinsin (so'z vaqtlari `cut.words.json` da). Subtitr bilan ustma-ust
@@ -143,6 +160,41 @@ tushmasin: subtitr `position_y` atrofida turadi. Rasm va b-roll fayllarini foyda
 yo'q faylni o'ylab topma. Render qilishdan oldin `--stills` bilan ko'rib tekshir.
 
 Logotip va oxirgi kadr elementlarga yozilmaydi: ular brenddan (`logo`, `endcard`) olinadi.
+
+- **Emoji** subtitr va istalgan matn ichida ishlaydi (rasm qilib chiziladi). Bayroqlar yo'q.
+- **Shaffof fonli video** (After Effects yoki Remotion'dan ProRes 4444 `.mov`, yoki alfa kanalli
+  `.webm`): `image` elementi bilan istalgan joyga, `broll` + `"mode": "full"` bilan butun kadr ustiga
+  qo'yiladi. Tayyor animatsiya to'plamlari (obuna tugmasi, plashka) shu yo'l bilan ishlatiladi.
+- `choice` uchun `"style": "glass"` shisha ko'rinish beradi.
+
+## Ko'rinish va ovoz sozlamalari (`style.json` yoki `brand.json`)
+
+| Bo'lim | Nima | Qiymatlar |
+|---|---|---|
+| `look` | Rang ishlovi | `preset`: off, natural, warm, cool, punchy, film; qo'shimcha: `contrast`, `saturation`, `warmth`, `sharpen`, `vignette`, `grain`, `lut` (.cube) |
+| `zoom` | Kesishdagi yaqinlashtirish | `punch_in`, `slow_push`, `enabled` |
+| `audio.voice` | Nutqni tozalash | off, clean, denoise, strong |
+| `audio.music_file` | Fon musiqa (nutq paytida o'zi pasayadi) | fayl yo'li, `music_volume_db` |
+| `sfx` | Avtomatik ovoz effektlari | `enabled`, `on_big_word`, `on_element` |
+| `cut.speed` | Butun video tezligi | 1.0 (o'zgarmaydi) … 1.15 |
+| `progress_bar` | Tepadagi/pastdagi ko'rsatkich chiziq | `enabled`, `position`, `color` |
+| `platform` | Xavfsiz zona va eksport talablari | `safe`, `max_duration`, `lufs` |
+
+Ovozga tegishli tanlovni (voice, sfx, musiqa balandligi) agent o'zi hal qilmaydi: ikki variantni
+render qilib, foydalanuvchi tinglab tanlaydi.
+
+## Montaj sifati qoidalari
+
+Render qilishdan oldin `--stills` bilan tekshiriladigan ro'yxat:
+
+1. Birinchi 1.5 soniyada kuchli boshlanish: sarlavha yoki eng muhim gap, harakat darhol boshlansin.
+2. Bir kadrda bitta asosiy narsa: brend rangi bir vaqtda ko'pi bilan bitta elementda.
+3. Har 3 soniyada yangi narsa (kesish, zoom, element), lekin orada sokin joylar ham qolsin.
+4. Matn xavfsiz zona ichida (stills rasmidagi ko'k ramka), yuzni va bir-birini yopmasin.
+5. Subtitrda har bo'lakda bitta urg'u; hamma so'zni belgilab tashlama.
+6. Elementlar gapga mos paytda chiqsin (so'z vaqtlari bo'yicha), aytilishidan oldin emas.
+7. Oxirida aniq chaqiriq (oxirgi kadr yoki matn): bitta harakat.
+8. Platforma tekshiruvi `[OK]` bo'lsin; `OGOH` chiqsa foydalanuvchiga ayt.
 
 ## Qoidalar
 
@@ -185,7 +237,8 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
   `no_silence`, `no_repeats`, `no_cut`, `no_subs`, `force`, `language`, `model`, `silence_db`,
   `music`, `engine`.
 - Natijada: `subs_text` (matn), `words` (so'z va vaqtlari), `cuts` (kesilgan joylar),
-  `low_confidence_words`, `brands`, `preview`, `output_info`.
+  `low_confidence_words`, `brands`, `preview`, `output_info`, `notes` (joylashuv ogohlantirishlari),
+  `checks` (platforma tekshiruvi). Xuddi shu holat `temp/<nom>/result.json` ga ham yoziladi.
 - Tartib: 1) `pipeline` → `need_approval`; 2) matnni foydalanuvchiga ko'rsatish, `subs.srt` ga
   tuzatish va belgilar, `elements.json` yozish; 3) `stills` bilan ko'rib tekshirish;
   4) foydalanuvchi tasdiqlagach `"approve_subs": true`.
@@ -223,4 +276,6 @@ ffprobe -v error -show_entries format=duration:stream=codec_type,width,height,r_
 - FFmpeg 7+ da uzun filtr grafigi `-/filter_complex fayl` orqali beriladi (eski
   `-filter_complex_script` FFmpeg 9 da olib tashlangan): `common.run_ffmpeg_graph`.
 - Eski dvigatelda (ASS) Windows yo'lidagi `:` va `\` muammosi `common.filter_path` da hal qilingan.
-- Emoji hozircha qo'llab-quvvatlanmaydi (rangli emoji shrifti chizilmaydi): o'rniga rasm ishlating.
+- Remotion bu loyihada yo'q. Maxsus sahna kerak bo'lsa `docs/REMOTION_PROMPT.md` bo'yicha
+  qo'shiladi va natijasi shaffof video sifatida ustiga qo'yiladi.
+- Tashqi skill o'rnatishdan oldin `docs/SKILLS_AUDIT.md` ni o'qi va foydalanuvchidan so'ra.

@@ -22,6 +22,8 @@
     "loudnorm_lra": 11,
     "bitrate": "192k",
     "sample_rate": 48000,
+    "voice": "off",
+    "_voice_izoh": "Nutqni tozalash: off | clean (past shovqin kesiladi, yengil siqiladi) | denoise (+ shovqin pasayadi) | strong (radio ovozi). Qaysi biri yaxshi eshitilishini tinglab tanlang.",
     "music_file": "",
     "music_volume_db": -20,
     "music_ducking": true,
@@ -36,6 +38,8 @@
     "padding": 0.1,
     "min_keep": 0.2,
     "fade_ms": 15,
+    "speed": 1.0,
+    "_speed_izoh": "Butun video tezligi (1.0 = o'zgarmaydi, 1.08 = 8% tezroq). Ovoz ohangi o'zgarmaydi.",
     "remove_repeats": true,
     "repeat_similarity": 0.85,
     "intermediate_crf": 16
@@ -112,6 +116,31 @@
     "volume_db": -12,
     "on_big_word": "pop",
     "on_element": "whoosh"
+  },
+
+  "look": {
+    "_izoh": "Rang ishlovi (color grade). preset: off | natural | warm | cool | punchy | film. Ixtiyoriy qo'shimchalar: contrast, saturation, brightness, gamma, warmth (-1..1), sharpen (0..1.5), vignette (0..1), grain (0..12), lut (.cube fayl yo'li).",
+    "enabled": true,
+    "preset": "natural"
+  },
+
+  "platform": {
+    "_izoh": "Yakuniy fayl shu talablar bo'yicha tekshiriladi. safe: ilova tugmalari yopadigan chetlar (kadrga nisbatan); matn va grafika shu chegaradan chiqsa ogohlantirish beriladi.",
+    "name": "Instagram Reels",
+    "max_duration": 90,
+    "fps_max": 60,
+    "lufs": -14,
+    "lufs_tolerance": 2.0,
+    "true_peak": -1.0,
+    "safe": {"top": 0.08, "bottom": 0.20, "left": 0.05, "right": 0.12}
+  },
+
+  "progress_bar": {
+    "_izoh": "Video qayergacha kelganini ko'rsatadigan ingichka chiziq. color bo'sh bo'lsa brend rangi.",
+    "enabled": false,
+    "position": "top",
+    "height": 8,
+    "color": ""
   },
 
   "whisper": {

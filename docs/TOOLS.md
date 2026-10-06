@@ -50,5 +50,7 @@ Yoqsa `style/style.json` da `whisper.model` ga shu nomni yozing.
 | Shriftlar (`style/fonts/`): Inter, Montserrat, Onest, Oswald, Unbounded, Playfair Display, Caveat | Subtitr va sarlavhalar; hammasi lotin, kirill va o'zbek harflarini qo'llaydi | https://github.com/google/fonts (SIL OFL, tijoriy ishda bepul; litsenziyalar `style/fonts/LICENSES/`) |
 | Ovoz effektlari (`assets/sfx/`) | pop, click, tick, thud, ding, whoosh, swipe, riser | `scripts/make_sfx.py` bilan noldan generatsiya qilingan, tashqi manba yo'q |
 
-Emoji shrifti (Noto Color Emoji) hozircha ishlatilmaydi: Pillow uning yangi formatini chiza olmaydi.
-Remotion (React) ham ko'rib chiqildi, lekin hozircha kerak emas: hamma grafika Python'da chiziladi.
+| Emoji rasmlari (`assets/emoji/`) | Matn ichidagi va alohida emoji | https://github.com/googlefonts/noto-emoji (Apache 2.0 / OFL) |
+| Reels xavfsiz zonalari va eksport talablari | `style.json: platform` | https://github.com/kajisho5/ffmpeg-skill (MIT) jadvalidan olingan qiymatlar |
+
+Tashqi skill va plaginlar auditi: `docs/SKILLS_AUDIT.md`. Remotion: `docs/REMOTION_PROMPT.md`.

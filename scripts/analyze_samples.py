@@ -194,6 +194,7 @@ def summarize(items: list) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Namuna videolarni tahlil qilib JSON hisobot yozadi.")
     ap.add_argument("videos", nargs="*", help="Aniq fayllar (berilmasa samples/ dagi hammasi)")
+    ap.add_argument("--brand", help="Faqat shu brend namunalari: samples/<brend>/ (hisobot: temp/analysis/<brend>/report.json)")
     ap.add_argument("--no-whisper", action="store_true", help="Nutq tezligini o'lchama (ancha tez ishlaydi)")
     ap.add_argument("--report", help="Hisobot fayli (standart: temp/analysis/report.json)")
     ap.add_argument("--style", help="Boshqa style.json fayli")
@@ -203,9 +204,10 @@ def main() -> int:
     if args.videos:
         videos = [C.need_file(v, "Video") for v in args.videos]
     else:
-        if not C.SAMPLES_DIR.is_dir():
-            raise C.MontajError(f"samples/ papkasi topilmadi: {C.SAMPLES_DIR}")
-        videos = sorted(p for p in C.SAMPLES_DIR.iterdir() if p.suffix.lower() in C.VIDEO_EXTS)
+        folder = C.SAMPLES_DIR / args.brand if args.brand else C.SAMPLES_DIR
+        if not folder.is_dir():
+            raise C.MontajError(f"Namunalar papkasi topilmadi: {folder}")
+        videos = sorted(p for p in folder.iterdir() if p.suffix.lower() in C.VIDEO_EXTS)
     if not videos:
         raise C.MontajError("samples/ ichida video yo'q. Avval yoqqan uslubdagi 3-5 ta namuna videoni "
                             "samples/ ga tashlang (mp4, mov, mkv).")
@@ -235,7 +237,8 @@ def main() -> int:
             C.info(f"  kadrlar: {item['frames']['count']} ta -> {item['frames']['dir']}")
 
     report = {"videos": items, "summary": summarize(items)}
-    report_path = C.guard_output(Path(args.report) if args.report else ANALYSIS_DIR / "report.json")
+    default_report = (ANALYSIS_DIR / args.brand / "report.json") if args.brand else ANALYSIS_DIR / "report.json"
+    report_path = C.guard_output(Path(args.report) if args.report else default_report)
     C.write_json(report, report_path)
     C.info(f"\nHisobot: {report_path}")
     if report["summary"]:

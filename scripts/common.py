@@ -367,7 +367,7 @@ def ffprobe_info(path: str | Path) -> dict:
         "has_audio": a is not None,
         "width": 0, "height": 0, "fps": 0.0, "rotation": 0,
         "vcodec": None, "acodec": None, "sample_rate": 0, "channels": 0,
-        "pix_fmt": None, "color_space": None, "color_transfer": None, "color_range": None,
+        "pix_fmt": None, "color_space": None, "color_transfer": None, "color_range": None, "alpha": False,
     }
     if v:
         rotation = 0
@@ -379,6 +379,9 @@ def ffprobe_info(path: str | Path) -> dict:
         w, h = int(v.get("width", 0)), int(v.get("height", 0))
         if abs(rotation) % 180 == 90:  # telefon videosi yonboshlab saqlangan
             w, h = h, w
+        pix = str(v.get("pix_fmt") or "")
+        out["alpha"] = (pix.startswith(("yuva", "rgba", "bgra", "argb", "abgr", "gbrap", "ya"))
+                        or str((v.get("tags") or {}).get("alpha_mode", (v.get("tags") or {}).get("ALPHA_MODE", ""))) == "1")
         out.update(pix_fmt=v.get("pix_fmt"), color_space=v.get("color_space"),
                    color_transfer=v.get("color_transfer"), color_range=v.get("color_range"))
         out.update(width=w, height=h, rotation=rotation, vcodec=v.get("codec_name"),

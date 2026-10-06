@@ -53,6 +53,20 @@ def ease_back(p: float, overshoot: float = 1.4) -> float:
     return 1 + p * p * ((overshoot + 1) * p + overshoot)
 
 
+def spring(p: float, omega: float = 12.0, zeta: float = 0.5) -> float:
+    """Prujina kabi: tez chiqadi, biroz oshib ketadi va o'rniga tushadi (0 -> 1)."""
+    p = clamp01(p)
+    if p >= 1:
+        return 1.0
+    wd = omega * math.sqrt(max(1e-6, 1 - zeta * zeta))
+    return 1 - math.exp(-zeta * omega * p) * (math.cos(wd * p) + (zeta * omega / wd) * math.sin(wd * p))
+
+
+def breathe(t: float, amount: float = 0.006, period: float = 3.2) -> float:
+    """Ekranda uzoq turgan element uchun juda sekin "nafas olish" masshtabi (1 atrofida)."""
+    return 1.0 + amount * math.sin(t * 2 * math.pi / period)
+
+
 def rgb(color: str) -> tuple:
     m = re.fullmatch(r"#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})", str(color).strip())
     if not m:
@@ -287,6 +301,130 @@ def text_sprite(text: str, font, color: str, tracking: float = 0.0, shadow: dict
     return from_pil(img, -pad, -base_y), adv
 
 
+# ---------------------------------------------------------------- emoji
+
+class Emoji:
+    """Emoji rasmlari (assets/emoji/noto-emoji-128.zip). Matn ichidagi emoji rasm qilib chiziladi."""
+
+    ZIP = C.ROOT / "assets" / "emoji" / "noto-emoji-128.zip"
+    _zip = None
+    _names: set = set()
+    _cache: dict = {}
+    _missing_warned = False
+
+    @classmethod
+    def _open(cls) -> bool:
+        if cls._zip is None:
+            if not cls.ZIP.is_file():
+                if not cls._missing_warned:
+                    cls._missing_warned = True
+                    C.warn(f"Emoji to'plami topilmadi ({cls.ZIP}). Emoji o'rniga bo'sh joy qoladi.")
+                return False
+            import zipfile
+            cls._zip = zipfile.ZipFile(cls.ZIP)
+            cls._names = {n[:-4] for n in cls._zip.namelist() if n.endswith(".png")}
+        return True
+
+    @staticmethod
+    def _is_start(ch: str) -> bool:
+        o = ord(ch)
+        return (0x1F000 <= o <= 0x1FAFF or 0x2600 <= o <= 0x27BF or 0x2B00 <= o <= 0x2BFF
+                or 0x2190 <= o <= 0x21FF or 0x2300 <= o <= 0x23FF or o in (0x00A9, 0x00AE, 0x203C, 0x2049, 0x2122, 0x2139, 0x3030, 0x303D))
+
+    @classmethod
+    def split(cls, text: str) -> list:
+        """Matnni bo'laklarga ajratadi: [("text", "salom "), ("emoji", "1f525")]."""
+        if not any(cls._is_start(ch) for ch in text) or not cls._open():
+            return [("text", text)]
+        out, buf, i = [], "", 0
+        while i < len(text):
+            if cls._is_start(text[i]):
+                j, best = i + 1, None
+                seq = [ord(text[i])]
+                if "%x" % seq[0] in cls._names:
+                    best = (i + 1, "%x" % seq[0])
+                while j < len(text) and j - i < 12:  # ZWJ ketma-ketliklari, teri rangi, variatsiya belgisi
+                    o = ord(text[j])
+                    if not (o in (0x200D, 0xFE0F, 0x20E3) or 0x1F3FB <= o <= 0x1F3FF or cls._is_start(text[j])):
+                        break
+                    if o != 0xFE0F:
+                        seq.append(o)
+                    j += 1
+                    name = "_".join("%x" % c for c in seq)
+                    if name in cls._names:
+                        best = (j, name)
+                if best:
+                    if buf:
+                        out.append(("text", buf))
+                        buf = ""
+                    out.append(("emoji", best[1]))
+                    i = best[0]
+                    if i < len(text) and ord(text[i]) == 0xFE0F:
+                        i += 1
+                    continue
+            buf += text[i]
+            i += 1
+        if buf:
+            out.append(("text", buf))
+        return out
+
+    @classmethod
+    def image(cls, name: str, size: int):
+        key = (name, size)
+        if key not in cls._cache:
+            import io
+            img = Image.open(io.BytesIO(cls._zip.read(name + ".png"))).convert("RGBA")
+            cls._cache[key] = img.resize((size, size), Image.LANCZOS)
+        return cls._cache[key]
+
+
+def measure(font, text: str, tracking: float = 0.0) -> float:
+    """Matn kengligi (emoji bilan birga)."""
+    runs = Emoji.split(text)
+    if len(runs) == 1 and runs[0][0] == "text":
+        return text_advance(font, text, tracking)
+    em = font.size * 1.06
+    return sum(text_advance(font, r, tracking) if kind == "text" else em for kind, r in runs)
+
+
+def word_sprite(text: str, font, color: str, tracking: float = 0.0, shadow: dict | None = None,
+                glow: dict | None = None, stroke: dict | None = None) -> tuple:
+    """text_sprite ning emoji tushunadigan varianti. (sprite, kenglik) qaytaradi."""
+    runs = Emoji.split(text)
+    if len(runs) == 1 and runs[0][0] == "text":
+        return text_sprite(text, font, color, tracking, shadow, glow, stroke)
+    em = int(round(font.size * 1.06))
+    parts, x = [], 0.0
+    for kind, value in runs:
+        if kind == "text":
+            if value.strip() == "":
+                x += text_advance(font, value, tracking)
+                continue
+            spr, adv = text_sprite(value, font, color, tracking, shadow, glow, stroke)
+            parts.append((spr, x, 0.0))
+            x += adv
+        else:
+            img = Emoji.image(value, em)
+            sh = None
+            if shadow and float(shadow.get("opacity", 0)) > 0:
+                sh = {"blur": shadow.get("blur", 10), "dy": shadow.get("dy", 3), "opacity": float(shadow["opacity"]) * 0.8}
+            spr = pil_sprite(img, shadow=sh)             # nuqtasi markazda
+            parts.append((spr, x + em / 2, -font.size * 0.36))
+            x += em
+    left = min(px + spr.ox for spr, px, _ in parts)
+    top = min(py + spr.oy for spr, _, py in parts)
+    right = max(px + spr.ox + spr.w for spr, px, _ in parts)
+    bottom = max(py + spr.oy + spr.h for spr, _, py in parts)
+    canvas = np.zeros((int(math.ceil(bottom - top)), int(math.ceil(right - left)), 4), np.uint8)
+    for spr, px, py in parts:
+        x0, y0 = int(round(px + spr.ox - left)), int(round(py + spr.oy - top))
+        h, w = min(spr.h, canvas.shape[0] - y0), min(spr.w, canvas.shape[1] - x0)
+        dst = canvas[y0:y0 + h, x0:x0 + w].astype(np.uint16)
+        src = spr.pix[:h, :w].astype(np.uint16)
+        canvas[y0:y0 + h, x0:x0 + w] = (src + (dst * (255 - src[..., 3:4]) + 127) // 255).astype(np.uint8)
+    return Sprite(canvas, left, top), x
+
+
 # ---------------------------------------------------------------- shakllar
 
 def rounded_rect_sprite(w: int, h: int, radius: float, fill: tuple, border: tuple | None = None,
@@ -332,6 +470,30 @@ def glass(frame: np.ndarray, x: int, y: int, w: int, h: int, radius: int, opacit
     roi[:] = (roi.astype(np.float32) * (1 - m) + soft * m).astype(np.uint8)
 
 
+def pil_sprite(img, radius: float = 0, shadow: dict | None = None) -> Sprite:
+    """Pillow rasmidan sprite: yumaloq burchak va soya bilan. Sprite nuqtasi: markaz."""
+    img = img.convert("RGBA")
+    if radius > 0:
+        s = 3
+        m = Image.new("L", (img.width * s, img.height * s), 0)
+        ImageDraw.Draw(m).rounded_rectangle([0, 0, img.width * s - 1, img.height * s - 1], radius=radius * s, fill=255)
+        m = m.resize(img.size, Image.LANCZOS)
+        img.putalpha(Image.composite(img.getchannel("A"), Image.new("L", img.size, 0), m))
+    if shadow and float(shadow.get("opacity", 0)) > 0:
+        sh_blur, sh_dy = float(shadow.get("blur", 12)), float(shadow.get("dy", 6))
+        pad = int(math.ceil(sh_blur * 3 + abs(sh_dy)))
+        canvas = Image.new("RGBA", (img.width + pad * 2, img.height + pad * 2), (0, 0, 0, 0))
+        alpha = Image.new("L", canvas.size, 0)
+        alpha.paste(img.getchannel("A"), (pad, pad + int(round(sh_dy))))
+        alpha = alpha.filter(ImageFilter.GaussianBlur(sh_blur)).point(lambda v, k=float(shadow["opacity"]): int(v * k))
+        base = Image.new("RGBA", canvas.size, rgb(shadow.get("color", "#000000")) + (0,))
+        base.putalpha(alpha)
+        canvas.alpha_composite(base)
+        canvas.alpha_composite(img, (pad, pad))
+        img = canvas
+    return from_pil(img, -img.width / 2, -img.height / 2)
+
+
 def image_sprite(path: str | Path, width: int | None = None, height: int | None = None,
                  radius: float = 0, shadow: dict | None = None) -> Sprite:
     """Rasm faylidan sprite (PNG shaffofligi saqlanadi). Sprite nuqtasi: markaz."""
@@ -349,23 +511,4 @@ def image_sprite(path: str | Path, width: int | None = None, height: int | None 
         else:
             w, h = max(1, int(round(height * ratio))), int(height)
         img = img.resize((w, h), Image.LANCZOS)
-    if radius > 0:
-        s = 3
-        m = Image.new("L", (img.width * s, img.height * s), 0)
-        ImageDraw.Draw(m).rounded_rectangle([0, 0, img.width * s - 1, img.height * s - 1], radius=radius * s, fill=255)
-        m = m.resize(img.size, Image.LANCZOS)
-        img.putalpha(Image.composite(img.getchannel("A"), Image.new("L", img.size, 0), m))
-    pad = 0
-    if shadow and float(shadow.get("opacity", 0)) > 0:
-        sh_blur, sh_dy = float(shadow.get("blur", 12)), float(shadow.get("dy", 6))
-        pad = int(math.ceil(sh_blur * 3 + abs(sh_dy)))
-        canvas = Image.new("RGBA", (img.width + pad * 2, img.height + pad * 2), (0, 0, 0, 0))
-        alpha = Image.new("L", canvas.size, 0)
-        alpha.paste(img.getchannel("A"), (pad, pad + int(round(sh_dy))))
-        alpha = alpha.filter(ImageFilter.GaussianBlur(sh_blur)).point(lambda v, k=float(shadow["opacity"]): int(v * k))
-        base = Image.new("RGBA", canvas.size, rgb(shadow.get("color", "#000000")) + (0,))
-        base.putalpha(alpha)
-        canvas.alpha_composite(base)
-        canvas.alpha_composite(img, (pad, pad))
-        img = canvas
-    return from_pil(img, -img.width / 2, -img.height / 2)
+    return pil_sprite(img, radius, shadow)
