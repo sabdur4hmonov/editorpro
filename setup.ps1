@@ -279,10 +279,10 @@ if ($libsOk) {
         if (-not (Test-Path -LiteralPath $sample)) {
             [void](Run-Logged "$VenvPy scripts\selftest.py --no-whisper")
         }
-        $code = Run-Logged "$VenvPy scripts\bench_whisper.py --models small"
+        $code = Run-Logged "$VenvPy scripts\bench_whisper.py --models small --allow-download"
         if ($code -eq 0) { $whisperOk = $true } else { Problem 'Whisper sinovi xato bilan tugadi.' }
     } else {
-        Say '  O''tkazib yuborildi. Model birinchi marta ishlatilganda o''zi yuklanadi.'
+        Say '  O''tkazib yuborildi. Model birinchi marta kerak bo''lganda hajmi ko''rsatilib, ruxsat so''raladi.'
     }
 } else {
     Say '  Kutubxonalar o''rnatilmagani uchun o''tkazib yuborildi.'

@@ -1,0 +1,82 @@
+---
+name: transcribe-uz
+description: Transcribe an Uzbek (or Russian/English) video with the project's whisper setup, then correct spelling without touching word timings, and get the user's approval of the text. Use when the user asks to transcribe a video, fix a transcript, or compare whisper models.
+argument-hint: "<video path>"
+---
+
+# /transcribe-uz — transcript first, corrected text, approved by the user
+
+Argument: `$ARGUMENTS` (video path). Talk to the user in **Uzbek**, short numbered steps. The user
+is a beginner programmer.
+
+**You cannot hear the audio.** Every correction you make is based on the logic of the text only
+(spelling, grammar, context). You do not know what was actually said. Where the meaning is not
+clear, do not guess: mark the place `needs_review` and ask the user.
+
+Python is always `.venv/Scripts/python.exe`, run from the project root. Check `--help` before
+using a flag you are not sure about.
+
+## Steps
+
+1. **Transcribe** with the configured model (`style/style.json` → `whisper`):
+
+   `.venv/Scripts/python.exe scripts/transcribe.py <video>`
+
+   Output: `temp/<job>/orig.words.json` (word-by-word timings) and `temp/<job>/orig.srt`.
+   - Exit code 4 means the model is not on this computer. Nothing was downloaded. Tell the user
+     the size that was printed and ask. Only after a clear yes, re-run with `--allow-download`.
+   - A different model for one run: `--model NAME`. Never change `style.json` unless the user asks.
+   - If the script prints timing problems (`So'z vaqtlarida ... muammo`), show them to the user.
+
+2. **Read and correct — text only.**
+   - List the words with their numbers:
+     `.venv/Scripts/python.exe scripts/apply_corrections.py temp/<job>/orig.words.json --list`
+   - Find Uzbek spelling mistakes and Latin-script mistakes: `o'` / `g'` and the tutuq belgisi,
+     x/h and q/k confusions, words glued together or split apart, suffixes, capital letters in
+     names, Cyrillic output where the video is Uzbek in Latin script.
+   - Write ONLY `temp/<job>/corrections.json`. Format (see the script's `--help`/docstring):
+     `{"corrections": [{"index": 5, "was": "kitop", "text": "kitob"}]}`
+     Always include `was` (the current word) so a wrong number is caught.
+   - Never edit `orig.words.json`, never edit an SRT by hand, never write `start`/`end` anywhere.
+   - Keep the speaker's own words. Do not rephrase, shorten or "improve" style. Do not add words.
+   - Not sure what the word should be (a name, a brand, a number, a garbled phrase)? Do not guess:
+     `{"index": 20, "was": "...", "needs_review": true, "note": "nega shubhali"}` and leave the text.
+   - Splitting one word into two or merging two into one is allowed (`"text": "ilm markazi"`, or
+     `"count": 2`); the script divides the time evenly and marks the place `needs_review` itself.
+
+3. **Apply:**
+
+   `.venv/Scripts/python.exe scripts/apply_corrections.py temp/<job>/orig.words.json temp/<job>/corrections.json`
+
+   Output: `orig.words.fixed.json`, `orig.fixed.srt`, `orig.fixed.txt`. The script proves that
+   timings did not change and lists every `needs_review` place. If it reports an error, fix
+   `corrections.json` (not the script, not the timings) and run it again.
+
+4. **Show and get approval.** Show the user, in Uzbek:
+   - the full corrected text (`orig.fixed.txt`),
+   - the list of changes: was → now,
+   - every `needs_review` place with its time, and your question about it,
+   - words whisper itself was unsure about (marked `?` in `--list`).
+   Ask: "Matn to'g'rimi?" Wait for a clear yes. If the user corrects something, update
+   `corrections.json` and re-run step 3 (always from the original `orig.words.json`).
+   **Until the user approves, do not go on to subtitles or rendering.**
+
+## Comparing models
+
+When the user wants to choose a model:
+
+`.venv/Scripts/python.exe scripts/compare_models.py <video> --models small,yuldashev222/whisper-small-uz-v1-ct2`
+
+It uses only the first 60 seconds, writes one set of files per model and a side-by-side table
+(`temp/compare/<name>/compare.html`, `compare.txt`) with differing words highlighted.
+- The video must contain real speech in the target language. Ask the user for a 1-minute test
+  video; never build a synthetic one.
+- Do not score or rank quality yourself: you cannot hear which model is right. Report speed and
+  where the texts differ; the user listens and chooses.
+- Exit code 4 = a model must be downloaded: tell the user the size, ask, then `--allow-download`.
+- Write the chosen model into `style/style.json` (`whisper.model`) only after the user says which.
+
+## Not done by this skill
+
+`pipeline.py` still runs its own transcription and does not read `orig.words.fixed.json`.
+Connecting approved text to subtitles is a separate task; tell the user this plainly if they ask.

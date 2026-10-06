@@ -228,7 +228,11 @@ def main() -> int:
               f"{meta['width']}x{meta['height']}, {meta['duration']:.2f}s, ovoz: {'bor' if meta['has_audio'] else 'yoq'}")
         C.info("    " + "\n    ".join(p.stdout.strip().splitlines()[-9:]))
 
-    C.info("\n9. Xavfsizlik qoidalari")
+    C.info("\n9. Transkripsiya (model tanlash, vaqt tekshiruvi, tuzatish)")
+    import test_transcribe
+    test_transcribe.run(check, video, WORK, args.no_whisper)
+
+    C.info("\n10. Xavfsizlik qoidalari")
     check("asl (test) video o'zgarmadi", before == (video.stat().st_size, video.stat().st_mtime_ns))
     p = script("render.py", video, "-o", C.INPUT_DIR / "bad.mp4", expect=1)
     check("input/ ga yozish rad etiladi", p.returncode == 1 and not (C.INPUT_DIR / "bad.mp4").exists())

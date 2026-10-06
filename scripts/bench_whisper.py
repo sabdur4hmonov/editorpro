@@ -27,6 +27,8 @@ def main() -> int:
     ap.add_argument("--language", help="Til (standart: namuna uchun en, o'z faylingiz uchun style.json dagi)")
     ap.add_argument("--seconds", type=float, default=60, help="Eng ko'pi bilan necha soniya sinalsin")
     ap.add_argument("--style", help="Boshqa style.json fayli")
+    ap.add_argument("--allow-download", action="store_true",
+                    help="Model kompyuterda bo'lmasa internetdan yuklashga ruxsat (foydalanuvchi rozi bo'lgach)")
     args = ap.parse_args()
 
     style = C.load_style(args.style)
@@ -59,7 +61,11 @@ def main() -> int:
         cfg = dict(wcfg, model=name)
         C.info(f"\nModel: {name}")
         t0 = time.time()
-        model = T.load_model(cfg)
+        try:
+            model = T.load_model(cfg, True if args.allow_download else None)
+        except T.DownloadNeeded as exc:
+            C.info(f"\n{exc}")
+            return T.EXIT_NEED_DOWNLOAD
         load_sec = time.time() - t0
         res = T.transcribe_audio(wav, cfg, model=model)
         speed = audio_sec / max(res["elapsed_sec"], 0.01)
@@ -67,7 +73,7 @@ def main() -> int:
         rows.append({"model": name, "load_sec": round(load_sec, 1), "transcribe_sec": res["elapsed_sec"],
                      "speed_x": round(speed, 2), "words": len(res["words"]), "language": res["language"],
                      "real_speech": real_speech, "text": text[:300]})
-        C.info(f"  yuklash: {load_sec:.1f}s (birinchi marta internetdan yuklab olish ham shu ichida)")
+        C.info(f"  yuklash: {load_sec:.1f}s (model hozir yuklab olingan bo'lsa, o'sha vaqt ham shu ichida)")
         C.info(f"  transkripsiya: {res['elapsed_sec']}s -> tezlik {speed:.1f}x, so'zlar: {len(res['words'])}")
         if text:
             C.info(f"  matn: {text[:160]}")

@@ -92,6 +92,11 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `selftest.py`, `check_env.py`, `bench_whisper.py` | Sinov, muhit tekshiruvi, whisper tezligi. |
 | `watcher.py` | Chatdan kelgan topshiriqlarni bajaradi. |
 
+Transkripsiya uchun `transcribe-uz` skilli (`docs/claude_skills/transcribe-uz/`) va
+`scripts/transcribe.py` ishlatiladi. Model `style.json` ning `whisper` bo'limida; kompyuterda yo'q
+model ruxsatsiz yuklanmaydi (chiqish kodi 4). Modellarni solishtirish: `scripts/compare_models.py`;
+matnni vaqtga tegmasdan tuzatish: `scripts/apply_corrections.py`.
+
 ## Ish tartibi
 
 1. **transcribe** — asl videodan matn va so'z vaqtlari.

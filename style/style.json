@@ -144,7 +144,7 @@
   },
 
   "whisper": {
-    "_izoh": "model: small (standart) | base (tezroq, sifati past) | medium (sekin). O'zbek tili uchun maxsus model sinash mumkin: yuldashev222/whisper-small-uz-v1-ct2. language: uz | ru | en | auto.",
+    "_izoh": "model: tayyor nom (tiny, base, small - standart, medium), Hugging Face manzili (muallif/model, faster-whisper formatida, masalan yuldashev222/whisper-small-uz-v1-ct2) yoki kompyuterdagi model papkasi. Kompyuterda yo'q model o'zi yuklanmaydi: hajmi ko'rsatiladi va ruxsat so'raladi (--allow-download). Modellarni solishtirish: scripts/compare_models.py. language: uz | ru | en | auto. compute_type: int8 (CPU). beam_size: 5. Bir martalik almashtirish: transcribe.py --model / --language / --compute-type / --beam-size.",
     "model": "small",
     "compute_type": "int8",
     "device": "cpu",
