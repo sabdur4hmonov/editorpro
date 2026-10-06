@@ -53,4 +53,26 @@ Yoqsa `style/style.json` da `whisper.model` ga shu nomni yozing.
 | Emoji rasmlari (`assets/emoji/`) | Matn ichidagi va alohida emoji | https://github.com/googlefonts/noto-emoji (Apache 2.0 / OFL) |
 | Reels xavfsiz zonalari va eksport talablari | `style.json: platform` | https://github.com/kajisho5/ffmpeg-skill (MIT) jadvalidan olingan qiymatlar |
 
+## Rasm, belgi va grafika (ishlatilmoqda)
+
+| Narsa | Nima uchun | Manba va litsenziya |
+|---|---|---|
+| Phosphor Icons (`assets/icons/`) | 1500+ vektor belgi: `icon` elementi, `scripts/icons.py` | https://github.com/phosphor-icons/web (MIT) |
+| Edge / Chrome (kompyuterda bor) | HTML/CSS/SVG ni PNG qilish: `scripts/html_render.py` | alohida o'rnatilmaydi |
+| Openverse API | Kalitsiz stok rasm qidirish (CC0, jamoat mulki, CC BY) | https://api.openverse.org (kod: https://github.com/WordPress/openverse) |
+| Wikimedia Commons API | Kalitsiz rasm qidirish (tarixiy, joylar, narsalar) | https://commons.wikimedia.org/w/api.php |
+| Pexels API | Sifatli stok foto va b-roll video (bepul kalit) | https://www.pexels.com/api/documentation/ |
+| Pixabay API | Stok foto va video (bepul kalit) | https://pixabay.com/api/docs/ |
+| Gemini image API | AI rasm (kalit kerak, pullik bo'lishi mumkin; rasmga SynthID belgisi qo'yiladi) | https://ai.google.dev/gemini-api/docs/image-generation |
+
+Yangi Python kutubxonasi qo'shilmagan: tarmoq so'rovlari standart `urllib` bilan.
+
+## Harakatli grafika uchun (ixtiyoriy, o'rnatilmagan)
+
+| Tool | Nima | Eslatma |
+|---|---|---|
+| HyperFrames | HTML → video, shaffof WebM/ProRes; Claude Code plagini bor | https://github.com/heygen-com/hyperframes (Apache-2.0), Node 22+. Qo'shish: `docs/HYPERFRAMES_PROMPT.md` |
+| Remotion | React → video | Litsenziyasi kompaniyalar uchun pullik bo'lishi mumkin. `docs/REMOTION_PROMPT.md` |
+| OpenMontage | Agentlar uchun to'liq video ishlab chiqarish tizimi | https://github.com/calesthio/OpenMontage (AGPL-3.0): kodi ko'chirilmaydi, faqat g'oya manbai |
+
 Tashqi skill va plaginlar auditi: `docs/SKILLS_AUDIT.md`. Remotion: `docs/REMOTION_PROMPT.md`.

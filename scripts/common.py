@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import math
 import re
 import shutil
@@ -511,7 +512,10 @@ def cue_style(style: dict) -> dict:
 
 
 def words_to_cues(words: list, sub_style: dict) -> list:
-    """So'zlar ro'yxatidan qisqa subtitr bo'laklari yasaydi (Reels uslubi)."""
+    """So'zlar ro'yxatidan qisqa subtitr bo'laklari yasaydi (Reels uslubi).
+
+    So'zda "brk": true bo'lsa (skript qatori tugagan joy) bo'lak shu so'zdan keyin uziladi.
+    """
     max_words = int(sub_style.get("max_words_per_line", 3))
     max_chars = int(sub_style.get("max_chars_per_line", 18))
     max_dur = float(sub_style.get("max_cue_duration", 2.5))
@@ -520,8 +524,10 @@ def words_to_cues(words: list, sub_style: dict) -> list:
 
     def flush():
         if cur:
-            cues.append({"start": cur[0]["start"], "end": cur[-1]["end"],
-                         "text": " ".join(w["word"] for w in cur)})
+            text = " ".join(w["word"] for w in cur)
+            # yonma-yon turgan bir xil belgilar birlashtiriladi: "**3** **ta**" -> "**3 ta**"
+            text = re.sub(r"(?<![*!_])(!!|\*\*|\*|_) \1(?![*!_])", " ", text)
+            cues.append({"start": cur[0]["start"], "end": cur[-1]["end"], "text": text})
             cur.clear()
 
     for w in words:
@@ -529,14 +535,18 @@ def words_to_cues(words: list, sub_style: dict) -> list:
         if not token:
             continue
         item = {"start": float(w["start"]), "end": float(w["end"]), "word": token}
+        plain = strip_markup(token)
         if cur:
-            text_len = len(" ".join(x["word"] for x in cur)) + 1 + len(token)
-            if (len(cur) >= max_words or text_len > max_chars
+            text_len = len(" ".join(strip_markup(x["word"]) for x in cur)) + 1 + len(plain)
+            # bitta belgilangan ibora ("!!20 daqiqa!!") ikki bo'lakka bo'linib ketmasin
+            mark = re.match(r"!!|\*\*|\*|_", token)
+            glued = bool(mark) and cur[-1]["word"].startswith(mark.group()) and len(cur) <= max_words
+            if (((len(cur) >= max_words or text_len > max_chars) and not glued)
                     or item["end"] - cur[0]["start"] > max_dur
                     or item["start"] - cur[-1]["end"] > gap_break):
                 flush()
         cur.append(item)
-        if token[-1] in ".!?":
+        if w.get("brk") or re.search(r"[.!?\u2026][^\w]*$", plain):
             flush()
     flush()
     # bo'laklar ustma-ust tushmasin va juda qisqa bo'lmasin
@@ -546,6 +556,26 @@ def words_to_cues(words: list, sub_style: dict) -> list:
         cue["end"] = min(max(cue["end"], cue["start"] + min_dur), nxt)
         cue["start"], cue["end"] = round(cue["start"], 3), round(cue["end"], 3)
     return [c for c in cues if c["end"] > c["start"]]
+
+
+def secret(name: str) -> str:
+    """Maxfiy kalitni oladi: avval muhit o'zgaruvchisidan, keyin loyihadagi .env faylidan.
+
+    .env gitga kirmaydi. Kalit qiymati hech qachon ekranga yoki logga chiqarilmaydi.
+    """
+    value = os.environ.get(name, "").strip()
+    if value:
+        return value
+    env = ROOT / ".env"
+    if env.is_file():
+        for line in env.read_text(encoding="utf-8-sig", errors="replace").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            if key.strip() == name:
+                return val.strip().strip('"').strip("'")
+    return ""
 
 
 def write_json(data, path: str | Path) -> None:

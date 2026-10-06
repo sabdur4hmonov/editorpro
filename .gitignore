@@ -17,3 +17,5 @@ jobs/
 !brands/**/sfx/*.wav
 __pycache__/
 *.pyc
+# Maxfiy kalitlar (stok rasm va AI rasm xizmatlari)
+.env

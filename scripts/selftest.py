@@ -51,6 +51,7 @@ def make_test_video(path: Path) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Montaj tizimini test video bilan sinaydi.")
     ap.add_argument("--no-whisper", action="store_true", help="Whisper bosqichini sinama")
+    ap.add_argument("--offline", action="store_true", help="Internet kerak bo'lgan sinovni (rasm qidirish) o'tkazib yubor")
     args = ap.parse_args()
 
     style = C.load_style()
@@ -131,6 +132,8 @@ def main() -> int:
         {"type": "callout", "start": 4.0, "end": 6.0, "text": "shisha panel \U0001F525", "y": 0.2},
         {"type": "lower_third", "start": 0.3, "end": 2.5, "name": "Ism Familiya", "role": "lavozim"},
         {"type": "emoji", "start": 4.5, "end": 6.0, "emoji": "\U0001F680", "x": 0.8, "y": 0.35},
+        {"type": "icon", "start": 0.3, "end": 2.5, "name": "rocket-launch", "x": 0.75, "y": 0.45, "size": 0.14,
+         "bg": "circle", "text": "belgi"},
         {"type": "sfx", "at": 1.6, "name": "pop"},
     ]}, mel)
     shot = WORK / "motion_stills.jpg"
@@ -150,7 +153,61 @@ def main() -> int:
               f"{meta['width']}x{meta['height']}, {meta['duration']:.2f}s"
               + (("; " + "; ".join(problems)) if problems else ""))
 
-    C.info("\n7. pipeline.py (hammasi bitta buyruq bilan)")
+    C.info("\n7. Skript, belgilar, HTML grafika, rasm qidirish")
+    import script_align as SA
+    heard = [{"word": w, "start": i * 0.4, "end": i * 0.4 + 0.3, "prob": 0.8} for i, w in enumerate(
+        "Bugun sizga uchta sir aytaman birinchisi har kuni yigirma daqiqa oqing ilmmarkazi yordam beradi".split())]
+    try:
+        res = SA.align(heard, "Bugun sizga **3 ta** sir aytaman.\n[rasm: kitob]\n"
+                              "Birinchisi: har kuni !!20 daqiqa!! o'qing, ilm markazi yordam beradi.")
+        texts = [w["word"] for w in res["words"]]
+        check("skript nutq vaqtlariga tekislandi",
+              "**3**" in texts and "!!20!!" in texts and "markazi" in texts and len(res["notes"]) == 1
+              and abs(res["notes"][0]["at"] - 2.0) < 0.05 and all(b["start"] >= a["start"] for a, b in zip(res["words"], res["words"][1:])),
+              f"{res['report']['matched']}/{res['report']['script_words']} so'z aniq mos, eslatma {res['notes'][0]['at']}s da")
+    except Exception as exc:
+        check("skript nutq vaqtlariga tekislandi", False, f"{type(exc).__name__}: {exc}")
+    ipng = WORK / "icon.png"
+    ipng.unlink(missing_ok=True)
+    p = script("icons.py", "png", "rocket", "-o", ipng, "--size", "256")
+    check("belgi (ikonka) chizildi", p.returncode == 0 and ipng.is_file() and ipng.stat().st_size > 800)
+    page = WORK / "karta.html"
+    page.write_text((C.ROOT / "assets" / "html" / "shablon.html").read_text(encoding="utf-8"), encoding="utf-8")
+    hpng = WORK / "karta.png"
+    hpng.unlink(missing_ok=True)
+    p = script("html_render.py", page, "-o", hpng, "--trim")
+    ok = p.returncode == 0 and hpng.is_file()
+    detail = ""
+    if ok:
+        from PIL import Image
+        with Image.open(hpng) as im:
+            lo, hi = im.convert("RGBA").getchannel("A").getextrema()
+            ok = 600 < im.width <= W and im.height > 400 and hi == 255
+            detail = f"{im.width}x{im.height}, shaffoflik {lo}..{hi}"
+    check("HTML grafika rasmga aylandi (brauzer orqali)", ok, detail)
+    if args.offline:
+        C.info("  [--] rasm qidirish: o'tkazib yuborildi (--offline)")
+    else:
+        idir = WORK / "images"
+        p = subprocess.run([sys.executable, str(SCRIPTS / "images.py"), "search", "mountain landscape", "--n", "4",
+                            "--source", "openverse,wikimedia", "--out", str(idir)], cwd=str(C.ROOT),
+                           stdin=subprocess.DEVNULL, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        lines = [l for l in (p.stdout + p.stderr).strip().splitlines() if l.strip()]
+        if p.returncode == 0 and (idir / "candidates.jpg").is_file():
+            n = len(C.read_json(idir / "candidates.json").get("candidates", []))
+            check("internetdan rasm qidirish (Openverse, Wikimedia)", n > 0, f"{n} ta nomzod; "
+                  + "; ".join(l.strip() for l in lines if l.strip().startswith("(")))
+            pk = script("images.py", "pick", "1", "--name", "selftest_rasm", "--out", idir)
+            got = list(idir.glob("selftest_rasm.*"))
+            check("tanlangan rasm yuklandi va manbasi yozildi",
+                  pk.returncode == 0 and any(g.suffix in (".jpg", ".png") for g in got)
+                  and any(g.name.endswith(".credit.json") for g in got))
+        else:
+            # internet yo'qligi tizim xatosi emas: sinov yiqilmaydi, lekin sababi ko'rsatiladi
+            C.info("  [--] rasm qidirish ishlamadi (internet yoki manba javob bermadi):\n      "
+                   + "\n      ".join(lines[-6:]))
+
+    C.info("\n8. pipeline.py (hammasi bitta buyruq bilan)")
     extra = ["--no-subs", "--no-repeats"] if args.no_whisper else []
     out = C.OUTPUT_DIR / "test_video_final.mp4"
     p = subprocess.run([sys.executable, str(SCRIPTS / "pipeline.py"), str(video), "--force", *extra],
@@ -171,7 +228,7 @@ def main() -> int:
               f"{meta['width']}x{meta['height']}, {meta['duration']:.2f}s, ovoz: {'bor' if meta['has_audio'] else 'yoq'}")
         C.info("    " + "\n    ".join(p.stdout.strip().splitlines()[-9:]))
 
-    C.info("\n8. Xavfsizlik qoidalari")
+    C.info("\n9. Xavfsizlik qoidalari")
     check("asl (test) video o'zgarmadi", before == (video.stat().st_size, video.stat().st_mtime_ns))
     p = script("render.py", video, "-o", C.INPUT_DIR / "bad.mp4", expect=1)
     check("input/ ga yozish rad etiladi", p.returncode == 1 and not (C.INPUT_DIR / "bad.mp4").exists())

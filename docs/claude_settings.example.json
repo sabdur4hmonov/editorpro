@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/python.exe scripts/*)",
+      "Bash(ffprobe *)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "WebSearch"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Edit(./input/**)",
+      "Write(./input/**)",
+      "Edit(./samples/**)",
+      "Write(./samples/**)"
+    ]
+  }
+}

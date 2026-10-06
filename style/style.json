@@ -156,6 +156,17 @@
     "low_confidence": 0.5
   },
 
+  "images": {
+    "_izoh": "Stok rasm va b-roll qidirish (scripts/images.py). sources: qidiriladigan manbalar tartibi. licenses: ruxsat etilgan litsenziyalar (cc0, pdm - jamoat mulki; by - muallif ko'rsatiladi). pexels va pixabay uchun .env fayliga kalit kerak. ai: AI rasm (GEMINI_API_KEY kerak, pullik bo'lishi mumkin).",
+    "sources": ["pexels", "pixabay", "openverse", "wikimedia"],
+    "licenses": ["cc0", "pdm", "by"],
+    "ai": {
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-image",
+      "size": "1K"
+    }
+  },
+
   "analysis": {
     "frame_every_sec": 2,
     "scene_threshold": 27,

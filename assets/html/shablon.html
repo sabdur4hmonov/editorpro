@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!--
+  Namuna: HTML bilan chizilgan grafika. Nusxa olib, temp/<nom>/gfx/ ichida o'zgartiring.
+  Rasmga aylantirish:
+    python scripts/html_render.py temp/<nom>/gfx/karta.html -o temp/<nom>/images/karta.png --trim
+  Tayyor o'zgaruvchilar: var(--accent) brend rangi, var(--W) / var(--H) kadr o'lchami.
+  Shriftlar: "Inter", "Montserrat", "Onest", "Oswald", "Unbounded", "Playfair Display", "Caveat".
+  Fon shaffof. Xavfsiz zona: tepadan 8%, pastdan 20%, chapdan 5%, o'ngdan 12%.
+-->
+<style>
+  body { font-family: "Inter", sans-serif; color: #fff; }
+  .card {
+    position: absolute; left: 110px; top: 420px; width: 760px; padding: 56px 60px;
+    border-radius: 56px; background: rgba(18, 18, 22, 0.92);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  }
+  .label { font-size: 40px; font-weight: 500; opacity: 0.7; letter-spacing: -0.02em; }
+  .value { font-size: 190px; font-weight: 800; line-height: 1; letter-spacing: -0.05em; color: var(--accent); }
+  .bars { display: flex; align-items: flex-end; gap: 22px; height: 260px; margin-top: 44px; }
+  .bars div { flex: 1; border-radius: 18px 18px 6px 6px; background: rgba(255, 255, 255, 0.16); }
+  .bars div.on { background: var(--accent); }
+  .note { margin-top: 30px; font-size: 44px; font-weight: 600; letter-spacing: -0.03em; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="label">3 oyda o'sish</div>
+    <div class="value">+85%</div>
+    <div class="bars">
+      <div style="height:28%"></div><div style="height:41%"></div><div style="height:55%"></div>
+      <div style="height:72%"></div><div class="on" style="height:100%"></div>
+    </div>
+    <div class="note">o'quvchilar natijasi</div>
+  </div>
+</body>
+</html>

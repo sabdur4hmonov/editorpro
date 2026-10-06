@@ -10,6 +10,10 @@ Subtitr matni tasdiqlanmaguncha videoga yozilmaydi:
   3) Tasdiqdan keyin:  python scripts/pipeline.py input/video.mp4 --approve-subs
      (oldingi ish qayta bajarilmaydi, tuzatilgan matn ishlatiladi)
 
+Tayyor skript matni bo'lsa (nima deyilgani yozilgan .txt):
+     python scripts/pipeline.py input/video.mp4 --script input/video.txt
+   Matn skriptdan, vaqt whisperdan olinadi (video yonida shu nomli .txt bo'lsa o'zi topiladi).
+
 Asl video hech qachon o'zgarmaydi. Natija: output/<nom>_final.mp4
 """
 from __future__ import annotations
@@ -54,6 +58,8 @@ def main() -> int:
     ap.add_argument("--no-silence", action="store_true", help="Jim joylarni kesma (faqat --remove/--trim ishlaydi)")
     ap.add_argument("--remove", help="Qo'lda olib tashlanadigan oraliqlar, asl video bo'yicha: 10-15,22.5-24")
     ap.add_argument("--trim", help="Faqat shu oraliq qolsin, asl video bo'yicha: 5-42")
+    ap.add_argument("--script", help="Tayyor skript matni (.txt): subtitr matni shundan, vaqti whisperdan olinadi")
+    ap.add_argument("--no-script", action="store_true", help="Video yonidagi shu nomli .txt ni ishlatma")
     ap.add_argument("--music", help="Fon musiqa fayli")
     ap.add_argument("--brand", help="Brend nomi (brands/<nom>/brand.json): shrift, rang, logotip, oxirgi kadr")
     ap.add_argument("--elements", help="Grafik elementlar fayli (standart: temp/<nom>/elements.json, bo'lsa)")
@@ -105,6 +111,17 @@ def main() -> int:
         C.write_json({"status": status, "video": str(video), "brand": style.get("_brand", ""), **extra},
                      work / "result.json")
     want_cut = bool(style["cut"].get("enabled", True)) and not args.no_cut
+    # tayyor skript: --script yoki video yonidagi shu nomli .txt
+    script_file = None
+    if args.script:
+        script_file = C.need_file(args.script, "Skript fayli")
+    elif not args.no_script and video.with_suffix(".txt").is_file():
+        script_file = video.with_suffix(".txt")
+        C.info(f"Skript topildi (video yonida): {script_file.name}. Ishlatmaslik uchun: --no-script")
+    script_fp = ""
+    if script_file:
+        st = script_file.stat()
+        script_fp = f"{script_file}|{st.st_size}|{int(st.st_mtime)}"
     state_path, subs_srt = work / "job.json", work / "subs.srt"
     state = C.read_json(state_path) if state_path.is_file() else {}
     remove = auto_cut.parse_ranges(args.remove)
@@ -113,7 +130,8 @@ def main() -> int:
         raise C.MontajError("--trim uchun bitta oraliq kerak, masalan: 5-42")
     opts = {"subs": want_subs, "cut": want_cut, "no_repeats": args.no_repeats, "no_silence": args.no_silence,
             "silence_db": args.silence_db, "language": style["whisper"]["language"],
-            "model": style["whisper"]["model"], "remove": args.remove or "", "trim": args.trim or ""}
+            "model": style["whisper"]["model"], "remove": args.remove or "", "trim": args.trim or "",
+            "script": script_fp}
     whisper_opts = {"language": style["whisper"]["language"], "model": style["whisper"]["model"]}
     resume = (not args.force and state.get("fingerprint") == fingerprint(video)
               and state.get("opts") == opts and Path(state.get("cut_video", "")).is_file())
@@ -156,6 +174,23 @@ def main() -> int:
             cut_video, cut_words = video, words
             if words is not None:
                 C.write_json({"source": str(video), "words": words}, work / "cut.words.json")
+
+        # ---- skript bo'yicha matn: so'zlar skriptdan, vaqtlar whisperdan
+        (work / "script.notes.json").unlink(missing_ok=True)
+        if script_file and want_subs and cut_words:
+            t = step("Skript matnini nutq vaqtlariga tekislash")
+            import script_align as SA
+            aligned = SA.align(cut_words, SA.read_script_file(script_file))
+            SA.print_report(aligned)
+            C.write_json({"source": str(video), "words": cut_words}, work / "cut.whisper.words.json")
+            cut_words = aligned["words"]
+            C.write_json({"source": str(video), "script": str(script_file), "words": cut_words},
+                         work / "cut.words.json")
+            C.write_json({"script": str(script_file), "notes": aligned["notes"], "report": aligned["report"]},
+                         work / "script.notes.json")
+            done(t)
+        elif script_file and want_subs:
+            C.warn("Skript berilgan, lekin videoda nutq topilmadi: skript ishlatilmadi.")
 
         # tekshiriladigan subtitr fayli (foydalanuvchi shuni tahrir qiladi)
         if subs_srt.exists():  # oldingi (ehtimol qo'lda tuzatilgan) matn yo'qolmasin
@@ -202,8 +237,13 @@ def main() -> int:
         words_file = work / "cut.words.json"
         cut_words = C.read_json(words_file).get("words", []) if words_file.is_file() else []
         low = T.low_confidence_words(cut_words, float(style["whisper"].get("low_confidence", 0.5)))
+        notes_file = work / "script.notes.json"
+        if notes_file.is_file():
+            rep_ = C.read_json(notes_file).get("report", {})
+            C.info(f"\n  Matn skriptdan olingan ({rep_.get('coverage', 0):.0%} so'z nutqda aniq topildi)."
+                   + (" Quyidagi so'zlar boshqacha eshitilgan: matni skriptdagidek, vaqti taxminiy." if low else ""))
         if low:
-            C.info("\n  Whisper ishonchi past so'zlar (ayniqsa shularni tekshiring): "
+            C.info("\n  Ishonchi past so'zlar (ayniqsa shularni tekshiring): "
                    + ", ".join(f"{w['word']}@{C.fmt_time(w['start'])}" for w in low[:40]))
         approved = args.approve_subs
         if approved and not resume:
@@ -254,7 +294,19 @@ def main() -> int:
     C.info(f"  Hajm:        {meta['size_bytes'] / 1e6:.1f} MB")
     if engine == "motion":
         CP.print_report(meta, style)
-    save_result("done", output=str(out), notes=meta.get("notes") or [], checks=meta.get("checks") or [])
+    # ishlatilgan stok/AI rasmlar uchun mualliflik ro'yxati
+    credits = []
+    if elements_file and engine == "motion":
+        import images as IM
+        credits = IM.collect_credits(elements_file, C.brand_dir(style))
+        if credits:
+            text = IM.credits_text(credits)
+            (work / "credits.txt").write_text(text + "\n", encoding="utf-8")
+            C.info("\n=== Rasm manbalari ===\n" + text)
+    save_result("done", output=str(out), notes=meta.get("notes") or [], checks=meta.get("checks") or [],
+                credits=[{"file": c.get("file"), "credit": c.get("credit"),
+                          "attribution_required": bool(c.get("attribution_required")),
+                          "ai_generated": bool(c.get("ai_generated"))} for c in credits])
     C.info(f"\nTAYYOR ({time.time() - total:.1f}s): {out}")
     return 0
 

@@ -5,6 +5,9 @@ Montaj mantig'i agentda emas, `scripts/` dagi Python skriptlarida. Agentning ish
 ishga tushirish, natijani tekshirish, matn va grafik elementlarni tayyorlash, kerak bo'lsa skript,
 brend yoki `style/style.json` ni tuzatish.
 
+**Har bir montajdan oldin `docs/PLAYBOOK.md` ni o'qi**: unda montajor kabi o'ylash tartibi bor
+(reja jadvali, nima aytilsa nima ko'rsatiladi, rasm topish zinapoyasi, tekshirish aylanasi).
+
 ## Loyiha nima
 
 Foydalanuvchi montajor, har xil brendlar uchun Reels/TikTok (9:16, 1080x1920) videolar qiladi.
@@ -27,6 +30,11 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | `assets/sfx/` | Ovoz effektlari: pop, click, tick, thud, ding, whoosh, swipe, riser. |
 | `assets/models/` | Yuzni topish modeli (YuNet). |
 | `assets/emoji/` | Emoji rasmlari (Noto, bitta zip ichida). |
+| `assets/icons/` | 1500+ vektor belgi (Phosphor, MIT): `icon` elementi va `icons.py`. |
+| `assets/html/` | HTML grafika namunasi (`shablon.html`). |
+| `.env` | Maxfiy kalitlar (stok va AI rasm xizmatlari). Gitga kirmaydi, o'qib ko'rsatilmaydi. |
+| `docs/claude_skills/` | Claude Code uchun `/montaj` va `/brend` buyruqlari (manba; `.claude/skills/` ga ko'chiriladi). |
+| `docs/PLAYBOOK.md` | Montajor qo'llanmasi: qaror qabul qilish tartibi. **Har montajda o'qiladi.** |
 | `scripts/` | Montaj skriptlari. |
 | `jobs/` | Watcher topshiriqlari va natijalari (chatdan montaj). |
 | `setup.ps1`, `start_watcher.bat` | Muhitni o'rnatish; watcher'ni ochish. |
@@ -70,6 +78,11 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `pipeline.py VIDEO` | Hammasini ketma-ket bajaradi. |
 | `transcribe.py VIDEO` | So'z-so'z vaqtli matn: `temp/<nom>/orig.words.json`, `orig.srt`. |
 | `auto_cut.py VIDEO` | Jim joy, takror va qo'lda berilgan oraliqlarni kesadi (`--apply`). |
+| `script_align.py` | Tayyor skript matnini nutq vaqtlariga tekislaydi (pipeline `--script` shuni chaqiradi). |
+| `images.py` | Stok rasm/b-roll qidirish (`search`), yuklash (`pick`), AI rasm (`ai`), manbalar (`credits`). |
+| `html_render.py` | HTML/CSS/SVG sahifani shaffof PNG qiladi (Edge/Chrome orqali): agent o'zi chizadi. |
+| `icons.py` | Belgilarni qidirish (`find`), ko'rish (`sheet`), PNG qilish (`png`). |
+| `frames.py VIDEO` | Tayyor videodan kadrlar varag'i (natijani ko'rib tekshirish uchun). |
 | `compose.py VIDEO` | Motion render: zoom, subtitr animatsiyasi, elementlar, brend, ovoz. |
 | `subtitles.py`, `render.py` | Eski oddiy dvigatel (`captions.engine: ass`): ASS subtitr va render. |
 | `audio_mix.py`, `make_sfx.py` | Ovozni yig'ish; ovoz effektlarini generatsiya qilish. |
@@ -103,6 +116,21 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 Ikkinchi ishga tushirish oldingi ishni qayta bajarmaydi, tuzatilgan `subs.srt` va (bo'lsa)
 `temp/<nom>/elements.json` ni ishlatadi. Chiqish kodi 3 xato emas, "tasdiq kutilmoqda" degani.
 `--force` hammasini boshidan boshlaydi (oldingi matn `subs.prev.srt` da qoladi).
+
+### Tayyor skript bilan ishlash (`--script`)
+
+Foydalanuvchi videoda nima deyilganini matn qilib bersa (`input/<video nomi>.txt` yoki
+`--script yo'l.txt`), subtitr matni **skriptdan**, vaqti **whisperdan** olinadi. Video yonida shu
+nomli `.txt` bo'lsa pipeline uni o'zi topadi (`--no-script` o'chiradi).
+
+- Skriptda belgilar ishlaydi (`*katta*`, `**rangli**`, `!!juda katta!!`). Har qator alohida subtitr bo'lagi.
+- `[kvadrat qavs]` ichidagi yozuv aytilmaydi, u montaj eslatmasi: `[rasm: tog']`, `[stat: 85%]`.
+  Har eslatmaning videodagi vaqti `temp/<nom>/script.notes.json` da (`notes[].at`). Ularni bajar.
+- Chiqishda farqlar ko'rsatiladi: boshqacha eshitilgan so'zlar, skriptda yo'q lekin aytilgan gap
+  (whisper matni qoladi, tekshir), skriptda bor lekin aytilmagan gap (subtitrga qo'yilmaydi).
+- Skript videoga mos kelmasa (35% dan kam so'z topilsa) xato beradi: noto'g'ri fayl berilgan.
+- Tasdiq qoidasi o'zgarmaydi: matn baribir foydalanuvchiga ko'rsatiladi.
+- Asl whisper so'zlari `cut.whisper.words.json` da qoladi.
 
 Kesishni boshqarish (vaqtlar asl video bo'yicha, soniyalarda): `--remove 10-15,22.5-24` (olib
 tashlash), `--trim 5-42` (faqat shu oraliq qolsin), `--no-silence`, `--no-repeats`, `--no-cut`,
@@ -146,7 +174,8 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `choice` | To'g'ri/noto'g'ri kartochkasi (✗ ✓ va matn) | `items[{at, text, ok}]`, `y`, `color` |
 | `stat` | Katta raqam sanab chiqadi, halqa to'ladi | `value`, `suffix`, `label`, `ring`, `x`, `y`, `size` |
 | `voice` | Ovozli xabar pleyeri | `y`, `width`, `length` |
-| `image` | Rasm yoki kichik video ustma-qatlam | `file`, `x`, `y`, `width`, `radius`, `anim` (pop/fade/none) |
+| `image` | Rasm yoki kichik video ustma-qatlam | `file`, `x`, `y`, `width`, `radius`, `anim` (pop/fade/none), `border` (oq hoshiya, 0.012), `border_color`, `rotate` (gradus) |
+| `icon` | Vektor belgi (1500+), ostida ixtiyoriy yozuv | `name`, `x`, `y`, `size`, `bg` (none/circle/square/glass), `color`, `bg_color`, `style` (fill/bold), `text` |
 | `broll` | Qo'shimcha kadr: `mode` `full` (to'liq ekran) yoki `split` (tepada gapiruvchi) | `file`, `mode`, `fade`, `offset` |
 | `zoom` | Qo'lda zoom | `scale`, `x`, `y`, `ease` |
 | `sfx` | Ovoz effekti | `at`, `name`, `volume_db` |
@@ -156,8 +185,9 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 
 Har elementda `start` va `end` bor. Elementlarni matn mazmuniga qarab qo'ying: nima aytilayotgan
 bo'lsa, o'sha paytda ko'rinsin (so'z vaqtlari `cut.words.json` da). Subtitr bilan ustma-ust
-tushmasin: subtitr `position_y` atrofida turadi. Rasm va b-roll fayllarini foydalanuvchi beradi;
-yo'q faylni o'ylab topma. Render qilishdan oldin `--stills` bilan ko'rib tekshir.
+tushmasin: subtitr `position_y` atrofida turadi. Yo'q faylni o'ylab topma: rasm kerak bo'lsa
+pastdagi "Rasm va grafika" bo'limi bo'yicha top yoki chiz. Render qilishdan oldin `--stills` bilan
+ko'rib tekshir.
 
 Logotip va oxirgi kadr elementlarga yozilmaydi: ular brenddan (`logo`, `endcard`) olinadi.
 
@@ -166,6 +196,43 @@ Logotip va oxirgi kadr elementlarga yozilmaydi: ular brenddan (`logo`, `endcard`
   `.webm`): `image` elementi bilan istalgan joyga, `broll` + `"mode": "full"` bilan butun kadr ustiga
   qo'yiladi. Tayyor animatsiya to'plamlari (obuna tugmasi, plashka) shu yo'l bilan ishlatiladi.
 - `choice` uchun `"style": "glass"` shisha ko'rinish beradi.
+
+## Rasm va grafika (o'zing top yoki chiz)
+
+Fayllar `temp/<nom>/images/` ga tushadi (brendga doimiy kerak bo'lsa `--out brands/NOM/assets`).
+`elements.json` da `file` loyiha papkasiga nisbatan yoziladi: `temp/<nom>/images/tog.jpg`.
+
+```powershell
+# Belgi qidirish (inglizcha), keyin elements.json da {"type": "icon", "name": "rocket-launch", ...}
+.venv\Scripts\python.exe scripts\icons.py find rocket
+
+# O'zing chizish: HTML yoz (namuna: assets\html\shablon.html), PNG qil
+.venv\Scripts\python.exe scripts\html_render.py temp\video\gfx\karta.html -o temp\video\images\karta.png --trim --brand NOM
+
+# Stok rasm: qidir -> temp\video\images\candidates.jpg ni OCHIB KO'R -> tanla
+.venv\Scripts\python.exe scripts\images.py search "student studying laptop" --video input\video.mp4 --orient portrait
+.venv\Scripts\python.exe scripts\images.py pick 3 --name talaba --video input\video.mp4
+
+# Stok b-roll video (Pexels yoki Pixabay kaliti kerak)
+.venv\Scripts\python.exe scripts\images.py search "city traffic night" --kind video --video input\video.mp4
+
+# AI rasm (GEMINI_API_KEY kerak; birinchi marta foydalanuvchidan so'ra)
+.venv\Scripts\python.exe scripts\images.py ai "tavsif inglizcha" --name nom --video input\video.mp4
+```
+
+- Manbalar: `pexels`, `pixabay` (bepul kalit kerak, sifatli foto va video), `openverse`, `wikimedia`
+  (kalitsiz). Faqat tijoratda ishlatsa bo'ladigan litsenziyalar olinadi (`style.json`: `images`).
+- Kalitlar `.env` faylida: `PEXELS_API_KEY=...`, `PIXABAY_API_KEY=...`, `GEMINI_API_KEY=...`.
+  Kalitni foydalanuvchi o'zi yozadi. **`.env` ni ochma, ekranga chiqarma, commit qilma.**
+- Har yuklangan fayl yonida `<fayl>.credit.json` (manba, muallif, litsenziya). Render oxirida
+  `Rasm manbalari` ro'yxati chiqadi va `temp/<nom>/credits.txt` ga yoziladi: uni foydalanuvchiga ayt.
+- HTML sahifada: shriftlar nomi bilan ishlaydi (`font-family: "Inter"`), brend rangi `var(--accent)`,
+  kadr o'lchami `var(--W)`/`var(--H)`, fon shaffof, internetdan hech narsa yuklanmaydi. Bitta kadr
+  olinadi (animatsiya yo'q): harakatni elementning `anim`i beradi.
+- `html_render.py` Edge yoki Chrome'ni o'zi topadi (`MONTAJ_BROWSER` bilan almashtirsa bo'ladi).
+- AI rasm API'si (`images.py ai`) hujjat bo'yicha yozilgan, lekin kalitsiz sinab ko'rilmagan:
+  birinchi ishlatishda natijani tekshir, xato bersa `style.json` dagi `images.ai` va rasmiy
+  hujjatni (ai.google.dev/gemini-api/docs/image-generation) solishtirib tuzat.
 
 ## Ko'rinish va ovoz sozlamalari (`style.json` yoki `brand.json`)
 
@@ -211,7 +278,12 @@ Render qilishdan oldin `--stills` bilan tekshiriladigan ro'yxat:
    tashlab ketma. Tuzata olmasang, nima bo'lganini va nimani sinaganingni foydalanuvchiga ayt.
 6. Bilmagan narsangni taxmin qilma: buyruq yoki parametrni avval `--help` yoki koddan tekshir.
 7. Foydalanuvchi boshlang'ich dasturchi: har qadamni oddiy o'zbek tilida, qisqa tushuntir.
-8. Mualliflik huquqi: musiqa, kino lavhasi, rasm va logotipni faqat foydalanuvchi bergan fayldan ol.
+8. Mualliflik huquqi: **musiqa, kino lavhasi va logotip** faqat foydalanuvchi bergan fayldan olinadi.
+   Rasm va b-roll: foydalanuvchi bergan, `images.py` orqali topilgan (litsenziyasi yozib qo'yiladi),
+   o'zing chizgan (HTML, belgi) yoki AI yaratgan bo'lishi mumkin. Boshqa yo'l bilan (brauzerdan
+   saqlab, Google rasmlardan) rasm olinmaydi. Ishlatilgan manbalarni hisobotda ayt.
+9. Stok rasm qidirish va yuklash uchun har safar so'rash shart emas (foydalanuvchi ruxsat bergan).
+   Pullik narsa (AI rasm) birinchi marta ishlatilganda so'raladi.
 
 ## Agentlar bilan ishlash
 
@@ -228,21 +300,40 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
 
 - Topshiriq: `jobs/inbox/<id>.json`. Natija: `jobs/done/<id>.json`, log: `jobs/logs/<id>.log`,
   kadrlar: `jobs/preview/<id>.jpg`. Watcher tirikligi: `jobs/watcher.json` (`alive_at`).
-- Faqat tayyor amallar: `pipeline`, `analyze`, `selftest`, `preview`, `git_commit`, `install_deps`.
+- Faqat tayyor amallar: `pipeline`, `analyze`, `selftest`, `preview`, `images`, `html`, `git_commit`,
+  `install_deps`.
   Ixtiyoriy buyruq yo'q; har bir maydon tekshiriladi, noma'lum narsa rad etiladi.
   Yangi amal kerak bo'lsa, foydalanuvchidan so'rab `watcher.py` ga qo'shiladi.
 - Misol: `{"action": "pipeline", "video": "input/video.mp4", "options": {"brand": "NOM"}}`.
   `video` loyihadan tashqaridagi to'liq yo'l ham bo'lishi mumkin (fayl faqat o'qiladi).
   `pipeline` sozlamalari: `brand`, `approve_subs`, `stills` (sonlar ro'yxati), `remove`, `trim`,
   `no_silence`, `no_repeats`, `no_cut`, `no_subs`, `force`, `language`, `model`, `silence_db`,
-  `music`, `engine`.
+  `music`, `engine`, `script` (skript fayli), `no_script`.
+- `images`: `{"action": "images", "video": "...", "options": {"search": "so'z", "kind": "photo", "n": 8,
+  "orient": "portrait"}}` → natijada `candidates` va `preview` (nomzodlar varag'i). Keyin
+  `{"options": {"pick": [3], "name": "tog"}}` yoki `{"options": {"ai": "tavsif", "name": "nom"}}`.
+- `html`: `{"action": "html", "html": "temp/<nom>/gfx/karta.html", "output": "temp/<nom>/images/karta.png",
+  "options": {"trim": true, "brand": "NOM"}}` (ikkala yo'l ham `temp/` ichida bo'lishi shart).
 - Natijada: `subs_text` (matn), `words` (so'z va vaqtlari), `cuts` (kesilgan joylar),
   `low_confidence_words`, `brands`, `preview`, `output_info`, `notes` (joylashuv ogohlantirishlari),
-  `checks` (platforma tekshiruvi). Xuddi shu holat `temp/<nom>/result.json` ga ham yoziladi.
+  `checks` (platforma tekshiruvi), `script` (eslatmalar va farqlar), `credits` (rasm manbalari).
+  Xuddi shu holat `temp/<nom>/result.json` ga ham yoziladi.
 - Tartib: 1) `pipeline` → `need_approval`; 2) matnni foydalanuvchiga ko'rsatish, `subs.srt` ga
   tuzatish va belgilar, `elements.json` yozish; 3) `stills` bilan ko'rib tekshirish;
   4) foydalanuvchi tasdiqlagach `"approve_subs": true`.
-- Claude Code va Codex watcher'siz, to'g'ridan-to'g'ri skriptlarni ishlatadi.
+- Claude Code va Codex watcher'siz, to'g'ridan-to'g'ri skriptlarni ishlatadi. Ular ishlayotganda
+  watcher oynasi yopiq bo'lsin (bir vaqtda bitta agent).
+
+## Claude Code'da ishlatish
+
+- `/montaj input\video.mp4 NOM` — to'liq montaj. `/brend NOM` — yangi mijoz qo'shish.
+  Manbasi `docs/claude_skills/`; ishlashi uchun `.claude/skills/` ga ko'chirilgan bo'lishi kerak
+  (`docs/CLAUDE_CODE.md` dagi birinchi tekshiruv prompti buni qiladi). Ko'chirilmagan bo'lsa ham
+  shu fayl va `docs/PLAYBOOK.md` bo'yicha oddiy so'rov bilan ishlayveradi.
+- Ruxsatlar taklifi `docs/claude_settings.example.json` da (loyiha skriptlari so'rovsiz ishlaydi,
+  `.env` o'qilmaydi, `input/` va `samples/` ga yozilmaydi). `.claude/settings.json` ga faqat
+  foydalanuvchi rozi bo'lgach yoziladi. Batafsil: `docs/CLAUDE_CODE.md`.
+- Codex shu faylni (`AGENTS.md`) va `docs/PLAYBOOK.md` ni o'qib xuddi shu ishni qiladi.
 
 ## Natijani tekshirish
 

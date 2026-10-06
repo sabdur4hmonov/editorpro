@@ -579,7 +579,43 @@ class ImageLayer(Layer):
             self.reader = VideoReader(self.path, self.width, self.vh, ctx.fps, cover=False)
             self.spr = None
         else:
-            self.spr = M.image_sprite(self.path, width=self.width, radius=self.radius, shadow=self.shadow)
+            border = float(el.get("border", 0)) * ctx.W          # oq hoshiya (kartochka ko'rinishi)
+            rotate = float(el.get("rotate", 0))                  # biroz qiyshaytirish (gradus)
+            if border > 0 or abs(rotate) > 0.05:
+                self.spr = self._framed(border, str(el.get("border_color", "#FFFFFF")), rotate)
+            else:
+                self.spr = M.image_sprite(self.path, width=self.width, radius=self.radius, shadow=self.shadow)
+        pad = math.ceil(18 * ctx.k * 3 + 8 * ctx.k) if (self.shadow and self.spr) else 0   # soya chetini hisobga olmaymiz
+        half_w = (self.spr.w / 2 - pad) if self.spr else self.width / 2
+        half_h = (self.spr.h / 2 - pad) if self.spr else self.vh / 2
+        ctx.check_safe(f"Rasm ({self.path.name})", self.cx - half_w, self.cy - half_h, self.cx + half_w, self.cy + half_h)
+
+    def _framed(self, border: float, color: str, rotate: float) -> M.Sprite:
+        """Rasm atrofiga hoshiya chizadi va (kerak bo'lsa) qiyshaytiradi."""
+        try:
+            img = Image.open(self.path).convert("RGBA")
+        except Exception as exc:
+            raise C.MontajError(f"Rasmni ochib bo'lmadi ({self.path.name}): {exc}") from exc
+        b = int(round(border))
+        inner_w = max(8, self.width - 2 * b)
+        img = img.resize((inner_w, max(8, int(round(inner_w * img.height / img.width)))), Image.LANCZOS)
+        if b > 0:
+            if self.radius > 0:
+                mask = Image.new("L", img.size, 0)
+                ImageDraw.Draw(mask).rounded_rectangle([0, 0, img.width - 1, img.height - 1],
+                                                       radius=max(1, self.radius - b), fill=255)
+                img.putalpha(Image.composite(img.getchannel("A"), Image.new("L", img.size, 0), mask))
+            card = Image.new("RGBA", (img.width + 2 * b, img.height + 2 * b), M.rgb(color) + (255,))
+            card.alpha_composite(img, (b, b))
+            img = card
+        if self.radius > 0:
+            mask = Image.new("L", (img.width * 3, img.height * 3), 0)
+            ImageDraw.Draw(mask).rounded_rectangle([0, 0, mask.width - 1, mask.height - 1], radius=self.radius * 3, fill=255)
+            mask = mask.resize(img.size, Image.LANCZOS)
+            img.putalpha(Image.composite(img.getchannel("A"), Image.new("L", img.size, 0), mask))
+        if abs(rotate) > 0.05:
+            img = img.rotate(-rotate, resample=Image.BICUBIC, expand=True)
+        return M.pil_sprite(img, 0, self.shadow)
 
     def draw(self, frame, t: float) -> None:
         op, scale = appear(t, self.start, self.end)
@@ -1083,6 +1119,80 @@ class EmojiLayer(Layer):
                anchor=(0, 0))
 
 
+class IconLayer(Layer):
+    """Vektor belgi (Phosphor): fonsiz, doira, kvadrat yoki shisha fon ustida. Ostiga qisqa yozuv qo'ysa bo'ladi."""
+    z = 37
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        import icons as IC
+        self.ctx = ctx
+        k = ctx.k
+        name = str(el.get("name", "")).strip()
+        if not name:
+            raise C.MontajError("icon uchun 'name' kerak (qidirish: python scripts/icons.py find SO'Z).")
+        self.size = size = max(24, int(float(el.get("size", 0.16)) * ctx.W))
+        self.bg = str(el.get("bg", "none"))
+        if self.bg not in ("none", "circle", "square", "glass"):
+            raise C.MontajError(f"icon.bg noto'g'ri: {self.bg!r}. Mumkin: none, circle, square, glass")
+        cap = ctx.caption_cfg()
+        accent = M.rgb(el.get("accent", cap["accent"]))
+
+        def colour(value, default):
+            v = str(value) if value else default
+            return accent if v == "accent" else M.rgb(v)
+
+        plate = colour(el.get("bg_color"), "accent")
+        bright = (0.299 * plate[0] + 0.587 * plate[1] + 0.114 * plate[2]) / 255
+        default = "#FFFFFF" if self.bg in ("none", "glass") else ("#111111" if bright > 0.55 else "#FFFFFF")
+        col = colour(el.get("color"), default)
+        inner = size if self.bg == "none" else int(size * 0.56)
+        icon = IC.render(name, inner, col + (255,), str(el.get("style", "fill")))
+        self.radius = int(size * 0.28)
+        if self.bg in ("circle", "square"):
+            s = 3
+            big = Image.new("RGBA", (size * s, size * s), (0, 0, 0, 0))
+            d = ImageDraw.Draw(big)
+            if self.bg == "circle":
+                d.ellipse([0, 0, size * s - 1, size * s - 1], fill=plate + (255,))
+            else:
+                d.rounded_rectangle([0, 0, size * s - 1, size * s - 1], radius=self.radius * s, fill=plate + (255,))
+            img = big.resize((size, size), Image.LANCZOS)
+            img.alpha_composite(icon, ((size - inner) // 2, (size - inner) // 2))
+        elif self.bg == "glass":
+            img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+            img.alpha_composite(icon, ((size - inner) // 2, (size - inner) // 2))
+        else:
+            img = icon
+        shadow = {"blur": 14 * k, "dy": 6 * k, "opacity": 0.32 if self.bg != "glass" else 0.2}
+        self.spr = M.pil_sprite(img, shadow=shadow)
+        self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.3)) * ctx.H
+        self.label = None
+        bottom = self.cy + size / 2
+        if el.get("text"):
+            fsize = float(el.get("text_size", 44)) * k
+            font = ctx.fonts.get(cap["font"], fsize, 600)
+            self.label = M.word_sprite(fix_apostrophes(str(el["text"])), font, "#FFFFFF", cap["tracking"] * fsize,
+                                       {"blur": 10 * k, "dy": 3 * k, "opacity": 0.55})
+            self.label_y = self.cy + size / 2 + fsize * 1.25
+            bottom = self.label_y + fsize * 0.3
+        half = max(size / 2, (self.label[1] / 2) if self.label else 0)
+        ctx.check_safe(f"Belgi ({name})", self.cx - half, self.cy - size / 2, self.cx + half, bottom)
+
+    def draw(self, frame, t: float) -> None:
+        op, scale = appear(t, self.start, self.end)
+        size = self.size
+        if self.bg == "glass":
+            M.glass(frame, int(self.cx - size / 2), int(self.cy - size / 2), size, size, self.radius, opacity=op,
+                    blur=20 * self.ctx.k, tint_alpha=0.18)
+        M.blit(frame, self.spr, self.cx, self.cy, opacity=op,
+               scale=scale * M.breathe(t - self.start, 0.012, 2.4), anchor=(0, 0))
+        if self.label:
+            p = M.clamp01((t - self.start - 0.12) / 0.25)
+            M.blit(frame, self.label[0], self.cx - self.label[1] / 2, self.label_y + (1 - M.ease_out(p)) * 12 * self.ctx.k,
+                   opacity=p * clamp_exit(t, self.end, 0.14))
+
+
 class ProgressLayer(Layer):
     """Video qayergacha kelganini ko'rsatadigan ingichka chiziq (tepada yoki pastda)."""
     z = 80
@@ -1102,7 +1212,8 @@ class ProgressLayer(Layer):
 
 ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "broll": BrollLayer,
                  "list": ListLayer, "choice": ChoiceLayer, "stat": StatLayer, "voice": VoiceLayer,
-                 "callout": CalloutLayer, "lower_third": LowerThirdLayer, "emoji": EmojiLayer}
+                 "callout": CalloutLayer, "lower_third": LowerThirdLayer, "emoji": EmojiLayer,
+                 "icon": IconLayer}
 NON_LAYER_TYPES = {"sfx", "zoom"}
 
 

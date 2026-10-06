@@ -7,7 +7,7 @@ to'xtatish uchun oynani yoping yoki Ctrl+C bosing.
 Qanday ishlaydi:
   1) Claude (chatdan) jobs/inbox/<id>.json fayl yozadi.
   2) Watcher uni o'qib, FAQAT quyidagi tayyor amallardan birini bajaradi:
-       pipeline, analyze, selftest, preview, git_commit, install_deps
+       pipeline, analyze, selftest, preview, images, html, git_commit, install_deps
      Ixtiyoriy buyruq bajarilmaydi: topshiriqdagi har bir maydon tekshiriladi va
      faqat shu loyihaning skriptlari (yoki git commit) ishga tushadi.
   3) Natija jobs/done/<id>.json ga, to'liq log jobs/logs/<id>.log ga yoziladi.
@@ -27,7 +27,7 @@ from pathlib import Path
 
 import common as C
 
-VERSION = 3
+VERSION = 4
 JOBS = C.ROOT / "jobs"
 INBOX, DONE, LOGS, PREVIEW = JOBS / "inbox", JOBS / "done", JOBS / "logs", JOBS / "preview"
 HEARTBEAT = JOBS / "watcher.json"
@@ -75,7 +75,7 @@ def build_command(job: dict) -> tuple[list, dict]:
     if action == "pipeline":
         allowed = {"approve_subs", "no_subs", "no_cut", "no_repeats", "force",
                    "language", "model", "silence_db", "music", "brand", "engine", "stills",
-                   "no_silence", "remove", "trim"}
+                   "no_silence", "remove", "trim", "script", "no_script"}
         unknown = set(opts) - allowed
         if unknown:
             raise C.MontajError(f"pipeline uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
@@ -87,7 +87,8 @@ def build_command(job: dict) -> tuple[list, dict]:
                     raise C.MontajError(f"{key}: \"10-15,22.5-24\" ko'rinishidagi matn bo'lishi kerak.")
                 cmd += [f"--{key}", opts[key]]
         for key, arg in (("approve_subs", "--approve-subs"), ("no_subs", "--no-subs"), ("no_cut", "--no-cut"),
-                         ("no_repeats", "--no-repeats"), ("force", "--force"), ("no_silence", "--no-silence")):
+                         ("no_repeats", "--no-repeats"), ("force", "--force"), ("no_silence", "--no-silence"),
+                         ("no_script", "--no-script")):
             if _flag(opts, key):
                 cmd.append(arg)
         if "language" in opts:
@@ -105,6 +106,8 @@ def build_command(job: dict) -> tuple[list, dict]:
             cmd += [f"--silence-db={opts['silence_db']}"]
         if "music" in opts:
             cmd += ["--music", str(_path(opts["music"], AUDIO_EXTS, "Musiqa"))]
+        if "script" in opts:
+            cmd += ["--script", str(_path(opts["script"], {".txt", ".md"}, "Skript"))]
         if "brand" in opts:
             if opts["brand"] not in C.list_brands():
                 raise C.MontajError(f"Brend topilmadi: {opts['brand']!r}. Mavjudlari: "
@@ -149,6 +152,99 @@ def build_command(job: dict) -> tuple[list, dict]:
         # faqat shu ro'yxatdagi kutubxonalar, faqat .venv ichiga
         return [py, "-m", "pip", "install", "--disable-pip-version-check", *DEPS], {"deps": DEPS}
 
+    if action == "images":
+        # rasm/b-roll qidirish, tanlash yoki AI bilan yaratish: fayllar temp/<nom>/images/ ga tushadi
+        video = _path(job.get("video"), C.VIDEO_EXTS, "Video")
+        cmd = [py, str(SCRIPTS / "images.py")]
+        tail_args = ["--video", str(video)]
+        modes = [k for k in ("search", "pick", "ai") if k in opts]
+        if len(modes) != 1:
+            raise C.MontajError("images: options ichida aynan bittasi bo'lsin: search, pick yoki ai.")
+        mode = modes[0]
+        name = opts.get("name")
+        if name is not None and (not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9_\- ]{1,60}", name)):
+            raise C.MontajError("name: lotin harflari, raqam, chiziqcha (60 belgigacha) bo'lishi kerak.")
+        if mode == "search":
+            unknown = set(opts) - {"search", "kind", "n", "orient", "source", "allow_sa"}
+            if unknown:
+                raise C.MontajError(f"images search uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+            query = opts["search"]
+            if not isinstance(query, str) or not 2 <= len(query.strip()) <= 120 or query.strip().startswith("-"):
+                raise C.MontajError("search: 2 dan 120 belgigacha qidiruv so'zi kerak.")
+            cmd += ["search", query.strip()]
+            if "kind" in opts:
+                if opts["kind"] not in ("photo", "video"):
+                    raise C.MontajError("kind: photo yoki video.")
+                cmd += ["--kind", opts["kind"]]
+            if "n" in opts:
+                if isinstance(opts["n"], bool) or not isinstance(opts["n"], int) or not 1 <= opts["n"] <= 24:
+                    raise C.MontajError("n: 1 dan 24 gacha butun son.")
+                cmd += ["--n", str(opts["n"])]
+            if "orient" in opts:
+                if opts["orient"] not in ("any", "portrait", "landscape", "square"):
+                    raise C.MontajError("orient: any, portrait, landscape yoki square.")
+                cmd += ["--orient", opts["orient"]]
+            if "source" in opts:
+                src = opts["source"]
+                if not isinstance(src, list) or not src or any(x not in ("openverse", "wikimedia", "pexels", "pixabay") for x in src):
+                    raise C.MontajError("source: openverse, wikimedia, pexels, pixabay ro'yxati.")
+                cmd += ["--source", ",".join(src)]
+            if _flag(opts, "allow_sa"):
+                cmd.append("--allow-sa")
+        elif mode == "pick":
+            unknown = set(opts) - {"pick", "name"}
+            if unknown:
+                raise C.MontajError(f"images pick uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+            nums = opts["pick"]
+            if (not isinstance(nums, list) or not 1 <= len(nums) <= 8
+                    or any(isinstance(x, bool) or not isinstance(x, int) or not 1 <= x <= 24 for x in nums)):
+                raise C.MontajError("pick: 1 dan 8 tagacha raqam ro'yxati (masalan [3]).")
+            cmd += ["pick", ",".join(str(x) for x in nums)]
+            if name:
+                cmd += ["--name", name]
+        else:
+            unknown = set(opts) - {"ai", "name", "ar"}
+            if unknown:
+                raise C.MontajError(f"images ai uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+            prompt = opts["ai"]
+            if not isinstance(prompt, str) or not 5 <= len(prompt.strip()) <= 1500 or prompt.strip().startswith("-"):
+                raise C.MontajError("ai: 5 dan 1500 belgigacha rasm tavsifi kerak.")
+            if not name:
+                raise C.MontajError("ai uchun 'name' (fayl nomi) kerak.")
+            cmd += ["ai", prompt.strip(), "--name", name]
+            if "ar" in opts:
+                if not isinstance(opts["ar"], str) or not re.fullmatch(r"\d{1,2}:\d{1,2}", opts["ar"]):
+                    raise C.MontajError("ar: 9:16 ko'rinishida bo'lishi kerak.")
+                cmd += ["--ar", opts["ar"]]
+        folder = C.TEMP_DIR / C.slugify(video.stem) / "images"
+        return cmd + tail_args, {"video": str(video), "images_dir": str(folder), "mode": mode}
+
+    if action == "html":
+        # agent yozgan HTML sahifani rasmga aylantirish (faqat temp/ ichida)
+        unknown = set(opts) - {"trim", "brand", "opaque"}
+        if unknown:
+            raise C.MontajError(f"html uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+        page = _path(job.get("html"), {".html", ".htm"}, "HTML fayl")
+        out = job.get("output")
+        if not isinstance(out, str) or not out.strip():
+            raise C.MontajError("html uchun 'output' (natija rasm yo'li) kerak.")
+        out_p = Path(out.strip())
+        out_p = (out_p if out_p.is_absolute() else C.ROOT / out_p).resolve()
+        if not C.is_inside(page, C.TEMP_DIR) or not C.is_inside(out_p, C.TEMP_DIR):
+            raise C.MontajError("html: sahifa ham, natija ham temp/ papkasi ichida bo'lishi kerak.")
+        if out_p.suffix.lower() not in (".png", ".jpg", ".jpeg"):
+            raise C.MontajError("html: natija .png yoki .jpg bo'lishi kerak.")
+        cmd = [py, str(SCRIPTS / "html_render.py"), str(page), "-o", str(out_p)]
+        if _flag(opts, "trim"):
+            cmd.append("--trim")
+        if _flag(opts, "opaque"):
+            cmd.append("--opaque")
+        if "brand" in opts:
+            if opts["brand"] not in C.list_brands():
+                raise C.MontajError(f"Brend topilmadi: {opts['brand']!r}.")
+            cmd += ["--brand", opts["brand"]]
+        return cmd, {"image": str(out_p)}
+
     if action == "preview":
         if opts:
             raise C.MontajError("preview uchun sozlama yo'q.")
@@ -164,7 +260,7 @@ def build_command(job: dict) -> tuple[list, dict]:
         return [], {"message": message.strip()}
 
     raise C.MontajError(f"Noma'lum amal: {action!r}. Mumkin: pipeline, analyze, selftest, preview, "
-                        "git_commit, install_deps")
+                        "images, html, git_commit, install_deps")
 
 
 # ---------------------------------------------------------------- bajarish
@@ -239,6 +335,10 @@ def collect_pipeline(info: dict, result: dict, job_id: str) -> None:
         # so'zlar va vaqtlari (kesilgan video bo'yicha): grafik elementlarni vaqtga bog'lash uchun
         result["words"] = [[w["start"], w["end"], w["word"]] for w in all_words][:1500]
     result["brands"] = C.list_brands()
+    notes_file = work / "script.notes.json"
+    if notes_file.is_file():     # skript bo'yicha tekislash: eslatmalar vaqti va farqlar
+        data = C.read_json(notes_file)
+        result["script"] = {"notes": data.get("notes", []), "report": data.get("report", {})}
     if (work / "elements.json").is_file():
         result["elements_file"] = str(work / "elements.json")
     if info.get("stills"):
@@ -253,7 +353,7 @@ def collect_pipeline(info: dict, result: dict, job_id: str) -> None:
     res_file = work / "result.json"
     if res_file.is_file():   # pipeline yozgan aniq holat (natija yo'li, ogohlantirishlar, platforma tekshiruvi)
         res = C.read_json(res_file)
-        for key in ("notes", "checks"):
+        for key in ("notes", "checks", "credits"):
             if res.get(key):
                 result[key] = res[key]
         if res.get("status") == "done" and res.get("output"):
@@ -315,6 +415,27 @@ def run_job(path: Path) -> None:
                 if result["action"] == "pipeline":
                     log.flush()
                     collect_pipeline(info, result, job_id)
+                elif result["action"] == "images" and code == 0:
+                    folder = Path(info["images_dir"])
+                    result["images_dir"] = str(folder)
+                    cfile = folder / "candidates.json"
+                    if info["mode"] == "search" and cfile.is_file():
+                        data = C.read_json(cfile)
+                        result["candidates"] = [{k: c.get(k) for k in ("n", "source", "license", "title", "author",
+                                                                        "width", "height", "kind", "duration", "page")}
+                                                for c in data.get("candidates", [])]
+                        result["problems"] = data.get("problems", [])
+                        sheet = folder / "candidates.jpg"
+                        if sheet.is_file():
+                            PREVIEW.mkdir(parents=True, exist_ok=True)
+                            target = PREVIEW / f"{job_id}.jpg"
+                            target.write_bytes(sheet.read_bytes())
+                            result["preview"] = str(target)
+                    result["files"] = sorted(str(f) for f in folder.iterdir()
+                                             if f.is_file() and not f.name.startswith(".")
+                                             and f.suffix.lower() in (".jpg", ".png", ".mp4"))[:200]
+                elif result["action"] == "html" and code == 0:
+                    result["image"] = info["image"]
     except Exception as exc:  # watcher hech qachon yiqilmasligi kerak
         result.update(status="error", error=f"{type(exc).__name__}: {exc}")
     finally:
