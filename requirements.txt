@@ -1,0 +1,6 @@
+# Asosiy kutubxonalar (aniq versiyalar setup.ps1 tomonidan yozilgan).
+# Barcha bog'liq kutubxonalar: requirements.lock.txt
+faster-whisper==1.2.1
+scenedetect[opencv]==0.7.1
+opencv-python==5.0.0.93
+numpy==2.4.6

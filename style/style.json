@@ -1,0 +1,87 @@
+{
+  "_izoh": "Montaj uslubi shu faylda. Qoidani o'zgartirish uchun faqat shu faylni tahrir qiling. '_' bilan boshlangan kalitlar izoh, skriptlar ularni o'qimaydi.",
+  "profile": "reels_tiktok_vertical",
+
+  "video": {
+    "_izoh": "fit: crop (to'ldirib kesadi) | pad (qora hoshiya) | blur (xira fon) | auto (manba vertikalga yaqin bo'lsa crop, aks holda blur)",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "fit": "auto",
+    "codec": "libx264",
+    "crf": 20,
+    "preset": "medium",
+    "use_nvenc": false,
+    "nvenc_cq": 21
+  },
+
+  "audio": {
+    "_izoh": "loudnorm_i: umumiy balandlik (LUFS). Reels/TikTok uchun -14. music_volume_db: musiqa ovozi nutqqa nisbatan.",
+    "loudnorm_i": -14,
+    "loudnorm_tp": -1.5,
+    "loudnorm_lra": 11,
+    "bitrate": "192k",
+    "sample_rate": 48000,
+    "music_file": "",
+    "music_volume_db": -20,
+    "music_ducking": true,
+    "music_fade_sec": 1.5
+  },
+
+  "cut": {
+    "_izoh": "silence_db dan past va min_silence dan uzun joylar jim deb olinadi. padding: nutq atrofida qoldiriladigan zaxira (soniya). fade_ms: kesish joyidagi yumshoq o'tish.",
+    "enabled": true,
+    "silence_db": -35,
+    "min_silence": 0.45,
+    "padding": 0.1,
+    "min_keep": 0.2,
+    "fade_ms": 15,
+    "remove_repeats": true,
+    "repeat_similarity": 0.85,
+    "intermediate_crf": 16
+  },
+
+  "subtitles": {
+    "_izoh": "O'lchamlar 1920 balandlik uchun piksel. margin_v: pastdan masofa (Reels tugmalari yopib qo'ymasligi uchun katta). Ranglar #RRGGBB. Shrift tizimda bo'lishi yoki style/fonts/ ga .ttf qilib tashlangan bo'lishi kerak.",
+    "enabled": true,
+    "font": "Arial",
+    "fonts_dir": "style/fonts",
+    "font_size": 84,
+    "bold": true,
+    "uppercase": true,
+    "primary_color": "#FFFFFF",
+    "outline_color": "#000000",
+    "outline_width": 6,
+    "shadow": 2,
+    "position": "bottom",
+    "margin_v": 460,
+    "margin_h": 90,
+    "max_words_per_line": 3,
+    "max_chars_per_line": 18,
+    "max_cue_duration": 2.5,
+    "min_cue_duration": 0.3,
+    "gap_break": 0.6,
+    "highlight_enabled": true,
+    "highlight_color": "#FFE600",
+    "pop_animation": true
+  },
+
+  "whisper": {
+    "_izoh": "model: small (standart) | base (tezroq, sifati past) | medium (sekin). O'zbek tili uchun maxsus model sinash mumkin: yuldashev222/whisper-small-uz-v1-ct2. language: uz | ru | en | auto.",
+    "model": "small",
+    "compute_type": "int8",
+    "device": "cpu",
+    "cpu_threads": 4,
+    "language": "uz",
+    "beam_size": 5,
+    "vad_filter": true,
+    "initial_prompt": "",
+    "low_confidence": 0.5
+  },
+
+  "analysis": {
+    "frame_every_sec": 2,
+    "scene_threshold": 27,
+    "whisper_max_sec": 120
+  }
+}

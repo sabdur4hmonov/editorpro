@@ -1,0 +1,155 @@
+"""Tizim ishlayotganini tekshiradi: test video yasaydi va butun zanjirni sinaydi.
+
+    python scripts/selftest.py              # to'liq sinov (whisper ham)
+    python scripts/selftest.py --no-whisper # whisper o'rnatilmagan bo'lsa
+
+Test video: 10 soniya, 1280x720, testsrc + sine (ichida 2 ta jim joy bor).
+Hamma fayl temp/selftest/ va output/ ga yoziladi.
+"""
+from __future__ import annotations
+
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+import common as C
+
+WORK = C.TEMP_DIR / "selftest"
+SCRIPTS = Path(__file__).resolve().parent
+results: list = []
+
+
+def check(name: str, ok: bool, detail: str = "") -> bool:
+    results.append((name, ok, detail))
+    C.info(f"  [{'OK' if ok else 'XATO'}] {name}{(' - ' + detail) if detail else ''}")
+    return ok
+
+
+def script(name: str, *args, expect: int = 0) -> subprocess.CompletedProcess:
+    """Skriptni xuddi foydalanuvchi kabi buyruq qatoridan ishga tushiradi."""
+    # stdin yopiq: skript "y/N" deb so'rab, ko'rinmaydigan savolda osilib qolmasligi uchun
+    proc = subprocess.run([sys.executable, str(SCRIPTS / name), *map(str, args)], cwd=str(C.ROOT),
+                          stdin=subprocess.DEVNULL,
+                          capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if proc.returncode != expect:
+        C.info("    --- chiqish ---\n" + "\n".join(
+            "    " + l for l in (proc.stdout + proc.stderr).strip().splitlines()[-25:]))
+    return proc
+
+
+def make_test_video(path: Path) -> None:
+    """10 s test video. Ovoz: 0-2.5 s ton, 2.5-4 jim, 4-6.5 ton, 6.5-8 jim, 8-10 ton."""
+    C.run([C.need_tool("ffmpeg"), "-hide_banner", "-nostdin", "-loglevel", "error", "-y",
+           "-f", "lavfi", "-i", "testsrc=size=1280x720:rate=30:duration=10",
+           "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=10",
+           "-af", "volume='if(lt(mod(t,4),2.5),0.5,0)':eval=frame",
+           "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",
+           "-c:a", "aac", "-b:a", "128k", "-shortest", path])
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="Montaj tizimini test video bilan sinaydi.")
+    ap.add_argument("--no-whisper", action="store_true", help="Whisper bosqichini sinama")
+    args = ap.parse_args()
+
+    style = C.load_style()
+    W, H = style["video"]["width"], style["video"]["height"]
+    WORK.mkdir(parents=True, exist_ok=True)
+
+    C.info("1. Dasturlar")
+    ffmpeg = C.need_tool("ffmpeg")
+    C.need_tool("ffprobe")
+    version = C.run([ffmpeg, "-hide_banner", "-version"]).stdout.splitlines()[0]
+    check("ffmpeg va ffprobe topildi", True, version)
+    for flt in ("subtitles", "loudnorm", "silencedetect", "sidechaincompress"):
+        check(f"ffmpeg filtri: {flt}", C.has_filter(flt))
+    check("Python versiyasi", sys.version_info >= (3, 9), sys.version.split()[0])
+
+    C.info("\n2. Test video")
+    video = WORK / "test_video.mp4"
+    make_test_video(video)
+    src = C.ffprobe_info(video)
+    check("test video yaratildi", src["has_video"] and src["has_audio"] and abs(src["duration"] - 10) < 0.3,
+          f"{src['width']}x{src['height']}, {src['duration']:.2f}s")
+    before = (video.stat().st_size, video.stat().st_mtime_ns)
+
+    C.info("\n3. auto_cut.py (jim joylarni kesish)")
+    job = C.job_dir(video)
+    cut = job / "cut.mp4"
+    cut.unlink(missing_ok=True)  # oldingi sinovdan qolgan oraliq fayl (temp/ ichida)
+    p = script("auto_cut.py", video)
+    check("faqat ro'yxat rejimi (kesmasdan)", p.returncode == 0 and "jim" in p.stdout and not cut.exists())
+    p = script("auto_cut.py", video, "--apply")
+    if check("kesish bajarildi", p.returncode == 0 and cut.is_file()):
+        meta = C.ffprobe_info(cut)
+        # 2 ta 1.5 s jimlik, har biridan 2 x padding qoladi
+        expected = 10 - 2 * (1.5 - 2 * float(style["cut"].get("padding", 0.1)))
+        check("kesilgan video uzunligi", abs(meta["duration"] - expected) < 0.35,
+              f"{meta['duration']:.2f}s (kutilgan ~{expected:.2f}s)")
+        check("kesilgan videoda ovoz bor", meta["has_audio"])
+
+    C.info("\n4. subtitles.py (subtitr, Windows yo'l muammosi shu yerda tekshiriladi)")
+    srt = WORK / "sample.srt"
+    C.write_srt([
+        {"start": 0.3, "end": 2.0, "text": "Salom, bu sinov"},
+        {"start": 2.2, "end": 4.0, "text": "O'zbek tili: g'oya, o'quvchi"},
+        {"start": 4.2, "end": 6.5, "text": "Привет, это тест"},
+    ], srt)
+    base = cut if cut.is_file() else video
+    p = script("subtitles.py", base, srt, "--approved", "-o", C.OUTPUT_DIR / "selftest_sub.mp4")
+    check("subtitr videoga yozildi", p.returncode == 0 and (C.OUTPUT_DIR / "selftest_sub.mp4").is_file())
+    p = script("subtitles.py", base, srt, "-o", C.OUTPUT_DIR / "selftest_sub2.mp4", expect=3)
+    check("tasdiqsiz subtitr yozilmaydi (kod 3)", p.returncode == 3 and not (C.OUTPUT_DIR / "selftest_sub2.mp4").exists())
+
+    C.info("\n5. render.py (9:16, loudnorm, subtitr)")
+    ass = WORK / "sample.ass"
+    p = script("subtitles.py", base, srt, "--ass-only", "--ass", ass)
+    check("ASS fayl yaratildi (--ass-only)", p.returncode == 0 and ass.is_file())
+    import subtitles as S
+    S.make_ass(base, srt, ass, style, target_size=(W, H))  # yakuniy o'lcham (1080x1920) uchun qayta yasaladi
+    final = C.OUTPUT_DIR / "selftest_render.mp4"
+    p = script("render.py", base, "--subs", ass, "-o", final)
+    if check("render bajarildi", p.returncode == 0 and final.is_file()):
+        meta, problems = C.verify_video(final, W, H, C.ffprobe_info(base)["duration"])
+        check("natija formati", not problems,
+              f"{meta['width']}x{meta['height']}, {meta['duration']:.2f}s, ovoz: {meta['acodec']}"
+              + (("; " + "; ".join(problems)) if problems else ""))
+
+    C.info("\n6. pipeline.py (hammasi bitta buyruq bilan)")
+    extra = ["--no-subs", "--no-repeats"] if args.no_whisper else []
+    out = C.OUTPUT_DIR / "test_video_final.mp4"
+    p = subprocess.run([sys.executable, str(SCRIPTS / "pipeline.py"), str(video), "--force", *extra],
+                       cwd=str(C.ROOT), stdin=subprocess.DEVNULL,
+                       capture_output=True, text=True, encoding="utf-8", errors="replace")
+    note = "whisper bilan" if not args.no_whisper else "whispersiz"
+    if p.returncode == 3:
+        # whisper tonni "nutq" deb o'ylab matn chiqardi va pipeline tasdiq so'rab to'xtadi (to'g'ri xulq).
+        # Bu sinov bo'lgani uchun tasdiqlab davom etamiz.
+        note += ", tasdiq bosqichi ham ishladi"
+        p = script("pipeline.py", video, "--approve-subs", *extra)
+    elif p.returncode != 0:
+        C.info("    --- chiqish ---\n" + "\n".join(
+            "    " + l for l in (p.stdout + p.stderr).strip().splitlines()[-25:]))
+    if check("pipeline tugadi", p.returncode == 0 and out.is_file(), note):
+        meta, problems = C.verify_video(out, W, H)
+        check("pipeline natijasi", not problems and meta["duration"] < 9.5,
+              f"{meta['width']}x{meta['height']}, {meta['duration']:.2f}s, ovoz: {'bor' if meta['has_audio'] else 'yoq'}")
+        C.info("    " + "\n    ".join(p.stdout.strip().splitlines()[-9:]))
+
+    C.info("\n7. Xavfsizlik qoidalari")
+    check("asl (test) video o'zgarmadi", before == (video.stat().st_size, video.stat().st_mtime_ns))
+    p = script("render.py", video, "-o", C.INPUT_DIR / "bad.mp4", expect=1)
+    check("input/ ga yozish rad etiladi", p.returncode == 1 and not (C.INPUT_DIR / "bad.mp4").exists())
+
+    failed = [r for r in results if not r[1]]
+    C.info(f"\nNATIJA: {len(results) - len(failed)}/{len(results)} tekshiruv o'tdi.")
+    if failed:
+        C.info("O'tmaganlar: " + "; ".join(r[0] for r in failed))
+        return 1
+    C.info("Hammasi ishlayapti. Sinov natijalari: output/selftest_*.mp4 va output/test_video_final.mp4")
+    return 0
+
+
+if __name__ == "__main__":
+    C.run_main(main)

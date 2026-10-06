@@ -1,0 +1,16 @@
+# Videolar, oraliq fayllar va virtual muhit gitga kirmaydi
+samples/*
+input/*
+output/*
+temp/*
+!samples/.gitkeep
+!input/.gitkeep
+!output/.gitkeep
+!temp/.gitkeep
+.venv/
+*.mp4
+*.mov
+*.mkv
+*.wav
+__pycache__/
+*.pyc
