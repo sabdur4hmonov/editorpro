@@ -4,6 +4,10 @@ Bu fayl "qanday tugmani bosish" haqida emas (u `AGENTS.md` da), balki **yaxshi m
 o'ylashi** haqida. Har bir videoda shu tartib bo'yicha ishla. Foydalanuvchi faqat xom video va
 brend nomini beradi; qolgan qarorlar senda.
 
+Har montajda [EDIT_QUALITY.md](EDIT_QUALITY.md) bo'yicha reja, ko'rik dalillari va yakuniy
+`temp/<nom>/review.md` ni saqla. Ish tugagach [AGENT_MEMORY.md](AGENT_MEMORY.md) ga o'rganilgan
+narsa va keyingi agent uchun tavsiyani yoz; foydalanuvchi fikri tegishli notes.md ga ham yoziladi.
+
 ## 0. Nima berilgan
 
 | Narsa | Qayerda | Bo'lmasa |
@@ -171,4 +175,3 @@ qilinadi. Qoidalar `docs/NAMUNA_USLUBI.md` da, ish tartibi `/namuna` skillida. E
 3. Sariq kam ishlatiladi; yulduzcha (`\*`) faqat ilmoq va asosiy raqamda.
 4. Har 3-4 soniyada bitta element; oxirida `follow` kartochkasi.
 5. Renderdan oldin kadrlarni namuna kadrlari bilan yonma-yon solishtir.
-

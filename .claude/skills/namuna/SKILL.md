@@ -72,3 +72,10 @@ Never write into `input/` or `samples/`.
 - Movie clips, music and logos come only from files the user gives.
 - You judge frames, not motion or sound. For motion, take three close frames:
   `scripts/frames.py <video> --at 2.00,2.08,2.20`.
+
+## Handoff (another agent may continue this work)
+
+Run `scripts/handoff.py show` before starting and continue unfinished work found there. Write
+`scripts/handoff.py set "..." --agent <claude|codex>` after every milestone (text sent for approval,
+user's answer, elements written, before and after a render): video, brand, what is done, what the
+user still has to answer, the exact next command. Usage limits end a session without warning.

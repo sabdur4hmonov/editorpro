@@ -68,3 +68,10 @@ checklist ("What 'like the samples' means") for captions, hook, elements and end
 - Every number shown on screen was said in the video or given by the user.
 - Music, film clips and logos only from files the user provided.
 - If a script fails, find the cause and fix it; never skip a stage silently.
+
+## Handoff (another agent may continue this work)
+
+Run `scripts/handoff.py show` before starting and continue unfinished work found there. Write
+`scripts/handoff.py set "..." --agent <claude|codex>` after every milestone (text sent for approval,
+user's answer, elements written, before and after a render): video, brand, what is done, what the
+user still has to answer, the exact next command. Usage limits end a session without warning.

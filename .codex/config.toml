@@ -1,0 +1,4 @@
+[mcp_servers.montaj-project]
+command = 'D:/Coding projects/editor pro/.venv/Scripts/python.exe'
+args = ['D:/Coding projects/editor pro/scripts/project_mcp.py']
+cwd = 'D:/Coding projects/editor pro'

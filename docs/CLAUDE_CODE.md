@@ -1,5 +1,9 @@
 # Claude Code'da ishlatish
 
+Joriy umumiy sozlama: [AGENT_SETUP.md](AGENT_SETUP.md). To'rtta skill nusxasi bir manbadan
+yangilanadi. Mahalliy MCP `.mcp.json` da; Claude ochilganda loyiha MCPsini tasdiqlang.
+Har sessiyada [AGENT_MEMORY.md](AGENT_MEMORY.md), har montajda [EDIT_QUALITY.md](EDIT_QUALITY.md) ni o'qing.
+
 Bu loyiha Claude Code uchun tayyor: `CLAUDE.md` → `AGENTS.md` (qoidalar), `docs/PLAYBOOK.md`
 (montajor qo'llanmasi). `/montaj` va `/brend` buyruqlari `docs/claude_skills/` da, ruxsatlar taklifi
 `docs/claude_settings.example.json` da tayyor turibdi: chatdan `.claude/` papkasiga yozib bo'lmaydi,

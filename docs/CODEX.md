@@ -1,5 +1,9 @@
 # Codex bilan ishlash
 
+Joriy umumiy sozlama: [AGENT_SETUP.md](AGENT_SETUP.md). To'rtta skill va mahalliy MCP
+tayyor; qayta o'rnatishdan oldin `sync_skills.py --check` bilan tekshiring. Ikkala agentning
+tajribasi [AGENT_MEMORY.md](AGENT_MEMORY.md), har video sifat tartibi [EDIT_QUALITY.md](EDIT_QUALITY.md).
+
 Codex loyihadagi `AGENTS.md` ni o'zi o'qiydi: montaj qoidalari, skriptlar va uslub o'sha yerda. Claude Code
 ham xuddi shu faylni o'qiydi, shuning uchun ikkalasi bir xil ishlaydi. Ular **navbat bilan** ishlatiladi:
 birining limiti tugasa, ikkinchisi `HOLAT.md` dagi eslatmadan davom ettiradi (`scripts/handoff.py`).

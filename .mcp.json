@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "montaj-project": {
+      "type": "stdio",
+      "command": "D:/Coding projects/editor pro/.venv/Scripts/python.exe",
+      "args": ["D:/Coding projects/editor pro/scripts/project_mcp.py"]
+    }
+  }
+}

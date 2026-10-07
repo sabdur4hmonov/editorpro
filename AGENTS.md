@@ -355,6 +355,16 @@ Render qilishdan oldin `--stills` bilan tekshiriladigan ro'yxat:
 
 ## Agentlar bilan ishlash
 
+- Ikkala agentning doimiy tajribasi `docs/AGENT_MEMORY.md` da: **har sessiya boshida o'qi**.
+  Har montajdan yoki texnik o'zgarishdan keyin nima o'rganildi, dalili va keyingi agentga
+  tavsiyani yoz. Taxmin, tekshirilgan natija va foydalanuvchi tasdig'ini farqlagin.
+- Har montajda `docs/EDIT_QUALITY.md` bo'yicha reja va `temp/<nom>/review.md` tayyorla.
+  Tekshirilmagan sifat yoki tasdiqlanmagan ovoz tanlovini "o'tdi" deb yozma.
+- Sessiya boshida `scripts/sync_skills.py --check` ni `.venv` Python bilan ishlat.
+  Nusxalar eskirgan bo'lsa `--apply`: manba `docs/claude_skills/`, Claude nusxasi
+  `.claude/skills/`, Codex nusxasi `.agents/skills/`. Nusxalarni alohida tahrir qilma.
+- Ikkala agent uchun MCP va foydalanish tartibi: `docs/AGENT_SETUP.md`.
+
 - **Bir vaqtda faqat bitta agent ishlaydi** (Claude Code yoki Codex). Ikkalasi birga ishlamaydi.
   Foydalanuvchi ularni navbat bilan ishlatadi: birining limiti tugasa, ikkinchisi davom ettiradi.
 - **Ishni boshlashdan oldin** `.venv\Scripts\python.exe scripts\handoff.py show` ni ishga tushir: oldingi
