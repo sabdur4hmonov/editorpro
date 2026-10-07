@@ -102,6 +102,30 @@ Blok sozlamalari: `slide_in` (so'z o'ngdan sirg'alishi, em), `intro_scale`, `dri
 | Telefon/profil (3) | `phone`, `profile` | faqat mijoz bergan rasm yoki name/handle/bio/avatar |
 | Sarlavha odam orqasida (5, 7, 10) | `text/title` + `behind_person: true` | PPHumanSeg; soch chetlarini kadrda tekshir |
 
+## 5a. To'liq ekranli b-roll (namuna 15, 16) — 2026-10-07 o'lchangan
+
+Kesish vaqtlari PySceneDetect bilan aniqlangan (`ContentDetector(threshold=27)`), har bo'lak o'rtasidagi kadr
+ko'rib chiqilgan (`frames.py --at`).
+
+| Namuna | B-roll oraliqlari (s) | Ko'rinishi |
+|---|---|---|
+| 15 | 5.11–6.01, 6.01–6.77, 9.68–11.18, 13.38–14.38, 14.38–15.38, 17.98–19.65, 19.65–20.85 | **oq-qora**, qoraytirilgan, 0.8–1.7 s, ketma-ket ikki klip ham bo'ladi |
+| 15 | 26.99–27.89, 27.89–28.83, 29.43–32.0 | **rangli** (hammasi oq-qora emas) |
+| 16 | 14.28–16.64, 16.64–18.36 | rangli, iliq, odam orqadan / yelka ustidan (yuz markazda emas) |
+
+- Gapiruvchining ovozi b-roll ostida davom etadi, klipning o'z ovozi yo'q. Kirish va chiqish **keskin kesish**.
+- Subtitr b-roll ustida qoladi. Namuna 15 da b-roll ustidagi subtitr boshqa uslubda (tor KATTA harf + kichik
+  izoh), gapiruvchi kadrida oddiy kichik harfli. Foydalanuvchi so'rasa bir xil uslub qoldiriladi.
+- Namuna 16 dagi shakl bilan o'tish (to'q sariq "uy" shakli kadrni supuradi, 7.95–8.15) faqat telefon maketi
+  sahnasiga kirishda; b-roll'lar keskin kesish bilan.
+- Namuna 16 da 7.5–13.1 telefon maketi sahnasi (fon naqshli, ichida xiralashtirilgan video).
+
+Tizimda: `{"type": "broll", "mode": "full", "file": "...mp4", "offset": 0.5, "focus_x": 0.5, "bw": true, "dim": 0.3}`.
+`bw` oq-qora, `dim` qoraytirish (oq kiyim/och fon ustida 0.4–0.45, aks holda oq subtitr o'qilmaydi), `focus_x`
+gorizontal klipning qaysi qismi 9:16 ga qoladi. `grade` elementi b-roll'ga ta'sir qilmaydi (u avval chiziladi).
+Kamera suriladigan klipda `offset` ni kompozitsiya yaxshi joyga qo'y va oxirgi kadrni ham tekshir.
+B-roll ichiga tushgan stiker-rasmlarni olib tashla. Bola klipida yuz markazda bo'lmasin (orqadan, qo'llar).
+
 ## 6. Namunadagi video tuzilishi (shunday rejala)
 
 1. **0-2 s, ilmoq.** Katta sarlavha (`{caps}` yoki `{heavy}`) + bitta harakat (zoom, `grade bw`).

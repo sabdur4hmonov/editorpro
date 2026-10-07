@@ -223,7 +223,7 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `voice` | Ovozli xabar pleyeri | `y`, `width`, `length` |
 | `image` | Rasm yoki kichik video ustma-qatlam (shaffof PNG: `cutout.py` - hoshiyasiz stiker) | `file`, `x`, `y`, `width`, `radius`, `anim` (pop/fade/none), `border` (oq hoshiya, 0.012), `border_color`, `rotate` (gradus), `wiggle` (tebranish, gradus) |
 | `icon` | Vektor belgi (1500+), ostida ixtiyoriy yozuv | `name`, `x`, `y`, `size`, `bg` (none/circle/square/glass), `color`, `bg_color`, `style` (fill/bold), `text` |
-| `broll` | Qo'shimcha kadr: `mode` `full` (to'liq ekran) yoki `split` (tepada gapiruvchi) | `file`, `mode`, `fade`, `offset` |
+| `broll` | Qo'shimcha kadr: `mode` `full` (to'liq ekran) yoki `split` (tepada gapiruvchi); ovozi o'chiq | `file`, `mode`, `fade`, `offset`, `focus_x` (9:16 kesish joyi), `bw` (oq-qora), `dim` (qoraytirish 0..1) |
 | `zoom` | Qo'lda zoom | `scale`, `x`, `y`, `ease` |
 | `sfx` | Ovoz effekti | `at`, `name`, `volume_db` |
 | `callout` | Panel ichidagi matn: `style` `glass` (orqasi xira), `dark`, `accent` | `text`, `x`, `y`, `width`, `style` |
