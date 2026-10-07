@@ -2050,7 +2050,7 @@ class FollowLayer(Layer):
             ph, pw = int(fsize * 1.55), int(tw + fsize * 1.3)
             self.pill = M.rounded_rect_sprite(pw, ph, ph / 2, (255, 255, 255, 255), shadow={"blur": 12 * k, "dy": 4 * k, "opacity": 0.3})
             self.pill_text, self.pill_size = (txt, tw), (pw, ph, fsize)
-        bsize = d * 0.10
+        bsize = d * (0.10 if self.pill is not None else 0.14)    # @manzil yo'q: tugma asosiy yozuv, kattaroq
         bfont = ctx.fonts.get(cap["font"], bsize, 600)
         self.buttons = []
         for label, fill, ink in ((str(el.get("button", "Obuna")), color, None), (str(el.get("done", "Obuna bo'ldingiz")), (232, 232, 236), "#222222")):
