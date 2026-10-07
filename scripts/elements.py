@@ -1981,7 +1981,8 @@ class FollowLayer(Layer):
     """Obuna kartochkasi (namuna 9, 12, 14): doira ichida logotip, ostida @manzil va "Obuna" tugmasi.
 
     Kursor uchib kelib tugmani bosadi, tugma "bosildi" holatiga o'tadi (kulrang, boshqa yozuv).
-    logo: fayl (bo'lmasa doira brend rangida, ichida name yozuvi). Vaqt: start..end, bosish: tap (soniya, startdan).
+    logo: fayl (bo'lmasa doira brend rangida, ichida name yozuvi yoki icon belgisi). handle ixtiyoriy:
+    bo'lmasa @manzil yozuvi chizilmaydi. Vaqt: start..end, bosish: tap (soniya, startdan).
     """
     z = 60
 
@@ -2030,16 +2031,25 @@ class FollowLayer(Layer):
             spr, tw = M.word_sprite(text, font, "#111111" if bright > 0.6 else "#FFFFFF", cap["tracking"] * size * 0.5)
             name_img = Image.fromarray(self._unpremultiply(spr.pix), "RGBA")
             disc.alpha_composite(name_img, (int((d - tw) / 2 + spr.ox), int(d * 0.56 + spr.oy)))
+        elif el.get("icon"):
+            # logotip ham, nom ham yo'q: doira ichida vektor belgi (brendsiz video uchun)
+            import icons as IC
+            bright = (0.299 * color[0] + 0.587 * color[1] + 0.114 * color[2]) / 255
+            ink = M.rgb("#111111" if bright > 0.6 else "#FFFFFF")
+            side = int(inner * 0.52)
+            icon = IC.render(str(el["icon"]).strip(), side, ink + (255,), str(el.get("icon_style", "fill")))
+            disc.alpha_composite(icon, ((d - side) // 2, (d - side) // 2))
         self.disc = M.pil_sprite(disc, shadow=shadow)                       # nuqtasi markazda
-        handle = fix_apostrophes(str(el.get("handle", "")))
-        if not handle:
-            raise C.MontajError("follow uchun 'handle' kerak (masalan \"@sahifa_nomi\").")
-        fsize = d * 0.145
-        font = ctx.fonts.get(cap["font"], fsize, 600)
-        txt, tw = M.word_sprite(handle, font, "#111111", -0.03 * fsize)
-        ph, pw = int(fsize * 1.55), int(tw + fsize * 1.3)
-        self.pill = M.rounded_rect_sprite(pw, ph, ph / 2, (255, 255, 255, 255), shadow={"blur": 12 * k, "dy": 4 * k, "opacity": 0.3})
-        self.pill_text, self.pill_size = (txt, tw), (pw, ph, fsize)
+        # handle ixtiyoriy: bo'lmasa oq yozuvli "pill" chizilmaydi, tugma doira ostiga ko'tariladi
+        handle = fix_apostrophes(str(el.get("handle", "")).strip())
+        self.pill, ph = None, 0
+        if handle:
+            fsize = d * 0.145
+            font = ctx.fonts.get(cap["font"], fsize, 600)
+            txt, tw = M.word_sprite(handle, font, "#111111", -0.03 * fsize)
+            ph, pw = int(fsize * 1.55), int(tw + fsize * 1.3)
+            self.pill = M.rounded_rect_sprite(pw, ph, ph / 2, (255, 255, 255, 255), shadow={"blur": 12 * k, "dy": 4 * k, "opacity": 0.3})
+            self.pill_text, self.pill_size = (txt, tw), (pw, ph, fsize)
         bsize = d * 0.10
         bfont = ctx.fonts.get(cap["font"], bsize, 600)
         self.buttons = []
@@ -2055,7 +2065,8 @@ class FollowLayer(Layer):
         ImageDraw.Draw(cur).ellipse([0, 0, r * 2 * s - 1, r * 2 * s - 1], fill=(255, 255, 255, 170), outline=(255, 255, 255, 255), width=s * 2)
         self.cursor = M.pil_sprite(cur.resize((r * 2, r * 2), Image.LANCZOS), shadow={"blur": 6 * k, "dy": 2 * k, "opacity": 0.3})
         self.pill_y = d * 0.47
-        self.btn_y = self.pill_y + ph * 0.5 + self.buttons[0][4] * 0.62
+        self.btn_y = (self.pill_y + ph * 0.5 + self.buttons[0][4] * 0.62 if self.pill is not None
+                      else d * 0.5 + self.buttons[0][4] * 0.2)
         ctx.check_safe("Obuna kartochkasi (follow)", self.cx - d / 2, self.cy - d / 2, self.cx + d / 2,
                        self.cy + self.btn_y + self.buttons[0][4] / 2)
 
@@ -2077,9 +2088,9 @@ class FollowLayer(Layer):
             M.blit(frame, spr, cx + dx * scale, cy + dy * scale, opacity=op * opacity, scale=scale * extra, anchor=(0, 0))
 
         at(self.disc, 0, 0)
-        pw, ph, fsize = self.pill_size
         pp = M.clamp01((t - self.start - 0.12) / 0.3)
-        if pp > 0:
+        if pp > 0 and self.pill is not None:
+            pw, ph, fsize = self.pill_size
             grow = 0.6 + 0.4 * M.spring(pp)
             M.blit(frame, self.pill, cx - pw / 2 * scale, cy + (self.pill_y - ph / 2) * scale, opacity=op * M.clamp01(pp * 3),
                    scale=scale * grow, anchor=(pw / 2, ph / 2))

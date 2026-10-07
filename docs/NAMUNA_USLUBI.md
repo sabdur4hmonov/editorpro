@@ -87,7 +87,7 @@ Blok sozlamalari: `slide_in` (so'z o'ngdan sirg'alishi, em), `intro_scale`, `dri
 
 | Namunada | Element | Eslatma |
 |---|---|---|
-| Obuna kartochkasi: doira, @manzil, tugma bosiladi (9, 12, 14) | `follow` | `handle`, `logo` yoki `name`, `button`, `done`, `tap` |
+| Obuna kartochkasi: doira, @manzil, tugma bosiladi (9, 12, 14) | `follow` | `handle` (ixtiyoriy), `logo`, `name` yoki `icon` (brendsiz: `icon`, handle'siz), `button`, `done`, `tap` |
 | To'liq ekranli rangli sahna, katak fon (4, 8, 9, 11) | `scene` | ustiga `voice`, `text`, `image`, `stat` qo'yiladi |
 | Ovozli xabar pleyeri (4, 8, 10, 13) | `voice` | `scene` ichida yoki video ustida |
 | Oq-qora kadr (13 boshi, 14) | `grade` `mode: bw` | ilmoq yoki "to'xtab qolgan" joy |

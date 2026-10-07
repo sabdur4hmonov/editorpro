@@ -229,7 +229,7 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `lower_third` | Ism va lavozim plashkasi | `name`, `role`, `x`, `y` |
 | `emoji` | Katta emoji, sakrab chiqadi. `sticker: true` oq hoshiyali stiker | `emoji`, `x`, `y`, `size`, `sticker`, `rotate`, `wiggle` |
 | `stage` | Videoni (yoki uning bir qismini) yumaloq kartochkaga oladi, orqasiga **yangi harakatli fon** chizadi | `crop [x0,y0,x1,y1]`, `width`, `y`, `radius`, `border`, `background`, `footer {text, from}`, `progress`, `punch [{at, scale}]`, `shake [{at, amp}]`, `flash [{at}]` |
-| `follow` | Obuna kartochkasi: doira (logotip yoki nom), @manzil, tugma bosiladi | `handle`, `logo` yoki `name`, `button`, `done`, `tap`, `x`, `y`, `size`, `color` |
+| `follow` | Obuna kartochkasi: doira (logotip, nom yoki belgi), @manzil, tugma bosiladi | `handle` (ixtiyoriy), `logo`, `name` yoki `icon`, `button`, `done`, `tap`, `x`, `y`, `size`, `color` |
 | `scene` | To'liq ekranli chizilgan fon (ustiga matn, rasm, `voice` qo'yiladi) | `background {color1..4, pattern: dots/grid/none, rays, sparks}`, `fade` |
 | `grade` | Vaqtincha oq-qora (`mode: bw`) yoki qoraytirish (`dim`) | `mode`, `amount`, `fade` |
 | `flash` | Qisqa chaqnash (sahna almashganda) | `at`, `duration`, `color`, `amount` |

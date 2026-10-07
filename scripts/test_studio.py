@@ -58,6 +58,18 @@ class Rules(unittest.TestCase):
         default_item = studio.preflight(style, [], [{"type": "list", "items": [{"text": "Sinov"}]}], 4, False)
         self.assertTrue(default_item["structural_ok"])
 
+    def test_follow_without_handle_draws_icon(self):
+        style = C.load_style()
+        style["video"].update(width=360, height=640)
+        ctx = E.Ctx(style)
+        layer = E.FollowLayer(ctx, {"type": "follow", "start": 0, "end": 3, "icon": "user-plus", "tap": 1})
+        self.assertIsNone(layer.pill)
+        frame = np.zeros((640, 360, 3), np.uint8)
+        layer.draw(frame, 1.5)
+        self.assertGreater(int(frame.max()), 0)
+        with self.assertRaises(C.MontajError):
+            E.FollowLayer(ctx, {"type": "follow", "start": 0, "end": 3, "icon": "yoq-belgi-nomi"})
+
     def test_emphasis_suggestions_keep_timings(self):
         import apply_corrections as AC
         words = [{"start": i*.3, "end": i*.3+.2, "word": word, "prob": .9}
