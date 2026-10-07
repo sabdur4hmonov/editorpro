@@ -245,7 +245,7 @@ def gather_sfx(style: dict, elements: list, cues: list, words: list | None) -> l
     if cfg.get("on_big_word"):
         import subtitles as S
         for cue in cues:
-            tokens = E.parse_markup(E.fix_apostrophes(cue["text"]))
+            tokens = E.parse_markup(E.fix_apostrophes(E.split_cue_tag(cue["text"])[2]))
             times = S.word_times(cue, [w for w, _, _ in tokens], words) if tokens else []
             for (word, level, _), at in zip(tokens, times):
                 if level in ("big", "big_accent", "huge"):

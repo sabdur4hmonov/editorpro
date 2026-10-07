@@ -35,8 +35,9 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | `assets/icons/` | 1500+ vektor belgi (Phosphor, MIT): `icon` elementi va `icons.py`. |
 | `assets/html/` | HTML grafika namunasi (`shablon.html`). |
 | `.env` | Maxfiy kalitlar (stok va AI rasm xizmatlari). Gitga kirmaydi, o'qib ko'rsatilmaydi. |
-| `docs/claude_skills/` | Claude Code uchun `/montaj` va `/brend` buyruqlari (manba; `.claude/skills/` ga ko'chiriladi). |
+| `docs/claude_skills/` | Claude Code uchun `/montaj`, `/namuna`, `/brend`, `/transcribe-uz` buyruqlari (manba; `.claude/skills/` ga ko'chiriladi). |
 | `docs/PLAYBOOK.md` | Montajor qo'llanmasi: qaror qabul qilish tartibi. **Har montajda o'qiladi.** |
+| `docs/NAMUNA_USLUBI.md` | Namuna videolar (`samples/`) uslubi: subtitr uslublari, animatsiyalar, elementlar. |
 | `scripts/` | Montaj skriptlari. |
 | `jobs/` | Watcher topshiriqlari va natijalari (chatdan montaj). |
 | `setup.ps1`, `start_watcher.bat` | Muhitni o'rnatish; watcher'ni ochish. |
@@ -179,15 +180,24 @@ qaytadan yaratiladi.
 | Belgi | Natija |
 |---|---|
 | `*so'z*` | katta |
-| `**so'z**` | katta va brend rangida |
+| `**so'z**` | katta va brend rangida (porlaydi) |
 | `!!so'z!!` | juda katta va rangli (raqam, asosiy so'z) |
 | `_so'z_` | faqat rangli, o'lchami o'zgarmaydi |
+| `==so'z==`, `~~so'z~~` | marker: so'z ustidan rangli quti surtiladi (ikkinchisi qizil) |
+| `\*` | oddiy yulduzcha: `**\*3 oyda**` ekranda `*3 oyda` |
+| `{uslub,y=0.2}` (bo'lak boshida) | shu bo'lak boshqa uslubda va joyda: `{caps}`, `{heavy}`, `{single}` ... |
 
-- Bir bo'lakda bitta asosiy ibora belgilanadi; qolgan so'zlar o'zi kichik bo'ladi. Har bo'lakka
-  belgi qo'yish shart emas: belgisiz bo'lak o'rtacha o'lchamda chiqadi, raqamlar o'zi ajratiladi.
+- **Bir gapda bitta asosiy ibora belgilanadi**; qolgan so'zlar o'zi kichik bo'lib, asosiy ibora ostiga
+  uning kengligida joylashadi ("blok"). Urg'uli qisqa gap (9 so'zgacha) bitta bo'lak bo'lib qoladi,
+  urg'usiz gap 3-4 so'zdan bo'linadi. Belgisiz bo'lakda raqamlar o'zi ajratiladi.
 - Ma'no tashiydigan so'zni belgilang (raqam, natija, mahsulot nomi), bog'lovchini emas.
-- Uslub `captions.preset`: `clean` (toza, kichik harf), `glow` (baland KATTA harf, porlash),
-  `box` (asosiy so'z rangli qutida), `serif` (nafis kursiv). Joyi: `captions.position_y`.
+- Uslub `captions.preset`: `clean` (asosiy: namunalardagi kichik harfli zich uslub), `caps` (tor KATTA
+  sarlavha), `heavy` (juda qalin so'z, harfma-harf), `italic`, `serif`, `single` (bir-ikki so'zdan),
+  `marker` (kichik, chapda, marker bilan), `karaoke` (ovozli xabar sahnasi), `glow`, `box`.
+  Joyi: `captions.position_y`. Atoqli otlar matnda qanday yozilsa shunday chiqadi (`Rus`, `SMM`).
+- **Namunalardagidek video** uchun: `docs/NAMUNA_USLUBI.md` va `/namuna` skilli
+  (`docs/claude_skills/namuna/`). Tuzatilgan matnda (`corrections.json`) belgilar va `{uslub}` ham
+  yozilsa bo'ladi: `{uslub}` bilan boshlangan so'z yangi bo'lak boshlaydi.
 
 ## Grafik elementlar (`temp/<nom>/elements.json`)
 
@@ -218,6 +228,10 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `lower_third` | Ism va lavozim plashkasi | `name`, `role`, `x`, `y` |
 | `emoji` | Katta emoji, sakrab chiqadi. `sticker: true` oq hoshiyali stiker | `emoji`, `x`, `y`, `size`, `sticker`, `rotate`, `wiggle` |
 | `stage` | Videoni (yoki uning bir qismini) yumaloq kartochkaga oladi, orqasiga **yangi harakatli fon** chizadi | `crop [x0,y0,x1,y1]`, `width`, `y`, `radius`, `border`, `background`, `footer {text, from}`, `progress`, `punch [{at, scale}]`, `shake [{at, amp}]`, `flash [{at}]` |
+| `follow` | Obuna kartochkasi: doira (logotip yoki nom), @manzil, tugma bosiladi | `handle`, `logo` yoki `name`, `button`, `done`, `tap`, `x`, `y`, `size`, `color` |
+| `scene` | To'liq ekranli chizilgan fon (ustiga matn, rasm, `voice` qo'yiladi) | `background {color1..4, pattern: dots/grid/none, rays, sparks}`, `fade` |
+| `grade` | Vaqtincha oq-qora (`mode: bw`) yoki qoraytirish (`dim`) | `mode`, `amount`, `fade` |
+| `flash` | Qisqa chaqnash (sahna almashganda) | `at`, `duration`, `color`, `amount` |
 | `burst` | Emoji "otilib chiqadi" (kulgu, qarsak joyida) | `at`, `emoji` (bitta yoki ro'yxat), `count`, `duration`, `x [dan, gacha]` |
 | `confetti` | Konfetti (yutuq, taqdirlash joyida) | `at`, `duration`, `count`, `origin` (sides/top) |
 
@@ -394,7 +408,8 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
 
 ## Claude Code'da ishlatish
 
-- `/montaj input\video.mp4 NOM` — to'liq montaj. `/brend NOM` — yangi mijoz qo'shish.
+- `/montaj input\video.mp4 NOM` — to'liq montaj. `/namuna input\video.mp4 NOM` — namunalardagidek montaj.
+  `/brend NOM` — yangi mijoz qo'shish. `/transcribe-uz video` — matn va tuzatish.
   Manbasi `docs/claude_skills/`; ishlashi uchun `.claude/skills/` ga ko'chirilgan bo'lishi kerak
   (`docs/CLAUDE_CODE.md` dagi birinchi tekshiruv prompti buni qiladi). Ko'chirilmagan bo'lsa ham
   shu fayl va `docs/PLAYBOOK.md` bo'yicha oddiy so'rov bilan ishlayveradi.

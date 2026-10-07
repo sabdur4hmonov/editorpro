@@ -154,6 +154,45 @@ def main() -> int:
     p = script("compose.py", base, "--subs", msrt, "--elements", sel, "--stills", "1.1,2.3", "--stills-out", sshot)
     check("ijodiy joylashuv (stage, burst, confetti, sarlavha animatsiyasi)",
           p.returncode == 0 and sshot.is_file() and sshot.stat().st_size > 20000)
+    # namuna uslubi: har xil presetlar, marker, yulduzcha, bo'lak belgisi, sahna, oq-qora, obuna kartochkasi
+    nsrt = WORK / "namuna.srt"
+    nsrt.write_text(
+        "1\n00:00:00,200 --> 00:00:01,400\n**\\*3 oyda Rus tilini** o'rgana olaman deb o'ylaysizmi?\n\n"
+        "2\n00:00:01,500 --> 00:00:02,300\n{caps,y=0.2}**KELINGLAR** hozir sizlarga\n\n"
+        "3\n00:00:02,400 --> 00:00:03,200\n{heavy,y=0.3}==Kamerani== *sekin* yaqinlashtirsangiz\n\n"
+        "4\n00:00:03,300 --> 00:00:04,100\n{marker}sohasiga ==kirib kelishimga== asosiy ~~sabab~~\n\n"
+        "5\n00:00:04,200 --> 00:00:04,900\n{italic}**Vapsheee** tez chiqish uchun\n\n"
+        "6\n00:00:05,000 --> 00:00:05,600\n{serif}Men *Farruh*\n\n"
+        "7\n00:00:05,700 --> 00:00:06,300\n{single}odam deb\n\n"
+        "8\n00:00:06,400 --> 00:00:07,000\n{karaoke}mening ismim\n\n"
+        "9\n00:00:07,100 --> 00:00:08,000\n{clean,anim_main=flicker,anim_sub=bar}*10 yil* orqaga qaytganingizda\n",
+        encoding="utf-8")
+    nel = WORK / "namuna_elements.json"
+    C.write_json({"elements": [
+        {"type": "grade", "mode": "bw", "start": 0, "end": 1.4},
+        {"type": "flash", "at": 1.4},
+        {"type": "scene", "start": 6.3, "end": 7.1, "background": {"color1": "#0B2A8F", "color2": "#0A1F6B", "pattern": "grid"}},
+        {"type": "follow", "start": 7.2, "end": 9.6, "handle": "@sinov_sahifa", "name": "Sinov", "tap": 0.9},
+    ]}, nel)
+    nshot = WORK / "namuna_stills.jpg"
+    nshot.unlink(missing_ok=True)
+    p = script("compose.py", base, "--subs", nsrt, "--elements", nel,
+               "--stills", "0.9,1.9,2.9,3.9,4.6,5.3,6.0,6.7,7.6,8.4", "--stills-out", nshot)
+    check("namuna uslubi: 9 xil subtitr uslubi, marker, sahna, oq-qora, obuna kartochkasi",
+          p.returncode == 0 and nshot.is_file() and nshot.stat().st_size > 20000,
+          (p.stderr.strip().splitlines() or [""])[-1][:160])
+    p = script("compose.py", base, "--subs", WORK / "bad_tag.srt", "--stills", "0.5", "--stills-out", WORK / "bad_tag.jpg") \
+        if (WORK / "bad_tag.srt").write_text("1\n00:00:00,100 --> 00:00:01,000\n{yoq-uslub}salom\n", encoding="utf-8") else None
+    check("noma'lum subtitr uslubi tushunarli xato beradi", p.returncode == 1 and "noma'lum" in p.stderr)
+    import elements as E
+    cues = C.words_to_cues([{"start": i * 0.4, "end": i * 0.4 + 0.3, "word": w} for i, w in enumerate(
+        "**3 oyda Rus tilini** o'rgana olaman deb o'ylaysizmi? {caps}**KELINGLAR** hozir sizlarga. oddiy gap bu yerda davom etadi va uzun bo'ladi.".split())], {})
+    check("blok: urg'uli qisqa gap bitta bo'lakda, {uslub} yangi bo'lak boshlaydi, oddiy gap bo'linadi",
+          cues[0]["text"] == "**3 oyda Rus tilini** o'rgana olaman deb o'ylaysizmi?" and cues[1]["text"].startswith("{caps}**KELINGLAR**")
+          and len(cues) >= 4 and E.split_cue_tag("{caps,y=0.2} MATN") == ("caps", {"y": "0.2"}, "MATN")
+          and [lvl for _, lvl, _ in E.parse_markup("a ==b== ~~c~~ \\*d")] == ["normal", "mark", "mark2", "normal"]
+          and E.parse_markup("\\*3")[0][0] == "*3" and C.strip_markup("{caps}**\\*3** ==x==") == "3 x",
+          " | ".join(c["text"] for c in cues)[:200])
     shot = WORK / "motion_stills.jpg"
     shot.unlink(missing_ok=True)
     p = script("compose.py", base, "--subs", msrt, "--elements", mel, "--brand", "demo",

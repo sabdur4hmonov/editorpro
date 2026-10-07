@@ -75,11 +75,11 @@
   "_brand_izoh": "Standart brend nomi (brands/<nom>/). Bo'sh bo'lsa faqat shu fayldagi qiymatlar ishlaydi. Buyruqda --brand NOM bilan ham beriladi.",
 
   "captions": {
-    "_izoh": "Yangi subtitr dvigateli. engine: motion (animatsiyali, tavsiya) | ass (eski, oddiy) | off. preset: clean | glow | box | serif. Matnda belgilar: *katta*, **katta va rangli**, !!juda katta!!, _faqat rangli_. Qolgan sozlamalar (font, size_main, accent, position_y, case, animation ...) ixtiyoriy: yozilsa presetdagini almashtiradi.",
+    "_izoh": "Subtitr dvigateli. engine: motion (animatsiyali, tavsiya) | ass (eski, oddiy) | off. preset: clean (namunalarning asosiy uslubi) | caps | heavy | italic | serif | single | marker | karaoke | glow | box. Matnda belgilar: *katta*, **katta va rangli**, !!juda katta!!, _faqat rangli_, ==marker==, ~~ikkinchi marker~~, \\* oddiy yulduzcha. Bitta bo'lakni boshqa uslubda chizish: bo'lak boshiga {caps,y=0.2}. Qolgan sozlamalar (font, size_main, accent, position_y, case, animation ...) ixtiyoriy: yozilsa presetdagini almashtiradi. To'liq ro'yxat: docs/NAMUNA_USLUBI.md.",
     "engine": "motion",
     "preset": "clean",
     "accent": "#FFE600",
-    "position_y": 0.64,
+    "position_y": 0.56,
     "max_words_per_line": 4,
     "max_chars_per_line": 26,
     "auto_numbers": true

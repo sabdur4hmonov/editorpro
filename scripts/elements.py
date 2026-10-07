@@ -19,38 +19,96 @@ import motion as M
 from motion import cv2, Image, ImageDraw
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+CAPTION_ANIMS = ("blur", "fade", "pop", "rise", "flicker", "bar", "letters", "ltrack", "none")
+FLICKER = (1.0, 0.28, 0.28, 1.0, 0.28, 0.28)      # "miltillab yonish": kadrma-kadr shaffoflik
 
 CAPTION_PRESETS = {
-    # toza, zamonaviy: kichik harf, zich harflar, yumshoq soya, so'zlar xiralikdan ochiladi
+    # Namuna videolarning asosiy uslubi (samples/ 2, 7, 8, 10): kichik harf, juda zich harflar, asosiy ibora
+    # katta, qolgani ostida kichik; so'zlar xiralikdan ochiladi, so'zlar orasi keng boshlanib zichlashadi,
+    # blok sekin kattalashadi, tugagach xiralashib yo'qoladi. Sariq so'z porlaydi.
     "clean": {
-        "font": "Inter", "italic": False, "weight_sub": 500, "weight_plain": 600, "weight_main": 700,
-        "size_sub": 56, "size_plain": 76, "size_main": 106, "size_huge": 196,
-        "tracking": -0.045, "leading": 1.02, "case": "lower", "strip_punct": True,
-        "color": "#FFFFFF", "accent": "#FFE600", "big_accent": False, "sub_opacity": 0.92,
-        "position_y": 0.64, "max_width": 0.84, "align": "center",
-        "reveal": "word", "animation": "blur", "anim_ms": 220, "blur_px": 14, "rise_px": 10, "dim": 0.35,
-        "shadow": {"blur": 16, "dy": 4, "opacity": 0.5, "color": "#000000"},
-        "glow": None, "stroke": None, "box": None, "auto_numbers": False,
+        "font": "Inter", "italic": False, "weight_sub": 500, "weight_plain": 500, "weight_main": 600,
+        "size_sub": 78, "size_plain": 80, "size_main": 124, "size_huge": 300,
+        "tracking": -0.06, "leading": 1.0, "word_space": 0.78, "case": "smart", "strip_punct": True,
+        "fit_sub": True, "fit_min": 0.62, "fit_max": 1.1,
+        "color": "#FFFFFF", "accent": "#FFE600", "big_accent": False, "sub_opacity": 1.0,
+        "position_y": 0.56, "max_width": 0.84, "align": "center",
+        "reveal": "word", "animation": "blur", "anim_ms": 300, "blur_px": 14, "rise_px": 0, "dim": 0.35,
+        "slide_in": 0.8, "slide_ms": 900, "track_in": 0.0, "track_ms": 1100, "intro_scale": 0.94, "intro_ms": 500, "drift": 0.035,
+        "exit": "blur", "exit_ms": 170, "letter_ms": 45, "letter_track": 0.22, "letter_from": "below", "bar_ms": 120,
+        "shadow": {"blur": 18, "dy": 4, "opacity": 0.45, "color": "#000000"},
+        "glow": {"blur": 16, "opacity": 0.5}, "stroke": None, "box": None, "auto_numbers": False,
+        "highlight": {"color": None, "text": "#111111"},
+        "highlight2": {"color": "#D7263D", "text": "#FFFFFF", "pre": "#FFFFFF"},
     },
-    # baland, tor shrift, KATTA harf, sariq porlash
+    # baland, tor shrift, KATTA harf, sariq porlash (namuna 5, 10: "KELINGLAR", "TASAVVUR QILING")
     "glow": {
         "font": "Oswald", "weight_sub": 500, "weight_plain": 600, "weight_main": 700,
         "size_sub": 62, "size_plain": 88, "size_main": 132, "size_huge": 240,
-        "tracking": 0.0, "leading": 1.08, "case": "upper", "big_accent": True,
-        "animation": "pop", "anim_ms": 200, "reveal": "cue",
+        "tracking": 0.0, "leading": 1.08, "word_space": 0.9, "case": "upper", "big_accent": True,
+        "animation": "pop", "anim_ms": 200, "reveal": "cue", "slide_in": 0.0, "track_in": 0.0, "intro_scale": 1.0, "drift": 0.0,
+        "exit": "fade", "exit_ms": 100,
         "glow": {"blur": 20, "opacity": 0.5},
         "shadow": {"blur": 10, "dy": 3, "opacity": 0.6, "color": "#000000"},
     },
+    # sarlavha: tor KATTA harflar tepadan birin-ketin tushadi, sariq porlaydi (namuna 5)
+    "caps": {
+        "font": "Inter", "font_main": "Oswald", "weight_sub": 500, "weight_plain": 600, "weight_main": 700,
+        "size_sub": 62, "size_plain": 80, "size_main": 250, "size_huge": 330,
+        "tracking": -0.02, "leading": 0.98, "word_space": 0.9, "case": "smart", "case_main": "upper",
+        "big_accent": True, "fit_sub": False, "position_y": 0.2, "reveal": "cue", "animation": "letters", "anim_sub": "blur",
+        "letter_from": "above", "letter_ms": 38, "slide_in": 0.0, "track_in": 0.0, "intro_scale": 1.0, "drift": 0.05,
+        "glow": {"blur": 26, "opacity": 0.6}, "exit": "blur", "exit_ms": 220,
+        "shadow": {"blur": 12, "dy": 4, "opacity": 0.35, "color": "#000000"},
+    },
     # asosiy so'z rangli quti ichida
     "box": {
-        "weight_main": 700, "size_main": 92, "reveal": "cue", "animation": "pop",
+        "weight_main": 700, "size_main": 92, "reveal": "cue", "animation": "pop", "slide_in": 0.0, "track_in": 0.0, "intro_scale": 1.0,
+        "drift": 0.0, "exit": "fade", "exit_ms": 100, "glow": None,
         "box": {"text": "#111111", "radius": 0.26, "pad_x": 0.34, "pad_y": 0.16},
     },
-    # nafis kursiv
+    # nafis kursiv (namuna 3): asosiy ibora Playfair kursivda, kichik so'zlar oddiy shriftda
     "serif": {
-        "font": "Playfair Display", "italic": True, "weight_sub": 400, "weight_plain": 500, "weight_main": 600,
-        "tracking": -0.01, "case": "asis", "size_plain": 80, "size_main": 110,
-        "animation": "blur", "reveal": "cue", "anim_ms": 380,
+        "font": "Inter", "font_main": "Playfair Display", "italic_main": True,
+        "weight_sub": 400, "weight_plain": 400, "weight_main": 500,
+        "tracking": -0.02, "case": "asis", "size_sub": 58, "size_plain": 76, "size_main": 112, "size_huge": 180,
+        "animation": "blur", "reveal": "word", "anim_ms": 380, "slide_in": 0.5, "track_in": 0.0, "drift": 0.02, "glow": None,
+    },
+    # bir-ikki so'zdan, tez almashadi (namuna 12)
+    "single": {
+        "weight_plain": 600, "weight_sub": 500, "size_plain": 72, "size_sub": 54, "size_main": 150,
+        "position_y": 0.6, "reveal": "cue", "animation": "fade", "anim_ms": 110, "slide_in": 0.0, "track_in": 0.0,
+        "intro_scale": 0.97, "intro_ms": 160, "drift": 0.0, "exit": "none",
+    },
+    # marker: kichik, chapga tekislangan, bir necha qator; ==so'z== ustidan rangli quti surtiladi (namuna 13)
+    "marker": {
+        "weight_plain": 500, "weight_sub": 500, "weight_main": 600, "size_plain": 52, "size_sub": 52, "size_main": 78,
+        "tracking": -0.055, "leading": 1.12, "align": "left", "position_y": 0.42, "max_width": 0.66,
+        "animation": "blur", "anim_ms": 240, "slide_in": 0.6, "track_in": 0.0, "intro_scale": 1.0, "drift": 0.02,
+        "glow": None, "exit": "blur",
+    },
+    # juda qalin katta so'z harfma-harf sakrab chiqadi, ostida mayda izoh (namuna 14)
+    "heavy": {
+        "weight_main": 800, "weight_sub": 500, "weight_plain": 700, "size_main": 270, "size_huge": 360,
+        "size_sub": 52, "size_plain": 120, "tracking": -0.065, "leading": 0.96, "case": "asis", "align": "left",
+        "fit_sub": True, "fit_min": 0.5, "fit_max": 2.2,
+        "anim_main": "letters", "anim_sub": "blur", "animation": "blur", "letter_ms": 60, "letter_from": "below",
+        "slide_in": 0.0, "track_in": 0.0, "intro_scale": 1.0, "drift": 0.02, "exit": "drop", "exit_ms": 230, "glow": None,
+        "shadow": {"blur": 22, "dy": 6, "opacity": 0.3, "color": "#000000"},
+    },
+    # qiya sariq sarlavha: harflar keng chiqib zichlashadi, ostidagi so'zlar pastdan o'tiradi (namuna 6)
+    "italic": {
+        "italic": True, "weight_main": 700, "weight_sub": 400, "weight_plain": 600, "big_accent": True,
+        "size_main": 104, "size_sub": 52, "size_plain": 80, "case": "asis", "align": "left",
+        "anim_main": "ltrack", "anim_sub": "rise", "animation": "blur", "letter_ms": 50, "letter_track": 0.3,
+        "slide_in": 0.0, "track_in": 0.0, "intro_scale": 1.0, "drift": 0.03, "glow": {"blur": 18, "opacity": 0.6}, "exit": "blur",
+    },
+    # ovozli xabar sahnasi ostidagi matn: Har So'z Bosh Harfda, bir-ikki so'zdan (namuna 4, 10)
+    "karaoke": {
+        "weight_plain": 600, "weight_sub": 600, "size_plain": 58, "size_sub": 58, "size_main": 70,
+        "tracking": -0.05, "case": "title", "strip_punct": False, "position_y": 0.745,
+        "reveal": "cue", "animation": "fade", "anim_ms": 90, "slide_in": 0.0, "track_in": 0.0, "intro_scale": 1.0, "drift": 0.0,
+        "exit": "none", "glow": None, "shadow": {"blur": 10, "dy": 2, "opacity": 0.3, "color": "#000000"},
     },
 }
 
@@ -133,28 +191,42 @@ def fix_apostrophes(text: str) -> str:
     return re.sub(r"[ʻʼ`´']", "’", text)
 
 
+MARKS = {"!!": "huge", "**": "big_accent", "*": "big", "\x01": "accent", "==": "mark", "~~": "mark2"}
+CUE_TAG = re.compile(r"^\s*\{([A-Za-z][\w-]*)((?:,[A-Za-z_]+=[^,{}\s]+)*)\}\s*")
+
+
+def split_cue_tag(text: str) -> tuple:
+    """Bo'lak boshidagi uslub belgisini ajratadi: "{caps,y=0.2} MATN" -> ("caps", {"y": "0.2"}, "MATN")."""
+    m = CUE_TAG.match(text)
+    if not m:
+        return None, {}, text
+    opts = dict(part.split("=", 1) for part in m.group(2).split(",") if part)
+    return m.group(1), opts, text[m.end():]
+
+
 def parse_markup(text: str) -> list:
     """Belgilangan matnni so'zlarga ajratadi: [(so'z, daraja, yangi_qator)].
 
-    *so'z* katta, **so'z** katta + rangli, !!so'z!! juda katta + rangli, _so'z_ faqat rangli.
-    Belgilar butun so'z(lar) atrofiga qo'yiladi. "\n" majburiy yangi qator.
+    *so'z* katta, **so'z** katta + rangli, !!so'z!! juda katta + rangli, _so'z_ faqat rangli,
+    ==so'z== marker bilan bo'yalgan (urg'u rangi), ~~so'z~~ ikkinchi rangli marker.
+    Belgilar butun so'z(lar) atrofiga qo'yiladi. "\\n" majburiy yangi qator. "\\*" oddiy yulduzcha (*3 oyda).
     """
+    text = text.replace("\\*", "\x02")
     # "_" faqat so'z chegarasida belgi hisoblanadi (masalan @ilm_markazi ichidagisi oddiy harf)
     text = re.sub(r"(?<!\S)_(?=\S)", "\x01", text)
     text = re.sub(r"(?<=\S)_(?=$|[\s.,!?;:])", "\x01", text)
-    marks = {"!!": "huge", "**": "big_accent", "*": "big", "\x01": "accent"}
     out, level, newline = [], "normal", False
-    for tok in re.split(r"(!!|\*\*|\*|\x01|\n|[ \t\r\f\v]+)", text):
+    for tok in re.split(r"(!!|\*\*|\*|==|~~|\x01|\n|[ \t\r\f\v]+)", text):
         if not tok:
             continue
         if tok == "\n":
             newline = True
         elif tok.isspace():
             continue
-        elif tok in marks:
-            level = "normal" if level == marks[tok] else marks[tok]
+        elif tok in MARKS:
+            level = "normal" if level == MARKS[tok] else MARKS[tok]
         else:
-            out.append((tok, level, newline))
+            out.append((tok.replace("\x02", "*"), level, newline))
             newline = False
     return out
 
@@ -170,11 +242,30 @@ def apply_case(word: str, mode: str) -> str:
         if len(letters) >= 2 and all(c.isupper() for c in letters):
             return word  # qisqartma (SMM, IELTS) o'zgarmaydi
         return word.lower()
+    if mode == "smart":
+        return word          # yozilganidek; gap boshidagi bosh harfni CaptionLayer kichraytiradi
+    if mode == "title":
+        for i, c in enumerate(word):
+            if c.isalpha():
+                return word[:i] + c.upper() + word[i + 1:]
     return word
 
 
 class RichBlock:
-    """Bir necha qatorli, har xil o'lchamli matn bloki. So'zlar alohida sprite bo'lib saqlanadi."""
+    """Bir necha qatorli, har xil o'lchamli matn bloki. So'zlar alohida sprite bo'lib saqlanadi.
+
+    Animatsiya turlari (cfg["animation"], asosiy so'zlar uchun "anim_main", kichik so'zlar uchun "anim_sub"):
+      blur    - xiralikdan ochiladi va biroz ko'tariladi
+      fade    - shunchaki ochiladi
+      pop     - prujina bilan kattalashib chiqadi
+      rise    - pastroqdan chiqib joyiga o'tiradi
+      flicker - bir-ikki marta miltillab yonadi
+      bar     - avval so'z o'rnida to'ldirilgan to'rtburchak, keyin so'zning o'zi
+      letters - harflar birin-ketin sakrab chiqadi (letter_from: below | above)
+      ltrack  - harflar keng oraliq bilan chiqib, zichlashadi
+      none    - animatsiyasiz
+    Butun blok: track_in (so'zlar orasi boshida keng, keyin zichlashadi), intro_scale, drift, exit.
+    """
 
     def __init__(self, ctx: Ctx, text: str, cfg: dict, size_scale: float = 1.0):
         self.ctx, self.cfg = ctx, cfg
@@ -183,7 +274,8 @@ class RichBlock:
         for word, level, newline in parse_markup(fix_apostrophes(text)):
             if cfg.get("strip_punct"):
                 word = word.rstrip(".,;:").lstrip(",.")
-            word = apply_case(word, str(cfg.get("case", "asis")))
+            mode = cfg.get("case_main") if (level in ("big", "big_accent", "huge") and cfg.get("case_main")) else cfg.get("case", "asis")
+            word = apply_case(word, str(mode))
             if word:
                 if tokens and not newline and not any(ch.isalnum() for ch in word):
                     level = tokens[-1]["level"]      # emoji oldingi so'z bilan bir qatorda va bir o'lchamda turadi
@@ -200,31 +292,55 @@ class RichBlock:
                     break
         accent = cfg.get("accent", "#FFE600")
         box = cfg.get("box")
+        hl = dict(cfg.get("highlight") or {})
+        hl2 = dict(cfg.get("highlight2") or {})
+        anim_all = str(cfg.get("animation", "blur"))
+        anim_main, anim_sub = str(cfg.get("anim_main") or anim_all), str(cfg.get("anim_sub") or anim_all)
+        for name in (anim_all, anim_main, anim_sub):
+            if name not in CAPTION_ANIMS:
+                raise C.MontajError(f"Subtitr animatsiyasi noto'g'ri: {name!r}. Mumkin: {', '.join(CAPTION_ANIMS)}")
+        font_main = cfg.get("font_main") or cfg["font"]
+        italic_main = cfg.get("italic") if cfg.get("italic_main") is None else cfg.get("italic_main")
         for t in tokens:
             lvl = t["level"]
+            big = lvl in ("big", "big_accent", "huge")
             if lvl == "huge":
                 size, weight = cfg["size_huge"], cfg["weight_main"]
-            elif lvl in ("big", "big_accent"):
+            elif big:
                 size, weight = cfg["size_main"], cfg["weight_main"]
             elif emph:
                 size, weight = cfg["size_sub"], cfg["weight_sub"]
             else:
                 size, weight = cfg["size_plain"], cfg["weight_plain"]
             t["size"] = size * k
-            t["font"] = ctx.fonts.get(cfg["font"], t["size"], weight, bool(cfg.get("italic")))
+            t["font"] = ctx.fonts.get(font_main if big else cfg["font"], t["size"], weight,
+                                      bool(italic_main if big else cfg.get("italic")))
             colored = lvl in ("big_accent", "huge", "accent") or (lvl == "big" and cfg.get("big_accent"))
-            t["boxed"] = bool(box) and lvl in ("big", "big_accent", "huge")
+            t["boxed"] = bool(box) and big
+            t["mark"] = {"mark": hl, "mark2": hl2}.get(lvl)
             t["color"] = box.get("text", "#111111") if t["boxed"] else (accent if colored else cfg["color"])
             t["opacity"] = 1.0 if lvl != "normal" or not emph else float(cfg.get("sub_opacity", 1.0))
             t["track"] = float(cfg.get("tracking", 0)) * t["size"]
-            t["emph"] = lvl in ("big", "big_accent", "huge")
+            t["emph"] = big
+            t["anim"] = anim_main if big else (anim_sub if emph else anim_all)
 
         # qatorlarga bo'lish: o'lcham o'zgarsa yoki kenglikka sig'masa yangi qator
         max_w = float(cfg.get("max_width", 0.84)) * ctx.W
+        word_space = float(cfg.get("word_space", 0.9))
+        star_kern = float(cfg.get("star_kern", 0.07))
+
+        def measure(t: dict) -> float:
+            if t["text"][:1] == "*" and len(t["text"]) > 1 and t["text"][1].isalnum():
+                return (M.measure(t["font"], "*", 0) - star_kern * t["size"]
+                        + M.measure(t["font"], t["text"][1:], t["track"]))
+            return M.measure(t["font"], t["text"], t["track"])
+
+        if emph and cfg.get("fit_sub"):
+            self._fit_sub(tokens, cfg, k, max_w, word_space, measure)
         lines, cur, cur_w = [], [], 0.0
         for t in tokens:
-            t["w"] = M.measure(t["font"], t["text"], t["track"])
-            space = t["font"].getlength(" ") * 0.9 + t["track"]
+            t["w"] = measure(t)
+            space = t["font"].getlength(" ") * word_space + t["track"]
             add = t["w"] + (space if cur else 0)
             if cur and (t["newline"] or abs(cur[0]["size"] - t["size"]) > 0.5 or cur_w + add > max_w):
                 lines.append(cur)
@@ -235,18 +351,19 @@ class RichBlock:
         if cur:
             lines.append(cur)
 
-        self.words, self.boxes = [], []
+        self.words, self.boxes, self.marks = [], [], []
         leading = float(cfg.get("leading", 1.02))
         widths = [sum(t["w"] + t["gap"] for t in line) for line in lines]
         self.width = max(widths) if widths else 0.0
         y = 0.0
         align = str(cfg.get("align", "center"))
-        for line, lw in zip(lines, widths):
+        shadow_cfg = cfg.get("shadow")
+        for li, (line, lw) in enumerate(zip(lines, widths)):
             size = line[0]["size"]
             pad_y = (box.get("pad_y", 0.16) * size) if (box and line[0]["boxed"]) else 0.0
             y += pad_y
             baseline = y + size * 0.80
-            x = 0.0 if align == "left" else (self.width - lw) / 2
+            x = 0.0 if align == "left" else ((self.width - lw) if align == "right" else (self.width - lw) / 2)
             if box and line[0]["boxed"]:
                 px = box.get("pad_x", 0.34) * size
                 bw, bh = int(lw + px * 2), int(size * 1.02 + pad_y * 2)
@@ -254,24 +371,127 @@ class RichBlock:
                                             M.rgb(box.get("color", accent)) + (255,),
                                             shadow={"blur": 14 * ctx.k, "dy": 6 * ctx.k, "opacity": 0.35})
                 self.boxes.append({"spr": spr, "x": x - px, "y": y - pad_y, "first": len(self.words)})
-            for t in line:
+            group = None
+            for wi, t in enumerate(line):
                 x += t["gap"]
                 glow = None
                 if cfg.get("glow") and t["color"] == accent:
                     glow = dict(cfg["glow"], blur=cfg["glow"].get("blur", 18) * ctx.k, color=accent)
                 shadow = None
-                if cfg.get("shadow") and not t["boxed"]:
-                    sh = cfg["shadow"]
-                    shadow = dict(sh, blur=sh.get("blur", 16) * ctx.k, dy=sh.get("dy", 4) * ctx.k)
+                if shadow_cfg and not t["boxed"]:
+                    shadow = dict(shadow_cfg, blur=shadow_cfg.get("blur", 16) * ctx.k, dy=shadow_cfg.get("dy", 4) * ctx.k)
                 stroke = None
                 if cfg.get("stroke"):
                     stroke = dict(cfg["stroke"], width=cfg["stroke"].get("width", 4) * ctx.k)
-                spr, _ = M.word_sprite(t["text"], t["font"], t["color"], t["track"], shadow, glow, stroke)
-                self.words.append({"spr": spr, "x": x, "y": baseline, "w": t["w"], "size": size,
-                                   "opacity": t["opacity"], "emph": t["emph"], "text": t["text"]})
+                word = {"x": x, "y": baseline, "w": t["w"], "size": size, "opacity": t["opacity"], "emph": t["emph"],
+                        "text": t["text"], "line": li, "li": wi, "ln": len(line), "anim": t["anim"],
+                        "color": t["color"], "letters": None, "pre": None, "group": None}
+                if t["mark"] is not None:
+                    # marker: so'z avval urg'u rangida chiqadi, keyin ustidan rangli quti "surtiladi"
+                    mk = t["mark"]
+                    fill = mk.get("color") or accent
+                    word["pre"], _ = M.word_sprite(t["text"], t["font"], mk.get("pre") or fill, t["track"], shadow)
+                    word["spr"], _ = M.word_sprite(t["text"], t["font"], mk.get("text", "#111111"), t["track"])
+                    if group is None or group["fill"] != fill:
+                        group = {"fill": fill, "x0": x, "x1": x + t["w"], "y": baseline, "size": size,
+                                 "words": [], "cfg": mk}
+                        self.marks.append(group)
+                    group["x1"] = x + t["w"]
+                    group["words"].append(len(self.words))
+                    word["group"] = len(self.marks) - 1
+                    word["anim"] = anim_all if anim_all in ("blur", "fade", "none", "rise") else "blur"
+                else:
+                    group = None
+                    if t["text"][:1] == "*" and len(t["text"]) > 1 and t["text"][1].isalnum():
+                        # "*3 oyda": yulduzcha so'zga yopishib turadi (namunalardagi belgi)
+                        star, adv = M.word_sprite("*", t["font"], cfg.get("star_color") or t["color"], 0, shadow, glow, stroke)
+                        rest, _ = M.word_sprite(t["text"][1:], t["font"], t["color"], t["track"], shadow, glow, stroke)
+                        word["spr"] = M.merge_sprites([(star, 0.0, 0.0), (rest, adv - star_kern * size, 0.0)])
+                    else:
+                        word["spr"], _ = M.word_sprite(t["text"], t["font"], t["color"], t["track"], shadow, glow, stroke)
+                    if word["anim"] in ("letters", "ltrack") and all(kind == "text" for kind, _ in M.Emoji.split(t["text"])):
+                        word["letters"] = self._letters(t, shadow, glow, stroke)
+                self.words.append(word)
                 x += t["w"]
             y += size * leading + pad_y
         self.height = y
+        for g in self.marks:
+            mk, size = g["cfg"], g["size"]
+            px, top, bottom = float(mk.get("pad_x", 0.14)) * size, float(mk.get("top", 0.86)) * size, float(mk.get("bottom", 0.24)) * size
+            w, h = int(g["x1"] - g["x0"] + px * 2), int(top + bottom)
+            g["spr"] = M.rounded_rect_sprite(max(2, w), max(2, h), float(mk.get("radius", 0.10)) * size,
+                                             M.rgb(g["fill"]) + (255,))
+            g["bx"], g["by"], g["bw"] = g["x0"] - px, g["y"] - top, w
+        self.line_sizes = [line[0]["size"] for line in lines]
+        self._bars: dict = {}
+
+    def _fit_sub(self, tokens: list, cfg: dict, k: float, max_w: float, word_space: float, measure) -> None:
+        """Kichik qator(lar)ni asosiy ibora kengligiga moslaydi (namunalardagi "blok" ko'rinishi).
+
+        Kichik so'zlar bitta qatorga sig'sa o'lchami asosiy qator kengligiga tenglashadi; juda maydalashib
+        ketadigan bo'lsa ikki qatorga bo'linadi. O'lcham size_sub ning fit_min..fit_max ulushida qoladi.
+        """
+        def width(run: list) -> float:
+            return sum(measure(t) for t in run) + sum(t["font"].getlength(" ") * word_space + t["track"] for t in run[1:])
+
+        def resize(run: list, factor: float) -> None:
+            for t in run:
+                t["size"] = t["size"] * factor
+                t["font"] = self.ctx.fonts.get(cfg["font"], t["size"], cfg["weight_sub"], bool(cfg.get("italic")))
+                t["track"] = float(cfg.get("tracking", 0)) * t["size"]
+
+        # asosiy iboradan OLDINGI kichik so'zlar (tepadagi yorliq: "Men", "bugun", ==Kamerani==) o'z o'lchamida qoladi
+        runs, cur, seen_big = [], [], False
+        for t in tokens:
+            if t["emph"] or t["newline"]:
+                if cur and seen_big:
+                    runs.append(cur)
+                cur = [] if t["emph"] else [t]
+                seen_big = seen_big or t["emph"]
+            else:
+                cur.append(t)
+        if cur and seen_big:
+            runs.append(cur)
+        big = [t for t in tokens if t["emph"]]
+        if not big or not runs:
+            return
+        # asosiy iboraning eng keng qatori (o'zi ham kenglikka sig'masa bo'linadi)
+        main_w, line_w = 0.0, 0.0
+        for i, t in enumerate(big):
+            add = measure(t) + (t["font"].getlength(" ") * word_space + t["track"] if line_w else 0)
+            if line_w and (t["newline"] or abs(big[i - 1]["size"] - t["size"]) > 0.5 or line_w + add > max_w):
+                main_w, line_w, add = max(main_w, line_w), 0.0, measure(t)
+            line_w += add
+        main_w = max(main_w, line_w)
+        lo, hi = float(cfg.get("fit_min", 0.62)), float(cfg.get("fit_max", 1.1))
+        for run in runs:
+            w = width(run)
+            if w <= 0:
+                continue
+            factor = main_w / w
+            if factor < lo and len(run) >= 3:
+                # ikki qator: uzunliklari eng yaqin bo'ladigan joydan bo'linadi, kengrog'i asosiy qatorga tenglashadi
+                best, cut = None, 1
+                for i in range(1, len(run)):
+                    wide = max(width(run[:i]), width(run[i:]))
+                    if best is None or wide < best:
+                        best, cut = wide, i
+                run[cut]["newline"] = True
+                factor = main_w / best
+            resize(run, min(hi, max(lo, factor)))
+
+    @staticmethod
+    def _letters(t: dict, shadow, glow, stroke) -> list:
+        """So'zni harflarga bo'ladi: [(sprite, x siljish, kenglik)]. Harflar orasidagi masofa asl so'zdagidek."""
+        out, x, text, font = [], 0.0, t["text"], t["font"]
+        for i, ch in enumerate(text):
+            nxt = text[i + 1:i + 2]
+            adv = (font.getlength(ch + nxt) - font.getlength(nxt) if nxt else font.getlength(ch)) + (t["track"] if nxt else 0)
+            if not ch.isspace():
+                spr, _ = M.text_sprite(ch, font, t["color"], 0.0, shadow, glow, stroke)
+                out.append((spr, x, font.getlength(ch)))
+            x += adv
+        return out
 
     @property
     def plain_words(self) -> list:
@@ -280,36 +500,144 @@ class RichBlock:
     def draw(self, frame, cx: float, cy: float, t: float, times: list | None, cfg: dict,
              start: float, end: float) -> None:
         """Blokni (cx, cy) markazga chizadi. times: har bir so'zning paydo bo'lish vaqti (yoki None)."""
+        k = self.ctx.k
         anim = max(0.001, float(cfg.get("anim_ms", 220)) / 1000.0)
-        out = clamp_exit(t, end, 0.10)
-        # chiqish kirishdan tezroq: so'nadi va biroz pastga cho'kadi
-        ox, oy = cx - self.width / 2, cy - self.height / 2 + (1 - out) * 8 * self.ctx.k
-        mode = str(cfg.get("animation", "blur"))
         reveal = str(cfg.get("reveal", "word"))
+        blur_px = float(cfg.get("blur_px", 14)) * k
+        # ---- butun blok: kirish masshtabi, sekin o'sish, chiqish
+        life = max(0.2, end - start)
+        intro_from = float(cfg.get("intro_scale", 1.0))
+        scale = intro_from + (1 - intro_from) * M.ease_out((t - start) / max(0.001, float(cfg.get("intro_ms", 450)) / 1000.0))
+        scale *= 1.0 + float(cfg.get("drift", 0.0)) * M.clamp01((t - start) / life)
+        exit_mode, exit_dur = str(cfg.get("exit", "fade")), max(0.001, float(cfg.get("exit_ms", 100)) / 1000.0)
+        out_blur, sink = 0.0, 0.0
+        if exit_mode == "blur":                       # tugagach xiralashib yo'qoladi (keyingi bo'lak ustidan chiqadi)
+            q = M.clamp01((t - end) / exit_dur)
+            out, out_blur = 1.0 - q, q * blur_px * 1.5
+            scale *= 1.0 + 0.05 * q
+        elif exit_mode == "drop":                     # pastga tushib ketadi
+            q = M.clamp01((t - end) / exit_dur)
+            out, sink = 1.0 - q * q, M.ease_in_out(q) * self.height * 0.9
+        elif exit_mode == "none":
+            out = 1.0 if t < end else 0.0
+        else:                                         # fade: tugashidan oldin tez so'nadi va biroz cho'kadi
+            out = clamp_exit(t, end, exit_dur)
+            sink = (1 - out) * 8 * k
+        if out <= 0.003:
+            return
+        # ---- so'zlar orasi boshida keng, keyin zichlashadi (qator markaziga nisbatan)
+        track_in = float(cfg.get("track_in", 0.0))
+        spread = track_in * (1 - M.ease_out((t - start) / max(0.001, float(cfg.get("track_ms", 1100)) / 1000.0))) if track_in else 0.0
+        slide_in = float(cfg.get("slide_in", 0.0))
+        slide_dur = max(0.001, float(cfg.get("slide_ms", 900)) / 1000.0)
+        half_w, half_h = self.width / 2, self.height / 2
+
+        def put(spr, xr: float, yr: float, ax: float = 0.0, ay: float = 0.0, extra: float = 1.0,
+                opacity: float = 1.0, blur: float = 0.0, dx: float = 0.0, dy: float = 0.0) -> None:
+            # (xr, yr) - blok ichidagi nuqta; (ax, ay) - sprite ichida joyida qoladigan nuqta
+            fx = cx + (xr + ax - half_w) * scale + dx
+            fy = cy + (yr + ay - half_h) * scale + dy + sink
+            M.blit(frame, spr, fx - ax, fy - ay, opacity=opacity * out, scale=scale * extra,
+                   blur=blur + out_blur, anchor=(ax, ay))
+
+        def shift(w: dict) -> float:
+            return (w["li"] - (w["ln"] - 1) / 2) * spread * w["size"] if spread else 0.0
+
+        def t_of(i: int) -> float:
+            return times[i] if (times and reveal in ("word", "dim")) else start
+
         for b in self.boxes:
             t0 = times[b["first"]] if (times and reveal != "cue") else start
             if t >= t0:
-                M.blit(frame, b["spr"], ox + b["x"], oy + b["y"], opacity=out * M.clamp01((t - t0) / (anim * 0.6)),
-                       scale=0.7 + 0.3 * M.spring((t - t0) / (anim * 1.6)), anchor=(b["spr"].w / 2, b["spr"].h / 2))
+                spr = b["spr"]
+                put(spr, b["x"], b["y"], spr.w / 2, spr.h / 2, 0.7 + 0.3 * M.spring((t - t0) / (anim * 1.6)),
+                    M.clamp01((t - t0) / (anim * 0.6)))
+        # ---- marker qutilari: guruhdagi oxirgi so'z chiqqach chapdan o'ngga surtiladi
+        wiped = {}
+        for gi, g in enumerate(self.marks):
+            t0 = t_of(g["words"][-1]) + float(g["cfg"].get("delay_ms", 160)) / 1000.0
+            p = M.ease_in_out((t - t0) / max(0.001, float(g["cfg"].get("wipe_ms", 320)) / 1000.0))
+            wiped[gi] = p
+            if p > 0.004:
+                spr = g["spr"]
+                part = M.Sprite(np.ascontiguousarray(spr.pix[:, :max(1, int(round(spr.w * p)))]), spr.ox, spr.oy)
+                put(part, g["bx"] + shift(self.words[g["words"][0]]), g["by"])
+        fps = 25.0
         for i, w in enumerate(self.words):
-            t0 = times[i] if (times and reveal in ("word", "dim")) else start
+            t0 = t_of(i)
             p = (t - t0) / anim
-            base_op = w["opacity"] * out
+            base_op = w["opacity"]
+            sx = shift(w)
             if p < 0:
                 if reveal == "dim":
-                    M.blit(frame, w["spr"], ox + w["x"], oy + w["y"], opacity=base_op * float(cfg.get("dim", 0.35)))
+                    put(w["spr"], w["x"] + sx, w["y"], opacity=base_op * float(cfg.get("dim", 0.35)))
                 continue
+            spr = w["spr"]
+            if w["group"] is not None:
+                g = self.marks[w["group"]]
+                covered = wiped[w["group"]] * g["bw"] >= (w["x"] + w["w"] * 0.5 - g["bx"])
+                spr = w["spr"] if covered else w["pre"]
+            mode = w["anim"]
             e = M.ease_out(p)
+            # har bir so'z o'ngroqdan sirg'alib kelib joyiga o'tiradi (namunalardagi asosiy harakat)
+            dx = slide_in * w["size"] * scale * (1 - M.ease_out((t - t0) / slide_dur)) if slide_in else 0.0
+            if mode in ("letters", "ltrack") and w["letters"]:
+                step = float(cfg.get("letter_ms", 45)) / 1000.0
+                ldur = max(anim, 0.26)
+                last = t0 + step * (len(w["letters"]) - 1) + ldur
+                if t >= last and mode == "letters":
+                    put(spr, w["x"] + sx, w["y"], opacity=base_op, dx=dx)
+                    continue
+                from_above = str(cfg.get("letter_from", "below")) == "above"
+                wide = float(cfg.get("letter_track", 0.22)) * w["size"]
+                tighten = 1 - M.ease_out((t - t0) / max(0.001, float(cfg.get("track_ms", 1100)) / 1000.0))
+                n = len(w["letters"])
+                for j, (lspr, lx, lw) in enumerate(w["letters"]):
+                    lp = (t - (t0 + j * step)) / ldur
+                    if lp < 0:
+                        continue
+                    le = M.ease_out(lp)
+                    if mode == "ltrack":
+                        put(lspr, w["x"] + sx + lx + (j - (n - 1) / 2) * wide * tighten, w["y"],
+                            opacity=base_op * le, blur=(1 - le) * blur_px * 0.6)
+                    else:
+                        dy = (1 - le) * w["size"] * 0.28 * (-1 if from_above else 1)
+                        put(lspr, w["x"] + sx + lx, w["y"], lw / 2, -w["size"] * 0.30, 0.35 + 0.65 * M.spring(lp),
+                            base_op * M.clamp01(lp * 3.0), dy=dy * scale)
+                continue
             if mode == "none" or p >= 1:
-                M.blit(frame, w["spr"], ox + w["x"], oy + w["y"], opacity=base_op)
+                put(spr, w["x"] + sx, w["y"], opacity=base_op, dx=dx)
             elif mode == "pop":
-                M.blit(frame, w["spr"], ox + w["x"], oy + w["y"], opacity=base_op * M.clamp01(p * 2.5),
-                       scale=0.6 + 0.4 * M.spring(p), anchor=(w["w"] / 2, -w["size"] * 0.35))
+                put(spr, w["x"] + sx, w["y"], w["w"] / 2, -w["size"] * 0.35, 0.6 + 0.4 * M.spring(p),
+                    base_op * M.clamp01(p * 2.5))
             elif mode == "fade":
-                M.blit(frame, w["spr"], ox + w["x"], oy + w["y"], opacity=base_op * e)
+                put(spr, w["x"] + sx, w["y"], opacity=base_op * e, dx=dx)
+            elif mode == "rise":
+                put(spr, w["x"] + sx, w["y"], opacity=base_op * M.clamp01(p * 2.2),
+                    dx=dx, dy=(1 - M.spring(p, 9.0, 0.62)) * w["size"] * 0.42 * scale)
+            elif mode == "flicker":
+                # 25 kadr/s ritmida: yonadi, ikki kadr xira, yana yonadi ... keyin barqaror
+                n = int((t - t0) * fps + 1e-6)
+                put(spr, w["x"] + sx, w["y"], opacity=base_op * (FLICKER[n] if n < len(FLICKER) else 1.0))
+            elif mode == "bar":
+                if (t - t0) < float(cfg.get("bar_ms", 120)) / 1000.0:
+                    key = (i, w["color"])
+                    if key not in self._bars:
+                        self._bars[key] = M.rounded_rect_sprite(max(2, int(w["w"])), max(2, int(w["size"] * 0.74)),
+                                                                0, M.rgb(w["color"]) + (255,))
+                    put(self._bars[key], w["x"] + sx, w["y"] - w["size"] * 0.70, opacity=base_op)
+                else:
+                    put(spr, w["x"] + sx, w["y"], opacity=base_op)
             else:  # blur: xiralikdan ochiladi va biroz pastdan ko'tariladi
-                M.blit(frame, w["spr"], ox + w["x"], oy + w["y"] + (1 - e) * float(cfg.get("rise_px", 10)) * self.ctx.k,
-                       opacity=base_op * e, blur=(1 - e) * float(cfg.get("blur_px", 14)) * self.ctx.k)
+                put(spr, w["x"] + sx, w["y"], opacity=base_op * e, blur=(1 - e) * blur_px,
+                    dx=dx, dy=(1 - e) * float(cfg.get("rise_px", 10)) * k)
+
+    @staticmethod
+    def tail(cfg: dict) -> float:
+        """Bo'lak tugaganidan keyin ham chizilishi kerak bo'lgan vaqt (chiqish animatsiyasi)."""
+        if str(cfg.get("exit", "fade")) in ("blur", "drop"):
+            return float(cfg.get("exit_ms", 100)) / 1000.0
+        return 0.0
 
 
 def clamp_exit(t: float, end: float, dur: float) -> float:
@@ -345,8 +673,16 @@ class Layer:
 
 
 class CaptionLayer(Layer):
-    """Subtitr: SRT bo'laklari, so'zlar nutq bilan birga ochiladi."""
+    """Subtitr: SRT bo'laklari, so'zlar nutq bilan birga ochiladi.
+
+    Bo'lak boshida uslub belgisi bo'lishi mumkin: "{caps,y=0.2} MATN" - shu bo'lak boshqa presetda,
+    boshqa joyda chiziladi (namuna videolardagi kabi: sarlavha bir uslubda, oddiy gap boshqasida).
+    Belgi sozlamalari: y, x (0..1), size (ko'paytma), align, anim, anim_main, anim_sub, exit, case.
+    """
     z = 50
+    TAG_NUM = {"y": "position_y", "x": "position_x", "size": "_size", "track": "track_in", "drift": "drift"}
+    TAG_STR = {"align": "align", "anim": "animation", "anim_main": "anim_main", "anim_sub": "anim_sub",
+               "exit": "exit", "case": "case", "reveal": "reveal", "color": "color", "accent": "accent"}
 
     def __init__(self, ctx: Ctx, cues: list, words: list | None, total: float):
         super().__init__(0, total)
@@ -359,19 +695,60 @@ class CaptionLayer(Layer):
             nxt = cues[i + 1]["start"] if i + 1 < len(cues) else None
             if nxt is not None and 0 <= nxt - end < float(self.cfg.get("hold_gap", 0.35)):
                 end = nxt  # qisqa pauzada matn miltillamasligi uchun keyingisigacha ushlab turiladi
-            self.items.append({"start": cue["start"], "end": end, "text": cue["text"], "cue": cue,
-                               "block": None, "times": None})
+            name, opts, text = split_cue_tag(cue["text"])
+            prev = strip_markup(cues[i - 1]["text"]).rstrip() if i else ""
+            sentence_start = not prev or prev[-1:] in ".!?\u2026"
+            self.items.append({"start": cue["start"], "end": end, "text": text, "cue": dict(cue, text=text),
+                               "block": None, "times": None, "cfg": self._cue_cfg(name, opts, cue), "tail": 0.0,
+                               "sentence_start": sentence_start})
+            self.items[-1]["tail"] = RichBlock.tail(self.items[-1]["cfg"])
         self.words, self._word_times = words, S.word_times
 
+    def _cue_cfg(self, name, opts: dict, cue: dict) -> dict:
+        if name is None and not opts:
+            return self.cfg
+        over = {}
+        if name and name not in ("default", str(self.cfg.get("preset", "clean"))):
+            if name not in CAPTION_PRESETS:
+                raise C.MontajError(f"Subtitr bo'lagidagi uslub noma'lum: {{{name}}} ({C.fmt_time(cue['start'])}). "
+                                    f"Mumkin: {', '.join(CAPTION_PRESETS)}")
+            # bo'lakda boshqa preset aytilgan bo'lsa, o'sha presetning o'z qiymatlari umumiy sozlamadan ustun turadi
+            over.update({key: val for key, val in CAPTION_PRESETS[name].items()})
+            over["preset"] = name
+        for key, val in opts.items():
+            if key in self.TAG_NUM:
+                try:
+                    over[self.TAG_NUM[key]] = float(val)
+                except ValueError:
+                    raise C.MontajError(f"Subtitr belgisida {key}={val!r} son emas ({C.fmt_time(cue['start'])}).")
+            elif key in self.TAG_STR:
+                over[self.TAG_STR[key]] = val
+            else:
+                raise C.MontajError(f"Subtitr belgisida noma'lum sozlama: {key} ({C.fmt_time(cue['start'])}). "
+                                    f"Mumkin: {', '.join(sorted(set(self.TAG_NUM) | set(self.TAG_STR)))}")
+        cfg = self.ctx.caption_cfg({"preset": over.get("preset", self.cfg.get("preset", "clean"))})
+        for key in ("font", "accent"):          # brend shrifti va rangi har qanday presetda saqlanadi
+            keep = self.ctx.style.get("captions", {}).get(key)
+            if keep and key in over and key not in opts:
+                over[key] = keep
+        cfg.update(over)
+        return cfg
+
     def _prepare(self, item: dict) -> None:
-        block = RichBlock(self.ctx, item["text"], self.cfg)
+        cfg = item["cfg"]
+        size = float(cfg.get("_size", 1.0))
+        if str(cfg.get("case")) == "smart" and item["sentence_start"]:
+            # gap boshidagi bosh harf kichraytiriladi; gap ichidagi atoqli otlar (Rus, Instagram) yozilganidek qoladi
+            item["text"] = re.sub(r"^((?:\{[^{}]*\}|[^\w]|_)*)([^\W\d_])(?=[^\W\d_]*[a-z\u0430-\u044f\u2018\u2019'])",
+                                  lambda m: m.group(1) + m.group(2).lower(), item["text"], count=1)
+        block = RichBlock(self.ctx, item["text"], cfg, size)
         # juda keng chiqsa xavfsiz zonaga sig'adigan qilib kichraytiriladi (o'ngda Instagram tugmalari bor)
         safe = self.ctx.safe
         room = (1 - 2 * max(safe["left"], safe["right"])) * self.ctx.W
         if block.width > room:
-            block = RichBlock(self.ctx, item["text"], self.cfg, max(0.6, room / block.width * 0.99))
+            block = RichBlock(self.ctx, item["text"], cfg, size * max(0.6, room / block.width * 0.99))
         tokens = block.plain_words
-        cx, cy = self.ctx.W / 2, float(self.cfg["position_y"]) * self.ctx.H
+        cx, cy = self._center(block, cfg)
         self.ctx.check_safe(f"Subtitr ({C.fmt_time(item['start'])})", cx - block.width / 2, cy - block.height / 2,
                             cx + block.width / 2, cy + block.height / 2)
         item["block"] = block
@@ -390,14 +767,26 @@ class CaptionLayer(Layer):
                     times[i] = min(last + 0.06, item["end"])
         item["times"] = times
 
+    def _center(self, block, cfg: dict) -> tuple:
+        """Blok markazi. align left/right bo'lsa position_x blokning shu chetini bildiradi."""
+        W, H = self.ctx.W, self.ctx.H
+        align = str(cfg.get("align", "center"))
+        px = cfg.get("position_x")
+        if px is None:
+            px = {"left": self.ctx.safe["left"] + 0.03, "right": 1 - self.ctx.safe["right"] - 0.03}.get(align, 0.5)
+        cx = float(px) * W + {"left": block.width / 2, "right": -block.width / 2}.get(align, 0.0)
+        return cx, float(cfg["position_y"]) * H
+
     def draw(self, frame, t: float) -> None:
         for item in self.items:
-            if item["start"] <= t < item["end"]:
+            if item["start"] <= t < item["end"] + item["tail"]:
                 if item["block"] is None:
                     self._prepare(item)
-                item["block"].draw(frame, self.ctx.W / 2, float(self.cfg["position_y"]) * self.ctx.H, t,
-                                   item["times"], self.cfg, item["start"], item["end"])
-            elif item["block"] is not None and t >= item["end"]:
+                    if t >= item["end"] + item["tail"]:
+                        continue
+                cx, cy = self._center(item["block"], item["cfg"])
+                item["block"].draw(frame, cx, cy, t, item["times"], item["cfg"], item["start"], item["end"])
+            elif item["block"] is not None and t >= item["end"] + item["tail"]:
                 item["block"] = None  # xotirani bo'shatish
 
 
@@ -1293,8 +1682,14 @@ class Backdrop:
                 for x in range((step // 2) if row % 2 else step, W, step):
                     cv2.circle(dots, (x, y), max(1, int(2.2 * ctx.k)), 9, -1, lineType=cv2.LINE_AA)
             self.grain = cv2.add(self.grain, cv2.merge([dots, dots, dots]))
+        elif pattern == "grid":
+            step = max(24, int(float(cfg.get("grid", 108)) * ctx.k))
+            lines = np.zeros((H, W), np.uint8)
+            lines[::step, :] = 16
+            lines[:, ::step] = 16
+            self.grain = cv2.add(self.grain, cv2.merge([lines, lines, lines]))
         elif pattern != "none":
-            raise C.MontajError(f"background.pattern noto'g'ri: {pattern!r}. Mumkin: dots, none")
+            raise C.MontajError(f"background.pattern noto'g'ri: {pattern!r}. Mumkin: dots, grid, none")
         # uchqunlar (bokeh)
         r = random.Random(7)
         self.sparks = []
@@ -1581,6 +1976,212 @@ class ConfettiLayer(Layer):
             cv2.fillConvexPoly(frame, pts, p["col"], lineType=cv2.LINE_AA)
 
 
+class FollowLayer(Layer):
+    """Obuna kartochkasi (namuna 9, 12, 14): doira ichida logotip, ostida @manzil va "Obuna" tugmasi.
+
+    Kursor uchib kelib tugmani bosadi, tugma "bosildi" holatiga o'tadi (kulrang, boshqa yozuv).
+    logo: fayl (bo'lmasa doira brend rangida, ichida name yozuvi). Vaqt: start..end, bosish: tap (soniya, startdan).
+    """
+    z = 60
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        cap = ctx.caption_cfg({"preset": "clean"})
+        k = self.k = ctx.k * float(el.get("scale", 1.0))
+        color = M.rgb(el.get("color") or cap["accent"])
+        d = self.d = max(40, int(float(el.get("size", 0.30)) * ctx.W))
+        self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.66)) * ctx.H
+        ring = max(3, int(d * 0.035))
+        shadow = {"blur": 22 * k, "dy": 8 * k, "opacity": 0.35}
+        s = 3
+        big = Image.new("RGBA", (d * s, d * s), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(big)
+        draw.ellipse([0, 0, d * s - 1, d * s - 1], fill=(255, 255, 255, 255))
+        draw.ellipse([ring * s, ring * s, (d - ring) * s - 1, (d - ring) * s - 1], fill=color + (255,))
+        disc = big.resize((d, d), Image.LANCZOS)
+        inner = d - ring * 2
+        if el.get("logo"):
+            try:
+                logo = Image.open(ctx.asset(el["logo"], "Logotip")).convert("RGBA")
+            except C.MontajError:
+                raise
+            except Exception as exc:
+                raise C.MontajError(f"follow.logo ochilmadi: {exc}") from exc
+            side = min(logo.size)
+            logo = logo.crop(((logo.width - side) // 2, (logo.height - side) // 2,
+                              (logo.width + side) // 2, (logo.height + side) // 2)).resize((inner, inner), Image.LANCZOS)
+            mask = Image.new("L", (inner * s, inner * s), 0)
+            ImageDraw.Draw(mask).ellipse([0, 0, inner * s - 1, inner * s - 1], fill=255)
+            mask = mask.resize((inner, inner), Image.LANCZOS)
+            # logotip shaffof bo'lsa doira rangi ko'rinadi, to'liq rasm bo'lsa doirani to'ldiradi
+            patch = Image.new("RGBA", (inner, inner), (0, 0, 0, 0))
+            patch.paste(logo, (0, 0), Image.composite(logo.getchannel("A"), Image.new("L", (inner, inner), 0), mask))
+            disc.alpha_composite(patch, (ring, ring))
+        elif el.get("name"):
+            bright = (0.299 * color[0] + 0.587 * color[1] + 0.114 * color[2]) / 255
+            size = d * 0.15
+            font = ctx.fonts.get(cap["font"], size, 600)
+            text = fix_apostrophes(str(el["name"]))
+            while M.measure(font, text, 0) > inner * 0.8 and size > 10:
+                size *= 0.92
+                font = ctx.fonts.get(cap["font"], size, 600)
+            spr, tw = M.word_sprite(text, font, "#111111" if bright > 0.6 else "#FFFFFF", cap["tracking"] * size * 0.5)
+            name_img = Image.fromarray(self._unpremultiply(spr.pix), "RGBA")
+            disc.alpha_composite(name_img, (int((d - tw) / 2 + spr.ox), int(d * 0.56 + spr.oy)))
+        self.disc = M.pil_sprite(disc, shadow=shadow)                       # nuqtasi markazda
+        handle = fix_apostrophes(str(el.get("handle", "")))
+        if not handle:
+            raise C.MontajError("follow uchun 'handle' kerak (masalan \"@sahifa_nomi\").")
+        fsize = d * 0.145
+        font = ctx.fonts.get(cap["font"], fsize, 600)
+        txt, tw = M.word_sprite(handle, font, "#111111", -0.03 * fsize)
+        ph, pw = int(fsize * 1.55), int(tw + fsize * 1.3)
+        self.pill = M.rounded_rect_sprite(pw, ph, ph / 2, (255, 255, 255, 255), shadow={"blur": 12 * k, "dy": 4 * k, "opacity": 0.3})
+        self.pill_text, self.pill_size = (txt, tw), (pw, ph, fsize)
+        bsize = d * 0.10
+        bfont = ctx.fonts.get(cap["font"], bsize, 600)
+        self.buttons = []
+        for label, fill, ink in ((str(el.get("button", "Obuna")), color, None), (str(el.get("done", "Obuna bo'ldingiz")), (232, 232, 236), "#222222")):
+            bright = (0.299 * fill[0] + 0.587 * fill[1] + 0.114 * fill[2]) / 255
+            spr, bw = M.word_sprite(fix_apostrophes(label), bfont, ink or ("#111111" if bright > 0.6 else "#FFFFFF"), -0.02 * bsize)
+            w, h = int(bw + bsize * 2.0), int(bsize * 1.7)
+            self.buttons.append((M.rounded_rect_sprite(w, h, h / 2, fill + (255,), shadow={"blur": 8 * k, "dy": 3 * k, "opacity": 0.25}),
+                                 spr, bw, w, h, bsize))
+        self.tap = self.start + float(el.get("tap", 1.3))
+        r = max(6, int(d * 0.06))
+        cur = Image.new("RGBA", (r * 2 * s, r * 2 * s), (0, 0, 0, 0))
+        ImageDraw.Draw(cur).ellipse([0, 0, r * 2 * s - 1, r * 2 * s - 1], fill=(255, 255, 255, 170), outline=(255, 255, 255, 255), width=s * 2)
+        self.cursor = M.pil_sprite(cur.resize((r * 2, r * 2), Image.LANCZOS), shadow={"blur": 6 * k, "dy": 2 * k, "opacity": 0.3})
+        self.pill_y = d * 0.47
+        self.btn_y = self.pill_y + ph * 0.5 + self.buttons[0][4] * 0.62
+        ctx.check_safe("Obuna kartochkasi (follow)", self.cx - d / 2, self.cy - d / 2, self.cx + d / 2,
+                       self.cy + self.btn_y + self.buttons[0][4] / 2)
+
+    @staticmethod
+    def _unpremultiply(pix: np.ndarray) -> np.ndarray:
+        out = pix.astype(np.float32)
+        a = np.maximum(out[..., 3:4], 1.0)
+        out[..., :3] = np.clip(out[..., :3] * 255.0 / a, 0, 255)
+        return out.astype(np.uint8)
+
+    def draw(self, frame, t: float) -> None:
+        op, scale = appear(t, self.start, self.end, 0.5, 0.18)
+        if op <= 0.003:
+            return
+        cx, cy = self.cx, self.cy
+
+        def at(spr, dx: float, dy: float, extra: float = 1.0, opacity: float = 1.0) -> None:
+            # (dx, dy) - kartochka markaziga nisbatan; hammasi shu markaz atrofida kattalashadi
+            M.blit(frame, spr, cx + dx * scale, cy + dy * scale, opacity=op * opacity, scale=scale * extra, anchor=(0, 0))
+
+        at(self.disc, 0, 0)
+        pw, ph, fsize = self.pill_size
+        pp = M.clamp01((t - self.start - 0.12) / 0.3)
+        if pp > 0:
+            grow = 0.6 + 0.4 * M.spring(pp)
+            M.blit(frame, self.pill, cx - pw / 2 * scale, cy + (self.pill_y - ph / 2) * scale, opacity=op * M.clamp01(pp * 3),
+                   scale=scale * grow, anchor=(pw / 2, ph / 2))
+            txt, tw = self.pill_text
+            M.blit(frame, txt, cx - tw / 2 * scale, cy + (self.pill_y + fsize * 0.36) * scale,
+                   opacity=op * M.clamp01((pp - 0.3) * 3), scale=scale, anchor=(0, 0))
+        bp = M.clamp01((t - self.start - 0.3) / 0.3)
+        if bp > 0:
+            pressed = t >= self.tap
+            box, spr, bw, w, h, bsize = self.buttons[1 if pressed else 0]
+            dip = 1.0
+            q = (t - self.tap) / 0.22
+            if -0.25 <= q < 1:                      # bosilganda tugma bir zum kichrayadi
+                dip = 1.0 - 0.10 * math.sin(M.clamp01(q + 0.25) / 1.25 * math.pi)
+            grow = (0.6 + 0.4 * M.spring(bp)) * dip
+            M.blit(frame, box, cx - w / 2 * scale, cy + (self.btn_y - h / 2) * scale, opacity=op * M.clamp01(bp * 3),
+                   scale=scale * grow, anchor=(w / 2, h / 2))
+            M.blit(frame, spr, cx - bw / 2 * scale, cy + (self.btn_y + bsize * 0.36) * scale,
+                   opacity=op * M.clamp01((bp - 0.3) * 3), scale=scale * dip, anchor=(bw / 2, -bsize * 0.36))
+        # kursor: o'ng-pastdan uchib kelib tugmani bosadi va so'nadi
+        c0, c1 = self.tap - 0.55, self.tap + 0.35
+        if c0 <= t < c1:
+            e = M.ease_in_out((t - c0) / 0.5)
+            x = cx + (self.d * 0.75 * (1 - e) + self.buttons[0][3] * 0.18) * scale
+            y = cy + (self.btn_y + self.d * 0.55 * (1 - e) + self.buttons[0][4] * 0.1) * scale
+            M.blit(frame, self.cursor, x, y, opacity=op * M.clamp01((t - c0) / 0.12) * M.clamp01((c1 - t) / 0.2),
+                   scale=1.0 - 0.2 * M.clamp01(1 - abs(t - self.tap) / 0.12), anchor=(0, 0))
+
+
+class SceneLayer(Layer):
+    """To'liq ekranli chizilgan fon (namuna 4, 8, 9, 11): ustiga matn, rasm, ovozli xabar qo'yiladi.
+
+    background: Backdrop sozlamalari (color1..color4, rays, sparks, pattern: dots | grid | none, glow).
+    Video shu vaqtda ko'rinmaydi (ovoz davom etadi). fade: kirish/chiqish (soniya).
+    """
+    z = 2
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        bg = dict(el.get("background", {}) or {})
+        bg.setdefault("accent", el.get("accent", ctx.caption_cfg()["accent"]))
+        self.backdrop = Backdrop(ctx, bg)
+        self.fade = max(0.0, float(el.get("fade", 0.22)))
+        self.buf = None
+
+    def draw(self, frame, t: float) -> None:
+        op = 1.0
+        if self.fade > 0:
+            op = M.clamp01((t - self.start) / self.fade) * M.clamp01((self.end - t) / self.fade)
+        if op >= 0.997:
+            self.backdrop.draw(frame, t - self.start)
+            return
+        if op <= 0.003:
+            return
+        if self.buf is None:
+            self.buf = np.empty_like(frame)
+        self.backdrop.draw(self.buf, t - self.start)
+        cv2.addWeighted(self.buf, op, frame, 1 - op, 0, dst=frame)
+
+
+class GradeLayer(Layer):
+    """Vaqtincha rang ishlovi: mode "bw" - oq-qora (namuna 13 boshi, 14 dagi "to'xtab qolgan" kadr)."""
+    z = 0
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.mode = str(el.get("mode", "bw"))
+        if self.mode not in ("bw", "dim"):
+            raise C.MontajError(f"grade.mode noto'g'ri: {self.mode!r}. Mumkin: bw, dim")
+        self.amount = M.clamp01(float(el.get("amount", 1.0 if self.mode == "bw" else 0.45)))
+        self.fade = max(0.0, float(el.get("fade", 0.25)))
+
+    def draw(self, frame, t: float) -> None:
+        op = self.amount
+        if self.fade > 0:
+            op *= M.clamp01((t - self.start) / self.fade) * M.clamp01((self.end - t) / self.fade)
+        if op <= 0.003:
+            return
+        if self.mode == "bw":
+            gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+            cv2.addWeighted(cv2.merge([gray, gray, gray]), op, frame, 1 - op, 0, dst=frame)
+        else:
+            frame[:] = (frame.astype(np.float32) * (1 - op)).astype(np.uint8)
+
+
+class FlashLayer(Layer):
+    """Qisqa chaqnash (sahna almashganda): kadr bir zum oqarib, qaytadi."""
+    z = 90
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.color = np.array(M.rgb(el.get("color", "#FFFFFF")), np.float32)
+        self.amount = M.clamp01(float(el.get("amount", 0.9)))
+
+    def draw(self, frame, t: float) -> None:
+        p = (t - self.start) / max(0.001, self.end - self.start)
+        if not 0 <= p < 1:
+            return
+        op = self.amount * (M.ease_out(p / 0.3) if p < 0.3 else (1 - (p - 0.3) / 0.7) ** 2)
+        if op > 0.003:
+            frame[:] = (frame.astype(np.float32) * (1 - op) + self.color * op).astype(np.uint8)
+
+
 class ProgressLayer(Layer):
     """Video qayergacha kelganini ko'rsatadigan ingichka chiziq (tepada yoki pastda)."""
     z = 80
@@ -1601,9 +2202,10 @@ class ProgressLayer(Layer):
 ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "broll": BrollLayer,
                  "list": ListLayer, "choice": ChoiceLayer, "stat": StatLayer, "voice": VoiceLayer,
                  "callout": CalloutLayer, "lower_third": LowerThirdLayer, "emoji": EmojiLayer,
-                 "icon": IconLayer, "stage": StageLayer, "burst": BurstLayer, "confetti": ConfettiLayer}
+                 "icon": IconLayer, "stage": StageLayer, "burst": BurstLayer, "confetti": ConfettiLayer,
+                 "follow": FollowLayer, "scene": SceneLayer, "grade": GradeLayer, "flash": FlashLayer}
 # "at" bilan beriladigan qisqa hodisalar: boshlanishi "at", uzunligi "duration"
-TIMED_TYPES = {"burst": 2.0, "confetti": 2.6}
+TIMED_TYPES = {"burst": 2.0, "confetti": 2.6, "flash": 0.3}
 NON_LAYER_TYPES = {"sfx", "zoom"}
 
 

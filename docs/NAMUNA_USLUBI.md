@@ -1,0 +1,119 @@
+# Namuna uslubi: `samples/` dagi videolar qanday qilingan va tizimda qanday takrorlanadi
+
+Bu fayl 14 ta namuna videoni kadrma-kadr o'rganish natijasi. Maqsad: tizim chiqargan video
+namunalardagi bilan bir xil ko'rinsin. O'lchamlar namunalardan o'lchab olingan va tizim chizgan
+yozuv namuna yozuvining yoniga qo'yib solishtirilgan (namuna 7, 8, 10, 11, 13, 14).
+
+Agent uchun buyruq: `/namuna` (`docs/claude_skills/namuna/SKILL.md`).
+
+## 1. Namunalarda nima takrorlanadi
+
+| Narsa | Namunada | Tizimda |
+|---|---|---|
+| Shrift | Zich grotesk, kichik harf, harflar deyarli tegib turadi | Inter, `tracking -0.06` |
+| Ikki pog'ona | Asosiy ibora katta, qolgani ostida kichik; kichik qator asosiy qator **kengligiga teng** | `*ibora*` + `fit_sub` |
+| So'z chiqishi | Har so'z xiralikdan ochiladi va **o'ngroqdan sirg'alib** joyiga keladi | `animation: blur`, `slide_in` |
+| Blok harakati | Butun yozuv sekin kattalashadi, tugagach xiralashib yo'qoladi, keyingisi ustidan chiqadi | `drift`, `exit: blur` |
+| Urg'u rangi | Sariq, porlaydi; oldida yulduzcha: `*3 oyda` | `**ibora**`, `\*` |
+| Juda katta raqam | `*3 oy` ekranning yarmi, ostida rangli qutidagi izoh | `!!\*3 oy!! ==kerak bo'ladi==` |
+| Marker | So'z avval sariq, keyin ustidan quti chapdan o'ngga surtiladi | `==so'z==`, `~~so'z~~` |
+| Sarlavha | Tor KATTA harflar tepadan tushadi, sariq porlaydi | `{caps}` |
+| Qalin so'z | Juda qalin so'z harfma-harf sakrab chiqadi, tepasida rangli yorliq | `{heavy}` |
+| Bitta so'z | Bir-ikki so'zdan, tez almashadi | `{single}` |
+| Atoqli ot | `Rus`, `Instagram`, `SMM` bosh harfda qoladi, gap boshi kichik | `case: smart` |
+| Joyi | Kadrning o'rtasi, ko'krak atrofida | `position_y 0.56` |
+
+## 2. Subtitr uslublari (`captions.preset` yoki bo'lak boshida `{uslub}`)
+
+| Uslub | Qaysi namuna | Qachon ishlatiladi |
+|---|---|---|
+| `clean` | 2, 7, 8, 10, 11 | **Asosiy.** Deyarli hamma gap shu uslubda |
+| `caps` | 5, 10 | Boshidagi ilmoq sarlavhasi, bo'lim sarlavhasi (tepada, `y=0.2`) |
+| `heavy` | 14 | Bitta kuchli so'z, energiyali video. Chapga tekislangan |
+| `italic` | 6 | Hissiyotli, yengil gap; qiya sariq sarlavha |
+| `serif` | 3, 12 | Ism, tanishtirish, nafis mavzu (soat, zargarlik) |
+| `single` | 12 | Tez gapirilgan joy, b-roll ustida |
+| `marker` | 13 | Intervyu, uzun gap; kichik, chapda, bir necha qator |
+| `karaoke` | 4, 10 | Ovozli xabar sahnasi ostida (Har So'z Bosh Harfda) |
+| `glow`, `box` | | Eski uslublar: KATTA harf porlash; so'z rangli qutida |
+
+Bitta videoda uslublar aralashadi (namunalarda ham shunday): asosiy uslub `style.json`/`brand.json`
+da, alohida bo'lak uchun matn boshiga belgi qo'yiladi:
+
+```
+{caps,y=0.2}**KELINGLAR** hozir sizlarga
+**\*3 oyda Rus tilini** o'rgana olaman deb o'ylaysizmi?
+{heavy,x=0.07,y=0.3}==Kamerani== *sekin* yaqinlashtirsangiz
+{clean,anim_main=flicker,anim_sub=bar}*10 yil* orqaga qaytganingizda
+```
+
+Belgi ichida bo'sh joy bo'lmaydi. Sozlamalar: `y`, `x` (0..1), `size` (ko'paytma), `align`,
+`anim`, `anim_main`, `anim_sub`, `exit`, `case`, `reveal`, `color`, `accent`.
+
+## 3. Matn belgilari
+
+| Belgi | Natija |
+|---|---|
+| `*so'z*` | katta (oq) |
+| `**so'z**` | katta va sariq (porlaydi) |
+| `!!so'z!!` | juda katta va sariq |
+| `_so'z_` | faqat sariq, o'lchami o'zgarmaydi |
+| `==so'z==` | marker: urg'u rangidagi quti surtiladi |
+| `~~so'z~~` | ikkinchi marker (qizil quti, oq yozuv) |
+| `\*` | oddiy yulduzcha: `**\*3 oyda**` → `*3 oyda` |
+
+**Blok qoidasi.** Qisqa gapda (9 so'zgacha, 56 belgigacha) urg'uli ibora bo'lsa gap bo'linmaydi:
+bitta bo'lakda asosiy ibora katta, qolgani ostida kichik chiqadi. Urg'u qo'yilmagan gap odatdagidek
+3-4 so'zdan bo'linadi. Shuning uchun **har gapda bitta asosiy ibora belgilash** namuna ko'rinishini
+beradi. O'chirish: `captions.lockup_chars: 0`.
+
+## 4. Animatsiyalar (`animation`, `anim_main`, `anim_sub`)
+
+| Nomi | Harakat | Namuna |
+|---|---|---|
+| `blur` | xiralikdan ochiladi | hammasida |
+| `fade` | shunchaki ochiladi | 4, 12 |
+| `pop` | prujina bilan kattalashadi | |
+| `rise` | pastroqdan chiqib o'tiradi | 6, 12 (kichik so'zlar) |
+| `flicker` | ikki marta miltillab yonadi | 7 ("10 yil") |
+| `bar` | avval oq to'rtburchak, keyin so'z | 7 (kichik so'zlar) |
+| `letters` | harflar birin-ketin sakraydi (`letter_from`: below/above) | 5, 14 |
+| `ltrack` | harflar keng chiqib zichlashadi | 6 |
+
+Blok sozlamalari: `slide_in` (so'z o'ngdan sirg'alishi, em), `intro_scale`, `drift` (sekin o'sish),
+`exit` (`blur`, `fade`, `drop`, `none`), `fit_sub` (kichik qatorni asosiy kenglikka moslash).
+
+## 5. Elementlar (namunalardagi qaytariladigan grafikalar)
+
+| Namunada | Element | Eslatma |
+|---|---|---|
+| Obuna kartochkasi: doira, @manzil, tugma bosiladi (9, 12, 14) | `follow` | `handle`, `logo` yoki `name`, `button`, `done`, `tap` |
+| To'liq ekranli rangli sahna, katak fon (4, 8, 9, 11) | `scene` | ustiga `voice`, `text`, `image`, `stat` qo'yiladi |
+| Ovozli xabar pleyeri (4, 8, 10, 13) | `voice` | `scene` ichida yoki video ustida |
+| Oq-qora kadr (13 boshi, 14) | `grade` `mode: bw` | ilmoq yoki "to'xtab qolgan" joy |
+| Sahna almashganda chaqnash (3) | `flash` | `at` |
+| Raqamli ro'yxat va rasmchalar (2, 5) | `list` | `items[{at, text, image}]` |
+| To'g'ri / xato shisha kartochkalar (6) | `choice` `style: glass` | |
+| Katta raqam va halqa (1, 11) | `stat` | |
+| Ism plashkasi, burchak yozuvi (3) | `lower_third`, `text` | |
+| Kino lavhasi ustida yozuv (7, 12) | `broll` + subtitr | lavhani faqat foydalanuvchi beradi |
+| Mahsulot, logotip rasmlari (2, 3) | `image` | mijoz fayllari |
+
+## 6. Namunadagi video tuzilishi (shunday rejala)
+
+1. **0-2 s, ilmoq.** Katta sarlavha (`{caps}` yoki `{heavy}`) + bitta harakat (zoom, `grade bw`).
+2. **Asosiy qism.** Har gapda bitta urg'u (`clean`). Har 3-4 soniyada bitta element: ro'yxat, rasm,
+   raqam. Sanab o'tilsa `list`, taqqoslansa `choice`, raqam aytilsa `!!raqam!!` yoki `stat`.
+3. **Dalil.** Mijoz ovozi bo'lsa `scene` + `voice` + `{karaoke}` (namuna 4, 8, 10).
+4. **Oxiri.** `follow` kartochkasi (2.5-3.5 s), tugma bosiladi.
+
+## 7. Hozircha avtomatik emas (halol ro'yxat)
+
+- **Yozuv odam orqasida** (namuna 5, 7, 10: sarlavha bosh ortida). Buning uchun odamni fondan ajratuvchi
+  model kerak (yuklab olinadi): foydalanuvchi ruxsati bilan qo'shiladi.
+- **Maxsus chizilgan sahnalar** (9: tarvuz, pazl, miya; 5: kalkulyator; 3: logotipli daraxt sxema).
+  Bular har video uchun qo'lda chizilgan. Tizimda o'rniga `scene` + HTML grafika (`html_render.py`)
+  + mijoz rasmlari ishlatiladi: o'xshash chiqadi, lekin aynan o'sha emas.
+- **Qo'lyozma izoh va chizilgan strelkalar** (12, 14), 3D harflar (1), odam atrofidagi kontur (14).
+- **Kino lavhalari, musiqa, logotip**: faqat foydalanuvchi bergan fayldan.
+- **Ovoz**: agent eshitmaydi. Effekt va musiqa ikki variantda render qilinib, foydalanuvchi tanlaydi.

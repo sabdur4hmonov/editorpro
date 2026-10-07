@@ -494,10 +494,13 @@ def parse_srt(path: str | Path) -> list:
 
 
 def strip_markup(text: str) -> str:
-    """Subtitrdagi belgilarni (*katta*, **rangli**, !!juda katta!!, _rangli_) olib tashlaydi."""
+    """Subtitrdagi belgilarni olib tashlaydi: *katta*, **rangli**, !!juda katta!!, _rangli_, ==marker==, ~~marker~~,
+    bo'lak boshidagi {uslub} va oddiy yulduzcha (\\*)."""
+    text = re.sub(r"^\s*\{[A-Za-z][^{}\s]*\}\s*", "", text)
+    text = text.replace("\\*", "")
     text = re.sub(r"(?<!\S)_(?=\S)", "", text)
     text = re.sub(r"(?<=\S)_(?=$|[\s.,!?;:])", "", text)
-    return re.sub(r"!!|\*+", "", text)
+    return re.sub(r"!!|\*+|==|~~", "", text)
 
 
 def cue_style(style: dict) -> dict:
@@ -505,7 +508,8 @@ def cue_style(style: dict) -> dict:
     out = dict(style.get("subtitles", {}))
     cap = style.get("captions", {})
     if str(cap.get("engine", "motion")).lower() == "motion":
-        for key in ("max_words_per_line", "max_chars_per_line", "max_cue_duration", "min_cue_duration", "gap_break"):
+        for key in ("max_words_per_line", "max_chars_per_line", "max_cue_duration", "min_cue_duration", "gap_break",
+                    "lockup_chars", "lockup_words", "lockup_duration"):
             if key in cap:
                 out[key] = cap[key]
     return out
@@ -579,10 +583,11 @@ def words_to_cues(words: list, sub_style: dict) -> list:
         if not token:
             continue
         plain = strip_markup(token)
-        mark = re.match(r"!!|\*\*|\*|_", token)
+        tagged = re.match(r"\{[A-Za-z][^{}\s]*\}", token)          # {uslub}: shu so'zdan yangi bo'lak boshlanadi
+        mark = re.match(r"!!|\*\*|\*|_|==|~~", token[tagged.end():] if tagged else token)
         item = {"start": float(w["start"]), "end": float(w["end"]), "word": token, "plain": plain,
                 "mark": mark.group() if mark else ""}
-        if cur and item["start"] - cur[-1]["end"] > gap_break:
+        if cur and (tagged or item["start"] - cur[-1]["end"] > gap_break):
             segs.append(cur)
             cur = []
         cur.append(item)
@@ -591,12 +596,20 @@ def words_to_cues(words: list, sub_style: dict) -> list:
             cur = []
     if cur:
         segs.append(cur)
+    # "blok" ko'rinishi (namunalardagi kabi): qisqa gapda urg'uli so'z bo'lsa gap bo'linmaydi, bitta bo'lakda
+    # asosiy ibora katta, qolgani ostida kichik chiqadi. lockup_chars: 0 bo'lsa bu qoida o'chadi.
+    lock_chars = int(sub_style.get("lockup_chars", 56))
+    lock_words = int(sub_style.get("lockup_words", 9))
+    lock_dur = float(sub_style.get("lockup_duration", 4.5))
     cues = []
     for seg in segs:
-        for a, b in _split_phrase(seg, max_words, max_chars, max_dur):
+        whole = (lock_chars > 0 and len(seg) > 1 and any(it["mark"] in ("!!", "**", "*") for it in seg)
+                 and len(seg) <= lock_words and len(" ".join(it["plain"] for it in seg)) <= lock_chars
+                 and seg[-1]["end"] - seg[0]["start"] <= lock_dur)
+        for a, b in ([(0, len(seg))] if whole else _split_phrase(seg, max_words, max_chars, max_dur)):
             text = " ".join(it["word"] for it in seg[a:b])
             # yonma-yon turgan bir xil belgilar birlashtiriladi: "**3** **ta**" -> "**3 ta**"
-            text = re.sub(r"(?<![*!_])(!!|\*\*|\*|_) \1(?![*!_])", " ", text)
+            text = re.sub(r"(?<![*!_=~])(!!|\*\*|\*|_|==|~~) \1(?![*!_=~])", " ", text)
             cues.append({"start": seg[a]["start"], "end": seg[b - 1]["end"], "text": text})
     # bo'laklar ustma-ust tushmasin va juda qisqa bo'lmasin
     min_dur = float(sub_style.get("min_cue_duration", 0.3))

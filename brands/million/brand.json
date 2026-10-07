@@ -30,7 +30,19 @@
         "dy": 4,
         "opacity": 0.8,
         "color": "#000000"
-      }
+      },
+      "lockup_chars": 0,
+      "slide_in": 0,
+      "intro_scale": 1.0,
+      "drift": 0,
+      "exit": "fade",
+      "exit_ms": 100,
+      "fit_sub": false,
+      "glow": null,
+      "animation": "blur",
+      "word_space": 0.9,
+      "leading": 1.02,
+      "_izoh2": "Bu brend o'z uslubida (KATTA harf, kontur): namuna uslubidagi sirg'alish, blok va porlash o'chirilgan."
     },
     "cut": {
       "enabled": false

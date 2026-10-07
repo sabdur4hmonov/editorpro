@@ -11,6 +11,10 @@ Arguments: `$ARGUMENTS` (video path, optional brand name, optional script file).
 You are the editor. The user (a beginner programmer, professional video editor) gives a raw video and a
 brand; you make every other decision. Talk to the user in **Uzbek**, short numbered steps.
 
+**Default look:** unless the brand's `brand.json` or the user says otherwise, the target style is the
+reference reels in `samples/`. Read `docs/NAMUNA_USLUBI.md` and follow the `/namuna` skill's
+checklist ("What 'like the samples' means") for captions, hook, elements and ending.
+
 ## Before anything
 
 1. Read `AGENTS.md` and `docs/PLAYBOOK.md` fully. They are the source of truth for commands, element

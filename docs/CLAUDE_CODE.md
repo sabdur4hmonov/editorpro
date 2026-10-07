@@ -46,10 +46,10 @@ report to me in Uzbek, short numbered points. Do not install anything. Never ope
    check fails, find the real cause and fix it; do not skip or weaken a check.
 3. Open temp/selftest/karta.png and, if the online search ran, temp/selftest/images/candidates.jpg.
    Tell me honestly whether they look right and which image sources answered.
-4. Skills: docs/claude_skills/montaj/SKILL.md and docs/claude_skills/brend/SKILL.md are ready but
+4. Skills: docs/claude_skills/ has four skills (montaj, namuna, brend, transcribe-uz), ready but
    not installed. Check their frontmatter against the current Claude Code skills documentation,
-   then copy them to .claude/skills/montaj/SKILL.md and .claude/skills/brend/SKILL.md (ask me
-   first). Tell me how to confirm that /montaj appears. docs/claude_skills/ stays the tracked source.
+   then copy each to .claude/skills/<name>/SKILL.md (ask me first). Tell me how to confirm that
+   /montaj and /namuna appear. docs/claude_skills/ stays the tracked source.
 5. Permissions: docs/claude_settings.example.json is a PROPOSAL for .claude/settings.json (project
    scripts run without prompts; .env is never read; nothing is written into input/ or samples/).
    Check every rule against the current Claude Code permissions documentation (Bash prefix/wildcard

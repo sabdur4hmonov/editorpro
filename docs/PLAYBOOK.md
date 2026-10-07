@@ -159,3 +159,16 @@ standart shu:
 8. **Ovoz:** effektlar ikki variantda render qilinadi (effektsiz va effektli), foydalanuvchi tinglab
    tanlaydi: watcher `elements` + `output` sozlamalari. Asl ovoz va kulgu doim birinchi.
 9. Kadrga yozilgan homiy belgisi (stiker, logotip) o'chirilmaydi va yopilmaydi: bu foydalanuvchi qarori.
+
+## 8. Namuna uslubi (standart ko'rinish)
+
+Foydalanuvchi fikri (2026-10-07): "namunadagi subtitr va animatsiyalar bilan bir xil videolar kerak,
+to'liq". Shuning uchun boshqa ko'rsatma bo'lmasa har gapiruvchi-odam videosi `samples/` uslubida
+qilinadi. Qoidalar `docs/NAMUNA_USLUBI.md` da, ish tartibi `/namuna` skillida. Eng muhimi:
+
+1. Har gapda bitta asosiy ibora belgilanadi: u katta, qolgani ostida kichik (blok).
+2. Ilmoq (0-2 s) boshqa uslubda: `{caps}` yoki `{heavy}`.
+3. Sariq kam ishlatiladi; yulduzcha (`\*`) faqat ilmoq va asosiy raqamda.
+4. Har 3-4 soniyada bitta element; oxirida `follow` kartochkasi.
+5. Renderdan oldin kadrlarni namuna kadrlari bilan yonma-yon solishtir.
+

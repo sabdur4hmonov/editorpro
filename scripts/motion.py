@@ -411,6 +411,11 @@ def word_sprite(text: str, font, color: str, tracking: float = 0.0, shadow: dict
             spr = pil_sprite(img, shadow=sh)             # nuqtasi markazda
             parts.append((spr, x + em / 2, -font.size * 0.36))
             x += em
+    return merge_sprites(parts), x
+
+
+def merge_sprites(parts: list) -> Sprite:
+    """Bir necha spriteni bitta qiladi. parts: [(sprite, x, y)] - har birining nuqtasi umumiy nuqtaga nisbatan."""
     left = min(px + spr.ox for spr, px, _ in parts)
     top = min(py + spr.oy for spr, _, py in parts)
     right = max(px + spr.ox + spr.w for spr, px, _ in parts)
@@ -422,7 +427,7 @@ def word_sprite(text: str, font, color: str, tracking: float = 0.0, shadow: dict
         dst = canvas[y0:y0 + h, x0:x0 + w].astype(np.uint16)
         src = spr.pix[:h, :w].astype(np.uint16)
         canvas[y0:y0 + h, x0:x0 + w] = (src + (dst * (255 - src[..., 3:4]) + 127) // 255).astype(np.uint8)
-    return Sprite(canvas, left, top), x
+    return Sprite(canvas, left, top)
 
 
 # ---------------------------------------------------------------- shakllar
