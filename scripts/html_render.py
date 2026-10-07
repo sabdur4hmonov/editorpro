@@ -25,6 +25,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 from PIL import Image, ImageFont
@@ -149,7 +150,26 @@ def render(html_path: str | Path, out_path: str | Path, style: dict | None = Non
                               errors="replace", timeout=120)
     except subprocess.TimeoutExpired:
         raise C.MontajError("Brauzer 120 soniyada javob bermadi (sahifa juda og'ir yoki brauzer osilib qoldi).") from None
-    if not shot.is_file() or shot.stat().st_size < 100:
+    # Edge qaytganidan keyin PNG yana ~1.5 s yozilishi mumkin. Hajmi
+    # 0.5 s o'zgarmaguncha kutamiz; 10 s sekin kompyuter uchun zaxira.
+    deadline = time.monotonic() + 10.0
+    last_size = -1
+    stable_since = time.monotonic()
+    shot_ready = False
+    while time.monotonic() < deadline:
+        now = time.monotonic()
+        try:
+            size = shot.stat().st_size if shot.is_file() else 0
+        except OSError:
+            size = 0
+        if size != last_size:
+            last_size = size
+            stable_since = now
+        elif size >= 100 and now - stable_since >= 0.5:
+            shot_ready = True
+            break
+        time.sleep(min(0.1, max(0.0, deadline - time.monotonic())))
+    if not shot_ready:
         tail = "\n".join((proc.stderr or proc.stdout or "").strip().splitlines()[-6:])
         raise C.MontajError(f"Brauzer rasm chiqarmadi (kod {proc.returncode}). Brauzer: {browser}\n{tail}")
     try:
