@@ -13,6 +13,19 @@ brend nomini beradi; qolgan qarorlar senda.
 | Skript (nima deyilgani) | `input/<video nomi>.txt` yoki `--script` | whisper matni + foydalanuvchi tekshiruvi |
 | Mijoz rasmlari, mahsulot surati | `brands/<nom>/assets/` | 4-bo'limdagi zinapoya |
 | Namuna videolar | `samples/<brend>/` | brend uslubi `brand.json` da |
+| Foydalanuvchi fikrlari | `style/notes.md`, `brands/<nom>/notes.md` | pipeline boshida chiqadi: **o'qi va amal qil** |
+| Lug'at | `style/glossary.json`, `brands/<nom>/glossary.json` | avtomatik qo'llanadi |
+
+Brend aytilmagan bo'lsa bu **brendsiz video**: `--brand` yozilmaydi, umumiy uslub ishlatiladi,
+logotip va oxirgi kadr qo'yilmaydi. Brend haqida hech narsa o'ylab topma.
+
+Avval video turini aniqla (xom videodan 8-12 kadr olib qara: `frames.py`):
+
+| Tur | Belgilari | Nima qilinadi |
+|---|---|---|
+| Gapiruvchi odam (xom) | bitta odam kameraga gapiradi | to'liq montaj: kesish, zoom, subtitr, elementlar, effektlar |
+| Sahna, intervyu, konsert | bir necha odam, tomoshabin, kulgu, musiqa | `--no-cut`, zoom o'chiq, subtitr; effekt kam yoki yo'q |
+| Tayyor Reels (ichida yozuv, stiker bor) | kadrga yozuv va belgilar allaqachon yozilgan | bor narsani o'chirib bo'lmaydi; faqat ustiga qo'shiladi, joyini kadrga qarab tanla. Xom manbani so'ra |
 
 Skript bo'lsa ish ancha aniq chiqadi: matn xatosiz, va sen videoda nima deyilganini bilasan
 (ovozni eshita olmaysan). Skript ichidagi `[rasm: ...]`, `[stat: 85%]` kabi eslatmalar
@@ -66,6 +79,9 @@ shunchaki joy to'ldiryaptimi?** Yordam bermasa qo'yma.
 - Brend rangi (accent) bir vaqtda bitta joyda. Shrift faqat brendniki.
 - Ovoz effekti (`sfx`) element chiqqan kadrda: `pop` (kichik), `whoosh` (katta/b-roll), `ding`
   (to'g'ri javob, natija), `tick` (ro'yxat). Har elementga emas: 10 soniyada 2–3 ta.
+- **Asl ovoz birinchi.** Effekt va musiqa nutqqa halaqit bermasligi kerak: tizim buni o'zi ta'minlaydi
+  (nutq paytida pasaytiradi va o'lchaydi), sen esa effektni iloji boricha so'zlar orasidagi pauzaga
+  yoki gap boshiga qo'y. Render oxiridagi `Nutq ustunligi` qatorini tekshir.
 
 ## 4. Rasm topish zinapoyasi
 
@@ -105,6 +121,9 @@ Qoidalar:
    kadrlar varag'ini ol va ko'r; `Tekshiruv` va `Platforma` qatorlari `[OK]` ekanini tekshir.
 5. Hisobot: natija fayli, nima qilingani (qisqa), rasm manbalari, ovoz bo'yicha savol (musiqa,
    effektlar yoqdimi — sen eshita olmaysan), keyingi tuzatish uchun taklif.
+6. Foydalanuvchi javobidagi har bir fikrni `feedback.py add` bilan yoz, sozlamaga aylanadiganini
+   `brand.json`/`style.json` ga kirit, takrorlangan whisper xatosini `glossary.py add` bilan lug'atga
+   qo'sh. Keyingi videoda o'sha xato takrorlanmasligi kerak.
 
 ## 6. Halol chegaralar
 

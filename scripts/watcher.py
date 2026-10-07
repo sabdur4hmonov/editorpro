@@ -7,7 +7,8 @@ to'xtatish uchun oynani yoping yoki Ctrl+C bosing.
 Qanday ishlaydi:
   1) Claude (chatdan) jobs/inbox/<id>.json fayl yozadi.
   2) Watcher uni o'qib, FAQAT quyidagi tayyor amallardan birini bajaradi:
-       pipeline, analyze, selftest, preview, images, html, git_commit, install_deps
+       pipeline, transcribe, model, compare, corrections, frames, analyze, selftest, preview,
+       images, html, git, git_commit, install_deps
      Ixtiyoriy buyruq bajarilmaydi: topshiriqdagi har bir maydon tekshiriladi va
      faqat shu loyihaning skriptlari (yoki git commit) ishga tushadi.
   3) Natija jobs/done/<id>.json ga, to'liq log jobs/logs/<id>.log ga yoziladi.
@@ -27,7 +28,7 @@ from pathlib import Path
 
 import common as C
 
-VERSION = 4
+VERSION = 5
 JOBS = C.ROOT / "jobs"
 INBOX, DONE, LOGS, PREVIEW = JOBS / "inbox", JOBS / "done", JOBS / "logs", JOBS / "preview"
 HEARTBEAT = JOBS / "watcher.json"
@@ -56,6 +57,26 @@ def _path(value, exts: set, what: str) -> Path:
     return p
 
 
+def _temp_path(value, exts: set, what: str) -> Path:
+    """Fayl temp/ ichida bo'lishi shart (agent yozgan yoki skript yaratgan oraliq fayllar)."""
+    p = _path(value, exts, what)
+    if not C.is_inside(p, C.TEMP_DIR):
+        raise C.MontajError(f"{what} temp/ papkasi ichida bo'lishi kerak: {p}")
+    return p
+
+
+def _model(value) -> str:
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.\-/]{0,120}", value) or ".." in value:
+        raise C.MontajError("Model nomi noto'g'ri (masalan: small yoki muallif/model).")
+    return value
+
+
+def _int(value, lo: int, hi: int, what: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or int(value) != value or not lo <= value <= hi:
+        raise C.MontajError(f"{what}: {lo} dan {hi} gacha butun son bo'lishi kerak.")
+    return int(value)
+
+
 def _flag(opts: dict, key: str) -> bool:
     value = opts.get(key, False)
     if not isinstance(value, bool):
@@ -75,7 +96,7 @@ def build_command(job: dict) -> tuple[list, dict]:
     if action == "pipeline":
         allowed = {"approve_subs", "no_subs", "no_cut", "no_repeats", "force",
                    "language", "model", "silence_db", "music", "brand", "engine", "stills",
-                   "no_silence", "remove", "trim", "script", "no_script"}
+                   "no_silence", "remove", "trim", "script", "no_script", "words", "no_glossary"}
         unknown = set(opts) - allowed
         if unknown:
             raise C.MontajError(f"pipeline uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
@@ -88,7 +109,7 @@ def build_command(job: dict) -> tuple[list, dict]:
                 cmd += [f"--{key}", opts[key]]
         for key, arg in (("approve_subs", "--approve-subs"), ("no_subs", "--no-subs"), ("no_cut", "--no-cut"),
                          ("no_repeats", "--no-repeats"), ("force", "--force"), ("no_silence", "--no-silence"),
-                         ("no_script", "--no-script")):
+                         ("no_script", "--no-script"), ("no_glossary", "--no-glossary")):
             if _flag(opts, key):
                 cmd.append(arg)
         if "language" in opts:
@@ -108,6 +129,8 @@ def build_command(job: dict) -> tuple[list, dict]:
             cmd += ["--music", str(_path(opts["music"], AUDIO_EXTS, "Musiqa"))]
         if "script" in opts:
             cmd += ["--script", str(_path(opts["script"], {".txt", ".md"}, "Skript"))]
+        if "words" in opts:      # tasdiqlangan (tuzatilgan) so'zlar fayli: whisper qayta ishlamaydi
+            cmd += ["--words", str(_temp_path(opts["words"], {".json"}, "So'zlar fayli"))]
         if "brand" in opts:
             if opts["brand"] not in C.list_brands():
                 raise C.MontajError(f"Brend topilmadi: {opts['brand']!r}. Mavjudlari: "
@@ -127,6 +150,104 @@ def build_command(job: dict) -> tuple[list, dict]:
                 "output": str(C.OUTPUT_DIR / f"{C.output_stem(video.stem)}_final.mp4"),
                 "stills": "stills" in opts}
         return cmd, info
+
+    if action == "transcribe":
+        unknown = set(opts) - {"model", "language", "beam_size", "allow_download", "name"}
+        if unknown:
+            raise C.MontajError(f"transcribe uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+        video = _path(job.get("video"), C.VIDEO_EXTS | AUDIO_EXTS, "Video")
+        cmd = [py, str(SCRIPTS / "transcribe.py"), str(video)]
+        if "model" in opts:
+            cmd += ["--model", _model(opts["model"])]
+        if "language" in opts:
+            if opts["language"] not in LANGS:
+                raise C.MontajError(f"language noto'g'ri. Mumkin: {', '.join(sorted(LANGS))}")
+            cmd += ["--language", opts["language"]]
+        if "beam_size" in opts:
+            cmd += ["--beam-size", str(_int(opts["beam_size"], 1, 20, "beam_size"))]
+        name = opts.get("name", "orig")
+        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9_\-]{1,40}", name):
+            raise C.MontajError("name: lotin harflari, raqam, chiziqcha (40 belgigacha).")
+        cmd += ["--name", name]
+        if _flag(opts, "allow_download"):
+            cmd.append("--allow-download")
+        return cmd, {"video": str(video), "work": str(C.TEMP_DIR / C.slugify(video.stem)), "name": name}
+
+    if action == "model":
+        # model holati (bormi, hajmi). allow_download true bo'lsa yuklab qo'yadi (foydalanuvchi rozi bo'lgach)
+        unknown = set(opts) - {"name", "allow_download"}
+        if unknown:
+            raise C.MontajError(f"model uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+        cmd = [py, str(SCRIPTS / "transcribe.py"), "--model-info", _model(opts.get("name"))]
+        if _flag(opts, "allow_download"):
+            cmd.append("--allow-download")
+        return cmd, {}
+
+    if action == "compare":
+        unknown = set(opts) - {"models", "seconds", "language", "beam_size", "allow_download"}
+        if unknown:
+            raise C.MontajError(f"compare uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+        video = _path(job.get("video"), C.VIDEO_EXTS | AUDIO_EXTS, "Video")
+        models = opts.get("models")
+        if not isinstance(models, list) or not 1 <= len(models) <= 5:
+            raise C.MontajError("models: 1 tadan 5 tagacha model nomi ro'yxati kerak.")
+        cmd = [py, str(SCRIPTS / "compare_models.py"), str(video), "--models", ",".join(_model(m) for m in models)]
+        if "seconds" in opts:
+            cmd += ["--seconds", str(_int(opts["seconds"], 5, 600, "seconds"))]
+        if "language" in opts:
+            if opts["language"] not in LANGS:
+                raise C.MontajError(f"language noto'g'ri. Mumkin: {', '.join(sorted(LANGS))}")
+            cmd += ["--language", opts["language"]]
+        if "beam_size" in opts:
+            cmd += ["--beam-size", str(_int(opts["beam_size"], 1, 20, "beam_size"))]
+        if _flag(opts, "allow_download"):
+            cmd.append("--allow-download")
+        return cmd, {"video": str(video), "compare_dir": str(C.TEMP_DIR / "compare" / C.slugify(video.stem))}
+
+    if action == "corrections":
+        # matnni vaqtga tegmasdan tuzatish: ikkala fayl ham temp/ ichida
+        unknown = set(opts) - {"list"}
+        if unknown:
+            raise C.MontajError(f"corrections uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+        words = _temp_path(job.get("words"), {".json"}, "So'zlar fayli")
+        cmd = [py, str(SCRIPTS / "apply_corrections.py"), str(words)]
+        if _flag(opts, "list"):
+            return cmd + ["--list"], {"words": str(words), "list": True}
+        corr = _temp_path(job.get("corrections"), {".json"}, "Tuzatishlar fayli")
+        return cmd + [str(corr)], {"words": str(words), "list": False}
+
+    if action == "frames":
+        unknown = set(opts) - {"n", "at"}
+        if unknown:
+            raise C.MontajError(f"frames uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+        video = _path(job.get("video"), C.VIDEO_EXTS, "Video")
+        cmd = [py, str(SCRIPTS / "frames.py"), str(video)]
+        if "at" in opts:
+            times = opts["at"]
+            if (not isinstance(times, list) or not 1 <= len(times) <= 24
+                    or any(isinstance(x, bool) or not isinstance(x, (int, float)) or x < 0 for x in times)):
+                raise C.MontajError("at: 1 tadan 24 tagacha musbat son ro'yxati bo'lishi kerak.")
+            cmd += ["--at", ",".join(f"{float(x):.3f}" for x in times)]
+        elif "n" in opts:
+            cmd += ["--n", str(_int(opts["n"], 1, 24, "n"))]
+        return cmd, {"video": str(video), "frames": True}
+
+    if action == "git":
+        # faqat xavfsiz amallar: holatni ko'rish va yangi branch ochish. Merge, reset, o'chirish yo'q.
+        unknown = set(opts) - {"op", "name"}
+        if unknown:
+            raise C.MontajError(f"git uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
+        op = opts.get("op")
+        if op not in ("status", "branch"):
+            raise C.MontajError("git: op 'status' yoki 'branch' bo'lishi kerak.")
+        name = opts.get("name")
+        if op == "branch":
+            if (not isinstance(name, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._\-]{1,40}", name)
+                    or name.endswith(".lock") or ".." in name or name in ("master", "main", "head")):
+                raise C.MontajError("git branch: name kichik lotin harflari, raqam, nuqta, chiziqcha (2-41 belgi).")
+        elif name is not None:
+            raise C.MontajError("git status uchun name kerak emas.")
+        return [], {"op": op, "name": name}
 
     if action == "analyze":
         unknown = set(opts) - {"no_whisper"}
@@ -259,8 +380,8 @@ def build_command(job: dict) -> tuple[list, dict]:
             raise C.MontajError("git_commit uchun 'message' (2000 belgigacha matn) kerak.")
         return [], {"message": message.strip()}
 
-    raise C.MontajError(f"Noma'lum amal: {action!r}. Mumkin: pipeline, analyze, selftest, preview, "
-                        "images, html, git_commit, install_deps")
+    raise C.MontajError(f"Noma'lum amal: {action!r}. Mumkin: pipeline, transcribe, model, compare, corrections, "
+                        "frames, analyze, selftest, preview, images, html, git, git_commit, install_deps")
 
 
 # ---------------------------------------------------------------- bajarish
@@ -391,6 +512,25 @@ def run_job(path: Path) -> None:
                 result["preview"] = make_preview(Path(info["video"]), job_id)
                 result["video_info"] = {k: v for k, v in C.ffprobe_info(info["video"]).items() if k != "path"}
                 result.update(status="ok", exit_code=0)
+            elif result["action"] == "git":
+                def git_out(*args):
+                    proc = subprocess.run(["git", *args], cwd=str(C.ROOT), capture_output=True, text=True,
+                                          encoding="utf-8", errors="replace", stdin=subprocess.DEVNULL)
+                    log.write(">> git " + " ".join(args) + "\n" + proc.stdout + proc.stderr)
+                    return proc.returncode, proc.stdout.strip()
+                code = 0
+                if info["op"] == "branch":
+                    exists, _ = git_out("rev-parse", "--verify", "--quiet", f"refs/heads/{info['name']}")
+                    if exists == 0:
+                        raise C.MontajError(f"Bunday branch allaqachon bor: {info['name']}")
+                    code, _ = git_out("checkout", "-b", info["name"])
+                _, branch = git_out("rev-parse", "--abbrev-ref", "HEAD")
+                _, status = git_out("status", "--porcelain")
+                _, logtxt = git_out("log", "--oneline", "-n", "6")
+                _, branches = git_out("branch", "--list", "--format=%(refname:short) %(objectname:short)")
+                result["git"] = {"branch": branch, "clean": status == "", "changes": status.splitlines()[:200],
+                                 "log": logtxt.splitlines(), "branches": branches.splitlines()}
+                result.update(status="ok" if code == 0 else "error", exit_code=code)
             elif result["action"] == "git_commit":
                 msg_file = LOGS / f"{job_id}.msg"
                 msg_file.write_text(info["message"] + "\n", encoding="utf-8")
@@ -410,7 +550,8 @@ def run_job(path: Path) -> None:
                 code = run_logged(cmd, log, job_id)
                 result["exit_code"] = code
                 result["status"] = "ok" if code == 0 else "need_approval" if (
-                    code == 3 and result["action"] == "pipeline") else "error"
+                    code == 3 and result["action"] == "pipeline") else "need_download" if (
+                    code == 4 and result["action"] in ("transcribe", "model", "compare")) else "error"
                 result.update({k: v for k, v in info.items() if k in ("video", "report")})
                 if result["action"] == "pipeline":
                     log.flush()
@@ -436,6 +577,46 @@ def run_job(path: Path) -> None:
                                              and f.suffix.lower() in (".jpg", ".png", ".mp4"))[:200]
                 elif result["action"] == "html" and code == 0:
                     result["image"] = info["image"]
+                elif result["action"] == "transcribe" and code == 0:
+                    work = Path(info["work"])
+                    wfile = work / f"{info['name']}.words.json"
+                    if wfile.is_file():
+                        data = C.read_json(wfile)
+                        result["words_file"] = str(wfile)
+                        result["transcript"] = {k: data.get(k) for k in ("language", "language_probability", "duration",
+                                                                         "model", "elapsed_sec")}
+                        # [raqam, start, end, so'z, ishonch]: tuzatishlar fayli shu raqamlar bo'yicha yoziladi
+                        result["words"] = [[i, w["start"], w["end"], w["word"], w.get("prob")]
+                                           for i, w in enumerate(data.get("words", []), 1)][:3000]
+                    issues = work / f"{info['name']}.timing_issues.json"
+                    result["timing_issues"] = C.read_json(issues).get("issues", []) if issues.is_file() else []
+                elif result["action"] == "compare" and code == 0:
+                    folder = Path(info["compare_dir"])
+                    result["compare_dir"] = str(folder)
+                    if (folder / "compare.txt").is_file():
+                        result["table"] = (folder / "compare.txt").read_text(encoding="utf-8", errors="replace")[:60000]
+                    if (folder / "compare.json").is_file():
+                        result["models"] = C.read_json(folder / "compare.json").get("models", [])
+                    result["html"] = str(folder / "compare.html")
+                elif result["action"] == "corrections" and code == 0 and not info["list"]:
+                    wpath = Path(info["words"])
+                    base = wpath.name[:-len(".words.json")] if wpath.name.endswith(".words.json") else wpath.stem
+                    fixed, txt = wpath.with_name(f"{base}.words.fixed.json"), wpath.with_name(f"{base}.fixed.txt")
+                    if fixed.is_file():
+                        data = C.read_json(fixed)
+                        result["fixed_file"] = str(fixed)
+                        result["needs_review"] = data.get("needs_review", [])
+                        result["word_count"] = len(data.get("words", []))
+                    if txt.is_file():
+                        result["text"] = txt.read_text(encoding="utf-8", errors="replace")[:60000]
+                elif result["action"] == "frames" and code == 0:
+                    video = Path(info["video"])
+                    sheet = C.TEMP_DIR / "frames" / f"{C.slugify(video.stem)}.jpg"
+                    if sheet.is_file():
+                        PREVIEW.mkdir(parents=True, exist_ok=True)
+                        target = PREVIEW / f"{job_id}.jpg"
+                        target.write_bytes(sheet.read_bytes())
+                        result["preview"] = str(target)
     except Exception as exc:  # watcher hech qachon yiqilmasligi kerak
         result.update(status="error", error=f"{type(exc).__name__}: {exc}")
     finally:

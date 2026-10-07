@@ -19,3 +19,5 @@ __pycache__/
 *.pyc
 # Maxfiy kalitlar (stok rasm va AI rasm xizmatlari)
 .env
+# Chatdan yuborilgan fayllar (Claude ilovasi shu papkaga nusxa qo`yadi)
+Claude outputs/

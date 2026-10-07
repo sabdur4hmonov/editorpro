@@ -24,9 +24,11 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | `output/` | Tayyor natijalar (brend tanlansa `output/<brend>/`). Natija faqat shu yerga yoziladi. |
 | `temp/` | Oraliq fayllar (har video uchun `temp/<nom>/`). Xohlagan payt o'chirsa bo'ladi. |
 | `samples/` | Uslub namunasi bo'ladigan videolar (brend bo'yicha `samples/<brend>/`). Faqat o'qiladi. |
-| `style/style.json` | Umumiy (standart) uslub qiymatlari. |
+| `style/style.json` | Umumiy (standart) uslub qiymatlari. Brendsiz videolar shu bilan qilinadi. |
+| `style/notes.md`, `brands/<nom>/notes.md` | **Foydalanuvchi fikrlari** (umumiy va brend bo'yicha). Har montajda o'qiladi. |
+| `style/glossary.json`, `brands/<nom>/glossary.json` | Lug'at: whisper doim xato yozadigan so'zlar (avtomatik to'g'rilanadi). |
 | `style/fonts/` | Shriftlar: Inter, Montserrat, Onest, Oswald, Unbounded, Playfair Display, Caveat. |
-| `brands/<nom>/` | Brend profili: `brand.json`, `logo.png`, `fonts/`, `music/`, `sfx/`. |
+| `brands/<nom>/` | Brend profili: `brand.json`, `logo.png`, `notes.md`, `glossary.json`, `fonts/`, `music/`, `sfx/`. |
 | `assets/sfx/` | Ovoz effektlari: pop, click, tick, thud, ding, whoosh, swipe, riser. |
 | `assets/models/` | Yuzni topish modeli (YuNet). |
 | `assets/emoji/` | Emoji rasmlari (Noto, bitta zip ichida). |
@@ -54,6 +56,26 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 - Fayl yo'llari (`logo.file`, `audio.music_file`, elementlardagi `file`) avval brend papkasidan,
   keyin loyiha papkasidan qidiriladi.
 - Mijoz brendi haqida bilmagan narsani (rang, shrift, logotip) o'ylab topma: foydalanuvchidan so'ra.
+
+### Brendsiz video
+
+Brend aytilmasa `--brand` yozilmaydi: `style/style.json` dagi umumiy uslub ishlatiladi (logotipsiz,
+oxirgi kadrsiz), natija `output/` ga tushadi. Umumiy eslatmalar (`style/notes.md`) va umumiy lug'at
+(`style/glossary.json`) baribir qo'llanadi. Brend haqida hech narsa o'ylab topilmaydi.
+
+### Foydalanuvchi fikrlaridan o'rganish (majburiy)
+
+Foydalanuvchi montaj haqida fikr bildirsa ("subtitr pastroq tursin", "bu rang yoqmadi", "effekt baland"):
+
+1. Darhol yozib qo'y: `.venv\Scripts\python.exe scripts\feedback.py add "fikr" [--brand NOM] [--video yo'l]`.
+   Faqat shu brendga tegishli bo'lsa `--brand`, hamma videoga tegishli bo'lsa brendsiz (umumiy).
+2. Sozlamaga aylanadigan fikrni `brand.json` (yoki umumiy bo'lsa `style.json`) ga ham yoz: eslatma
+   "nega"ni saqlaydi, sozlama esa uni har safar bajaradi.
+3. Whisper bir so'zni ikkinchi marta xato yozsa, lug'atga qo'sh:
+   `.venv\Scripts\python.exe scripts\glossary.py add "xato" "to'g'ri" [--brand NOM]`.
+4. Har montaj boshida `pipeline.py` eslatmalarni ko'rsatadi: ularni o'qi va amal qil. Eslatmaga zid
+   ish qilma; eslatmalar bir-biriga zid bo'lsa eng yangisi ustun, shubha bo'lsa so'ra.
+5. O'zgarishdan keyin commit qil (eslatma va lug'at fayllari gitda saqlanadi).
 
 ### Yangi mijoz (brend) qo'shish
 
@@ -89,13 +111,20 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `face.py VIDEO` | Yuz joylashuvini topadi. |
 | `new_brand.py NOM` | Yangi brend papkasi va `brand.json` yaratadi. |
 | `analyze_samples.py` | `samples/` tahlili: `temp/analysis/report.json`. |
-| `selftest.py`, `check_env.py`, `bench_whisper.py` | Sinov, muhit tekshiruvi, whisper tezligi. |
+| `compare_models.py` | Whisper modellarini bitta videoda yonma-yon solishtiradi (ball qo'ymaydi). |
+| `apply_corrections.py` | Transkripsiya matnini tuzatadi, vaqtlarga tegmaydi (`words.fixed.json`). |
+| `glossary.py` | Lug'at: `add "xato" "to'g'ri" [--brand NOM]`, `list`, `remove`. |
+| `feedback.py` | Foydalanuvchi fikrlari: `add "matn" [--brand NOM]`, `show`. |
+| `selftest.py`, `test_transcribe.py`, `check_env.py`, `bench_whisper.py` | Sinov, muhit tekshiruvi, whisper tezligi. |
 | `watcher.py` | Chatdan kelgan topshiriqlarni bajaradi. |
 
 Transkripsiya uchun `transcribe-uz` skilli (`docs/claude_skills/transcribe-uz/`) va
 `scripts/transcribe.py` ishlatiladi. Model `style.json` ning `whisper` bo'limida; kompyuterda yo'q
 model ruxsatsiz yuklanmaydi (chiqish kodi 4). Modellarni solishtirish: `scripts/compare_models.py`;
-matnni vaqtga tegmasdan tuzatish: `scripts/apply_corrections.py`.
+matnni vaqtga tegmasdan tuzatish: `scripts/apply_corrections.py`. Tasdiqlangan matn montajga
+`pipeline.py VIDEO --words temp\<nom>\orig.words.fixed.json` bilan beriladi (whisper qayta ishlamaydi).
+`transcribe.py` dan keyin pipeline'ni `--words` siz ishga tushirma: u `orig.words.json` ni qayta yozadi
+va tuzatishlar raqami mos kelmay qoladi.
 
 ## Ish tartibi
 
@@ -247,13 +276,19 @@ Fayllar `temp/<nom>/images/` ga tushadi (brendga doimiy kerak bo'lsa `--out bran
 | `zoom` | Kesishdagi yaqinlashtirish | `punch_in`, `slow_push`, `enabled` |
 | `audio.voice` | Nutqni tozalash | off, clean, denoise, strong |
 | `audio.music_file` | Fon musiqa (nutq paytida o'zi pasayadi) | fayl yo'li, `music_volume_db` |
-| `sfx` | Avtomatik ovoz effektlari | `enabled`, `on_big_word`, `on_element` |
+| `audio.voice_margin_db` | Nutq bor joyda qo'shimchalar nutqdan kamida shuncha dB past | 10 (kattaroq = qo'shimchalar sokinroq) |
+| `sfx` | Avtomatik ovoz effektlari (standart: yoqilgan) | `enabled`, `volume_db`, `duck`, `min_gap_sec`, `on_big_word`, `on_element` |
 | `cut.speed` | Butun video tezligi | 1.0 (o'zgarmaydi) … 1.15 |
 | `progress_bar` | Tepadagi/pastdagi ko'rsatkich chiziq | `enabled`, `position`, `color` |
 | `platform` | Xavfsiz zona va eksport talablari | `safe`, `max_duration`, `lufs` |
 
-Ovozga tegishli tanlovni (voice, sfx, musiqa balandligi) agent o'zi hal qilmaydi: ikki variantni
-render qilib, foydalanuvchi tinglab tanlaydi.
+**Nutq birinchi.** Asl ovoz alohida me'yorlanadi: musiqa yoki effekt qo'shilsa ham nutq balandligi
+o'zgarmaydi. Musiqa va effektlar nutq paytida o'zi pasayadi, keyin o'lchanadi: natijada `Nutq
+ustunligi` qatori chiqadi (qo'shimchalar nutqdan necha dB past). `OGOH` bo'lsa foydalanuvchiga ayt.
+Agent ovozni eshita olmaydi: yoqdi-yoqmadi tanlovini (voice, effekt turi, musiqa balandligi) o'zi hal
+qilmaydi, ikki variantni render qilib foydalanuvchiga tinglatadi va tanlovni eslatmaga yozadi.
+Sahna chiqishi, intervyu, konsert kabi "tayyor ovozli" videolarda effektni kam ishlat yoki o'chir
+(`sfx.enabled: false`), jim joylarni kesma (`--no-cut`): pauza va kulgu mazmunning bir qismi.
 
 ## Montaj sifati qoidalari
 
@@ -305,15 +340,27 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
 
 - Topshiriq: `jobs/inbox/<id>.json`. Natija: `jobs/done/<id>.json`, log: `jobs/logs/<id>.log`,
   kadrlar: `jobs/preview/<id>.jpg`. Watcher tirikligi: `jobs/watcher.json` (`alive_at`).
-- Faqat tayyor amallar: `pipeline`, `analyze`, `selftest`, `preview`, `images`, `html`, `git_commit`,
-  `install_deps`.
+- Faqat tayyor amallar: `pipeline`, `transcribe`, `model`, `compare`, `corrections`, `frames`, `analyze`,
+  `selftest`, `preview`, `images`, `html`, `git`, `git_commit`, `install_deps`.
   Ixtiyoriy buyruq yo'q; har bir maydon tekshiriladi, noma'lum narsa rad etiladi.
   Yangi amal kerak bo'lsa, foydalanuvchidan so'rab `watcher.py` ga qo'shiladi.
 - Misol: `{"action": "pipeline", "video": "input/video.mp4", "options": {"brand": "NOM"}}`.
   `video` loyihadan tashqaridagi to'liq yo'l ham bo'lishi mumkin (fayl faqat o'qiladi).
   `pipeline` sozlamalari: `brand`, `approve_subs`, `stills` (sonlar ro'yxati), `remove`, `trim`,
   `no_silence`, `no_repeats`, `no_cut`, `no_subs`, `force`, `language`, `model`, `silence_db`,
-  `music`, `engine`, `script` (skript fayli), `no_script`.
+  `music`, `engine`, `script` (skript fayli), `no_script`, `words` (temp/ ichidagi words.fixed.json),
+  `no_glossary`.
+- `transcribe`: `{"action": "transcribe", "video": "...", "options": {"model": "...", "language": "uz",
+  "allow_download": false}}` → `words` ([raqam, start, end, so'z, ishonch]), `timing_issues`.
+  `model`: `{"options": {"name": "...", "allow_download": false}}` → model bormi, hajmi qancha.
+  `compare`: `{"video": "...", "options": {"models": ["small", "..."], "seconds": 60}}` → `table`, `models`.
+  Model yo'q bo'lsa natija `need_download` (hech narsa yuklanmaydi). `allow_download: true` faqat
+  foydalanuvchi shu hajmga rozi bo'lgach yoziladi.
+- `corrections`: `{"words": "temp/<nom>/orig.words.json", "corrections": "temp/<nom>/corrections.json"}` →
+  `text` (tuzatilgan matn), `needs_review`. `{"options": {"list": true}}` so'zlarni raqami bilan chiqaradi.
+- `frames`: `{"video": "...", "options": {"n": 8}}` yoki `{"at": [2.0, 2.1]}` → `preview` (kadrlar varag'i).
+- `git`: `{"options": {"op": "status"}}` (branch, o'zgarishlar, log) yoki `{"op": "branch", "name": "yangi-nom"}`
+  (yangi branch ochib, unga o'tadi). Merge, reset, o'chirish yo'q: ularni foydalanuvchi o'zi qiladi.
 - `images`: `{"action": "images", "video": "...", "options": {"search": "so'z", "kind": "photo", "n": 8,
   "orient": "portrait"}}` → natijada `candidates` va `preview` (nomzodlar varag'i). Keyin
   `{"options": {"pick": [3], "name": "tog"}}` yoki `{"options": {"ai": "tavsif", "name": "nom"}}`.

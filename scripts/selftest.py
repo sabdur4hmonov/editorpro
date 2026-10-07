@@ -145,6 +145,9 @@ def main() -> int:
     p = script("compose.py", base, "--subs", msrt, "--elements", mel, "--brand", "demo", "-o", mout, expect=3)
     check("tasdiqsiz motion render yozilmaydi (kod 3)", p.returncode == 3)
     p = script("compose.py", base, "--subs", msrt, "--elements", mel, "--brand", "demo", "--approved", "-o", mout)
+    check("ovoz: nutq alohida me'yorlandi, effektlar nutqdan past", p.returncode == 0 and (
+        "nutq paytida qo'shimchalar nutqdan" in p.stdout or "ustma-ust tushmadi" in p.stdout),
+        next((l.strip() for l in p.stdout.splitlines() if "qo'shimchalar" in l), ""))
     if check("motion render bajarildi", p.returncode == 0 and mout.is_file()):
         brand = C.load_style(brand="demo")
         want = C.ffprobe_info(base)["duration"] + float(brand["endcard"]["duration"])

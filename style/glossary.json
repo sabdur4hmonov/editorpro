@@ -1,0 +1,4 @@
+{
+  "_izoh": "Whisper doim xato yozadigan so'zlar: from (xato) -> to (to'g'ri). Umumiy lug'at hamma videoga, brands/<nom>/glossary.json shu brendga qo'llanadi. Boshqarish: python scripts/glossary.py add|remove|list",
+  "replace": []
+}

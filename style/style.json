@@ -16,7 +16,7 @@
   },
 
   "audio": {
-    "_izoh": "loudnorm_i: umumiy balandlik (LUFS). Reels/TikTok uchun -14. music_volume_db: musiqa ovozi nutqqa nisbatan.",
+    "_izoh": "Nutq (asl ovoz) ALOHIDA me'yorlanadi (loudnorm_i, LUFS; Reels/TikTok uchun -14): musiqa yoki effekt qo'shilsa ham nutq balandligi o'zgarmaydi. Musiqa va effektlar nutq paytida o'zi pasayadi. voice_margin_db: nutq bor joyda qo'shimchalar nutqdan kamida shuncha dB past bo'ladi (o'lchanadi, yetmasa pasaytiriladi). music_volume_db: musiqa ovozi.",
     "loudnorm_i": -14,
     "loudnorm_tp": -1.5,
     "loudnorm_lra": 11,
@@ -27,7 +27,8 @@
     "music_file": "",
     "music_volume_db": -20,
     "music_ducking": true,
-    "music_fade_sec": 1.5
+    "music_fade_sec": 1.5,
+    "voice_margin_db": 10
   },
 
   "cut": {
@@ -111,9 +112,11 @@
   },
 
   "sfx": {
-    "_izoh": "Ovoz effektlari. enabled true bo'lsa katta so'z va grafik element chiqqanda avtomatik qo'yiladi. Fayllar: assets/sfx/ (pop, click, tick, thud, ding, whoosh, swipe, riser) yoki brend papkasidagi sfx/.",
-    "enabled": false,
-    "volume_db": -12,
+    "_izoh": "Ovoz effektlari. enabled true: katta so'z va grafik element chiqqanda avtomatik qo'yiladi (min_gap_sec dan zichroq emas). duck true: nutq paytida effekt o'zi pasayadi, nutqqa halaqit bermaydi. volume_db: effekt balandligi (nutq yo'q joyda). Fayllar: assets/sfx/ (pop, click, tick, thud, ding, whoosh, swipe, riser) yoki brend papkasidagi sfx/.",
+    "enabled": true,
+    "volume_db": -14,
+    "duck": true,
+    "min_gap_sec": 1.5,
     "on_big_word": "pop",
     "on_element": "whoosh"
   },

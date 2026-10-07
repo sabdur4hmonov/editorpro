@@ -22,8 +22,13 @@ brand; you make every other decision. Talk to the user in **Uzbek**, short numbe
 
 ## Workflow
 
-1. **Resolve inputs.** Video exists? Brand exists in `brands/`? If the brand is missing, run the
-   `/brend` flow or ask. Look for a script: `<video>.txt` next to the video or the third argument.
+1. **Resolve inputs.** Video exists? If the user named a brand, it must exist in `brands/` (if
+   missing, run the `/brend` flow or ask). If the user named no brand, this is a **brandless**
+   video: omit `--brand`, use the general style, add no logo or end card, invent nothing.
+   Look for a script: `<video>.txt` next to the video or the third argument. Read
+   `scripts/feedback.py show [--brand NAME]` (the pipeline also prints these notes) and follow them.
+   Look at the footage first (`scripts/frames.py <video> --n 12`) and decide the video type
+   (PLAYBOOK §0): talking head, stage/interview, or an already-finished reel.
 2. **First pass.** `scripts/pipeline.py <video> --brand <brand> [--script <txt>]`. Exit code 3 means
    "approval needed", not an error. Read the printed cut list and subtitle text.
 3. **Understand the content.** Read `temp/<job>/subs.srt`, `cut.words.json`, and
@@ -46,7 +51,11 @@ brand; you make every other decision. Talk to the user in **Uzbek**, short numbe
    `--at 2.0,2.1,2.25` (three close frames).
 9. **Report** in Uzbek: output file, what you did (short), image sources / credits that must be
    mentioned, AI-image note if any, and ask the user to listen for audio (you cannot hear).
-10. If you changed scripts, `style/style.json`, a brand or docs: run
+10. **Learn from the answer.** Record every piece of feedback the user gives with
+    `scripts/feedback.py add "..." [--brand NAME] [--video PATH]`, turn it into a setting in
+    `brand.json` / `style.json` when it maps to one, and add repeated whisper mistakes to the
+    glossary (`scripts/glossary.py add`). The same remark must not be needed twice.
+11. If you changed scripts, `style/style.json`, a brand or docs: run
     `scripts/selftest.py --no-whisper --offline`, then `git commit`.
 
 ## Hard rules

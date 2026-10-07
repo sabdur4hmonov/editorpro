@@ -14,6 +14,13 @@ Tayyor skript matni bo'lsa (nima deyilgani yozilgan .txt):
      python scripts/pipeline.py input/video.mp4 --script input/video.txt
    Matn skriptdan, vaqt whisperdan olinadi (video yonida shu nomli .txt bo'lsa o'zi topiladi).
 
+Tasdiqlangan (tuzatilgan) so'zlar fayli bo'lsa (scripts/apply_corrections.py natijasi):
+     python scripts/pipeline.py input/video.mp4 --words temp/video/orig.words.fixed.json
+   Whisper qayta ishlamaydi: matn ham, vaqt ham shu fayldan olinadi.
+
+Lug'at (style/glossary.json va brands/<nom>/glossary.json) har safar o'zi qo'llanadi (--no-glossary o'chiradi).
+Foydalanuvchi eslatmalari (style/notes.md, brands/<nom>/notes.md) boshida ko'rsatiladi.
+
 Asl video hech qachon o'zgarmaydi. Natija: output/<nom>_final.mp4
 """
 from __future__ import annotations
@@ -60,6 +67,8 @@ def main() -> int:
     ap.add_argument("--trim", help="Faqat shu oraliq qolsin, asl video bo'yicha: 5-42")
     ap.add_argument("--script", help="Tayyor skript matni (.txt): subtitr matni shundan, vaqti whisperdan olinadi")
     ap.add_argument("--no-script", action="store_true", help="Video yonidagi shu nomli .txt ni ishlatma")
+    ap.add_argument("--words", help="Tasdiqlangan so'zlar fayli (words.fixed.json): whisper o'rniga shu ishlatiladi")
+    ap.add_argument("--no-glossary", action="store_true", help="Lug'atni qo'llama")
     ap.add_argument("--music", help="Fon musiqa fayli")
     ap.add_argument("--brand", help="Brend nomi (brands/<nom>/brand.json): shrift, rang, logotip, oxirgi kadr")
     ap.add_argument("--elements", help="Grafik elementlar fayli (standart: temp/<nom>/elements.json, bo'lsa)")
@@ -122,6 +131,21 @@ def main() -> int:
     if script_file:
         st = script_file.stat()
         script_fp = f"{script_file}|{st.st_size}|{int(st.st_mtime)}"
+    # tasdiqlangan so'zlar fayli (matn tuzatilgan, vaqtlar asl video bo'yicha)
+    words_file, words_fp = None, ""
+    if args.words:
+        if args.script:
+            raise C.MontajError("--words va --script birga ishlatilmaydi: bittasini tanlang.")
+        words_file = C.need_file(args.words, "So'zlar fayli")
+        script_file, script_fp = None, ""          # video yonidagi .txt ham ishlatilmaydi
+        st = words_file.stat()
+        words_fp = f"{words_file}|{st.st_size}|{int(st.st_mtime)}"
+    # lug'at: doim xato yoziladigan so'zlar (umumiy + brend)
+    import glossary as G
+    gloss = [] if args.no_glossary else G.load(style)
+    gloss_fp = "|".join(f"{e['from']}>{e['to']}" for e in gloss)
+    import feedback as FB
+    FB.print_notes(style.get("_brand") or None)
     state_path, subs_srt = work / "job.json", work / "subs.srt"
     state = C.read_json(state_path) if state_path.is_file() else {}
     remove = auto_cut.parse_ranges(args.remove)
@@ -131,7 +155,7 @@ def main() -> int:
     opts = {"subs": want_subs, "cut": want_cut, "no_repeats": args.no_repeats, "no_silence": args.no_silence,
             "silence_db": args.silence_db, "language": style["whisper"]["language"],
             "model": style["whisper"]["model"], "remove": args.remove or "", "trim": args.trim or "",
-            "script": script_fp}
+            "script": script_fp, "words": words_fp, "glossary": gloss_fp}
     whisper_opts = {"language": style["whisper"]["language"], "model": style["whisper"]["model"]}
     resume = (not args.force and state.get("fingerprint") == fingerprint(video)
               and state.get("opts") == opts and Path(state.get("cut_video", "")).is_file())
@@ -142,7 +166,21 @@ def main() -> int:
     else:
         # ---- 1. transkripsiya
         words = None
-        if want_subs or (want_cut and style["cut"].get("remove_repeats", True) and not args.no_repeats):
+        if words_file is not None:
+            # whisper ishlamaydi: tasdiqlangan so'zlar ishlatiladi
+            data = C.read_json(words_file, "So'zlar fayli")
+            words = data.get("words") if isinstance(data, dict) else None
+            if not isinstance(words, list) or not all(isinstance(w, dict) and {"start", "end", "word"} <= set(w) for w in words):
+                raise C.MontajError(f"{words_file} so'zlar fayli emas (ichida start/end/word li \"words\" ro'yxati kerak).")
+            issues = T.check_words(words, src["duration"])
+            if issues:
+                T.print_issues(issues)
+                raise C.MontajError("So'zlar fayli bu videoga mos emas yoki vaqtlari buzilgan (yuqoridagi ro'yxat). "
+                                    "To'g'ri faylni bering yoki --words siz ishga tushiring.")
+            review = sum(1 for w in words if w.get("needs_review"))
+            C.info(f"\n=== 1/4 Transkripsiya o'rniga tayyor so'zlar: {words_file.name} ({len(words)} so'z"
+                   + (f", {review} tasi 'tekshirilsin' belgili" if review else "") + ") ===")
+        elif want_subs or (want_cut and style["cut"].get("remove_repeats", True) and not args.no_repeats):
             cached = work / "orig.words.json"
             if (not args.force and cached.is_file() and state.get("fingerprint") == fingerprint(video)
                     and state.get("whisper") == whisper_opts):
@@ -160,6 +198,14 @@ def main() -> int:
                 words = []
         else:
             C.info("\n=== 1/4 Transkripsiya o'tkazib yuborildi ===")
+
+        # ---- lug'at: doim xato yoziladigan so'zlar to'g'rilanadi (vaqtlar o'zgarmaydi)
+        if gloss and words:
+            words, changed = G.apply_to_words(words, gloss)
+            if changed:
+                C.info(f"\n  Lug'at bo'yicha {len(changed)} ta joy to'g'rilandi: "
+                       + ", ".join(f"{old} -> {new}" for _, old, new in changed[:12])
+                       + (" ..." if len(changed) > 12 else ""))
 
         # ---- 2. kesish
         if want_cut:
@@ -242,6 +288,10 @@ def main() -> int:
             rep_ = C.read_json(notes_file).get("report", {})
             C.info(f"\n  Matn skriptdan olingan ({rep_.get('coverage', 0):.0%} so'z nutqda aniq topildi)."
                    + (" Quyidagi so'zlar boshqacha eshitilgan: matni skriptdagidek, vaqti taxminiy." if low else ""))
+        review = [w for w in cut_words if w.get("needs_review")]
+        if review:
+            C.info("\n  'Tekshirilsin' deb belgilangan joylar (foydalanuvchidan so'rang): "
+                   + ", ".join(f"{w['word']}@{C.fmt_time(w['start'])}" for w in review[:40]))
         if low:
             C.info("\n  Ishonchi past so'zlar (ayniqsa shularni tekshiring): "
                    + ", ".join(f"{w['word']}@{C.fmt_time(w['start'])}" for w in low[:40]))

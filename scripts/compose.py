@@ -257,8 +257,9 @@ def gather_sfx(style: dict, elements: list, cues: list, words: list | None) -> l
                 auto.append({"at": max(0.0, float(el.get("start", 0)) - 0.05), "name": cfg["on_element"]})
     auto.sort(key=lambda e: e["at"])
     last = -9.0
+    gap = max(0.3, float(cfg.get("min_gap_sec", 1.5)))     # effektlar juda zich bo'lmasin
     for ev in auto:
-        if ev["at"] - last >= 0.3 and not any(abs(ev["at"] - x["at"]) < 0.15 for x in events):
+        if ev["at"] - last >= gap and not any(abs(ev["at"] - x["at"]) < gap / 2 for x in events):
             events.append(ev)
             last = ev["at"]
     return events
@@ -495,6 +496,12 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         out_meta["seconds"] = round(time.time() - began, 1)
         out_meta["notes"] = list(ctx.notes)
         out_meta["checks"] = check_export(out_path, style, out_meta)
+        rep = audio_mix.LAST_REPORT
+        if rep.get("additions") and rep.get("margin_db") is not None:
+            # musiqa/effektlar nutqni bosib ketmaganini ko'rsatadigan o'lchov
+            out_meta["checks"].append(("Nutq ustunligi", "ok" if rep["margin_db"] >= rep["required_db"] - 0.5 else "ogoh",
+                                       f"qo'shimchalar nutqdan {rep['margin_db']:g} dB past (talab {rep['required_db']:g} dB)"
+                                       + (f", {rep['reduced_db']:g} dB pasaytirildi" if rep.get("reduced_db") else "")))
         return out_meta
     finally:
         for layer in layers:

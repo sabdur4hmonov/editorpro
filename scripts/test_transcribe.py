@@ -90,6 +90,36 @@ def run(check, video: Path, work: Path, no_whisper: bool = False) -> None:
           p1.returncode == 1 and not (fix / "bad.fixed.json").exists() and p2.returncode == 1
           and src.read_bytes() == before)
 
+    # ---- lug'at: avtomatik to'g'rilash, vaqtlar o'zgarmaydi
+    import glossary as G
+    entries = [{"from": "kitop", "to": "kitob", "key": ("kitop",)},
+               {"from": "hech kim", "to": "hechkim", "key": ("hech", "kim")}]
+    gw = [dict(w) for w in words]
+    gw[3]["word"] = "Kitop,"
+    out_words, changed = G.apply_to_words(gw, entries)
+    by = {w["word"]: w for w in out_words}
+    check("lug'at so'zlarni to'g'rilaydi (tinish belgisi va vaqt saqlanadi)",
+          len(changed) == 2 and "kitob," in by and (by["kitob,"]["start"], by["kitob,"]["end"]) == (gw[3]["start"], gw[3]["end"])
+          and "hechkim" in by and by["hechkim"]["start"] == gw[7]["start"] and by["hechkim"]["end"] == gw[8]["end"],
+          "; ".join(f"{a} -> {b}" for _, a, b in changed))
+
+    # ---- pipeline --words: whisper o'rniga tasdiqlangan so'zlar
+    wvid = work / "words_test.mp4"
+    if not wvid.is_file():
+        wvid.write_bytes(video.read_bytes())
+    wj = work / "words_test.fixed.json"
+    C.write_json({"words": [{"start": 0.3, "end": 0.7, "word": "Tasdiqlangan"}, {"start": 0.8, "end": 1.2, "word": "matn"},
+                            {"start": 4.2, "end": 4.6, "word": "shu", "needs_review": True}, {"start": 4.7, "end": 5.1, "word": "yerda."}]}, wj)
+    p = _run("pipeline.py", wvid, "--words", wj, "--no-cut", "--no-glossary", "--force")
+    srt = C.TEMP_DIR / C.slugify(wvid.stem) / "subs.srt"
+    text = srt.read_text(encoding="utf-8") if srt.is_file() else ""
+    check("pipeline --words: matn tayyor fayldan olinadi, whisper ishlamaydi",
+          p.returncode == 3 and "Tasdiqlangan matn" in text and "shu yerda." in text
+          and "Whisper modeli yuklanmoqda" not in p.stdout and "Tekshirilsin" in p.stdout, _tail(p, 3) if p.returncode != 3 else "")
+    C.write_json({"words": [{"start": 0.3, "end": 99.0, "word": "boshqa"}]}, work / "words_bad.json")
+    p = _run("pipeline.py", wvid, "--words", work / "words_bad.json", "--no-cut", "--force")
+    check("pipeline --words: boshqa videoning so'zlari rad etiladi", p.returncode == 1 and "mos emas" in p.stderr)
+
     if no_whisper:
         C.info("  [--] transcribe.py (whisper) sinovlari o'tkazib yuborildi (--no-whisper)")
         return

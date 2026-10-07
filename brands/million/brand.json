@@ -1,0 +1,58 @@
+{
+  "name": "Million jamoasi",
+  "handle": "@million.gr",
+  "_izoh": "Million jamoasining rasmiy Instagram sahifasi uchun. Kontent: sahna chiqishlari (komediya). Shuning uchun jim joylar kesilmaydi (pauza va kulgu mazmunning bir qismi), zoom yo'q, rang ishlovi yo'q (video allaqachon tayyor). Logotip fayli hali berilmagan: logo.file bo'sh.",
+  "style": {
+    "captions": {
+      "_izoh": "Sahifaning o'z sarlavha uslubiga mos: Montserrat, qalin, KATTA harf, sariq urg'u, qora kontur (rang-barang sahna ustida o'qilishi uchun). position_y 0.655: kadrdagi homiy stikeri (y 0.70-0.78) va tepadagi sarlavhani yopmaslik uchun.",
+      "preset": "clean",
+      "font": "Montserrat",
+      "case": "upper",
+      "color": "#FFFFFF",
+      "accent": "#FFD93B",
+      "weight_sub": 700,
+      "weight_plain": 800,
+      "weight_main": 900,
+      "size_sub": 50,
+      "size_plain": 62,
+      "size_main": 84,
+      "size_huge": 120,
+      "tracking": -0.01,
+      "position_y": 0.655,
+      "max_words_per_line": 4,
+      "max_chars_per_line": 22,
+      "stroke": {
+        "width": 5,
+        "color": "#000000"
+      },
+      "shadow": {
+        "blur": 12,
+        "dy": 4,
+        "opacity": 0.8,
+        "color": "#000000"
+      }
+    },
+    "cut": {
+      "enabled": false
+    },
+    "zoom": {
+      "enabled": false
+    },
+    "look": {
+      "enabled": false
+    },
+    "logo": {
+      "file": ""
+    },
+    "endcard": {
+      "enabled": false,
+      "text": "Million jamoasi",
+      "handle": "@million.gr",
+      "button": "Obuna bo'ling"
+    },
+    "sfx": {
+      "enabled": false,
+      "_izoh": "Sahna chiqishida tomoshabin kulgusi bor: avtomatik effekt o'chiq. Foydalanuvchi tinglab tanlagach o'zgartiriladi."
+    }
+  }
+}

@@ -76,7 +76,10 @@ It uses only the first 60 seconds, writes one set of files per model and a side-
 - Exit code 4 = a model must be downloaded: tell the user the size, ask, then `--allow-download`.
 - Write the chosen model into `style/style.json` (`whisper.model`) only after the user says which.
 
-## Not done by this skill
-
-`pipeline.py` still runs its own transcription and does not read `orig.words.fixed.json`.
-Connecting approved text to subtitles is a separate task; tell the user this plainly if they ask.
+5. **After approval — hand the text to the edit.**
+   - A word whisper got wrong that will come up again (brand name, a person's name, a term):
+     `.venv/Scripts/python.exe scripts/glossary.py add "wrong" "right" [--brand NAME]`.
+   - Continue the edit with the approved words (whisper is not run again, timings stay):
+     `.venv/Scripts/python.exe scripts/pipeline.py <video> --words temp/<job>/orig.words.fixed.json [--brand NAME]`
+   - Do not run `pipeline.py` on this video without `--words` after this point: it would
+     re-transcribe and overwrite `orig.words.json`.
