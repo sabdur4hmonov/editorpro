@@ -1,4 +1,41 @@
 {
-  "_izoh": "Whisper doim xato yozadigan so'zlar: from (xato) -> to (to'g'ri). Umumiy lug'at hamma videoga, brands/<nom>/glossary.json shu brendga qo'llanadi. Boshqarish: python scripts/glossary.py add|remove|list",
-  "replace": []
+  "_izoh": "Whisper doim xato yozadigan so'zlar: from (xato) -> to (to'g'ri). Boshqarish: python scripts/glossary.py add|remove|list",
+  "replace": [
+    {
+      "from": "cd-da",
+      "to": "siydikda"
+    },
+    {
+      "from": "kalavot",
+      "to": "karavot"
+    },
+    {
+      "from": "kalavotlar",
+      "to": "karavotlar"
+    },
+    {
+      "from": "kalavotniy",
+      "to": "karavotniy"
+    },
+    {
+      "from": "kislorodda o'ladik",
+      "to": "kislorodga uladik"
+    },
+    {
+      "from": "og'ar holatga",
+      "to": "og'ir holatga"
+    },
+    {
+      "from": "parokka",
+      "to": "porok"
+    },
+    {
+      "from": "shikapdan",
+      "to": "chekapdan"
+    },
+    {
+      "from": "shomollash",
+      "to": "shamollash"
+    }
+  ]
 }

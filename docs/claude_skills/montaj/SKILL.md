@@ -65,6 +65,28 @@ Show stills, draft and final in the chat; record tested lessons in `docs/AGENT_M
 11. If you changed scripts, `style/style.json`, a brand or docs: run
     `scripts/selftest.py --no-whisper --offline`, then `git commit`.
 
+## Fast order: ONE approval message (user rule, 2026-10-07)
+
+The user does not want question lists. Each round trip costs them time.
+
+1. **Apply your best guess yourself** for every doubtful word and flag it inline as `[?word]`. Do not
+   send a numbered list of questions. Proper nouns, Russian words: keep exactly as said, fix only
+   misheard letters.
+2. **Prepare everything before asking**: corrected and marked text, plan table, pictures already found
+   and cut out, stills at every key moment (with alternatives when a choice matters, e.g. two accent
+   colours side by side), the follow card on a still, credits.
+3. **Send one message**: full marked text with `[?]` flags, plan table, stills, credits, and the few
+   answers you need. The user answers once.
+4. After "ha" on the text: write the approval word for word into HOLAT.md, then go straight to the
+   draft. After "ha" on the draft: the final. Do not stop in between when your own checks pass.
+5. **Uzbek transcription**: use `--model yuldashev222/whisper-small-uz-v1-ct2` (in the HF cache). The
+   default `small` produced unusable Uzbek on "doktor 1"; the fine-tuned model got whole sentences right.
+6. **Pictures** are cut-out stickers (`scripts/cutout.py`, no frame or border), real CC0/public-domain
+   photos, each exactly matching its word (the user rejects loosely related pictures). Place them under
+   the caption block; above it only when hands, the safe zone or the follow card are in the way; never
+   over the face, the text or the hands. Check every cut-out on the `--sheet` and on stills.
+7. **Full-frame stock b-roll** only when the user asks for it; on "doktor 1" it was rejected.
+
 ## Hard rules
 
 - Subtitles are never burned in without the user's explicit approval in this conversation.

@@ -65,6 +65,19 @@ Never write into `input/` or `samples/`.
 9. **Learn.** Every remark from the user goes to `scripts/feedback.py add ...` and, if it is a
    setting, into `brand.json` / `style.json`. Commit.
 
+## Fast order: ONE approval message (user rule, 2026-10-07)
+
+No question lists. Apply your best guess to every doubtful word and flag it inline as `[?word]`.
+Before asking, prepare everything: marked text, plan table, pictures found and cut out
+(`scripts/cutout.py`), stills of every key moment (alternatives side by side when a choice matters),
+the follow card on a still, credits. Send it in ONE message; the user answers once. After "ha" on the
+text write it into HOLAT.md and go straight to the draft; after "ha" on the draft, the final.
+Uzbek speech: transcribe with `--model yuldashev222/whisper-small-uz-v1-ct2`. Disease or key-term
+names can go in a big red box (`~~term~~` with `captions.mark2_big: true` in a per-video style file,
+`--style temp/<job>/style.json`). Pictures: cut-out stickers matching the exact word, under the
+caption block, never over face, text or hands. Full-frame stock b-roll only when asked
+(rejected on "doktor 1"; sample 15/16 analysis in `docs/NAMUNA_USLUBI.md` §5a).
+
 ## Honest limits (tell the user, do not fake)
 
 - Read `docs/STUDIO.md` when comparing samples, making an approved draft, preparing a batch,

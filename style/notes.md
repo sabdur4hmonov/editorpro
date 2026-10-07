@@ -10,3 +10,4 @@ Foydalanuvchi bergan fikrlar. Har montajdan oldin o'qiladi. Yangi fikr: `python 
 - 2026-10-07: Uslub namunasi samples/ dagi videolar: so'zma-so'z ochiladigan subtitr, asosiy so'z katta va rangli.
 - 2026-10-07: Ijodiyroq bo'l: kulgili (komediya) videoga ko'proq narsa qo'sh, fonni o'zgartir, kerak joyiga animatsiya qo'sh. Natija juda zo'r va professional bo'lsin.
 - 2026-10-07: Namuna videolardagi (samples/) subtitr yozuvi va animatsiyalari bilan bir xil videolar kerak, to'liq. Standart ko'rinish shu: docs/NAMUNA_USLUBI.md va /namuna skilli.
+- 2026-10-07: doktor 1: the full-frame stock b-roll version was rejected; the final has no b-roll.
