@@ -4,7 +4,7 @@
   "_izoh": "Million jamoasining rasmiy Instagram sahifasi uchun. Kontent: sahna chiqishlari (komediya). Shuning uchun jim joylar kesilmaydi (pauza va kulgu mazmunning bir qismi), zoom yo'q, rang ishlovi yo'q (video allaqachon tayyor). Logotip fayli hali berilmagan: logo.file bo'sh.",
   "style": {
     "captions": {
-      "_izoh": "Sahifaning o'z sarlavha uslubiga mos: Montserrat, qalin, KATTA harf, sariq urg'u, qora kontur (rang-barang sahna ustida o'qilishi uchun). position_y 0.655: kadrdagi homiy stikeri (y 0.70-0.78) va tepadagi sarlavhani yopmaslik uchun.",
+      "_izoh": "Sahifaning o'z sarlavha uslubiga mos: Montserrat, qalin, KATTA harf, sariq urg'u, qora kontur. position_y 0.733: video kartochkasi (stage) ostidagi bo'sh joyda (0.67-0.79), tasvirni ham, Instagram tugmalarini ham yopmaydi.",
       "preset": "clean",
       "font": "Montserrat",
       "case": "upper",
@@ -16,11 +16,11 @@
       "size_sub": 50,
       "size_plain": 62,
       "size_main": 84,
-      "size_huge": 120,
+      "size_huge": 108,
       "tracking": -0.01,
-      "position_y": 0.655,
+      "position_y": 0.733,
       "max_words_per_line": 4,
-      "max_chars_per_line": 22,
+      "max_chars_per_line": 20,
       "stroke": {
         "width": 5,
         "color": "#000000"

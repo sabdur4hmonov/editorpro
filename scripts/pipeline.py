@@ -199,6 +199,9 @@ def main() -> int:
         else:
             C.info("\n=== 1/4 Transkripsiya o'tkazib yuborildi ===")
 
+        if words:
+            T.print_squeezed(T.squeezed_runs(words))
+
         # ---- lug'at: doim xato yoziladigan so'zlar to'g'rilanadi (vaqtlar o'zgarmaydi)
         if gloss and words:
             words, changed = G.apply_to_words(words, gloss)

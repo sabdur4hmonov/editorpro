@@ -28,7 +28,8 @@ from pathlib import Path
 
 import common as C
 
-VERSION = 5
+VERSION = 6
+EXIT_RESTART = 75          # o'z fayli yangilangan: start_watcher.bat qayta ishga tushiradi
 JOBS = C.ROOT / "jobs"
 INBOX, DONE, LOGS, PREVIEW = JOBS / "inbox", JOBS / "done", JOBS / "logs", JOBS / "preview"
 HEARTBEAT = JOBS / "watcher.json"
@@ -96,7 +97,8 @@ def build_command(job: dict) -> tuple[list, dict]:
     if action == "pipeline":
         allowed = {"approve_subs", "no_subs", "no_cut", "no_repeats", "force",
                    "language", "model", "silence_db", "music", "brand", "engine", "stills",
-                   "no_silence", "remove", "trim", "script", "no_script", "words", "no_glossary"}
+                   "no_silence", "remove", "trim", "script", "no_script", "words", "no_glossary",
+                   "elements", "output"}
         unknown = set(opts) - allowed
         if unknown:
             raise C.MontajError(f"pipeline uchun noma'lum sozlama: {', '.join(sorted(unknown))}")
@@ -131,6 +133,14 @@ def build_command(job: dict) -> tuple[list, dict]:
             cmd += ["--script", str(_path(opts["script"], {".txt", ".md"}, "Skript"))]
         if "words" in opts:      # tasdiqlangan (tuzatilgan) so'zlar fayli: whisper qayta ishlamaydi
             cmd += ["--words", str(_temp_path(opts["words"], {".json"}, "So'zlar fayli"))]
+        if "elements" in opts:   # boshqa elementlar fayli (masalan effektli va effektsiz variant)
+            cmd += ["--elements", str(_temp_path(opts["elements"], {".json"}, "Elementlar fayli"))]
+        out_name = None
+        if "output" in opts:     # natija nomi: output/<nom>.mp4 (variantlarni yonma-yon saqlash uchun)
+            if not isinstance(opts["output"], str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_\-]{0,60}", opts["output"]):
+                raise C.MontajError("output: faqat fayl nomi (harf, raqam, _ va -), kengaytmasiz. Fayl output/ ga yoziladi.")
+            out_name = C.OUTPUT_DIR / f"{opts['output']}.mp4"
+            cmd += ["-o", str(out_name)]
         if "brand" in opts:
             if opts["brand"] not in C.list_brands():
                 raise C.MontajError(f"Brend topilmadi: {opts['brand']!r}. Mavjudlari: "
@@ -147,7 +157,7 @@ def build_command(job: dict) -> tuple[list, dict]:
                 raise C.MontajError("stills: 1 tadan 12 tagacha musbat son ro'yxati bo'lishi kerak.")
             cmd += ["--stills", ",".join(f"{float(x):.3f}" for x in times)]
         info = {"video": str(video), "work": str(C.TEMP_DIR / C.slugify(video.stem)),
-                "output": str(C.OUTPUT_DIR / f"{C.output_stem(video.stem)}_final.mp4"),
+                "output": str(out_name or C.OUTPUT_DIR / f"{C.output_stem(video.stem)}_final.mp4"),
                 "stills": "stills" in opts}
         return cmd, info
 
@@ -667,12 +677,21 @@ def main() -> int:
     C.info("  To'xtatish: shu oynani yoping yoki Ctrl+C.\n")
     write_heartbeat("idle")
     try:
+        me = Path(__file__)
+        born = me.stat().st_mtime
         while True:
             jobs = pending_jobs()
             for job in jobs:
                 run_job(job)
             if args.once:
                 return 0
+            try:
+                changed = me.stat().st_mtime != born
+            except OSError:
+                changed = False
+            if changed and not pending_jobs():
+                C.info("\nwatcher.py yangilandi: qayta ishga tushmoqda...")
+                return EXIT_RESTART
             write_heartbeat("idle")
             time.sleep(args.interval)
     finally:

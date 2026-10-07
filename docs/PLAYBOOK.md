@@ -24,7 +24,7 @@ Avval video turini aniqla (xom videodan 8-12 kadr olib qara: `frames.py`):
 | Tur | Belgilari | Nima qilinadi |
 |---|---|---|
 | Gapiruvchi odam (xom) | bitta odam kameraga gapiradi | to'liq montaj: kesish, zoom, subtitr, elementlar, effektlar |
-| Sahna, intervyu, konsert | bir necha odam, tomoshabin, kulgu, musiqa | `--no-cut`, zoom o'chiq, subtitr; effekt kam yoki yo'q |
+| Sahna, intervyu, konsert | bir necha odam, tomoshabin, kulgu, musiqa | `--no-cut`, zoom o'chiq, subtitr; komediya bo'lsa 7-bo'lim (ijodiy joylashuv) |
 | Tayyor Reels (ichida yozuv, stiker bor) | kadrga yozuv va belgilar allaqachon yozilgan | bor narsani o'chirib bo'lmaydi; faqat ustiga qo'shiladi, joyini kadrga qarab tanla. Xom manbani so'ra |
 
 Skript bo'lsa ish ancha aniq chiqadi: matn xatosiz, va sen videoda nima deyilganini bilasan
@@ -133,3 +133,29 @@ Qoidalar:
 - AI video (Kling, Veo, Seedance kabi) bu tizimda yaratilmaydi. Foydalanuvchi shunday klip bersa,
   u oddiy `broll` sifatida qo'yiladi.
 - Murakkab harakatli sahna (3D, personaj animatsiyasi) kerak bo'lsa: `docs/REMOTION_PROMPT.md`.
+
+## 7. Komediya va sahna videosi: ijodiy joylashuv
+
+Foydalanuvchi fikri (2026-10-07): "o'zing ijodiyroq bo'l; kulgili videoga ko'proq narsa qo'sh, fonni
+o'zgartir, kerak joyiga animatsiya qo'sh, professional bo'lsin". Shuning uchun komediya/sahna videosida
+standart shu:
+
+1. **Fon almashadi.** `stage` elementi: video kartochkaga olinadi, orqasida chizilgan fon (brend rangida
+   sahna chiroqlari). Tayyor Reels bo'lsa `crop` bilan faqat asl tasvir tasmasi olinadi (xira fon va eski
+   sarlavha tashqarida qoladi). Tasmani topish: `frames.py` bilan kadr olib, chegaralarni o'lcha.
+2. **Tartib (tepadan pastga):** kichik yozuv (jamoa nomi) → sarlavha (`stagger`, `loop: bob`) → kartochka →
+   subtitr (kartochka ostida, xavfsiz zona ichida) → pastki 20% bo'sh (Instagram yozuvlari).
+3. **Zarbalar hazilga bog'lanadi.** Kulgili gap tugagan so'zda `punch` (+ `flash`), eng katta hazilda
+   `shake`. Vaqt so'z vaqtlaridan olinadi. 60 soniyada 8-10 tadan oshmasin.
+4. **Kulgu joylari** `reactions.py` bilan topiladi (nutqsiz baland joy): o'sha yerda `burst` (😂 🤣 👏).
+   Taqdirlash, yutuq, sovg'a paytida `confetti`. Tomoshabin ko'rsatilgan kadrda ayniqsa yaxshi ishlaydi.
+5. **Stikerlar** (`emoji` + `sticker: true`, `rotate`, `wiggle`): aytilgan narsaga mos (pul → 💰,
+   medal → 🥇), kartochkaning yuqori burchagida, yuzni yopmaydi. Faqat **aniq eshitilgan** so'zga:
+   `needs_review` joyga stiker qo'yma.
+6. **Bo'sh joyni to'ldir.** Uzun kulgu paytida subtitr yo'q: o'sha joyga hazilning qisqa xulosasi
+   (`text`, ikki qator) qo'yiladi. Unda faqat videoda aytilgan narsa bo'ladi.
+7. **Whisper kulgu ustida matn o'ylab topadi.** `transcribe.py` "tiqilgan so'zlar" deb ogohlantirsa,
+   o'sha so'zlarni olib tashla (`corrections.json`, `"text": ""`).
+8. **Ovoz:** effektlar ikki variantda render qilinadi (effektsiz va effektli), foydalanuvchi tinglab
+   tanlaydi: watcher `elements` + `output` sozlamalari. Asl ovoz va kulgu doim birinchi.
+9. Kadrga yozilgan homiy belgisi (stiker, logotip) o'chirilmaydi va yopilmaydi: bu foydalanuvchi qarori.

@@ -511,44 +511,93 @@ def cue_style(style: dict) -> dict:
     return out
 
 
+MARK_WIDTH = {"!!": 1.7, "**": 1.35, "*": 1.15, "_": 0.85}   # belgilangan so'z kattaroq (yoki kichikroq) chiziladi
+
+
+def _split_phrase(seg: list, max_words: int, max_chars: int, max_dur: float) -> list:
+    """Bitta gapni (seg) bo'laklarga bo'ladi: iloji boricha kam bo'lak, uzunliklari teng, vergulda uziladi.
+
+    Qaytaradi: [(boshi, oxiri), ...] - seg ichidagi indekslar. Yolg'iz qolgan qisqa so'z ("ber.") dan qochadi.
+    """
+    n = len(seg)
+    if n == 1:
+        return [(0, 1)]
+    width = [len(it["plain"]) * MARK_WIDTH.get(it["mark"], 1.0) for it in seg]
+    # bitta belgilangan ibora ("!!20 daqiqa!!") ikki bo'lakka bo'linmaydi
+    glue = [bool(seg[i + 1]["mark"]) and seg[i]["mark"] == seg[i + 1]["mark"] for i in range(n - 1)]
+
+    def size(a: int, b: int) -> float:
+        return sum(width[a:b]) + (b - a - 1)
+
+    def fits(a: int, b: int, use_glue: bool) -> bool:
+        if b - a == 1:
+            return True
+        if use_glue and all(glue[a:b - 1]):
+            return b - a <= max_words + 1
+        return (b - a <= max_words and size(a, b) <= max_chars
+                and seg[b - 1]["end"] - seg[a]["start"] <= max_dur)
+
+    for use_glue in (True, False):
+        best = [math.inf] * (n + 1)
+        prev = [0] * (n + 1)
+        best[0] = 0.0
+        for b in range(1, n + 1):
+            for a in range(max(0, b - max_words - 1), b):
+                if best[a] == math.inf or not fits(a, b, use_glue):
+                    continue
+                if use_glue and a > 0 and glue[a - 1]:
+                    continue                                    # belgilangan ibora o'rtasidan uzilmaydi
+                cost = best[a] + 1000.0 + (max_chars - min(max_chars, size(a, b))) ** 2
+                if b - a == 1 and size(a, b) < 7:
+                    cost += 600.0                               # yolg'iz qisqa so'z
+                # vergul bo'lak o'rtasida qolmasin (ibora chegarasida uzilsin); qisqa iboralar birga qoladi
+                cost += 1100.0 * sum(1 for it in seg[a:b - 1] if it["plain"].rstrip().endswith((",", ";", ":", "\u2014")))
+                if cost < best[b]:
+                    best[b], prev[b] = cost, a
+        if best[n] < math.inf:
+            break
+    parts, b = [], n
+    while b > 0:
+        parts.append((prev[b], b))
+        b = prev[b]
+    return parts[::-1]
+
+
 def words_to_cues(words: list, sub_style: dict) -> list:
     """So'zlar ro'yxatidan qisqa subtitr bo'laklari yasaydi (Reels uslubi).
 
-    So'zda "brk": true bo'lsa (skript qatori tugagan joy) bo'lak shu so'zdan keyin uziladi.
+    Avval matn gaplarga ajraladi (nuqta, so'roq, undov; uzun pauza; so'zda "brk": true bo'lsa - skript
+    qatori yoki qo'lda qo'yilgan uzilish). Keyin har gap teng uzunlikdagi bo'laklarga bo'linadi.
     """
     max_words = int(sub_style.get("max_words_per_line", 3))
     max_chars = int(sub_style.get("max_chars_per_line", 18))
     max_dur = float(sub_style.get("max_cue_duration", 2.5))
     gap_break = float(sub_style.get("gap_break", 0.6))
-    cues, cur = [], []
-
-    def flush():
-        if cur:
-            text = " ".join(w["word"] for w in cur)
-            # yonma-yon turgan bir xil belgilar birlashtiriladi: "**3** **ta**" -> "**3 ta**"
-            text = re.sub(r"(?<![*!_])(!!|\*\*|\*|_) \1(?![*!_])", " ", text)
-            cues.append({"start": cur[0]["start"], "end": cur[-1]["end"], "text": text})
-            cur.clear()
-
+    segs, cur = [], []
     for w in words:
         token = str(w.get("word", "")).strip()
         if not token:
             continue
-        item = {"start": float(w["start"]), "end": float(w["end"]), "word": token}
         plain = strip_markup(token)
-        if cur:
-            text_len = len(" ".join(strip_markup(x["word"]) for x in cur)) + 1 + len(plain)
-            # bitta belgilangan ibora ("!!20 daqiqa!!") ikki bo'lakka bo'linib ketmasin
-            mark = re.match(r"!!|\*\*|\*|_", token)
-            glued = bool(mark) and cur[-1]["word"].startswith(mark.group()) and len(cur) <= max_words
-            if (((len(cur) >= max_words or text_len > max_chars) and not glued)
-                    or item["end"] - cur[0]["start"] > max_dur
-                    or item["start"] - cur[-1]["end"] > gap_break):
-                flush()
+        mark = re.match(r"!!|\*\*|\*|_", token)
+        item = {"start": float(w["start"]), "end": float(w["end"]), "word": token, "plain": plain,
+                "mark": mark.group() if mark else ""}
+        if cur and item["start"] - cur[-1]["end"] > gap_break:
+            segs.append(cur)
+            cur = []
         cur.append(item)
         if w.get("brk") or re.search(r"[.!?\u2026][^\w]*$", plain):
-            flush()
-    flush()
+            segs.append(cur)
+            cur = []
+    if cur:
+        segs.append(cur)
+    cues = []
+    for seg in segs:
+        for a, b in _split_phrase(seg, max_words, max_chars, max_dur):
+            text = " ".join(it["word"] for it in seg[a:b])
+            # yonma-yon turgan bir xil belgilar birlashtiriladi: "**3** **ta**" -> "**3 ta**"
+            text = re.sub(r"(?<![*!_])(!!|\*\*|\*|_) \1(?![*!_])", " ", text)
+            cues.append({"start": seg[a]["start"], "end": seg[b - 1]["end"], "text": text})
     # bo'laklar ustma-ust tushmasin va juda qisqa bo'lmasin
     min_dur = float(sub_style.get("min_cue_duration", 0.3))
     for i, cue in enumerate(cues):

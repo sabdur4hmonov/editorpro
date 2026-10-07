@@ -94,7 +94,9 @@ class Ctx:
             out.append("pastdan")
         if left < s["left"] * self.W - 2:
             out.append("chapdan")
-        if right > (1 - s["right"]) * self.W + 2:
+        # o'ng tomondagi tugmalar (yoqtirish, izoh, ulashish) kadrning pastki yarmida turadi:
+        # tepada turgan narsaga o'ng chegara qo'llanmaydi
+        if right > (1 - s["right"]) * self.W + 2 and bottom > 0.45 * self.H:
             out.append("o'ngdan")
         if out:
             self.note(f"{what} xavfsiz zonadan chiqyapti ({', '.join(out)}): Instagram tugmalari yopishi mumkin.")
@@ -363,6 +365,11 @@ class CaptionLayer(Layer):
 
     def _prepare(self, item: dict) -> None:
         block = RichBlock(self.ctx, item["text"], self.cfg)
+        # juda keng chiqsa xavfsiz zonaga sig'adigan qilib kichraytiriladi (o'ngda Instagram tugmalari bor)
+        safe = self.ctx.safe
+        room = (1 - 2 * max(safe["left"], safe["right"])) * self.ctx.W
+        if block.width > room:
+            block = RichBlock(self.ctx, item["text"], self.cfg, max(0.6, room / block.width * 0.99))
         tokens = block.plain_words
         cx, cy = self.ctx.W / 2, float(self.cfg["position_y"]) * self.ctx.H
         self.ctx.check_safe(f"Subtitr ({C.fmt_time(item['start'])})", cx - block.width / 2, cy - block.height / 2,
@@ -402,7 +409,7 @@ class TextLayer(Layer):
         super().__init__(el["start"], el["end"])
         override = {"reveal": "cue", "animation": el.get("anim", "blur"), "case": el.get("case", "asis"),
                     "strip_punct": False, "auto_numbers": False}
-        for key in ("preset", "font", "color", "accent", "align", "max_width", "italic", "box", "glow"):
+        for key in ("preset", "font", "color", "accent", "align", "max_width", "italic", "box", "glow", "tracking"):
             if key in el:
                 override[key] = el[key]
         if "weight" in el:
@@ -410,9 +417,25 @@ class TextLayer(Layer):
         self.ctx, self.cfg = ctx, ctx.caption_cfg(override)
         self.block = RichBlock(ctx, str(el.get("text", "")), self.cfg, float(el.get("size", 1.0)))
         self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.3)) * ctx.H
+        # stagger: so'zlar birin-ketin chiqadi (soniya); loop: "bob" - sekin tebranib turadi
+        self.times = None
+        stagger = float(el.get("stagger", 0))
+        if stagger > 0:
+            self.cfg = dict(self.cfg, reveal="word")
+            self.times = [self.start + i * stagger for i in range(len(self.block.words))]
+        self.loop = str(el.get("loop", "none"))
+        if self.loop not in ("none", "bob"):
+            raise C.MontajError(f"loop noto'g'ri: {self.loop!r}. Mumkin: none, bob")
+        self.k = ctx.k
+        half_w, half_h = self.block.width / 2, self.block.height / 2
+        ctx.check_safe(f"Matn ({strip_markup(str(el.get('text', '')))[:24]})", self.cx - half_w, self.cy - half_h,
+                       self.cx + half_w, self.cy + half_h)
 
     def draw(self, frame, t: float) -> None:
-        self.block.draw(frame, self.cx, self.cy, t, None, self.cfg, self.start, self.end)
+        cy = self.cy
+        if self.loop == "bob":
+            cy += math.sin((t - self.start) * 2 * math.pi / 2.6) * 7 * self.k
+        self.block.draw(frame, self.cx, cy, t, self.times, self.cfg, self.start, self.end)
 
 
 class VideoReader:
@@ -1099,7 +1122,10 @@ class LowerThirdLayer(Layer):
 
 
 class EmojiLayer(Layer):
-    """Katta emoji: sakrab chiqadi va sekin "nafas oladi"."""
+    """Katta emoji: sakrab chiqadi va sekin "nafas oladi".
+
+    sticker: true - oq hoshiyali stiker ko'rinishi; rotate: qiyalik (gradus); wiggle: tebranish (gradus).
+    """
     z = 37
 
     def __init__(self, ctx: Ctx, el: dict):
@@ -1110,12 +1136,37 @@ class EmojiLayer(Layer):
             raise C.MontajError(f"emoji elementida tanilmagan emoji: {el.get('emoji')!r} "
                                 "(bayroqlar va juda yangi emojilar to'plamda yo'q).")
         size = max(16, int(float(el.get("size", 0.2)) * ctx.W))
-        self.spr = M.pil_sprite(M.Emoji.image(runs[0], size), shadow={"blur": 14 * ctx.k, "dy": 6 * ctx.k, "opacity": 0.3})
+        img = M.Emoji.image(runs[0], size)
+        if el.get("sticker"):
+            pad = max(2, int(size * 0.075))
+            canvas = Image.new("RGBA", (img.width + pad * 2, img.height + pad * 2), (0, 0, 0, 0))
+            canvas.alpha_composite(img, (pad, pad))
+            alpha = np.asarray(canvas)[..., 3]
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (pad * 2 + 1, pad * 2 + 1))
+            edge = cv2.GaussianBlur(cv2.dilate(alpha, kernel), (0, 0), max(0.6, pad * 0.12))
+            white = Image.fromarray(np.dstack([np.full_like(edge, 255)] * 3 + [edge]), "RGBA")
+            white.alpha_composite(canvas)
+            img = white
+        self.rotate, self.wiggle = float(el.get("rotate", 0)), abs(float(el.get("wiggle", 0)))
+        shadow = {"blur": 14 * ctx.k, "dy": 6 * ctx.k, "opacity": 0.38}
+        steps = 9 if self.wiggle else 1
+        self.sprites = []
+        for i in range(steps):
+            ang = self.rotate + (self.wiggle * (2 * i / (steps - 1) - 1) if steps > 1 else 0)
+            turned = img.rotate(ang, resample=Image.BICUBIC, expand=True) if abs(ang) > 0.05 else img
+            self.sprites.append(M.pil_sprite(turned, shadow=shadow))
         self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.3)) * ctx.H
+        half = self.sprites[0].w / 2
+        ctx.check_safe(f"Emoji ({el.get('emoji')})", self.cx - half * 0.8, self.cy - half * 0.8,
+                       self.cx + half * 0.8, self.cy + half * 0.8)
 
     def draw(self, frame, t: float) -> None:
         op, scale = appear(t, self.start, self.end)
-        M.blit(frame, self.spr, self.cx, self.cy, opacity=op, scale=scale * M.breathe(t - self.start, 0.02, 1.8),
+        spr = self.sprites[0]
+        if len(self.sprites) > 1:
+            pos = (math.sin((t - self.start) * 2 * math.pi / 1.5) + 1) / 2
+            spr = self.sprites[min(len(self.sprites) - 1, int(round(pos * (len(self.sprites) - 1))))]
+        M.blit(frame, spr, self.cx, self.cy, opacity=op, scale=scale * M.breathe(t - self.start, 0.02, 1.8),
                anchor=(0, 0))
 
 
@@ -1193,6 +1244,343 @@ class IconLayer(Layer):
                    opacity=p * clamp_exit(t, self.end, 0.14))
 
 
+class Backdrop:
+    """Chizilgan harakatli fon: qorong'i gradient, sekin suzuvchi yorug'lik dog'lari va uchqunlar.
+
+    Tez ishlashi uchun yorug'lik kichik o'lchamda hisoblanib, keyin kattalashtiriladi.
+    """
+
+    def __init__(self, ctx: Ctx, cfg: dict):
+        W, H = ctx.W, ctx.H
+        self.W, self.H, self.k = W, H, ctx.k
+        accent = M.rgb(cfg.get("accent", ctx.caption_cfg()["accent"]))
+        c1, c2 = M.rgb(cfg.get("color1", "#05050A")), M.rgb(cfg.get("color2", "#120C22"))
+        self.lw, self.lh = max(8, W // 6), max(8, H // 6)
+        yy = np.linspace(0.0, 1.0, self.lh, dtype=np.float32)[:, None]
+        xx = np.linspace(-1.0, 1.0, self.lw, dtype=np.float32)[None, :]
+        mix = np.clip(yy * 0.85 + 0.15 * (1 - np.abs(xx)), 0, 1)[..., None]
+        base = np.array(c1, np.float32) * (1 - mix) + np.array(c2, np.float32) * mix
+        vign = 1.0 - 0.45 * np.clip((xx ** 2 + (2 * yy - 1) ** 2) / 2.0, 0, 1)
+        self.base = base * vign[..., None]
+        self.X = np.linspace(0.0, 1.0, self.lw, dtype=np.float32)[None, :]
+        self.Y = np.linspace(0.0, 1.0, self.lh, dtype=np.float32)[:, None]
+        strength = float(cfg.get("glow", 1.0))
+        cool = M.rgb(cfg.get("color3", "#3B2A8C"))
+        deep = M.rgb(cfg.get("color4", "#16307A"))
+        # (rang, markaz x/y, tebranish amplitudasi x/y, davr, faza, kenglik, kuch)
+        self.glows = [(accent, 0.50, 0.05, 0.22, 0.02, 11.0, 0.0, 0.24, 0.30 * strength),
+                      (cool, 0.88, 0.46, 0.10, 0.12, 15.0, 1.7, 0.40, 0.60 * strength),
+                      (deep, 0.10, 0.88, 0.14, 0.06, 13.0, 3.1, 0.42, 0.55 * strength),
+                      (accent, 0.80, 1.02, 0.12, 0.02, 17.0, 4.4, 0.22, 0.14 * strength)]
+        # sahna projektorlari: tepadagi ikki nuqtadan sekin siljiydigan nur dastalari
+        self.rays = []
+        if cfg.get("rays", True):
+            asp = H / W
+            for sx, a0, swing, period, ph in ((-0.08, 1.02, 0.16, 9.0, 0.0), (1.08, 2.12, 0.16, 11.5, 2.0)):
+                dx, dy = self.X - sx, (self.Y + 0.04) * asp
+                ang = np.arctan2(dy, dx).astype(np.float32)
+                fall = np.clip(1.15 - np.sqrt(dx * dx + dy * dy) / (1.25 * asp), 0, 1).astype(np.float32)
+                self.rays.append((ang, fall, a0, swing, period, ph))
+        self.ray_col = np.array([min(255, c + 60) for c in accent], np.float32) * (0.20 * strength)
+        # mayda don: tekis qorong'i fonda "zinapoya" (banding) chiqmasligi uchun
+        rng = np.random.default_rng(11)
+        self.grain = rng.integers(0, 5, size=(H, W, 3), dtype=np.uint8)
+        pattern = str(cfg.get("pattern", "dots"))
+        if pattern == "dots":
+            step = max(12, int(34 * ctx.k))
+            dots = np.zeros((H, W), np.uint8)
+            for row, y in enumerate(range(step // 2, H, step)):
+                for x in range((step // 2) if row % 2 else step, W, step):
+                    cv2.circle(dots, (x, y), max(1, int(2.2 * ctx.k)), 9, -1, lineType=cv2.LINE_AA)
+            self.grain = cv2.add(self.grain, cv2.merge([dots, dots, dots]))
+        elif pattern != "none":
+            raise C.MontajError(f"background.pattern noto'g'ri: {pattern!r}. Mumkin: dots, none")
+        # uchqunlar (bokeh)
+        r = random.Random(7)
+        self.sparks = []
+        sizes = [int(v * ctx.k) for v in (10, 16, 26)]
+        self.spark_sprites = {}
+        for size in sizes:
+            for name, col in (("a", accent), ("w", (255, 255, 255))):
+                d = size * 4
+                g = np.zeros((d, d), np.float32)
+                cv2.circle(g, (d // 2, d // 2), size, 1.0, -1, lineType=cv2.LINE_AA)
+                g = cv2.GaussianBlur(g, (0, 0), size * 0.55)
+                pix = np.dstack([g * col[0], g * col[1], g * col[2], g * 255]).astype(np.uint8)
+                self.spark_sprites[(size, name)] = M.Sprite(pix, -d / 2, -d / 2)
+        for _ in range(int(cfg.get("sparks", 26))):
+            self.sparks.append({"x": r.uniform(0.02, 0.98) * W, "y": r.uniform(0, 1) * H, "v": r.uniform(18, 60) * ctx.k,
+                                "key": (r.choice(sizes), r.choice("aaw")), "ph": r.uniform(0, 6.28),
+                                "f": r.uniform(0.5, 1.4), "sway": r.uniform(6, 26) * ctx.k, "op": r.uniform(0.25, 0.7)})
+
+    def draw(self, frame, t: float, boost: float = 0.0) -> None:
+        """boost 0..1: chaqnash (zarba paytida projektorlar va yorug'lik bir zum kuchayadi)."""
+        low = self.base.copy()
+        gain = 1.0 + 0.9 * boost
+        for col, cx, cy, ax, ay, period, ph, width, amp in self.glows:
+            x = cx + ax * math.sin(2 * math.pi * t / period + ph)
+            y = cy + ay * math.cos(2 * math.pi * t / (period * 1.3) + ph)
+            g = np.exp(-(((self.X - x) ** 2) + ((self.Y - y) * self.H / self.W) ** 2) / (2 * width * width)) * (amp * gain)
+            low += g[..., None] * np.array(col, np.float32)
+        for ang, fall, a0, swing, period, ph in self.rays:
+            a = a0 + swing * math.sin(2 * math.pi * t / period + ph)
+            beam = np.exp(-((ang - a) ** 2) / (2 * (0.075 * (1 + 0.5 * boost)) ** 2)) * fall
+            low += beam[..., None] * (self.ray_col * (1.0 + 2.2 * boost))
+        np.clip(low, 0, 255, out=low)
+        up = cv2.resize(low.astype(np.uint8), (self.W, self.H), interpolation=cv2.INTER_CUBIC)
+        frame[:] = cv2.add(up, self.grain)
+        span = self.H + 80 * self.k
+        for sp in self.sparks:
+            y = (sp["y"] - sp["v"] * t) % span - 40 * self.k
+            x = sp["x"] + math.sin(t * sp["f"] + sp["ph"]) * sp["sway"]
+            op = sp["op"] * (0.55 + 0.45 * math.sin(t * sp["f"] * 2.1 + sp["ph"]))
+            M.blit(frame, self.spark_sprites[sp["key"]], x, y, opacity=max(0.0, op))
+
+
+class StageLayer(Layer):
+    """Videoning bir qismini (crop) yumaloq burchakli kartochkaga olib, orqasiga yangi harakatli fon chizadi.
+
+    Tayyor Reels ichidagi xira fonni almashtirish yoki gorizontal videoni chiroyli ramkaga olish uchun.
+    punch: zarba paytida kartochka ichidagi tasvir biroz yaqinlashadi; shake: kartochka silkinadi.
+    """
+    z = 1
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        W, H, k = ctx.W, ctx.H, ctx.k
+        crop = el.get("crop", [0, 0, 1, 1])
+        if (not isinstance(crop, list) or len(crop) != 4 or not all(isinstance(v, (int, float)) for v in crop)
+                or not (0 <= crop[0] < crop[2] <= 1 and 0 <= crop[1] < crop[3] <= 1)):
+            raise C.MontajError("stage.crop: [x0, y0, x1, y1] bo'lishi kerak, 0..1 oralig'ida (x0 < x1, y0 < y1).")
+        self.sx0, self.sy0 = int(round(crop[0] * W)), int(round(crop[1] * H))
+        self.sx1, self.sy1 = int(round(crop[2] * W)), int(round(crop[3] * H))
+        sw, sh = self.sx1 - self.sx0, self.sy1 - self.sy0
+        if sw < 16 or sh < 16:
+            raise C.MontajError("stage.crop juda kichik.")
+        self.cw = max(16, int(float(el.get("width", 0.92)) * W) // 2 * 2)
+        self.ch = max(16, int(round(self.cw * sh / sw)) // 2 * 2)
+        self.cx, self.cy = float(el.get("x", 0.5)) * W, float(el.get("y", 0.47)) * H
+        if self.ch > H or self.cw > W:
+            raise C.MontajError("stage: kartochka kadrga sig'maydi (width ni kichraytiring).")
+        self.radius = max(0, min(int(float(el.get("radius", 40)) * k), self.cw // 2, self.ch // 2))
+        border = el.get("border", {}) or {}
+        accent = M.rgb(el.get("accent", ctx.caption_cfg()["accent"]))
+        bw = max(0, int(float(border.get("width", 5)) * k))
+        bcol = accent if str(border.get("color", "accent")) == "accent" else M.rgb(border["color"])
+        self.shadow = M.rounded_rect_sprite(self.cw, self.ch, self.radius, (0, 0, 0, 255),
+                                            shadow={"blur": 30 * k, "dy": 14 * k, "opacity": 0.6})
+        self.ring = M.rounded_rect_sprite(self.cw, self.ch, self.radius, (0, 0, 0, 0), border=bcol + (255,),
+                                          border_width=bw) if bw else None
+        if self.radius:
+            r = self.radius
+            m = np.zeros((r * 4, r * 4), np.float32)
+            cv2.circle(m, (r * 4, r * 4), r * 4, 1.0, -1, lineType=cv2.LINE_AA)       # chap-yuqori burchak
+            self.corner = cv2.resize(m, (r, r), interpolation=cv2.INTER_AREA)[..., None]
+        self.backdrop = Backdrop(ctx, dict(el.get("background", {}) or {}, accent=el.get("accent", ctx.caption_cfg()["accent"])))
+        self.float_px = float(el.get("float", 6)) * k
+        self.punch = self._events(el.get("punch"), "punch", {"scale": 0.045, "dur": 0.55})
+        self.shake = self._events(el.get("shake"), "shake", {"amp": 9.0, "dur": 0.5})
+        self.flash = self._events(el.get("flash"), "flash", {"amount": 1.0, "dur": 0.9})
+        prog = el.get("progress")
+        self.progress = None
+        if prog:
+            prog = prog if isinstance(prog, dict) else {}
+            self.progress = {"h": max(2, int(float(prog.get("height", 7)) * k)),
+                             "color": np.array(M.rgb(prog["color"]) if prog.get("color") else accent, np.float32)}
+        self.footer = None
+        ft = el.get("footer")
+        if ft:
+            fh = max(8, int(float(ft.get("height", 0.066)) * self.ch))
+            font = ctx.fonts.get(ctx.caption_cfg()["font"], fh * 0.5, 700)
+            text = M.word_sprite(fix_apostrophes(str(ft.get("text", ""))), font, str(ft.get("color", "#%02X%02X%02X" % accent)),
+                                 0.0, None)
+            self.footer = {"h": fh, "from": float(ft.get("from", self.start)), "text": text,
+                           "fill": np.array(M.rgb(ft.get("fill", "#0C0C12")), np.float32), "line": np.array(bcol, np.float32)}
+        half_w, half_h = self.cw / 2, self.ch / 2
+        ctx.check_safe("Kartochka (stage)", max(ctx.safe["left"] * W, self.cx - half_w), self.cy - half_h,
+                       min((1 - ctx.safe["right"]) * W, self.cx + half_w), self.cy + half_h)
+
+    @staticmethod
+    def _events(items, name: str, defaults: dict) -> list:
+        out = []
+        for it in items or []:
+            if not isinstance(it, dict) or "at" not in it:
+                raise C.MontajError(f"stage.{name}: har biri {{\"at\": soniya}} ko'rinishida bo'lishi kerak.")
+            ev = dict(defaults)
+            ev.update({key: float(val) for key, val in it.items()})
+            out.append(ev)
+        return out
+
+    def draw(self, frame, t: float) -> None:
+        k = self.ctx.k
+        # zarba: tez yaqinlashib, sekin qaytadi
+        zoom = 1.0
+        for ev in self.punch:
+            p = (t - ev["at"]) / ev["dur"]
+            if 0 <= p < 1:
+                zoom += ev["scale"] * (M.ease_out(p / 0.18) if p < 0.18 else 1 - M.ease_in_out((p - 0.18) / 0.82))
+        sx0, sy0, sx1, sy1 = self.sx0, self.sy0, self.sx1, self.sy1
+        if zoom > 1.001:
+            sw, sh = (sx1 - sx0) / zoom, (sy1 - sy0) / zoom
+            mx, my = (sx0 + sx1) / 2, (sy0 + sy1) / 2
+            sx0, sx1, sy0, sy1 = int(mx - sw / 2), int(mx + sw / 2), int(my - sh / 2), int(my + sh / 2)
+        card = cv2.resize(frame[sy0:sy1, sx0:sx1], (self.cw, self.ch), interpolation=cv2.INTER_LINEAR)
+        boost = 0.0
+        for ev in self.flash:
+            p = (t - ev["at"]) / ev["dur"]
+            if 0 <= p < 1:
+                boost = max(boost, ev["amount"] * (M.ease_out(p / 0.12) if p < 0.12 else (1 - (p - 0.12) / 0.88) ** 2))
+        self.backdrop.draw(frame, t, min(1.5, boost))
+        ox = 0.0
+        oy = math.sin((t - self.start) * 2 * math.pi / 6.5) * self.float_px
+        for ev in self.shake:
+            p = (t - ev["at"]) / ev["dur"]
+            if 0 <= p < 1:
+                amp = ev["amp"] * k * (1 - p) ** 2
+                ox += amp * math.sin(p * ev["dur"] * 2 * math.pi * 13)
+                oy += amp * math.cos(p * ev["dur"] * 2 * math.pi * 17)
+        intro = M.clamp01((t - self.start) / 0.45)
+        oy += (1 - M.ease_out(intro)) * 60 * k
+        H, W = frame.shape[:2]
+        x0 = int(round(min(max(0, self.cx - self.cw / 2 + ox), W - self.cw)))
+        y0 = int(round(min(max(0, self.cy - self.ch / 2 + oy), H - self.ch)))
+        if self.footer and t >= self.footer["from"]:
+            f = self.footer
+            op = M.ease_out((t - f["from"]) / 0.4)
+            band = card[self.ch - f["h"]:]
+            band[:] = (band.astype(np.float32) * (1 - 0.94 * op) + f["fill"] * (0.94 * op)).astype(np.uint8)
+            line = max(1, int(2 * k))
+            band[:line] = (band[:line].astype(np.float32) * (1 - op) + f["line"] * op).astype(np.uint8)
+            spr, tw = f["text"]
+            M.blit(card, spr, (self.cw - tw) / 2, self.ch - f["h"] * 0.30, opacity=op)
+        if self.progress:
+            # video qayergacha kelgani: kartochkaning eng pastki chetida ingichka chiziq
+            ph = self.progress["h"]
+            done_w = int(self.cw * M.clamp01((t - self.start) / max(0.01, self.end - self.start)))
+            strip = card[self.ch - ph:]
+            strip[:] = (strip.astype(np.float32) * 0.35).astype(np.uint8)
+            strip[:, :done_w] = self.progress["color"].astype(np.uint8)
+        M.blit(frame, self.shadow, x0, y0, opacity=intro)
+        region = frame[y0:y0 + self.ch, x0:x0 + self.cw]
+        r = self.radius
+        saved = None
+        if r:
+            saved = [region[:r, :r].copy(), region[:r, -r:].copy(), region[-r:, :r].copy(), region[-r:, -r:].copy()]
+        if intro < 0.999:
+            region[:] = (region.astype(np.float32) * (1 - intro) + card.astype(np.float32) * intro).astype(np.uint8)
+        else:
+            region[:] = card
+        if r:
+            a = self.corner
+            for patch, sl, mask in ((saved[0], (slice(0, r), slice(0, r)), a),
+                                    (saved[1], (slice(0, r), slice(-r, None)), a[:, ::-1]),
+                                    (saved[2], (slice(-r, None), slice(0, r)), a[::-1]),
+                                    (saved[3], (slice(-r, None), slice(-r, None)), a[::-1, ::-1])):
+                cur = region[sl].astype(np.float32)
+                region[sl] = (cur * mask + patch.astype(np.float32) * (1 - mask)).astype(np.uint8)
+        if self.ring is not None:
+            M.blit(frame, self.ring, x0, y0, opacity=intro)
+
+
+class BurstLayer(Layer):
+    """Emoji otilishi: bir nechta emoji pastdan ko'tarilib, so'nib ketadi (kulgu, olqish paytida)."""
+    z = 38
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        W, H, k = ctx.W, ctx.H, ctx.k
+        raw = el.get("emoji", "\U0001F602")
+        names = []
+        for item in (raw if isinstance(raw, list) else [raw]):
+            names += [v for kind, v in M.Emoji.split(str(item)) if kind == "emoji"]
+        if not names:
+            raise C.MontajError(f"burst elementida tanilmagan emoji: {raw!r}")
+        count = int(el.get("count", 9))
+        if not 1 <= count <= 60:
+            raise C.MontajError("burst.count 1 dan 60 gacha bo'lishi kerak.")
+        base = float(el.get("size", 0.085)) * W
+        xr = el.get("x", [0.12, 0.88])
+        x_lo, x_hi = (xr if isinstance(xr, list) else [float(xr) - 0.2, float(xr) + 0.2])
+        self.y0 = float(el.get("y_from", 0.74)) * H
+        self.rise = float(el.get("rise", 0.38)) * H
+        self.dur = max(0.3, self.end - self.start - 0.35)
+        r = random.Random(int(self.start * 1000) + count)
+        self.parts = []
+        for i in range(count):
+            size = max(16, int(base * r.uniform(0.7, 1.25)))
+            spr = M.pil_sprite(M.Emoji.image(r.choice(names), size), shadow={"blur": 8 * k, "dy": 4 * k, "opacity": 0.3})
+            self.parts.append({"spr": spr, "x": r.uniform(float(x_lo), float(x_hi)) * W, "delay": r.uniform(0, 0.35),
+                               "sway": r.uniform(8, 38) * k, "ph": r.uniform(0, 6.28), "rise": r.uniform(0.6, 1.0)})
+
+    def draw(self, frame, t: float) -> None:
+        for p in self.parts:
+            q = (t - self.start - p["delay"]) / self.dur
+            if not 0 <= q <= 1:
+                continue
+            y = self.y0 - self.rise * p["rise"] * M.ease_out(q)
+            x = p["x"] + math.sin(q * 5 + p["ph"]) * p["sway"]
+            M.blit(frame, p["spr"], x, y, opacity=M.clamp01(q * 7) * M.clamp01((1 - q) / 0.3),
+                   scale=0.5 + 0.5 * M.spring(q * 3.2), anchor=(0, 0))
+
+
+class ConfettiLayer(Layer):
+    """Konfetti: ikki pastki burchakdan (yoki tepadan) rangli qog'ozlar otiladi."""
+    z = 39
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        W, H, k = ctx.W, ctx.H, ctx.k
+        self.W, self.H, self.k = W, H, k
+        origin = str(el.get("origin", "sides"))
+        if origin not in ("sides", "top"):
+            raise C.MontajError(f"confetti.origin noto'g'ri: {origin!r}. Mumkin: sides, top")
+        count = int(el.get("count", 70))
+        if not 1 <= count <= 300:
+            raise C.MontajError("confetti.count 1 dan 300 gacha bo'lishi kerak.")
+        accent = ctx.caption_cfg()["accent"]
+        colors = [M.rgb(c) for c in (el.get("colors") or [accent, "#FFFFFF", "#FF5A5F", "#3DDC97", "#5B8CFF"])]
+        y_from = float(el.get("y_from", 0.72)) * H
+        r = random.Random(int(self.start * 1000) + count * 7)
+        self.g = 1500.0 * k
+        self.parts = []
+        for i in range(count):
+            if origin == "sides":
+                left = i % 2 == 0
+                ang = math.radians(r.uniform(52, 82))
+                speed = r.uniform(900, 1700) * k
+                vx = math.cos(ang) * speed * (1 if left else -1)
+                vy = -math.sin(ang) * speed
+                x, y = (0.03 * W if left else 0.97 * W), y_from
+            else:
+                x, y = r.uniform(0, 1) * W, -20 * k
+                vx, vy = r.uniform(-120, 120) * k, r.uniform(150, 520) * k
+            self.parts.append({"x": x, "y": y, "vx": vx, "vy": vy, "col": r.choice(colors), "w": r.uniform(9, 18) * k,
+                               "h": r.uniform(14, 28) * k, "rot": r.uniform(0, 6.28), "spin": r.uniform(-9, 9),
+                               "flip": r.uniform(3, 9), "ph": r.uniform(0, 6.28), "delay": r.uniform(0, 0.12)})
+
+    def draw(self, frame, t: float) -> None:
+        life = self.end - self.start
+        for p in self.parts:
+            tau = t - self.start - p["delay"]
+            if tau < 0:
+                continue
+            drag = 1.0 / (1.0 + 0.9 * tau)                     # havo qarshiligi: tezlik sekin so'nadi
+            x = p["x"] + p["vx"] * tau * drag
+            y = p["y"] + p["vy"] * tau * drag + 0.5 * self.g * tau * tau * 0.55
+            if y > self.H + 40 or x < -40 or x > self.W + 40:
+                continue
+            fade = M.clamp01((life - tau) / 0.35)
+            w = p["w"] * abs(math.cos(tau * p["flip"] + p["ph"])) * fade + 1.0
+            h = p["h"] * fade
+            a = p["rot"] + p["spin"] * tau
+            ca, sa = math.cos(a), math.sin(a)
+            pts = np.array([[x + (dx * ca - dy * sa), y + (dx * sa + dy * ca)]
+                            for dx, dy in ((-w / 2, -h / 2), (w / 2, -h / 2), (w / 2, h / 2), (-w / 2, h / 2))], np.int32)
+            cv2.fillConvexPoly(frame, pts, p["col"], lineType=cv2.LINE_AA)
+
+
 class ProgressLayer(Layer):
     """Video qayergacha kelganini ko'rsatadigan ingichka chiziq (tepada yoki pastda)."""
     z = 80
@@ -1213,7 +1601,9 @@ class ProgressLayer(Layer):
 ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "broll": BrollLayer,
                  "list": ListLayer, "choice": ChoiceLayer, "stat": StatLayer, "voice": VoiceLayer,
                  "callout": CalloutLayer, "lower_third": LowerThirdLayer, "emoji": EmojiLayer,
-                 "icon": IconLayer}
+                 "icon": IconLayer, "stage": StageLayer, "burst": BurstLayer, "confetti": ConfettiLayer}
+# "at" bilan beriladigan qisqa hodisalar: boshlanishi "at", uzunligi "duration"
+TIMED_TYPES = {"burst": 2.0, "confetti": 2.6}
 NON_LAYER_TYPES = {"sfx", "zoom"}
 
 
@@ -1231,6 +1621,9 @@ def build_elements(ctx: Ctx, elements: list, total: float) -> list:
                                 + ", ".join(sorted(set(ELEMENT_TYPES) | NON_LAYER_TYPES)))
         try:
             el = dict(el)
+            if kind in TIMED_TYPES and "at" in el:
+                el["start"] = float(el["at"])
+                el["end"] = el["start"] + float(el.get("duration", TIMED_TYPES[kind])) + (0.35 if kind == "burst" else 0)
             el["start"] = float(el.get("start", 0))
             el["end"] = min(float(el.get("end", total)), total)
             if el["end"] <= el["start"]:

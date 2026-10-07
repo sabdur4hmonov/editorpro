@@ -109,6 +109,7 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `subtitles.py`, `render.py` | Eski oddiy dvigatel (`captions.engine: ass`): ASS subtitr va render. |
 | `audio_mix.py`, `make_sfx.py` | Ovozni yig'ish; ovoz effektlarini generatsiya qilish. |
 | `face.py VIDEO` | Yuz joylashuvini topadi. |
+| `reactions.py VIDEO --words ...` | Nutqsiz baland joylarni topadi (kulgu, qarsak): effekt va emoji vaqti uchun. Taxmin, kadrdan tekshir. |
 | `new_brand.py NOM` | Yangi brend papkasi va `brand.json` yaratadi. |
 | `analyze_samples.py` | `samples/` tahlili: `temp/analysis/report.json`. |
 | `compare_models.py` | Whisper modellarini bitta videoda yonma-yon solishtiradi (ball qo'ymaydi). |
@@ -215,7 +216,10 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `sfx` | Ovoz effekti | `at`, `name`, `volume_db` |
 | `callout` | Panel ichidagi matn: `style` `glass` (orqasi xira), `dark`, `accent` | `text`, `x`, `y`, `width`, `style` |
 | `lower_third` | Ism va lavozim plashkasi | `name`, `role`, `x`, `y` |
-| `emoji` | Katta emoji, sakrab chiqadi | `emoji`, `x`, `y`, `size` |
+| `emoji` | Katta emoji, sakrab chiqadi. `sticker: true` oq hoshiyali stiker | `emoji`, `x`, `y`, `size`, `sticker`, `rotate`, `wiggle` |
+| `stage` | Videoni (yoki uning bir qismini) yumaloq kartochkaga oladi, orqasiga **yangi harakatli fon** chizadi | `crop [x0,y0,x1,y1]`, `width`, `y`, `radius`, `border`, `background`, `footer {text, from}`, `progress`, `punch [{at, scale}]`, `shake [{at, amp}]`, `flash [{at}]` |
+| `burst` | Emoji "otilib chiqadi" (kulgu, qarsak joyida) | `at`, `emoji` (bitta yoki ro'yxat), `count`, `duration`, `x [dan, gacha]` |
+| `confetti` | Konfetti (yutuq, taqdirlash joyida) | `at`, `duration`, `count`, `origin` (sides/top) |
 
 Har elementda `start` va `end` bor. Elementlarni matn mazmuniga qarab qo'ying: nima aytilayotgan
 bo'lsa, o'sha paytda ko'rinsin (so'z vaqtlari `cut.words.json` da). Subtitr bilan ustma-ust
@@ -224,6 +228,15 @@ pastdagi "Rasm va grafika" bo'limi bo'yicha top yoki chiz. Render qilishdan oldi
 ko'rib tekshir.
 
 Logotip va oxirgi kadr elementlarga yozilmaydi: ular brenddan (`logo`, `endcard`) olinadi.
+
+**Ijodiy joylashuv (`stage`)** fonni almashtirish kerak bo'lganda ishlatiladi: tayyor Reels (ichidagi
+xira fon o'rniga), gorizontal video, sahna/komediya chiqishi. Kartochka ichidagi tasvir `crop` bilan
+tanlanadi (asl kadrga nisbatan 0..1); tashqarisi chizilgan fon: sahna projektorlari, suzuvchi yorug'lik,
+uchqunlar (`background`: `color1..4`, `rays`, `sparks`, `pattern` dots/none). `punch` - kulgili gap
+tugaganda tasvir bir zum yaqinlashadi, `shake` - silkinadi, `flash` - fon chaqnaydi. `title`/`text` da
+`stagger` (so'zlar birin-ketin) va `loop: "bob"` (sekin tebranish), `tracking` (harf oralig'i) bor.
+`stage` bo'lsa subtitr kartochka ostida turadi (`captions.position_y`), sarlavha ustida. Namuna:
+`brands/million/` va uning `temp/<nom>/elements.json` fayli.
 
 - **Emoji** subtitr va istalgan matn ichida ishlaydi (rasm qilib chiziladi). Bayroqlar yo'q.
 - **Shaffof fonli video** (After Effects yoki Remotion'dan ProRes 4444 `.mov`, yoki alfa kanalli
@@ -349,7 +362,10 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
   `pipeline` sozlamalari: `brand`, `approve_subs`, `stills` (sonlar ro'yxati), `remove`, `trim`,
   `no_silence`, `no_repeats`, `no_cut`, `no_subs`, `force`, `language`, `model`, `silence_db`,
   `music`, `engine`, `script` (skript fayli), `no_script`, `words` (temp/ ichidagi words.fixed.json),
-  `no_glossary`.
+  `no_glossary`, `elements` (temp/ ichidagi boshqa elementlar fayli), `output` (natija nomi, kengaytmasiz:
+  `output/<nom>.mp4`; ikki variantni yonma-yon saqlash uchun, masalan effektli va effektsiz).
+- `watcher.py` yangilansa watcher o'zi qayta ishga tushadi (navbat bo'sh bo'lganda). `jobs/watcher.json`
+  dagi `version` yangi ekanini tekshir; eski bo'lsa foydalanuvchi oynani yopib qayta ochadi.
 - `transcribe`: `{"action": "transcribe", "video": "...", "options": {"model": "...", "language": "uz",
   "allow_download": false}}` → `words` ([raqam, start, end, so'z, ishonch]), `timing_issues`.
   `model`: `{"options": {"name": "...", "allow_download": false}}` → model bormi, hajmi qancha.

@@ -8,7 +8,12 @@ if not exist ".venv\Scripts\python.exe" (
   pause
   exit /b 1
 )
+:loop
 ".venv\Scripts\python.exe" scripts\watcher.py
+if %errorlevel%==75 (
+  echo Watcher yangilandi, qayta ishga tushmoqda...
+  goto loop
+)
 echo.
 echo Watcher to'xtadi.
 pause

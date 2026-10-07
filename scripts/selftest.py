@@ -135,7 +135,25 @@ def main() -> int:
         {"type": "icon", "start": 0.3, "end": 2.5, "name": "rocket-launch", "x": 0.75, "y": 0.45, "size": 0.14,
          "bg": "circle", "text": "belgi"},
         {"type": "sfx", "at": 1.6, "name": "pop"},
+        {"type": "burst", "at": 4.2, "emoji": ["\U0001F602", "\U0001F44F"], "count": 6},
+        {"type": "confetti", "at": 4.4, "count": 40},
     ]}, mel)
+    # ijodiy joylashuv: video kartochkada, orqada chizilgan harakatli fon
+    sel = WORK / "stage_elements.json"
+    C.write_json({"elements": [
+        {"type": "stage", "crop": [0, 0.3, 1, 0.7], "width": 0.9, "y": 0.42, "footer": {"text": "@sinov", "from": 1.0},
+         "punch": [{"at": 1.0}], "shake": [{"at": 2.0}], "flash": [{"at": 1.0}], "progress": True},
+        {"type": "emoji", "emoji": "\U0001F4B0", "start": 0.8, "end": 3, "x": 0.2, "y": 0.2, "size": 0.14,
+         "sticker": True, "rotate": -12, "wiggle": 6},
+        {"type": "title", "start": 0.1, "end": 6, "text": "SINOV \U0001F602", "y": 0.12, "stagger": 0.12, "loop": "bob"},
+        {"type": "burst", "at": 2.0, "count": 8},
+        {"type": "confetti", "at": 1.0, "origin": "top"},
+    ]}, sel)
+    sshot = WORK / "stage_stills.jpg"
+    sshot.unlink(missing_ok=True)
+    p = script("compose.py", base, "--subs", msrt, "--elements", sel, "--stills", "1.1,2.3", "--stills-out", sshot)
+    check("ijodiy joylashuv (stage, burst, confetti, sarlavha animatsiyasi)",
+          p.returncode == 0 and sshot.is_file() and sshot.stat().st_size > 20000)
     shot = WORK / "motion_stills.jpg"
     shot.unlink(missing_ok=True)
     p = script("compose.py", base, "--subs", msrt, "--elements", mel, "--brand", "demo",

@@ -27,6 +27,10 @@ using a flag you are not sure about.
      the size that was printed and ask. Only after a clear yes, re-run with `--allow-download`.
    - A different model for one run: `--model NAME`. Never change `style.json` unless the user asks.
    - If the script prints timing problems (`So'z vaqtlarida ... muammo`), show them to the user.
+   - If the script warns that many words are squeezed into a fraction of a second
+     (`... ta so'z ... soniyaga tiqilgan`), that text was almost certainly invented by whisper over
+     laughter, applause or music (often at the very end). Check the frames at that time, then remove
+     the run in `corrections.json` with `{"index": N, "count": K, "text": ""}` and tell the user.
 
 2. **Read and correct — text only.**
    - List the words with their numbers:

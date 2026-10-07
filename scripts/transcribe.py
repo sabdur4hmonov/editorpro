@@ -284,6 +284,69 @@ def print_issues(issues: list, limit: int = 30) -> None:
         C.info(f"    ... yana {len(issues) - limit} ta")
 
 
+def squeezed_runs(words: list, min_words: int = 4, per_word: float = 0.08) -> list:
+    """Juda tor vaqtga tiqilgan so'zlar to'plamini topadi (odam bunday tez gapira olmaydi).
+
+    Bu odatda whisper o'ylab topgan matn: kulgu, qarsak yoki musiqa ustida, ko'pincha video oxirida.
+    Hech narsa o'chirilmaydi: ro'yxat qaytadi, olib tashlash apply_corrections.py bilan ("text": "").
+    Qaytaradi: [{"index": birinchi so'z (1 dan), "count": nechta, "start", "end", "text"}].
+    """
+    runs, i, n = [], 0, len(words)
+    while i < n:
+        try:
+            start = float(words[i]["start"])
+            j = i
+            while j < n and float(words[j]["end"]) - start <= per_word * (j - i + 1):
+                j += 1
+        except (KeyError, TypeError, ValueError):
+            i += 1
+            continue
+        if j - i >= min_words:
+            runs.append({"index": i + 1, "count": j - i, "start": start, "end": float(words[j - 1]["end"]),
+                         "text": " ".join(str(w.get("word", "")) for w in words[i:j])})
+            i = j
+        else:
+            i += 1
+    return runs
+
+
+def print_squeezed(runs: list) -> None:
+    for r in runs:
+        text = r["text"] if len(r["text"]) <= 70 else r["text"][:67] + "..."
+        C.warn(f"{r['index']}-so'zdan boshlab {r['count']} ta so'z {r['end'] - r['start']:.2f} soniyaga tiqilgan "
+               f"({C.fmt_time(r['start'])}): \"{text}\"")
+    if runs:
+        C.info("    Bu odatda whisper o'ylab topgan matn (kulgu, qarsak, musiqa ustida). Kadrdan tekshiring va "
+               "apply_corrections.py bilan olib tashlang (\"text\": \"\").")
+
+
+APOSTROPHES = "'`´ʻʼ‘’"
+
+
+def merge_split_words(words: list) -> list:
+    """Whisper bo'lib yuborgan so'zlarni qayta yopishtiradi.
+
+    O'zbekcha o' va g' dagi tutuq belgisi tufayli whisper bitta so'zni ikkiga bo'ladi:
+    "o" + "'zi" -> "o'zi", "yorlig" + "'i" -> "yorlig'i", "qo'llab" + "-quvvatlagan" -> "qo'llab-quvvatlagan".
+    Birlashgan so'zning boshlanishi birinchi bo'lakdan, tugashi oxirgisidan olinadi.
+    """
+    out = []
+    for w in words:
+        token = str(w.get("word", ""))
+        glue = bool(out) and len(token) > 1 and (
+            (token[0] in APOSTROPHES and token[1].isalpha())
+            or (token[0] == "-" and token[1].isalpha() and out[-1]["word"][-1:].isalpha()))
+        if glue and float(w["start"]) - float(out[-1]["end"]) <= 0.35:
+            prev = out[-1]
+            prev["word"] += token
+            prev["end"] = max(prev["end"], w["end"])
+            if "prob" in w or "prob" in prev:
+                prev["prob"] = round(min(float(prev.get("prob", 1.0)), float(w.get("prob", 1.0))), 3)
+        else:
+            out.append(dict(w))
+    return out
+
+
 def transcribe_audio(wav: Path, wcfg: dict, model=None) -> dict:
     """WAV faylni matnga aylantiradi va so'zlar ro'yxatini qaytaradi."""
     model = model or load_model(wcfg)
@@ -310,6 +373,8 @@ def transcribe_audio(wav: Path, wcfg: dict, model=None) -> dict:
                                       "word": token, "prob": round(float(w.probability), 3)})
             segs.append({"start": round(seg.start, 3), "end": round(seg.end, 3), "text": seg.text.strip()})
             words += seg_words
+        if wcfg.get("merge_split_words", True):
+            words = merge_split_words(words)
     except Exception as exc:
         raise C.MontajError(f"Whisper transkripsiya paytida xato berdi: {exc}") from exc
     return {
@@ -356,6 +421,7 @@ def transcribe_video(video: Path, style: dict, out_dir: Path | None = None,
         issues_path.unlink(missing_ok=True)
     result["json_path"], result["srt_path"], result["cues"] = str(json_path), str(srt_path), cues
     result["timing_issues"] = issues
+    result["squeezed"] = squeezed_runs(result["words"])
     return result
 
 
@@ -440,6 +506,7 @@ def main() -> int:
     if res["words"]:
         C.info("  So'z vaqtlari tekshiruvi: " + ("muammo yo'q" if not res["timing_issues"]
                                                  else f"{len(res['timing_issues'])} ta muammo (yuqorida)"))
+    print_squeezed(res.get("squeezed") or [])
     C.info(f"  JSON: {res['json_path']}\n  SRT:  {res['srt_path']}")
     return 0
 

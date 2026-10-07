@@ -43,6 +43,20 @@ def run(check, video: Path, work: Path, no_whisper: bool = False) -> None:
     check("so'z vaqtlari tekshiruvi (tartib, end >= start, davomiylik)",
           T.check_words(good, 10.0) == [] and len(problems) == 3
           and [p["index"] for p in problems] == [1, 2, 3], f"buzuq namunada {len(problems)} ta muammo topildi")
+    # whisper o'ylab topgan matn: ko'p so'z juda tor vaqtga tiqiladi (kulgu, qarsak ustida)
+    normal = [{"start": i * 0.4, "end": i * 0.4 + 0.3, "word": f"so'z{i}"} for i in range(6)]
+    packed = [{"start": 2.5 + i * 0.01, "end": 2.5 + i * 0.01, "word": "qarab"} for i in range(8)]
+    runs = T.squeezed_runs(normal + packed)
+    check("tor vaqtga tiqilgan so'zlar topiladi, oddiy nutq belgilanmaydi (tezlashgan gap ham)",
+          len(runs) == 1 and runs[0]["index"] == 7 and runs[0]["count"] == 8 and not T.squeezed_runs(normal)
+          and not T.squeezed_runs([{"start": i * 0.12, "end": i * 0.12 + 0.1, "word": "ha"} for i in range(9)]),
+          str(runs))
+    merged = T.merge_split_words([{"start": 0, "end": 0.2, "word": "o", "prob": 0.9}, {"start": 0.2, "end": 0.4, "word": "'zi", "prob": 0.5},
+                                  {"start": 0.5, "end": 0.9, "word": "qo'llab"}, {"start": 0.9, "end": 1.4, "word": "-quvvatlash"},
+                                  {"start": 2.0, "end": 2.2, "word": "'90"}])
+    check("apostrof va chiziqchada bo'lingan so'zlar yopishadi (o + 'zi -> o'zi)",
+          [w["word"] for w in merged] == ["o'zi", "qo'llab-quvvatlash", "'90"] and merged[0]["end"] == 0.4
+          and merged[0]["prob"] == 0.5 and merged[1]["start"] == 0.5 and merged[1]["end"] == 1.4, str(merged))
 
     # ---- apply_corrections: vaqtlar o'zgarmasligi
     fix = work / "fix"
