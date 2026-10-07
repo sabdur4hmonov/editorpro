@@ -364,6 +364,9 @@ Render qilishdan oldin `--stills` bilan tekshiriladigan ro'yxat:
   Nusxalar eskirgan bo'lsa `--apply`: manba `docs/claude_skills/`, Claude nusxasi
   `.claude/skills/`, Codex nusxasi `.agents/skills/`. Nusxalarni alohida tahrir qilma.
 - Ikkala agent uchun MCP va foydalanish tartibi: `docs/AGENT_SETUP.md`.
+- Kengaytirilgan montaj vositalari: `docs/STUDIO.md`. Compose avtomatik preflight qiladi;
+  ijodiy ogohlantirishlarni reja bilan tekshir. Draft subtitr tasdig'ini chetlab o'tmaydi.
+  Batch faqat matn bosqichigacha. Har montajda stills/draft/finalni shu chatda ko'rsat.
 
 - **Bir vaqtda faqat bitta agent ishlaydi** (Claude Code yoki Codex). Ikkalasi birga ishlamaydi.
   Foydalanuvchi ularni navbat bilan ishlatadi: birining limiti tugasa, ikkinchisi davom ettiradi.

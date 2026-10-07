@@ -16,6 +16,7 @@ MUHIM: subtitr matni foydalanuvchi tasdiqlamaguncha videoga yozilmaydi (--approv
 from __future__ import annotations
 
 import argparse
+import copy
 import subprocess
 import sys
 import time
@@ -33,6 +34,22 @@ from motion import cv2
 
 EXIT_NEED_APPROVAL = 3
 HDR_TRANSFERS = {"smpte2084", "arib-std-b67"}
+
+
+def draft_style(style: dict) -> dict:
+    """Qoralama uchun nusxa: nisbat saqlanadi, final sozlamalariga tegilmaydi."""
+    out = copy.deepcopy(style)
+    cfg = out.get("preview", {})
+    height, fps = int(cfg.get("height", 640)), float(cfg.get("fps", 15))
+    if not 240 <= height <= 1080 or height % 2 or not 1 <= fps <= 60:
+        raise C.MontajError("preview.height: 240..1080 juft son, preview.fps: 1..60 bo'lishi kerak.")
+    v = out["video"]
+    height = min(height, int(v["height"]))
+    width = max(2, round(int(v["width"]) * height / int(v["height"]) / 2) * 2)
+    v.update(width=width, height=height, fps=min(fps, float(v["fps"])),
+             crf=int(cfg.get("crf", 28)), preset=str(cfg.get("preset", "ultrafast")))
+    out["_draft"] = True
+    return out
 
 
 # ---------------------------------------------------------------- kadrni formatga keltirish
@@ -306,7 +323,7 @@ def check_export(path: Path, style: dict, meta: dict | None = None) -> list:
     row("O'lcham", (meta["width"], meta["height"]) == (W, H), f"{meta['width']}x{meta['height']}")
     row("Video kodek", meta["vcodec"] in ("h264", "hevc") and meta.get("pix_fmt") == "yuv420p",
         f"{meta['vcodec']}, {meta.get('pix_fmt')}")
-    row("Kadr tezligi", 23 <= meta["fps"] <= float(plat.get("fps_max", 60)), f"{meta['fps']:g} fps")
+    row("Kadr tezligi", (1 if style.get("_draft") else 23) <= meta["fps"] <= float(plat.get("fps_max", 60)), f"{meta['fps']:g} fps")
     max_dur = float(plat.get("max_duration", 90))
     row("Davomiylik", meta["duration"] <= max_dur, f"{meta['duration']:.1f}s (chegara {max_dur:g}s)", warn_only=True)
     row("Ovoz", meta["has_audio"] and meta["acodec"] == "aac", f"{meta['acodec']}, {meta['sample_rate']} Hz")
@@ -345,9 +362,11 @@ def _tail(path: Path, lines: int = 12) -> str:
 def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = None,
             words: list | None = None, cuts: dict | None = None, elements_file: Path | None = None,
             music: Path | None = None, nvenc: bool | None = None, stills: list | None = None,
-            stills_out: Path | None = None) -> dict:
+            stills_out: Path | None = None, draft: bool = False) -> dict:
     """Asosiy funksiya. stills berilsa faqat shu vaqtlardagi kadrlarni rasm qilib chiqaradi."""
     video = C.need_file(video, "Video")
+    if draft:
+        style = draft_style(style)
     meta = C.ffprobe_info(video)
     if not meta["has_video"]:
         raise C.MontajError(f"Faylda video oqimi yo'q: {video}")
@@ -363,12 +382,25 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     cues = C.parse_srt(srt) if srt else []
     elements = read_elements(elements_file)
 
+    import studio
+    precheck = studio.preflight(style, cues, elements, base_dur, validate_layers=False)
+    C.write_json(precheck, work / "preflight.json")
+    if precheck["errors"]:
+        raise C.MontajError("PREFLIGHT: " + "; ".join(precheck["errors"]))
+    for warning in precheck["warnings"]:
+        ctx.note("Preflight: " + warning["text"])
+    segmenter = None
+    if any(el.get("behind_person") for el in elements):
+        from person_mask import PersonMask
+        segmenter = PersonMask()
+
     face = F.detect(video, quiet=True) if style.get("zoom", {}).get("face_aware", True) else None
     graph, fit = fit_graph(meta, style, face, brand_dir)
     ctx.anchor = face_in_output(meta, W, H, face, fit)
     plan = zoom_plan(style, cuts, base_dur)
     manual_zoom = [el for el in elements if el.get("type") == "zoom"]
     layers = build_layers(ctx, style, cues, words, elements, base_dur, total)
+    behind = [layer for layer in layers if getattr(layer, "behind_person", False)]
     ffmpeg = C.need_tool("ffmpeg")
     size = W * H * 3
 
@@ -376,9 +408,23 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         if t < base_dur and (plan or manual_zoom):
             z, cx, cy = zoom_at(plan, manual_zoom, t, ctx.anchor)
             frame = zoom_frame(frame, z, cx, cy)
+        if behind:
+            original = frame.copy()
+            active_behind = [layer for layer in behind if layer.active(t)]
+            if active_behind:
+                alpha = segmenter.infer(original)
+                for layer in active_behind:
+                    layer.draw(frame, t)
+                from person_mask import restore_person
+                restore_person(frame, original, alpha)
         for layer in layers:
+            if layer in behind:
+                continue
             if layer.active(t):
                 layer.draw(frame, t)
+        if style.get("_draft"):
+            cv2.putText(frame, "QORALAMA", (10, max(18, int(H * 0.04))), cv2.FONT_HERSHEY_SIMPLEX,
+                        max(0.4, H / 1920), (255, 255, 255), 1, cv2.LINE_AA)
         return frame
 
     try:
@@ -494,6 +540,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         if problems:
             raise C.MontajError(f"Natija tekshiruvdan o'tmadi ({out_path.name}): " + "; ".join(problems))
         out_meta["seconds"] = round(time.time() - began, 1)
+        out_meta["draft"] = bool(style.get("_draft"))
         out_meta["notes"] = list(ctx.notes)
         out_meta["checks"] = check_export(out_path, style, out_meta)
         rep = audio_mix.LAST_REPORT
@@ -532,6 +579,7 @@ def main() -> int:
     ap.add_argument("--stills", help="Faqat shu vaqtlardagi kadrlarni rasm qil, masalan: 1.5,4,9.2")
     ap.add_argument("--stills-out", help="Rasm fayli (standart: temp/<nom>/stills.jpg)")
     ap.add_argument("--approved", action="store_true", help="Foydalanuvchi subtitr matnini tasdiqlagan")
+    ap.add_argument("--draft", action="store_true", help="Kichik qoralama (preview sozlamalari); subtitr tasdiqi baribir kerak")
     ap.add_argument("--nvenc", action="store_true", help="NVIDIA karta bilan kodlash")
     ap.add_argument("--style", help="Boshqa style.json fayli")
     args = ap.parse_args()
@@ -569,10 +617,10 @@ def main() -> int:
             return EXIT_NEED_APPROVAL
 
     name = video.parent.name if C.is_inside(video, C.TEMP_DIR) and video.stem == "cut" else video.stem
-    out = Path(args.output) if args.output else C.OUTPUT_DIR / f"{C.output_stem(name)}_final.mp4"
+    out = Path(args.output) if args.output else C.OUTPUT_DIR / f"{C.output_stem(name)}_{'draft' if args.draft else 'final'}.mp4"
     C.info(f"Compose: {video.name} -> {out}")
     meta = compose(video, out, style, srt, words, cuts, elements_file,
-                   Path(args.music) if args.music else None, True if args.nvenc else None)
+                   Path(args.music) if args.music else None, True if args.nvenc else None, draft=args.draft)
     C.info(f"Tayyor ({meta['seconds']}s): {out}\n  {meta['width']}x{meta['height']}, {meta['fps']:g} fps, "
            f"{meta['duration']:.2f}s, ovoz: {'bor' if meta['has_audio'] else 'yoq'} ({meta['acodec']})")
     print_report(meta, style)

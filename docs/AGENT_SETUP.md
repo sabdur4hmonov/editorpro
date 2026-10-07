@@ -22,6 +22,9 @@ Brendsiz bo'lsa NOM yozilmaydi. To'rtta skill ikkala agentga ham bir xil jarayon
 
 ## Har montajdan keyin
 
+Namuna taqqoslash, draft, avtomatik preflight, urg'u, yangi grafikalar, muqova va
+matn navbati uchun [STUDIO.md](STUDIO.md) ni o'qing. Vositalar ikkala agent uchun bir xil CLI.
+
 EDIT_QUALITY.md bo'yicha review.md yoz. AGENT_MEMORY.md ga natija va keyingi tavsiyani qo'sh.
 Mijoz fikrini feedback.py, so'z xatosini glossary.py bilan saqla. HOLAT.md ga joriy holat,
 foydalanuvchi javobi va keyingi buyruqni yoz; avvalgi tugallanmagan ishni yo'qotma. Commit qil.

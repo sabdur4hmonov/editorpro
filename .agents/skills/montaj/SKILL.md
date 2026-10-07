@@ -13,6 +13,9 @@ brand; you make every other decision. Talk to the user in **Uzbek**, short numbe
 **Default look:** unless the brand's `brand.json` or the user says otherwise, the target style is the
 reference reels in `samples/`. Read `docs/NAMUNA_USLUBI.md` and follow the `/namuna` skill's
 checklist ("What 'like the samples' means") for captions, hook, elements and ending.
+Read `docs/STUDIO.md` for sample comparisons, automatic preflight, approved draft renders,
+emphasis proposals, behind-person titles, new graphics, covers and preparation-only batches.
+Show stills, draft and final in the chat; record tested lessons in `docs/AGENT_MEMORY.md`.
 
 ## Before anything
 

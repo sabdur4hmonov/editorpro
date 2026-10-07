@@ -1,0 +1,8 @@
+{
+  "source": "https://github.com/opencv/opencv_zoo/tree/main/models/human_segmentation_pphumanseg",
+  "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/main/models/human_segmentation_pphumanseg/human_segmentation_pphumanseg_2023mar.onnx",
+  "bytes": 6163938,
+  "sha256": "552d8a984054e59b5d773d24b9b12022b22046ceb2bbc4c9aaeaceb36a9ddf24",
+  "license": "Apache-2.0",
+  "notice": "Copyright (c) 2021 PaddlePaddle Authors"
+}

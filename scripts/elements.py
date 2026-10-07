@@ -804,6 +804,7 @@ class TextLayer(Layer):
         if "weight" in el:
             override.update(weight_sub=el["weight"], weight_plain=el["weight"], weight_main=el["weight"])
         self.ctx, self.cfg = ctx, ctx.caption_cfg(override)
+        self.behind_person = bool(el.get("behind_person", False))
         self.block = RichBlock(ctx, str(el.get("text", "")), self.cfg, float(el.get("size", 1.0)))
         self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.3)) * ctx.H
         # stagger: so'zlar birin-ketin chiqadi (soniya); loop: "bob" - sekin tebranib turadi
@@ -2199,11 +2200,156 @@ class ProgressLayer(Layer):
         frame[y:y + self.h, :w] = self.color
 
 
+class HandnoteLayer(TextLayer):
+    """Caveat qo'lyozma izoh; animatsiya va joylashuv TextLayer bilan bir xil."""
+
+    def __init__(self, ctx: Ctx, el: dict):
+        if not str(el.get("text", "")).strip():
+            raise C.MontajError("handnote.text kerak.")
+        config = dict(el)
+        config.setdefault("font", "Caveat")
+        config.setdefault("preset", "clean")
+        config.setdefault("tracking", 0.01)
+        config.setdefault("size", 1.15)
+        config.setdefault("stagger", 0.08)
+        super().__init__(ctx, config)
+
+
+class ArrowLayer(Layer):
+    """Chizilib chiqadigan egri strelka: points [start, control, end] yoki siniq yo'l."""
+    z = 44
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        values = el.get("points")
+        if not isinstance(values, list) or not 2 <= len(values) <= 32:
+            raise C.MontajError("arrow.points: 2..32 ta [x,y], 0..1.")
+        points = np.asarray(values, dtype=np.float64)
+        if points.shape != (len(values), 2) or not np.isfinite(points).all() or (points < 0).any() or (points > 1).any():
+            raise C.MontajError("arrow.points koordinatalari 0..1 bo'lishi kerak.")
+        points *= [ctx.W, ctx.H]
+        if len(points) == 3:
+            t = np.linspace(0, 1, 65)[:, None]
+            points = (1-t)**2 * points[0] + 2*(1-t)*t*points[1] + t**2 * points[2]
+        lengths = np.linalg.norm(np.diff(points, axis=0), axis=1)
+        if lengths.sum() < 2:
+            raise C.MontajError("arrow yo'li juda qisqa.")
+        bounds = np.r_[0, np.cumsum(lengths)]
+        samples = np.linspace(0, bounds[-1], 65)
+        self.points = np.stack([np.interp(samples, bounds, points[:, i]) for i in range(2)], axis=1)
+        self.stroke = max(1, int(float(el.get("stroke", 6)) * ctx.k))
+        self.head = max(4, float(el.get("head", 28)) * ctx.k)
+        self.seconds = float(el.get("draw_sec", 0.6))
+        if not math.isfinite(self.seconds) or self.seconds <= 0:
+            raise C.MontajError("arrow.draw_sec musbat son bo'lishi kerak.")
+        self.color = M.rgb(el.get("color", ctx.caption_cfg()["color"])) + (255,)
+        pad = self.head + self.stroke + 3
+        self.left, self.top = np.floor(self.points.min(axis=0)-pad).astype(int)
+        right, bottom = np.ceil(self.points.max(axis=0)+pad).astype(int)
+        self.width, self.height = int(right-self.left), int(bottom-self.top)
+        self.local = self.points - [self.left, self.top]
+        self.cache = {}
+        ctx.check_safe("Strelka", self.left, self.top, right, bottom)
+
+    def draw(self, frame, t: float) -> None:
+        index = min(64, max(1, int(M.ease_out((t-self.start)/self.seconds)*64)))
+        if index not in self.cache:
+            image = Image.new("RGBA", (self.width, self.height))
+            draw = ImageDraw.Draw(image)
+            coords = [tuple(point) for point in self.local[:index+1]]
+            draw.line(coords, fill=self.color, width=self.stroke, joint="curve")
+            if index == 64:
+                tip = self.local[-1]
+                direction = self.local[-2] - tip
+                direction /= max(0.01, np.linalg.norm(direction))
+                normal = np.array([-direction[1], direction[0]])
+                for side in (-1, 1):
+                    wing = tip + direction*self.head + normal*self.head*.48*side
+                    draw.line([tuple(wing), tuple(tip)], fill=self.color, width=self.stroke)
+            self.cache[index] = M.from_pil(image, 0, 0)
+        M.blit(frame, self.cache[index], self.left, self.top, opacity=clamp_exit(t, self.end, 0.15))
+
+
+class PhoneLayer(Layer):
+    """Telefon yoki profil kartochkasi: faqat berilgan rasm/ism/manzil, soxta statistika yo'q."""
+    z = 38
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.cx, self.cy = float(el.get("x", 0.5))*ctx.W, float(el.get("y", 0.32))*ctx.H
+        width = max(40, int(float(el.get("width", 0.42))*ctx.W))
+        phone = el.get("type") == "phone"
+        height = int(width*(1.92 if phone else 0.85))
+        radius = max(4, int(width*.09))
+        image = Image.new("RGBA", (width, height))
+        draw = ImageDraw.Draw(image)
+        draw.rounded_rectangle((0, 0, width-1, height-1), radius=radius, fill="#111116" if phone else "#202028", outline="#ECECF0", width=max(1, int(3*ctx.k)))
+        pad = max(4, int(width*.06))
+        top = int(width*.12) if phone else pad
+        if el.get("image"):
+            with Image.open(ctx.asset(el["image"], "Telefon rasmi")) as source:
+                picture = source.convert("RGBA")
+            picture.thumbnail((width-pad*2, height-top-pad))
+            image.alpha_composite(picture, ((width-picture.width)//2, top+(height-top-pad-picture.height)//2))
+        else:
+            name = fix_apostrophes(str(el.get("name", "")).strip())
+            handle = fix_apostrophes(str(el.get("handle", "")).strip())
+            if not name or not handle:
+                raise C.MontajError("phone/profile uchun image yoki name+handle kerak.")
+            cfg = ctx.caption_cfg()
+            avatar_size = int(width*.24)
+            avatar_y = top+pad
+            draw.ellipse((pad, avatar_y, pad+avatar_size, avatar_y+avatar_size), fill=cfg["accent"])
+            if el.get("avatar"):
+                with Image.open(ctx.asset(el["avatar"], "Profil rasmi")) as source:
+                    avatar = source.convert("RGBA")
+                side = min(avatar.size)
+                avatar = avatar.crop(((avatar.width-side)//2, (avatar.height-side)//2,
+                                      (avatar.width+side)//2, (avatar.height+side)//2)).resize((avatar_size, avatar_size), Image.LANCZOS)
+                mask = Image.new("L", (avatar_size, avatar_size))
+                ImageDraw.Draw(mask).ellipse((0, 0, avatar_size-1, avatar_size-1), fill=255)
+                # Keep source transparency inside the circular mask.
+                avatar.putalpha(Image.fromarray(np.minimum(np.asarray(mask), np.asarray(avatar.getchannel("A")))))
+                image.alpha_composite(avatar, (pad, avatar_y))
+            y = avatar_y+avatar_size+pad
+            for label, weight, color in ((name, 700, "#FFFFFF"), (handle, 500, "#C8C8D0")):
+                size = width*.075
+                font = ctx.fonts.get(cfg["font"], size, weight)
+                while font.getlength(label) > width-pad*2 and size > 4:
+                    size *= .9
+                    font = ctx.fonts.get(cfg["font"], size, weight)
+                draw.text((pad, y), label, font=font, fill=color)
+                y += size*1.45
+            bio = fix_apostrophes(str(el.get("bio", "")))
+            if bio:
+                font = ctx.fonts.get(cfg["font"], width*.06, 400)
+                lines = []
+                for word in bio.split():
+                    if lines and font.getlength(lines[-1]+" "+word) <= width-pad*2:
+                        lines[-1] += " "+word
+                    else:
+                        lines.append(word)
+                if y+len(lines)*width*.08 > height-pad or any(font.getlength(line) > width-pad*2 for line in lines):
+                    raise C.MontajError("Profil bio juda uzun; qisqartiring yoki phone ishlating.")
+                for line in lines:
+                    draw.text((pad, y), line, font=font, fill="#E0E0E8")
+                    y += width*.08
+        if phone:
+            draw.rounded_rectangle((width*.38, width*.035, width*.62, width*.07), radius=max(1, int(width*.02)), fill="#606068")
+        self.sprite = M.pil_sprite(image, shadow={"blur": 16*ctx.k, "dy": 5*ctx.k, "opacity": .35})
+        ctx.check_safe("Telefon/profil", self.cx-width/2, self.cy-height/2, self.cx+width/2, self.cy+height/2)
+
+    def draw(self, frame, t: float) -> None:
+        opacity, scale = appear(t, self.start, self.end)
+        M.blit(frame, self.sprite, self.cx, self.cy, opacity=opacity, scale=scale, anchor=(0, 0))
+
+
 ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "broll": BrollLayer,
                  "list": ListLayer, "choice": ChoiceLayer, "stat": StatLayer, "voice": VoiceLayer,
                  "callout": CalloutLayer, "lower_third": LowerThirdLayer, "emoji": EmojiLayer,
                  "icon": IconLayer, "stage": StageLayer, "burst": BurstLayer, "confetti": ConfettiLayer,
-                 "follow": FollowLayer, "scene": SceneLayer, "grade": GradeLayer, "flash": FlashLayer}
+                 "follow": FollowLayer, "scene": SceneLayer, "grade": GradeLayer, "flash": FlashLayer,
+                 "handnote": HandnoteLayer, "arrow": ArrowLayer, "phone": PhoneLayer, "profile": PhoneLayer}
 # "at" bilan beriladigan qisqa hodisalar: boshlanishi "at", uzunligi "duration"
 TIMED_TYPES = {"burst": 2.0, "confetti": 2.6, "flash": 0.3}
 NON_LAYER_TYPES = {"sfx", "zoom"}

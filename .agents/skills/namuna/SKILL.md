@@ -66,8 +66,12 @@ Never write into `input/` or `samples/`.
 
 ## Honest limits (tell the user, do not fake)
 
-- Text behind the speaker, hand-drawn arrows, 3D type, custom illustrated scenes: not automatic
-  (see `docs/NAMUNA_USLUBI.md` §7). Offer the closest available element instead.
+- Read `docs/STUDIO.md` when comparing samples, making an approved draft, preparing a batch,
+  suggesting emphasis, drawing handnotes/arrows/phone cards, making a cover or placing text behind
+  a person. Preflight checks structure and warns about rhythm/color; the agent still reviews frames.
+- Behind-person text uses the approved PPHumanSeg model; inspect hair/hand edges in stills.
+  Handnotes use a handwriting font, arrows draw along a path. 3D type and custom illustrated scenes
+  still need separate graphics (see `docs/NAMUNA_USLUBI.md` §7).
 - Movie clips, music and logos come only from files the user gives.
 - You judge frames, not motion or sound. For motion, take three close frames:
   `scripts/frames.py <video> --at 2.00,2.08,2.20`.

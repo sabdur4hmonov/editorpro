@@ -156,28 +156,25 @@ def main() -> int:
           p.returncode == 0 and sshot.is_file() and sshot.stat().st_size > 20000)
     # namuna uslubi: har xil presetlar, marker, yulduzcha, bo'lak belgisi, sahna, oq-qora, obuna kartochkasi
     nsrt = WORK / "namuna.srt"
-    nsrt.write_text(
-        "1\n00:00:00,200 --> 00:00:01,400\n**\\*3 oyda Rus tilini** o'rgana olaman deb o'ylaysizmi?\n\n"
-        "2\n00:00:01,500 --> 00:00:02,300\n{caps,y=0.2}**KELINGLAR** hozir sizlarga\n\n"
-        "3\n00:00:02,400 --> 00:00:03,200\n{heavy,y=0.3}==Kamerani== *sekin* yaqinlashtirsangiz\n\n"
-        "4\n00:00:03,300 --> 00:00:04,100\n{marker}sohasiga ==kirib kelishimga== asosiy ~~sabab~~\n\n"
-        "5\n00:00:04,200 --> 00:00:04,900\n{italic}**Vapsheee** tez chiqish uchun\n\n"
-        "6\n00:00:05,000 --> 00:00:05,600\n{serif}Men *Farruh*\n\n"
-        "7\n00:00:05,700 --> 00:00:06,300\n{single}odam deb\n\n"
-        "8\n00:00:06,400 --> 00:00:07,000\n{karaoke}mening ismim\n\n"
-        "9\n00:00:07,100 --> 00:00:08,000\n{clean,anim_main=flicker,anim_sub=bar}*10 yil* orqaga qaytganingizda\n",
-        encoding="utf-8")
+    # 9 bo'lak 0.2..6.9 s oralig'ida: sinov klipi ~7.4 s, preflight klipdan tashqaridagi bo'lakni rad etadi
+    ncues = ["**\\*3 oyda Rus tilini** o'rgana olaman deb o'ylaysizmi?", "{caps,y=0.2}**KELINGLAR** hozir sizlarga",
+             "{heavy,y=0.3}==Kamerani== *sekin* yaqinlashtirsangiz", "{marker}sohasiga ==kirib kelishimga== asosiy ~~sabab~~",
+             "{italic}**Vapsheee** tez chiqish uchun", "{serif}Men *Farruh*", "{single}odam deb", "{karaoke}mening ismim",
+             "{clean,anim_main=flicker,anim_sub=bar}*10 yil* orqaga qaytganingizda"]
+    nsrt.write_text("".join(
+        f"{i + 1}\n{C.srt_time(0.2 + i * 0.75)} --> {C.srt_time(0.2 + i * 0.75 + 0.7)}\n{text}\n\n"
+        for i, text in enumerate(ncues)), encoding="utf-8")
     nel = WORK / "namuna_elements.json"
     C.write_json({"elements": [
-        {"type": "grade", "mode": "bw", "start": 0, "end": 1.4},
-        {"type": "flash", "at": 1.4},
-        {"type": "scene", "start": 6.3, "end": 7.1, "background": {"color1": "#0B2A8F", "color2": "#0A1F6B", "pattern": "grid"}},
-        {"type": "follow", "start": 7.2, "end": 9.6, "handle": "@sinov_sahifa", "name": "Sinov", "tap": 0.9},
+        {"type": "grade", "mode": "bw", "start": 0, "end": 0.9},
+        {"type": "flash", "at": 0.9},
+        {"type": "scene", "start": 5.4, "end": 6.2, "background": {"color1": "#0B2A8F", "color2": "#0A1F6B", "pattern": "grid"}},
+        {"type": "follow", "start": 6.25, "end": 7.3, "handle": "@sinov_sahifa", "name": "Sinov", "tap": 0.6},
     ]}, nel)
     nshot = WORK / "namuna_stills.jpg"
     nshot.unlink(missing_ok=True)
     p = script("compose.py", base, "--subs", nsrt, "--elements", nel,
-               "--stills", "0.9,1.9,2.9,3.9,4.6,5.3,6.0,6.7,7.6,8.4", "--stills-out", nshot)
+               "--stills", "0.6,1.3,2.1,2.8,3.6,4.3,5.1,5.8,6.6,7.1", "--stills-out", nshot)
     check("namuna uslubi: 9 xil subtitr uslubi, marker, sahna, oq-qora, obuna kartochkasi",
           p.returncode == 0 and nshot.is_file() and nshot.stat().st_size > 20000,
           (p.stderr.strip().splitlines() or [""])[-1][:160])
@@ -302,14 +299,21 @@ def main() -> int:
     blocked = p.returncode == 1 and "boshqa ish ketyapti" in p.stderr
     C.BUSY_FILE.write_text(_json.dumps({"pid": 1, "agent": "boshqa agent", "what": "sinov", "started": 0, "alive_at": 0}),
                            encoding="utf-8")
-    p2 = script("handoff.py", "set", "sinov eslatmasi", "--agent", "selftest")
-    p3 = script("handoff.py", "show")
+    # haqiqiy HOLAT.md sinov paytida yo'qolmasligi kerak: baytma-bayt saqlab, oxirida joyiga qaytariladi
     note = C.ROOT / "HOLAT.md"
-    ok = (blocked and C.busy_state() is None and p2.returncode == 0 and p3.returncode == 0
-          and "sinov eslatmasi" in p3.stdout and "Band emas" in p3.stdout)
-    C.BUSY_FILE.unlink(missing_ok=True)
-    if note.is_file() and "sinov eslatmasi" in note.read_text(encoding="utf-8"):
-        note.unlink()
+    real_note = note.read_bytes() if note.is_file() else None
+    try:
+        p2 = script("handoff.py", "set", "sinov eslatmasi", "--agent", "selftest")
+        p3 = script("handoff.py", "show")
+        ok = (blocked and C.busy_state() is None and p2.returncode == 0 and p3.returncode == 0
+              and "sinov eslatmasi" in p3.stdout and "Band emas" in p3.stdout)
+    finally:
+        C.BUSY_FILE.unlink(missing_ok=True)
+        if real_note is not None:
+            note.write_bytes(real_note)
+        elif note.is_file():
+            note.unlink()
+    ok = ok and (note.read_bytes() == real_note if real_note is not None else not note.exists())
     check("navbat: band paytida ikkinchi ish to'xtaydi, eskirgan belgi to'siq bo'lmaydi, holat eslatmasi ishlaydi", ok,
           (p.stderr.strip().splitlines() or [""])[-1][:120] if not blocked else "")
     check("asl (test) video o'zgarmadi", before == (video.stat().st_size, video.stat().st_mtime_ns))

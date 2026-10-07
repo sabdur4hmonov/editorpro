@@ -98,6 +98,9 @@ Blok sozlamalari: `slide_in` (so'z o'ngdan sirg'alishi, em), `intro_scale`, `dri
 | Ism plashkasi, burchak yozuvi (3) | `lower_third`, `text` | |
 | Kino lavhasi ustida yozuv (7, 12) | `broll` + subtitr | lavhani faqat foydalanuvchi beradi |
 | Mahsulot, logotip rasmlari (2, 3) | `image` | mijoz fayllari |
+| Qo'lyozma izoh va strelka (12, 14) | `handnote`, `arrow` | Caveat matn, chizilib chiqadigan egri yo'l |
+| Telefon/profil (3) | `phone`, `profile` | faqat mijoz bergan rasm yoki name/handle/bio/avatar |
+| Sarlavha odam orqasida (5, 7, 10) | `text/title` + `behind_person: true` | PPHumanSeg; soch chetlarini kadrda tekshir |
 
 ## 6. Namunadagi video tuzilishi (shunday rejala)
 
@@ -109,11 +112,14 @@ Blok sozlamalari: `slide_in` (so'z o'ngdan sirg'alishi, em), `intro_scale`, `dri
 
 ## 7. Hozircha avtomatik emas (halol ro'yxat)
 
-- **Yozuv odam orqasida** (namuna 5, 7, 10: sarlavha bosh ortida). Buning uchun odamni fondan ajratuvchi
-  model kerak (yuklab olinadi): foydalanuvchi ruxsati bilan qo'shiladi.
+`docs/STUDIO.md` da namuna taqqoslash, draft, preflight va yangi elementlar tartibi bor.
+
+- **Yozuv odam orqasida** PPHumanSeg bilan ishlaydi, ammo 192x192 model soch/qo'l chetlarini
+  mukammal ajratmaydi. Har kerakli sahna kadrlarini tekshiring; yoqmasa oddiy oldingi sarlavha ishlating.
 - **Maxsus chizilgan sahnalar** (9: tarvuz, pazl, miya; 5: kalkulyator; 3: logotipli daraxt sxema).
   Bular har video uchun qo'lda chizilgan. Tizimda o'rniga `scene` + HTML grafika (`html_render.py`)
   + mijoz rasmlari ishlatiladi: o'xshash chiqadi, lekin aynan o'sha emas.
-- **Qo'lyozma izoh va chizilgan strelkalar** (12, 14), 3D harflar (1), odam atrofidagi kontur (14).
+- **Qo'lyozma** Caveat shriftida, **strelka** chizilib chiqadi; haqiqiy qalam harakati, 3D harflar (1),
+  odam atrofidagi kontur (14) uchun alohida mijoz animatsiyasi/qo'lda grafika kerak.
 - **Kino lavhalari, musiqa, logotip**: faqat foydalanuvchi bergan fayldan.
 - **Ovoz**: agent eshitmaydi. Effekt va musiqa ikki variantda render qilinib, foydalanuvchi tanlaydi.

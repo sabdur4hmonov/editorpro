@@ -15,6 +15,22 @@
     "nvenc_cq": 21
   },
 
+  "preview": {
+    "_izoh": "Faqat --draft: kichik qoralama, final sozlamalari o'zgarmaydi. Subtitrli video baribir tasdiq talab qiladi.",
+    "height": 640,
+    "fps": 15,
+    "crf": 28,
+    "preset": "ultrafast"
+  },
+
+  "quality": {
+    "_izoh": "Preflight ijodiy ogohlantirishlari: avtomatik did bahosi emas, ataylab sokin sahnalarni agent izohlaydi.",
+    "hook_sec": 1.5,
+    "max_event_gap": 4.0,
+    "max_accent_cue_ratio": 0.5,
+    "ending_sec": 3.5
+  },
+
   "audio": {
     "_izoh": "Nutq (asl ovoz) ALOHIDA me'yorlanadi (loudnorm_i, LUFS; Reels/TikTok uchun -14): musiqa yoki effekt qo'shilsa ham nutq balandligi o'zgarmaydi. Musiqa va effektlar nutq paytida o'zi pasayadi. voice_margin_db: nutq bor joyda qo'shimchalar nutqdan kamida shuncha dB past bo'ladi (o'lchanadi, yetmasa pasaytiriladi). music_volume_db: musiqa ovozi.",
     "loudnorm_i": -14,

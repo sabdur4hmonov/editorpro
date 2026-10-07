@@ -75,6 +75,8 @@ def main() -> int:
     ap.add_argument("--engine", choices=["motion", "ass", "off"],
                     help="Subtitr dvigateli (style.json: captions.engine ni almashtiradi)")
     ap.add_argument("--stills", help="Render qilmasdan, shu vaqtlardagi kadrlarni rasm qilib ko'rsat: 1.5,4,9")
+    ap.add_argument("--draft", action="store_true", help="Kichik qoralama; subtitr tasdiqi baribir talab qilinadi")
+    ap.add_argument("--prepare-only", action="store_true", help="Faqat transkripsiya/kesish/matn; hech qanday video render qilinmaydi")
     ap.add_argument("--language", help="Til: uz, ru, en, auto (style.json dagini almashtiradi)")
     ap.add_argument("--model", help="Whisper modeli: base, small, medium ...")
     ap.add_argument("--silence-db", type=float, help="Jimlik chegarasi dB (masalan -40)")
@@ -90,6 +92,8 @@ def main() -> int:
     engine = str(style["captions"].get("engine", "motion")).lower()
     if engine not in ("motion", "ass", "off"):
         raise C.MontajError(f"captions.engine noto'g'ri: {engine!r}. Mumkin: motion, ass, off.")
+    if args.draft and engine != "motion":
+        raise C.MontajError("--draft hozir motion dvigateli bilan ishlaydi.")
     if args.language:
         style["whisper"]["language"] = args.language
     if args.model:
@@ -104,7 +108,7 @@ def main() -> int:
     work = C.job_dir(video)
     C.busy_acquire(f"montaj: {video.name}")
     out_dir = C.OUTPUT_DIR / style["_brand"] if style.get("_brand") else C.OUTPUT_DIR   # har brend o'z papkasida
-    out = Path(args.output) if args.output else out_dir / f"{C.output_stem(video.stem)}_final.mp4"
+    out = Path(args.output) if args.output else out_dir / f"{C.output_stem(video.stem)}_{'draft' if args.draft else 'final'}.mp4"
     C.guard_output(out, video)
     C.info(f"Video: {video}\n  {src['width']}x{src['height']}, {src['fps']:g} fps, {src['duration']:.2f}s, "
            f"ovoz: {'bor' if src['has_audio'] else 'yoq'}\nIsh papkasi: {work}")
@@ -259,6 +263,15 @@ def main() -> int:
     cuts = C.read_json(cuts_file) if (cuts_file.is_file() and cut_video != video) else None
 
     # ---- tez ko'rish: faqat rasmlar (tasdiq kerak emas, video yozilmaydi)
+    if args.prepare_only:
+        if want_subs and subs_srt.is_file():
+            S.print_cues(C.parse_srt(subs_srt))
+            save_result("need_approval", subs=str(subs_srt))
+            C.info(f"MATN TAYYOR, TASDIQ KUTILMOQDA: {subs_srt}")
+            return EXIT_NEED_APPROVAL
+        save_result("prepared", subs=None)
+        C.info("TAYYORLANDI: nutq/subtitr yo'q, render bajarilmadi.")
+        return 0
     if args.stills:
         if engine != "motion":
             raise C.MontajError("--stills faqat motion dvigateli bilan ishlaydi (captions.engine: motion).")
@@ -332,7 +345,7 @@ def main() -> int:
         words_file = work / "cut.words.json"
         meta = CP.compose(cut_video, out, style, subs_srt if subs_ok else None,
                           C.read_json(words_file).get("words", []) if words_file.is_file() else None,
-                          cuts, elements_file, music, True if args.nvenc else None)
+                          cuts, elements_file, music, True if args.nvenc else None, draft=args.draft)
     else:
         t = step("4/4 Render")
         meta = R.render(cut_video, out, style, subs_ass, music, True if args.nvenc else None)
@@ -340,7 +353,8 @@ def main() -> int:
 
     C.info("\n=== Tekshiruv (ffprobe) ===")
     C.info(f"  Fayl:        {out}")
-    C.info(f"  O'lcham:     {meta['width']}x{meta['height']} (kutilgan {style['video']['width']}x{style['video']['height']})")
+    render_style = CP.draft_style(style) if args.draft else style
+    C.info(f"  O'lcham:     {meta['width']}x{meta['height']} (kutilgan {render_style['video']['width']}x{render_style['video']['height']})")
     C.info(f"  Davomiylik:  {meta['duration']:.2f}s (asl video {src['duration']:.2f}s"
            + (", oxirgi kadr qo'shilgan" if style.get("endcard", {}).get("enabled") and engine == "motion" else "") + ")")
     C.info(f"  FPS:         {meta['fps']:g}")
@@ -357,7 +371,7 @@ def main() -> int:
             text = IM.credits_text(credits)
             (work / "credits.txt").write_text(text + "\n", encoding="utf-8")
             C.info("\n=== Rasm manbalari ===\n" + text)
-    save_result("done", output=str(out), notes=meta.get("notes") or [], checks=meta.get("checks") or [],
+    save_result("draft" if args.draft else "done", output=str(out), notes=meta.get("notes") or [], checks=meta.get("checks") or [],
                 credits=[{"file": c.get("file"), "credit": c.get("credit"),
                           "attribution_required": bool(c.get("attribution_required")),
                           "ai_generated": bool(c.get("ai_generated"))} for c in credits])
