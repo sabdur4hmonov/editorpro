@@ -105,6 +105,7 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `images.py` | Stok rasm/b-roll qidirish (`search`), yuklash (`pick`), AI rasm (`ai`), manbalar (`credits`). |
 | `html_render.py` | HTML/CSS/SVG sahifani shaffof PNG qiladi (Edge/Chrome orqali): agent o'zi chizadi. |
 | `icons.py` | Belgilarni qidirish (`find`), ko'rish (`sheet`), PNG qilish (`png`). |
+| `cutout.py` | Rasmdan fonni olib tashlaydi (rembg: IS-Net standart, BiRefNet `--model birefnet-general --suffix cutb`); `--sheet` bilan tekshirish varag'i. BRIA modellari tijoratda taqiqlangan, rad etiladi. |
 | `frames.py VIDEO` | Tayyor videodan kadrlar varag'i (natijani ko'rib tekshirish uchun). |
 | `compose.py VIDEO` | Motion render: zoom, subtitr animatsiyasi, elementlar, brend, ovoz. |
 | `subtitles.py`, `render.py` | Eski oddiy dvigatel (`captions.engine: ass`): ASS subtitr va render. |
@@ -184,7 +185,7 @@ qaytadan yaratiladi.
 | `**so'z**` | katta va brend rangida (porlaydi) |
 | `!!so'z!!` | juda katta va rangli (raqam, asosiy so'z) |
 | `_so'z_` | faqat rangli, o'lchami o'zgarmaydi |
-| `==so'z==`, `~~so'z~~` | marker: so'z ustidan rangli quti surtiladi (ikkinchisi qizil) |
+| `==so'z==`, `~~so'z~~` | marker: so'z ustidan rangli quti surtiladi (ikkinchisi qizil, rangi `captions.highlight2.color`; `captions.mark2_big: true` bo'lsa `~~so'z~~` asosiy ibora kabi katta va blok bo'ladi) |
 | `\*` | oddiy yulduzcha: `**\*3 oyda**` ekranda `*3 oyda` |
 | `{uslub,y=0.2}` (bo'lak boshida) | shu bo'lak boshqa uslubda va joyda: `{caps}`, `{heavy}`, `{single}` ... |
 
@@ -220,7 +221,7 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `choice` | To'g'ri/noto'g'ri kartochkasi (✗ ✓ va matn) | `items[{at, text, ok}]`, `y`, `color` |
 | `stat` | Katta raqam sanab chiqadi, halqa to'ladi | `value`, `suffix`, `label`, `ring`, `x`, `y`, `size` |
 | `voice` | Ovozli xabar pleyeri | `y`, `width`, `length` |
-| `image` | Rasm yoki kichik video ustma-qatlam | `file`, `x`, `y`, `width`, `radius`, `anim` (pop/fade/none), `border` (oq hoshiya, 0.012), `border_color`, `rotate` (gradus) |
+| `image` | Rasm yoki kichik video ustma-qatlam (shaffof PNG: `cutout.py` - hoshiyasiz stiker) | `file`, `x`, `y`, `width`, `radius`, `anim` (pop/fade/none), `border` (oq hoshiya, 0.012), `border_color`, `rotate` (gradus), `wiggle` (tebranish, gradus) |
 | `icon` | Vektor belgi (1500+), ostida ixtiyoriy yozuv | `name`, `x`, `y`, `size`, `bg` (none/circle/square/glass), `color`, `bg_color`, `style` (fill/bold), `text` |
 | `broll` | Qo'shimcha kadr: `mode` `full` (to'liq ekran) yoki `split` (tepada gapiruvchi) | `file`, `mode`, `fade`, `offset` |
 | `zoom` | Qo'lda zoom | `scale`, `x`, `y`, `ease` |

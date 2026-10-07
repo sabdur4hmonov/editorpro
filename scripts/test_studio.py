@@ -70,6 +70,26 @@ class Rules(unittest.TestCase):
         with self.assertRaises(C.MontajError):
             E.FollowLayer(ctx, {"type": "follow", "start": 0, "end": 3, "icon": "yoq-belgi-nomi"})
 
+    def test_mark2_big_lockup_and_image_wiggle(self):
+        words = [{"start": i * .3, "end": i * .3 + .25, "word": w} for i, w in enumerate("bola ~~pnevmoniya~~ bo'lib qolgan".split())]
+        self.assertGreater(len(C.words_to_cues(words, {"max_words_per_line": 2})), 1)
+        self.assertEqual(len(C.words_to_cues(words, {"max_words_per_line": 2, "mark2_big": True})), 1)
+        style = C.load_style()
+        style["video"].update(width=360, height=640)
+        style["captions"]["mark2_big"] = True
+        ctx = E.Ctx(style)
+        cfg = ctx.caption_cfg()
+        block = E.RichBlock(ctx, "bola ~~pnevmoniya~~", cfg)
+        self.assertTrue(any(w["emph"] and w["group"] is not None for w in block.words))
+        WORK.mkdir(parents=True, exist_ok=True)
+        png = WORK / "wiggle.png"
+        Image.new("RGBA", (40, 30), (255, 0, 0, 255)).save(png)
+        layer = E.ImageLayer(ctx, {"start": 0, "end": 2, "file": str(png), "width": 0.2, "wiggle": 3})
+        self.assertEqual(len(layer.sprites), 9)
+        frame = np.zeros((640, 360, 3), np.uint8)
+        layer.draw(frame, 0.8)
+        self.assertGreater(int(frame.max()), 0)
+
     def test_emphasis_suggestions_keep_timings(self):
         import apply_corrections as AC
         words = [{"start": i*.3, "end": i*.3+.2, "word": word, "prob": .9}

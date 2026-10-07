@@ -280,7 +280,9 @@ class RichBlock:
                 if tokens and not newline and not any(ch.isalnum() for ch in word):
                     level = tokens[-1]["level"]      # emoji oldingi so'z bilan bir qatorda va bir o'lchamda turadi
                 tokens.append({"text": word, "level": level, "newline": newline})
-        emph = any(t["level"] in ("big", "big_accent", "huge") for t in tokens)
+        # mark2_big: ~~so'z~~ (rangli quti) ham asosiy ibora kabi katta chiziladi
+        big_levels = ("big", "big_accent", "huge") + (("mark2",) if cfg.get("mark2_big") else ())
+        emph = any(t["level"] in big_levels for t in tokens)
         if not emph and cfg.get("auto_numbers") and all(t["level"] == "normal" for t in tokens):
             # belgi qo'yilmagan bo'lakda raqamlar o'zi ajratiladi (masalan "3 oyda", "100%")
             for i, t in enumerate(tokens):
@@ -303,7 +305,7 @@ class RichBlock:
         italic_main = cfg.get("italic") if cfg.get("italic_main") is None else cfg.get("italic_main")
         for t in tokens:
             lvl = t["level"]
-            big = lvl in ("big", "big_accent", "huge")
+            big = lvl in big_levels
             if lvl == "huge":
                 size, weight = cfg["size_huge"], cfg["weight_main"]
             elif big:
@@ -971,7 +973,10 @@ class BrollLayer(Layer):
 
 
 class ImageLayer(Layer):
-    """Rasm (yoki kichik video) ustma-qatlam: joyi, kengligi, yumaloq burchak, soya."""
+    """Rasm (yoki kichik video) ustma-qatlam: joyi, kengligi, yumaloq burchak, soya.
+
+    Shaffof PNG (scripts/cutout.py) hoshiyasiz stiker bo'lib chiqadi; wiggle: sekin tebranish (gradus).
+    """
     z = 30
 
     def __init__(self, ctx: Ctx, el: dict):
@@ -985,6 +990,8 @@ class ImageLayer(Layer):
         self.opacity = float(el.get("opacity", 1.0))
         self.shadow = {"blur": 18 * ctx.k, "dy": 8 * ctx.k, "opacity": 0.35} if el.get("shadow", True) else None
         self.reader = None
+        self.sprites = None                                       # wiggle: oldindan burilgan nusxalar
+        self.wiggle = abs(float(el.get("wiggle", 0)))             # tebranish (gradus), emoji'dagidek
         if self.path.suffix.lower() in C.VIDEO_EXTS:
             meta = C.ffprobe_info(self.path)
             self.vh = max(2, int(self.width * meta["height"] / max(1, meta["width"])) // 2 * 2)
@@ -994,7 +1001,11 @@ class ImageLayer(Layer):
         else:
             border = float(el.get("border", 0)) * ctx.W          # oq hoshiya (kartochka ko'rinishi)
             rotate = float(el.get("rotate", 0))                  # biroz qiyshaytirish (gradus)
-            if border > 0 or abs(rotate) > 0.05:
+            if self.wiggle > 0:
+                color = str(el.get("border_color", "#FFFFFF"))
+                self.sprites = [self._framed(border, color, rotate + self.wiggle * (2 * i / 8 - 1)) for i in range(9)]
+                self.spr = self.sprites[4]
+            elif border > 0 or abs(rotate) > 0.05:
                 self.spr = self._framed(border, str(el.get("border_color", "#FFFFFF")), rotate)
             else:
                 self.spr = M.image_sprite(self.path, width=self.width, radius=self.radius, shadow=self.shadow)
@@ -1041,8 +1052,12 @@ class ImageLayer(Layer):
             spr = self.reader.sprite_at(t - self.start)
             if spr is None:
                 return
-        elif t - self.start > 1.0:
-            scale *= M.breathe(t - self.start)       # uzoq turgan rasm sekin "nafas oladi"
+        else:
+            if self.sprites:
+                pos = (math.sin((t - self.start) * 2 * math.pi / 1.5) + 1) / 2
+                spr = self.sprites[min(len(self.sprites) - 1, int(round(pos * (len(self.sprites) - 1))))]
+            if t - self.start > 1.0:
+                scale *= M.breathe(t - self.start)   # uzoq turgan rasm sekin "nafas oladi"
         M.blit(frame, spr, self.cx, self.cy, opacity=op * self.opacity, scale=scale, anchor=(0, 0))
 
     def close(self) -> None:

@@ -588,7 +588,7 @@ def cue_style(style: dict) -> dict:
     cap = style.get("captions", {})
     if str(cap.get("engine", "motion")).lower() == "motion":
         for key in ("max_words_per_line", "max_chars_per_line", "max_cue_duration", "min_cue_duration", "gap_break",
-                    "lockup_chars", "lockup_words", "lockup_duration"):
+                    "lockup_chars", "lockup_words", "lockup_duration", "mark2_big"):
             if key in cap:
                 out[key] = cap[key]
     return out
@@ -680,9 +680,10 @@ def words_to_cues(words: list, sub_style: dict) -> list:
     lock_chars = int(sub_style.get("lockup_chars", 56))
     lock_words = int(sub_style.get("lockup_words", 9))
     lock_dur = float(sub_style.get("lockup_duration", 4.5))
+    hero_marks = ("!!", "**", "*") + (("~~",) if sub_style.get("mark2_big") else ())
     cues = []
     for seg in segs:
-        whole = (lock_chars > 0 and len(seg) > 1 and any(it["mark"] in ("!!", "**", "*") for it in seg)
+        whole = (lock_chars > 0 and len(seg) > 1 and any(it["mark"] in hero_marks for it in seg)
                  and len(seg) <= lock_words and len(" ".join(it["plain"] for it in seg)) <= lock_chars
                  and seg[-1]["end"] - seg[0]["start"] <= lock_dur)
         for a, b in ([(0, len(seg))] if whole else _split_phrase(seg, max_words, max_chars, max_dur)):

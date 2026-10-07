@@ -5,3 +5,4 @@ scenedetect[opencv]==0.7.1
 opencv-python==5.0.0.93
 numpy==2.4.6
 pillow
+rembg[cpu]==2.0.85
