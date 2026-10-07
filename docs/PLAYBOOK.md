@@ -125,7 +125,9 @@ Qoidalar:
    kadrlar varag'ini ol va ko'r; `Tekshiruv` va `Platforma` qatorlari `[OK]` ekanini tekshir.
 5. Hisobot: natija fayli, nima qilingani (qisqa), rasm manbalari, ovoz bo'yicha savol (musiqa,
    effektlar yoqdimi — sen eshita olmaysan), keyingi tuzatish uchun taklif.
-6. Foydalanuvchi javobidagi har bir fikrni `feedback.py add` bilan yoz, sozlamaga aylanadiganini
+6. Parallel montajda fikrlarni faqat o'z temp/<video>/deferred_learning.md faylingga yoz.
+   Oxirida boshqa agent idle bo'lgach bitta agent umumiy yozuvlarni bajaradi. Shu idle bosqichda
+   foydalanuvchi javobidagi har bir fikrni `feedback.py add` bilan yoz, sozlamaga aylanadiganini
    `brand.json`/`style.json` ga kirit, takrorlangan whisper xatosini `glossary.py add` bilan lug'atga
    qo'sh. Keyingi videoda o'sha xato takrorlanmasligi kerak.
 

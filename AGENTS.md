@@ -78,7 +78,14 @@ Foydalanuvchi montaj haqida fikr bildirsa ("subtitr pastroq tursin", "bu rang yo
    ish qilma; eslatmalar bir-biriga zid bo'lsa eng yangisi ustun, shubha bo'lsa so'ra.
 5. O'zgarishdan keyin commit qil (eslatma va lug'at fayllari gitda saqlanadi).
 
+Parallel montajda bu umumiy yozuvlar kechiktiriladi: fikr/lug'at/tajriba takliflarini faqat
+o'z `temp/<video>/deferred_learning.md` faylingga yoz. Ikkala video tugab, boshqa agent
+bo'sh bo'lgach, bitta agent feedback, glossary, AGENT_MEMORY va umumiy sozlamalarni yangilab commit qiladi.
+
 ### Yangi mijoz (brend) qo'shish
+
+Boshqa agentning tugallanmagan video eslatmasi bo'lsa brend yaratma yoki tahrir qilma;
+foydalanuvchiga aytib kut. Mavjud brend fayllari parallel montajda faqat o'qiladi.
 
 1. Foydalanuvchidan so'raladigan narsalar: brend nomi, logotip (shaffof fonli PNG), asosiy rang,
    Instagram manzili, bor bo'lsa shrift va musiqa. Yoqqan videolari bo'lsa `samples/<brend>/` ga.
@@ -118,7 +125,7 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `apply_corrections.py` | Transkripsiya matnini tuzatadi, vaqtlarga tegmaydi (`words.fixed.json`). |
 | `glossary.py` | Lug'at: `add "xato" "to'g'ri" [--brand NOM]`, `list`, `remove`. |
 | `feedback.py` | Foydalanuvchi fikrlari: `add "matn" [--brand NOM]`, `show`. |
-| `handoff.py` | Navbat almashish: `show` (holat), `set "matn" --agent NOM`, `clear`. Eslatma: `HOLAT.md`. |
+| `handoff.py` | `show` barcha tugallanmagan video egalarini ko'rsatadi. `set "matn" --video VIDEO --agent NOM`, `show --video VIDEO`, `clear --video VIDEO --agent NOM`. Loyiha eslatmasi uchun `--video` yozilmaydi. |
 | `selftest.py`, `test_transcribe.py`, `check_env.py`, `bench_whisper.py` | Sinov, muhit tekshiruvi, whisper tezligi. |
 | `watcher.py` | Chatdan kelgan topshiriqlarni bajaradi. |
 
@@ -357,36 +364,55 @@ Render qilishdan oldin `--stills` bilan tekshiriladigan ro'yxat:
 ## Agentlar bilan ishlash
 
 - Ikkala agentning doimiy tajribasi `docs/AGENT_MEMORY.md` da: **har sessiya boshida o'qi**.
-  Har montajdan yoki texnik o'zgarishdan keyin nima o'rganildi, dalili va keyingi agentga
-  tavsiyani yoz. Taxmin, tekshirilgan natija va foydalanuvchi tasdig'ini farqlagin.
+  Parallel montajdagi tajribani o'z `temp/<video>/deferred_learning.md` faylingga yoz;
+  oxirida boshqa agent bo'sh bo'lganda bitta agent jurnalga ko'chiradi. Texnik ishda jurnalni
+  faqat boshqa agentning tugallanmagan videosi yo'q paytda yoz. Taxmin va dalilni farqlagin.
 - Har montajda `docs/EDIT_QUALITY.md` bo'yicha reja va `temp/<nom>/review.md` tayyorla.
   Tekshirilmagan sifat yoki tasdiqlanmagan ovoz tanlovini "o'tdi" deb yozma.
 - Sessiya boshida `scripts/sync_skills.py --check` ni `.venv` Python bilan ishlat.
-  Nusxalar eskirgan bo'lsa `--apply`: manba `docs/claude_skills/`, Claude nusxasi
+  Nusxalar eskirgan bo'lsa va boshqa agentning tugallanmagan videosi bo'lmasa `--apply`: manba `docs/claude_skills/`, Claude nusxasi
   `.claude/skills/`, Codex nusxasi `.agents/skills/`. Nusxalarni alohida tahrir qilma.
 - Ikkala agent uchun MCP va foydalanish tartibi: `docs/AGENT_SETUP.md`.
 - Kengaytirilgan montaj vositalari: `docs/STUDIO.md`. Compose avtomatik preflight qiladi;
   ijodiy ogohlantirishlarni reja bilan tekshir. Draft subtitr tasdig'ini chetlab o'tmaydi.
   Batch faqat matn bosqichigacha. Har montajda stills/draft/finalni shu chatda ko'rsat.
 
-- **Bir vaqtda faqat bitta agent ishlaydi** (Claude Code yoki Codex). Ikkalasi birga ishlamaydi.
-  Foydalanuvchi ularni navbat bilan ishlatadi: birining limiti tugasa, ikkinchisi davom ettiradi.
+- **Claude Code va Codex ikki TURLI videoda parallel ishlashi mumkin.** Har agent faqat
+  o'z videosi, `temp/<video>/` va shu papkadagi to'liq `style.json` nusxasi bilan ishlaydi;
+  buyruqlarga `--style temp/<video>/style.json` beriladi. Asl video/samples faqat o'qiladi,
+  natija output/ da har video uchun alohida nomga yoziladi. Bir xil temp nomiga tushadigan
+  videolarni parallel bermang; ikkinchi agent boshqa agentning papkasi yoki eslatmasiga tegmaydi.
+  PowerShell'da agent o'z terminalida `$env:MONTAJ_AGENT='claude'` yoki `'codex'` deb belgilaydi.
 - **Ishni boshlashdan oldin** `.venv\Scripts\python.exe scripts\handoff.py show` ni ishga tushir: oldingi
   agent qoldirgan eslatma (`HOLAT.md`), band belgisi, `temp/` dagi oxirgi ishlar holati va git ko'rinadi.
-  Eslatmada tugallanmagan ish bo'lsa, yangisini boshlama: o'shani davom ettir (yoki foydalanuvchidan so'ra).
+  `show` har tugallanmagan video va egasini sanaydi. Faqat o'zingga topshirilgan videoni
+  davom ettir yoki `handoff.py set "Boshlandi ..." --video VIDEO --agent NOM` bilan egala.
+  Boshqa agent egallagan videoni olmang. `show --video VIDEO` o'z eslatmangni to'liq ko'rsatadi.
 - **Ish davomida holatni yozib bor** (limit ogohlantirmasdan tugaydi, oxirida yozishga ulgurmaysan):
-  `.venv\Scripts\python.exe scripts\handoff.py set "..." --agent claude|codex`. Qachon: matn tasdiqqa
+  `.venv\Scripts\python.exe scripts\handoff.py set "..." --video VIDEO --agent claude|codex`. Qachon: matn tasdiqqa
   yuborilganda, foydalanuvchi javob berganda, `elements.json` yozilganda, render boshlanishidan oldin va
   tugagach. Nima yoziladi: qaysi video va brend, nima qilindi, foydalanuvchidan nima kutilmoqda (uning
-  javobi bo'lsa so'zma-so'z), keyingi qadamning aniq buyrug'i. Ish to'liq tugasa: `handoff.py clear`.
+  javobi bo'lsa so'zma-so'z), keyingi qadamning aniq buyrug'i. Eslatma `temp/<video>/HOLAT.md` da.
+  Video tugasa `handoff.py clear --video VIDEO --agent NOM`: status done, matn/tasdiqlar saqlanadi.
+  Loyiha `HOLAT.md` faqat umumiy setup/qarorlar uchun; parallel montajda ustidan yozma.
 - Foydalanuvchi tasdiqlari (subtitr matni, yuklashga ruxsat) eslatmada yozilgan bo'lsagina kuchda.
-  Yozilmagan tasdiqni taxmin qilma: qayta so'ra.
+  Video tasdig'i o'z video eslatmasiga, umumiy ruxsat loyiha HOLAT.md ga yoziladi.
+  Yozilmagan yoki boshqa videoga tegishli tasdiqni taxmin qilma: qayta so'ra.
 - Og'ir ishlar (`pipeline`, `compose`, `transcribe`, `compare_models`) bir vaqtda bittadan ishlaydi:
-  ikkinchisi "Hozir boshqa ish ketyapti" deb to'xtaydi (`temp/.busy.json`, o'zi o'chadi). Bu xato emas:
-  kut, belgini qo'lda o'chirma.
+  ikkinchisi egani ko'rsatib FIFO navbatda kutadi (`temp/.busy.json`, `.busy.queue/`).
+  Standart limit 7200 soniya (2 soat); `$env:MONTAJ_BUSY_TIMEOUT='900'` kabi sekundlarda
+  o'zgartiriladi. Limit tugasa aniq xato, ish boshlanmaydi. Heartbeat 5s, eski belgi 25s dan
+  keyin to'siq bo'lmaydi; belgilarni qo'lda o'chirma. compare_models ga `--out-dir
+  temp/<video>/compare` ber: natija boshqa video papkasiga yozilmasin.
 - Ishni boshlashdan oldin `git status` va `git log --oneline -5` ni ko'r: oldingi agent nima qilgan.
-- Skript, `style.json`, brend yoki shu faylni o'zgartirgach, **darhol `git commit` qil**.
-- Skriptni o'zgartirgach `.venv\Scripts\python.exe scripts\selftest.py --no-whisper` ni ishga tushir.
+- **Boshqa agentning tugallanmagan video eslatmasi bor ekan** `scripts/`, `style/style.json`,
+  `brands/`, `docs/`, skilllar va umumiy fayllarni tahrir qilma; selftest ham ishlatma.
+  Kodni tuzatish kerak bo'lsa, o'z ishingni to'xtat va foydalanuvchiga ayt.
+- **Parallel montajda git commit yo'q.** Feedback, glossary va AGENT_MEMORY oxirida,
+  boshqa agent bo'sh bo'lganda bitta agent tomonidan yoziladi. Shu yakuniy bosqichdan
+  keyin commit qil. Branch almashish va merge ham parallel montajda qilinmaydi.
+- Umumiy texnik o'zgarishlar faqat boshqa agentning tugallanmagan videosi yo'q paytda:
+  `.venv\Scripts\python.exe scripts\selftest.py --no-whisper` va tegishli testlar, keyin commit.
 
 ## Chatdan montaj (watcher)
 

@@ -12,7 +12,9 @@ Codex ham xuddi shu `AGENTS.md` ni o'qiydi.
 
 ## 1. Ochish
 
-1. Watcher oynasi ochiq bo'lsa yoping (bir vaqtda bitta agent ishlaydi).
+1. Watcher oynasi ochiq bo'lsa yoping. Claude Code va Codex ikki turli videoda parallel
+   ishlashi mumkin: [PARALLEL.md](PARALLEL.md). Pastdagi setup/selftest/commit promptlari
+   boshqa agentning unfinished videosi bo'lmagan texnik sessiya uchungina.
 2. PowerShell'da:
 
    ```powershell

@@ -62,8 +62,9 @@ Never write into `input/` or `samples/`.
 8. **After the render.** `scripts/frames.py output/<file>.mp4 --n 8`, check the report lines
    (`Tekshiruv`, `Platforma`, `Nutq ustunligi`). Report in Uzbek: file, what was done, what is
    still different from the samples, questions.
-9. **Learn.** Every remark from the user goes to `scripts/feedback.py add ...` and, if it is a
-   setting, into `brand.json` / `style.json`. Commit.
+9. **Learn.** During parallel editing, save remarks and proposals in your own deferred_learning.md.
+   At the end, when the other agent is idle, one agent updates feedback, glossary and AGENT_MEMORY,
+   and any approved shared settings, then commits.
 
 ## Fast order: ONE approval message (user rule, 2026-10-07)
 
@@ -71,7 +72,7 @@ No question lists. Apply your best guess to every doubtful word and flag it inli
 Before asking, prepare everything: marked text, plan table, pictures found and cut out
 (`scripts/cutout.py`), stills of every key moment (alternatives side by side when a choice matters),
 the follow card on a still, credits. Send it in ONE message; the user answers once. After "ha" on the
-text write it into HOLAT.md and go straight to the draft; after "ha" on the draft, the final.
+text write it into your video's `temp/<job>/HOLAT.md` and go straight to the draft; after "ha" on the draft, the final.
 Uzbek speech: transcribe with `--model yuldashev222/whisper-small-uz-v1-ct2`. Disease or key-term
 names can go in a big red box (`~~term~~` with `captions.mark2_big: true` in a per-video style file,
 `--style temp/<job>/style.json`). Pictures: cut-out stickers matching the exact word, under the
@@ -90,9 +91,19 @@ caption block, never over face, text or hands. Full-frame stock b-roll only when
 - You judge frames, not motion or sound. For motion, take three close frames:
   `scripts/frames.py <video> --at 2.00,2.08,2.20`.
 
-## Handoff (another agent may continue this work)
+## Parallel work and handoff
 
-Run `scripts/handoff.py show` before starting and continue unfinished work found there. Write
-`scripts/handoff.py set "..." --agent <claude|codex>` after every milestone (text sent for approval,
-user's answer, elements written, before and after a render): video, brand, what is done, what the
-user still has to answer, the exact next command. Usage limits end a session without warning.
+Run `scripts/handoff.py show` first: every unfinished video is listed with its owner. Work only on
+your assigned video. Claim/update it with `scripts/handoff.py set "..." --video <video> --agent
+<claude|codex>`; read it with `show --video <video>`. Record every milestone and exact user approval.
+Use `clear --video <video> --agent <owner>` when done: approvals remain in the completed note.
+Project HOLAT.md is only for project-wide state. Never touch the other agent's folder or note.
+
+Work only in your own temp/<job>/ and full per-video style.json; pass --style to pipeline,
+compose, transcribe and compare_models, frames.py -o for your frame sheets, and compare_models
+--out-dir temp/<job>/compare. Use distinct output names and set MONTAJ_AGENT in your terminal.
+Heavy jobs wait FIFO and report the holder; MONTAJ_BUSY_TIMEOUT defaults to 7200 seconds.
+Never delete locks manually. While another agent has an unfinished video, do not edit scripts/,
+style/style.json, brands/, docs/ or skills, and do not run selftest. If code must change, stop
+and tell the user. No git commits during parallel editing. Defer feedback, glossary and
+AGENT_MEMORY to the end: one agent writes them when the other is idle. See docs/PARALLEL.md.

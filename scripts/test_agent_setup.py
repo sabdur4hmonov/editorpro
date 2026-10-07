@@ -10,6 +10,7 @@ import tempfile
 import unittest
 
 import sync_skills
+from test_parallel import ParallelTests
 
 
 class SetupTests(unittest.TestCase):

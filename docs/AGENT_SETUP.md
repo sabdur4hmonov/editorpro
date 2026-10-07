@@ -1,6 +1,7 @@
 # Claude va Codex: bitta loyiha, bitta tajriba
 
-Bir vaqtda bittasi ishlaydi. Claude `CLAUDE.md` orqali, Codex bevosita `AGENTS.md` ni o'qiydi.
+Claude `CLAUDE.md` orqali, Codex bevosita `AGENTS.md` ni o'qiydi. Ikki turli videoda parallel
+ishlash va foydalanuvchi yuboradigan promptlar: [PARALLEL.md](PARALLEL.md). CPU ishlari FIFO navbatda.
 
 ## Sessiya boshi
 
@@ -9,7 +10,8 @@ Bir vaqtda bittasi ishlaydi. Claude `CLAUDE.md` orqali, Codex bevosita `AGENTS.m
 .venv\Scripts\python.exe scripts\sync_skills.py --check
 ```
 
-AGENT_MEMORY.md ni o'qi, tugallanmagan ishni davom ettir. Skill tekshiruvi 1-kod bersa:
+AGENT_MEMORY.md ni o'qi, faqat o'z videongni davom ettir/egala. Skill tekshiruvi 1-kod bersa
+va boshqa agentning unfinished videosi bo'lmasa:
 
 ```powershell
 .venv\Scripts\python.exe scripts\sync_skills.py --apply
@@ -25,9 +27,12 @@ Brendsiz bo'lsa NOM yozilmaydi. To'rtta skill ikkala agentga ham bir xil jarayon
 Namuna taqqoslash, draft, avtomatik preflight, urg'u, yangi grafikalar, muqova va
 matn navbati uchun [STUDIO.md](STUDIO.md) ni o'qing. Vositalar ikkala agent uchun bir xil CLI.
 
-EDIT_QUALITY.md bo'yicha review.md yoz. AGENT_MEMORY.md ga natija va keyingi tavsiyani qo'sh.
-Mijoz fikrini feedback.py, so'z xatosini glossary.py bilan saqla. HOLAT.md ga joriy holat,
-foydalanuvchi javobi va keyingi buyruqni yoz; avvalgi tugallanmagan ishni yo'qotma. Commit qil.
+EDIT_QUALITY.md bo'yicha o'z review.md faylingni yoz. Parallel montajda tajribani faqat
+o'z deferred_learning.md faylingga yoz. Ikkala video tugab, boshqa agent idle bo'lgach bitta agent
+AGENT_MEMORY.md ga natija va keyingi tavsiyani qo'shadi.
+Feedback/glossary ham shu yakuniy idle bosqichda yangilanadi va commit qilinadi.
+Joriy video, foydalanuvchi javobi va keyingi buyruqni handoff.py set --video VIDEO --agent NOM
+bilan temp/<video>/HOLAT.md ga yoz. Loyiha HOLAT.md faqat umumiy state uchun.
 
 ## Mahalliy MCP — montaj-project
 

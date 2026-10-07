@@ -13,6 +13,8 @@ import shutil
 import subprocess
 import sys
 import time
+import uuid
+from contextlib import contextmanager
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -84,54 +86,144 @@ def run_main(main_func) -> None:
 
 BUSY_FILE = TEMP_DIR / ".busy.json"
 BUSY_STALE_SEC = 25.0          # shuncha vaqt yangilanmagan belgi eskirgan hisoblanadi (jarayon yopilgan)
+BUSY_WAIT_SEC = 7200.0         # CPU navbati: standart kutish limiti 2 soat
 _busy_owned = False
+
+
+@contextmanager
+def file_mutex(path: Path):
+    """Qisqa atomik amallar uchun OS qulfi; jarayon o'lsa OS uni bo'shatadi."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a+b") as handle:
+        if handle.seek(0, 2) == 0:
+            handle.write(b"0")
+            handle.flush()
+        handle.seek(0)
+        if sys.platform == "win32":
+            import msvcrt
+            lock = lambda: msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            unlock = lambda: msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            lock = lambda: fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            unlock = lambda: fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        limit = time.monotonic() + 5
+        while True:
+            try:
+                lock()
+                break
+            except OSError:
+                if time.monotonic() >= limit:
+                    raise MontajError(f"Qisqa fayl qulfi 5 soniyada ochilmadi: {path}") from None
+                time.sleep(0.02)
+        try:
+            yield
+        finally:
+            unlock()
+
+
+def atomic_text(path: Path, text: str) -> None:
+    """O'quvchi yarim yozilgan faylni ko'rmasin; vaqtinchalik nom har yozishda alohida."""
+    temp = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
+    try:
+        temp.write_text(text, encoding="utf-8")
+        temp.replace(path)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
+def _lock_record(path: Path) -> dict | None:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and math.isfinite(float(data.get("alive_at", 0))):
+            return data
+    except (OSError, ValueError, TypeError):
+        pass
+    return None
+
+
+def _fresh_lock(path: Path) -> dict | None:
+    data = _lock_record(path)
+    if data is not None:
+        return data if time.time() - float(data.get("alive_at", 0)) <= BUSY_STALE_SEC else None
+    # Legacy clients may be between exclusive-create and their initial JSON write.
+    try:
+        if time.time() - path.stat().st_mtime <= BUSY_STALE_SEC:
+            return {"agent": "noma'lum agent", "what": "belgi yozilmoqda"}
+    except OSError:
+        pass
+    return None
 
 
 def busy_state() -> dict | None:
     """Hozir ishlayotgan og'ir ish haqida ma'lumot (yo'q yoki eskirgan bo'lsa None)."""
-    try:
-        data = json.loads(BUSY_FILE.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
-    if not isinstance(data, dict) or time.time() - float(data.get("alive_at", 0)) > BUSY_STALE_SEC:
-        return None
-    return data
+    return _fresh_lock(BUSY_FILE)
 
 
-def busy_acquire(what: str) -> None:
-    """Og'ir ish (transkripsiya, render) boshlanishini belgilaydi. Boshqa agent ishlayotgan bo'lsa xato beradi.
+def busy_acquire(what: str, timeout: float | None = None) -> None:
+    """CPU navbati: FIFO, heartbeat, eskirgan belgini tiklash, cheklangan kutish.
 
-    Kompyuter kuchi bitta renderga yetadi va ikki agent bitta temp/ papkaga yozsa bir-birini buzadi:
-    shuning uchun bir vaqtda bitta og'ir ish. Belgi jarayon tugaganda o'zi o'chadi; jarayon majburan
-    yopilsa 25 soniyada eskiradi. Agent nomi MONTAJ_AGENT muhit o'zgaruvchisidan olinadi (ixtiyoriy).
+    MONTAJ_AGENT egani, MONTAJ_BUSY_TIMEOUT kutish sekundlarini belgilaydi (standart 7200).
+    Bir jarayon ichidagi pipeline -> transcribe/compose chaqiruvlari qulfni qayta olmaydi.
     """
     global _busy_owned
     if _busy_owned:
         return
     import atexit
     import threading
+    try:
+        timeout = float(timeout if timeout is not None else os.environ.get("MONTAJ_BUSY_TIMEOUT", BUSY_WAIT_SEC))
+        if not math.isfinite(timeout) or timeout < 0:
+            raise ValueError
+    except (TypeError, ValueError):
+        raise MontajError("MONTAJ_BUSY_TIMEOUT manfiy bo'lmagan chekli son (sekund) bo'lishi kerak.") from None
     TEMP_DIR.mkdir(parents=True, exist_ok=True)
+    guard = BUSY_FILE.with_suffix(".guard")
+    queue = BUSY_FILE.with_suffix(".queue")
+    queue.mkdir(parents=True, exist_ok=True)
+    token = uuid.uuid4().hex
+    ticket = queue / (token + ".json")
+    deadline = time.monotonic() + timeout
     me = {"pid": os.getpid(), "agent": os.environ.get("MONTAJ_AGENT", "").strip() or "noma'lum agent",
-          "what": what, "started": time.time(), "alive_at": time.time()}
-    for attempt in range(2):
-        try:
-            with open(BUSY_FILE, "x", encoding="utf-8") as fh:
-                json.dump(me, fh, ensure_ascii=False)
-            break
-        except FileExistsError:
-            other = busy_state()
-            if other is not None and other.get("pid") != me["pid"]:
-                ago = int(time.time() - float(other.get("started", time.time())))
-                raise MontajError(
-                    f"Hozir boshqa ish ketyapti: {other.get('what', '?')} ({other.get('agent', '?')}, {ago} soniya oldin "
-                    "boshlangan). Bir vaqtda bitta og'ir ish bajariladi: u tugashini kuting va qayta urinib ko'ring.\n"
-                    "Hech narsa ishlamayotgan bo'lsa (oyna yopilgan), yarim daqiqadan keyin o'zi ochiladi.")
-            try:
-                BUSY_FILE.unlink()                    # eskirgan belgi
-            except OSError:
-                pass
-    else:
-        raise MontajError(f"Band belgisini yozib bo'lmadi: {BUSY_FILE}")
+          "what": what, "queued_at": time.time(), "alive_at": time.time(), "token": token}
+    reported, next_report = None, 0.0
+    try:
+        while True:
+            if reported is not None and time.monotonic() >= deadline:
+                raise MontajError(f"Hozir boshqa ish ketyapti: {reported}. Kutish limiti ({timeout:g}s) tugadi; "
+                                  "ish boshlanmadi. Keyin qayta ishga tushiring; band belgisini qo'lda o'chirmang.")
+            with file_mutex(guard):
+                me["alive_at"] = time.time()
+                atomic_text(ticket, json.dumps(me, ensure_ascii=False))
+                waiting = []
+                for path in queue.glob("*.json"):
+                    row = _fresh_lock(path)
+                    if row is None:
+                        path.unlink(missing_ok=True)
+                    else:
+                        waiting.append((float(row["queued_at"]) if "queued_at" in row else path.stat().st_mtime,
+                                        path.name, row))
+                waiting.sort(key=lambda row: (row[0], row[1]))
+                other = busy_state()
+                first = waiting[0] if waiting else None
+                if other is None and first and first[1] == ticket.name:
+                    me["started"] = time.time()
+                    atomic_text(BUSY_FILE, json.dumps(me, ensure_ascii=False))
+                    ticket.unlink()
+                    break
+                holder = other or (first[2] if first else {})
+            label = f"{holder.get('what', '?')} ({holder.get('agent', '?')})"
+            if label != reported or time.monotonic() >= next_report:
+                info(f"[NAVBAT] Hozir boshqa ish ketyapti: {label}. Kutilyapti; limit {timeout:g}s.")
+                reported, next_report = label, time.monotonic() + 15
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise MontajError(f"Hozir boshqa ish ketyapti: {label}. Kutish limiti ({timeout:g}s) tugadi; "
+                                  "ish boshlanmadi. Keyin qayta ishga tushiring; band belgisini qo'lda o'chirmang.")
+            time.sleep(min(0.2, remaining))
+    finally:
+        with file_mutex(guard):
+            ticket.unlink(missing_ok=True)
     _busy_owned = True
     stop = threading.Event()
 
@@ -139,19 +231,20 @@ def busy_acquire(what: str) -> None:
         while not stop.wait(5.0):
             me["alive_at"] = time.time()
             try:
-                tmp = BUSY_FILE.with_suffix(".tmp")
-                tmp.write_text(json.dumps(me, ensure_ascii=False), encoding="utf-8")
-                tmp.replace(BUSY_FILE)
-            except OSError:
+                with file_mutex(guard):
+                    if (_lock_record(BUSY_FILE) or {}).get("token") != token:
+                        return
+                    atomic_text(BUSY_FILE, json.dumps(me, ensure_ascii=False))
+            except (OSError, MontajError):
                 pass
 
     def release() -> None:
         stop.set()
         try:
-            data = json.loads(BUSY_FILE.read_text(encoding="utf-8"))
-            if data.get("pid") == me["pid"]:
-                BUSY_FILE.unlink()
-        except (OSError, ValueError):
+            with file_mutex(guard):
+                if (_lock_record(BUSY_FILE) or {}).get("token") == token:
+                    BUSY_FILE.unlink(missing_ok=True)
+        except (OSError, MontajError):
             pass
 
     threading.Thread(target=beat, daemon=True).start()

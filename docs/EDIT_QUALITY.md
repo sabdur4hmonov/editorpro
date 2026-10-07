@@ -13,7 +13,8 @@ Bor namuna bilan shrift/urg'u/rang/joylashuvni solishtir; namuna yo'q bo'lsa o'y
 ## 2. Matn va vaqt
 
 Matnni to'liq ko'rsat, ishonchi past so'zlar va takror kesilgan joylarni alohida ko'rsat.
-HOLAT.md da aniq tasdiq bo'lmaguncha videoga subtitrni yozma. So'z vaqtlarini o'zgartirma.
+O'z videongning temp/<video>/HOLAT.md eslatmasida aniq tasdiq bo'lmaguncha videoga subtitrni yozma.
+So'z vaqtlarini o'zgartirma. Parallel qoidalar: PARALLEL.md; tajriba oxirida bitta idle agent tomonidan yoziladi.
 Grafika aytilayotgan fikr vaqtida chiqsin, har subtitr bo'lagida bitta urg'u bo'lsin.
 
 ## 3. Kadr ko'rigi

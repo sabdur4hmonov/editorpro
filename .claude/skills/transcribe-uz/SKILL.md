@@ -16,6 +16,22 @@ clear, do not guess: mark the place `needs_review` and ask the user.
 Python is always `.venv/Scripts/python.exe`, run from the project root. Check `--help` before
 using a flag you are not sure about.
 
+## Parallel work and handoff
+
+Run scripts/handoff.py show first; it lists all unfinished videos and owners. Work only on
+your assigned video and its temp/<job>/; never touch the other agent's folder or note. Claim
+and update yours with handoff.py set "..." --video VIDEO --agent OWNER, read with show --video
+VIDEO, and record exact approvals there. clear --video VIDEO --agent OWNER marks done and
+keeps approvals. Project HOLAT.md is for project-wide state only.
+Use a full per-video temp/<job>/style.json copy, pass --style to transcribe, pipeline and
+compare_models, and --out-dir temp/<job>/compare to compare_models. Set MONTAJ_AGENT in your
+terminal. Heavy jobs wait FIFO and report the holder; MONTAJ_BUSY_TIMEOUT defaults to 7200s.
+Never manually remove the lock. While another agent has an unfinished video, do not edit
+scripts/, style/style.json, brands/, docs/ or skills, and do not run selftest. If a code change
+is required, stop and tell the user. No git commits during parallel editing. Feedback, glossary
+and AGENT_MEMORY are written at the end by one agent when the other is idle; until then keep
+proposals in your own temp/<job>/deferred_learning.md. See docs/PARALLEL.md.
+
 ## Steps
 
 1. **Transcribe** with the configured model (`style/style.json` → `whisper`):
@@ -78,10 +94,12 @@ It uses only the first 60 seconds, writes one set of files per model and a side-
 - Do not score or rank quality yourself: you cannot hear which model is right. Report speed and
   where the texts differ; the user listens and chooses.
 - Exit code 4 = a model must be downloaded: tell the user the size, ask, then `--allow-download`.
-- Write the chosen model into `style/style.json` (`whisper.model`) only after the user says which.
+- Write the chosen model into your per-video style during parallel editing. A shared
+  style/style.json change requires the user's choice and an idle maintenance session.
 
 5. **After approval — hand the text to the edit.**
    - A word whisper got wrong that will come up again (brand name, a person's name, a term):
+     during parallel editing, record it only in your deferred_learning.md. At the end, one idle agent runs
      `.venv/Scripts/python.exe scripts/glossary.py add "wrong" "right" [--brand NAME]`.
    - Continue the edit with the approved words (whisper is not run again, timings stay):
      `.venv/Scripts/python.exe scripts/pipeline.py <video> --words temp/<job>/orig.words.fixed.json [--brand NAME]`

@@ -16,14 +16,14 @@ reference reels in `samples/`. Read `docs/NAMUNA_USLUBI.md` and follow the `/nam
 checklist ("What 'like the samples' means") for captions, hook, elements and ending.
 Read `docs/STUDIO.md` for sample comparisons, automatic preflight, approved draft renders,
 emphasis proposals, behind-person titles, new graphics, covers and preparation-only batches.
-Show stills, draft and final in the chat; record tested lessons in `docs/AGENT_MEMORY.md`.
+Show stills, draft and final in the chat; defer shared learning during parallel editing as below.
 
 ## Before anything
 
 1. Read `AGENTS.md` and `docs/PLAYBOOK.md` fully. They are the source of truth for commands, element
    fields and editing rules. Do not guess a flag or field: check `--help` or the code.
 2. `git status` and `git log --oneline -5`. If a watcher window is running (`jobs/watcher.json` has a
-   recent `alive_at`), ask the user to close it: only one agent works at a time.
+   recent `alive_at`), ask the user to close it before direct Claude Code/Codex work.
 3. Python is always `.venv/Scripts/python.exe`, run from the project root.
 4. Never read, print or commit `.env`. Never write into `input/` or `samples/`.
 
@@ -58,11 +58,13 @@ Show stills, draft and final in the chat; record tested lessons in `docs/AGENT_M
    `--at 2.0,2.1,2.25` (three close frames).
 9. **Report** in Uzbek: output file, what you did (short), image sources / credits that must be
    mentioned, AI-image note if any, and ask the user to listen for audio (you cannot hear).
-10. **Learn from the answer.** Record every piece of feedback the user gives with
+10. **Learn from the answer.** During parallel editing, save proposals only in your own
+    `temp/<job>/deferred_learning.md`. At the end, when the other agent is idle, one agent records them with
     `scripts/feedback.py add "..." [--brand NAME] [--video PATH]`, turn it into a setting in
     `brand.json` / `style.json` when it maps to one, and add repeated whisper mistakes to the
     glossary (`scripts/glossary.py add`). The same remark must not be needed twice.
-11. If you changed scripts, `style/style.json`, a brand or docs: run
+11. Shared changes are prohibited while another agent has an unfinished video. In an idle maintenance session,
+    if you changed scripts, `style/style.json`, a brand or docs: run
     `scripts/selftest.py --no-whisper --offline`, then `git commit`.
 
 ## Fast order: ONE approval message (user rule, 2026-10-07)
@@ -77,7 +79,7 @@ The user does not want question lists. Each round trip costs them time.
    colours side by side), the follow card on a still, credits.
 3. **Send one message**: full marked text with `[?]` flags, plan table, stills, credits, and the few
    answers you need. The user answers once.
-4. After "ha" on the text: write the approval word for word into HOLAT.md, then go straight to the
+4. After "ha" on the text: write the approval word for word into your video's `temp/<job>/HOLAT.md`, then go straight to the
    draft. After "ha" on the draft: the final. Do not stop in between when your own checks pass.
 5. **Uzbek transcription**: use `--model yuldashev222/whisper-small-uz-v1-ct2` (in the HF cache). The
    default `small` produced unusable Uzbek on "doktor 1"; the fine-tuned model got whole sentences right.
@@ -92,11 +94,26 @@ The user does not want question lists. Each round trip costs them time.
 - Subtitles are never burned in without the user's explicit approval in this conversation.
 - Every number shown on screen was said in the video or given by the user.
 - Music, film clips and logos only from files the user provided.
-- If a script fails, find the cause and fix it; never skip a stage silently.
+- If a script fails, find the cause. If shared code needs changing while another agent owns an
+  unfinished video, stop and tell the user; never skip a stage silently.
 
-## Handoff (another agent may continue this work)
+## Parallel work and handoff
 
-Run `scripts/handoff.py show` before starting and continue unfinished work found there. Write
-`scripts/handoff.py set "..." --agent <claude|codex>` after every milestone (text sent for approval,
-user's answer, elements written, before and after a render): video, brand, what is done, what the
-user still has to answer, the exact next command. Usage limits end a session without warning.
+Run `scripts/handoff.py show` first: it lists every unfinished video and its owner. Work only on
+your assigned video; never touch another agent's video folder or note. Claim yours with
+`scripts/handoff.py set "Started ..." --video <video> --agent <claude|codex>` and use
+`show --video <video>` to read its full note. Repeat set after each milestone, including the user's
+exact approval, brand, files and next command. Finish with `clear --video <video> --agent <owner>`;
+this marks done and retains approvals. Project HOLAT.md is for project-wide state only.
+
+Use only your own `temp/<job>/` and a full per-video `temp/<job>/style.json` copy. Pass `--style`
+to pipeline/compose/transcribe/compare_models. Put frame sheets in that folder with `frames.py -o`;
+pass `--out-dir temp/<job>/compare` to compare_models. Output video names must be distinct.
+Set MONTAJ_AGENT in your own terminal. Heavy jobs wait FIFO, report the holder, and stop clearly
+after MONTAJ_BUSY_TIMEOUT seconds (default 7200). Do not delete locks manually.
+
+While another agent has an unfinished video, do not edit scripts/, style/style.json, brands/,
+docs/ or skills, and do not run selftest. If code changes are needed, stop and tell the user.
+No git commits during parallel editing. Feedback, glossary and AGENT_MEMORY are written at the
+end by one agent when the other is idle; until then use only your deferred_learning.md.
+Never change the branch or merge. See docs/PARALLEL.md for verified command examples.

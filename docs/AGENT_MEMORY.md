@@ -5,6 +5,10 @@ foydalanuvchi tasdiqlarini saqlaydi. Bir agent yozgan tajribani keyingisi ham qo
 
 Har montajdan va texnik o'zgarishdan keyin pastga yoz:
 
+Parallel montajda bu umumiy faylga darhol yozilmaydi: tajribani faqat o'z
+temp/<video>/deferred_learning.md faylingga yoz. Oxirida boshqa agent idle bo'lgach,
+bitta agent jurnal, feedback va glossary yozuvlarini umumiy fayllarga ko'chiradi.
+
 - Sana, agent, video/brend yoki texnik vazifa.
 - Nima ishladi / nima ishlamadi; sabab va dalil (fayl, vaqt, test, commit).
 - Keyingi agent uchun takrorlanadigan aniq tavsiya.
@@ -84,3 +88,27 @@ Ishladi:
   `output/doktor_1_final.mp4` 1080x1920 30 fps -14.0 LUFS, platforma [OK].
 
 Ochiq: finalda yuz manbaga nisbatan yumshoqroq (4K->1080 keyin zoom INTER_LINEAR, crf 20) - taklif berildi, kutilmoqda.
+
+## 2026-10-07 — Codex — ikki video parallel montaji — tekshirilgan
+
+- Avvalgi bir-agent tartibi yangilandi: ikki turli video parallel tayyorlanadi, ammo CPU ishlari
+  FIFO navbatda bittadan. MONTAJ_AGENT egani, MONTAJ_BUSY_TIMEOUT kutish limitini bildiradi
+  (standart 7200s). Heartbeat 5s va stale 25s saqlandi; token va OS qulfi eski egani yangi
+  egani o'chirishdan, claim/heartbeat/release poygasidan himoyalaydi.
+- handoff.py set/show/clear --video: temp/<video>/HOLAT.md, agent egasi va status. Begona egaga
+  yozish/clear va bir xil temp nomiga boshqa manbani yozish rad etiladi. Project HOLAT.md umumiy
+  state uchun qoladi. Clear video note'ni o'chirmaydi, status done qilib matn/tasdiqlarni saqlaydi.
+  Har set'da joriy holat bilan tegishli avvalgi tasdiqlarni ham saqla: set yangi holatni almashtiradi.
+- Haqiqiy to'qnashuv: html_render.py umumiy temp/.html_render/profile ishlatardi. Endi har
+  videoda temp/<video>/.html_render/profile va --style. Ikki parallel qizil/ko'k PNG alohida
+  profillarda tekshirildi. Edge bolalar jarayoni PNG tayyor bo'lgach ham profil SQLite faylini
+  qisqa ushlab turishi mumkin: test cleanup faqat PermissionError'da 30s gacha qayta urinadi,
+  to'liq tozalash talabini saqlaydi; doimiy xato bo'lsa test yiqiladi.
+- Dalil: test_agent_setup.py 11/11 (7 qulf/ownership sinovi, parallel HTML, 3 sync/MCP sinovi),
+  test_studio.py 13/13, yakuniy selftest --no-whisper: 44/44. Selftestdagi eski darhol-rad-qulf tekshiruvi yangi talablarga mos:
+  kutish chiqishi + aniq limit xatosi talab qilinadi, boshqa egaga ish boshlash taqiqlangan.
+- Keyingi agent: docs/PARALLEL.md promptlarini ishlat. Avval o'z --video note'ingni egala,
+  keyin to'liq per-video style nusxasi; frames -o, compare_models --out-dir va boshqa
+  yordamchi natijalar o'z papkangda. Boshqa unfinished video bor paytda umumiy kod/docs/brend/
+  skilllar va selftestga tegma; kod kerak bo'lsa to'xta va foydalanuvchiga ayt. Parallel commit
+  yo'q; yakunda bitta idle agent deferred_learning yozuvlarini umumlashtiradi.

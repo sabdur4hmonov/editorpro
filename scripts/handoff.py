@@ -1,16 +1,19 @@
 """Navbat almashish: bir agent to'xtaganda (limit, tanaffus) ikkinchisi qayerdan davom etishini biladi.
 
-    python scripts/handoff.py show                       hozirgi holat: eslatma, band belgisi, oxirgi ishlar, git
-    python scripts/handoff.py set "matn" [--agent NOM]   holatni yozib qo'yish (har muhim qadamdan keyin)
-    python scripts/handoff.py clear                      ish tugagach eslatmani tozalash
+    python scripts/handoff.py show                       loyiha va barcha tugallanmagan video egalari
+    python scripts/handoff.py show --video input/a.mp4    shu videoning to'liq eslatmasi
+    python scripts/handoff.py set "matn" --video input/a.mp4 --agent codex
+    python scripts/handoff.py clear --video input/a.mp4 --agent codex  videoni tugagan deb belgilash
 
-Eslatma loyiha papkasidagi HOLAT.md da turadi (gitga kirmaydi). Claude Code, Codex va chat (watcher)
-bir xil faylni o'qiydi. Limit to'satdan tugashi mumkin: shuning uchun eslatma oxirida emas, ish davomida yoziladi.
+Loyiha HOLAT.md umumiy holat uchun; har video temp/<video>/HOLAT.md da egasi bilan saqlanadi.
+Limit to'satdan tugaydi: eslatma oxirida emas, ish davomida yoziladi.
 """
 from __future__ import annotations
 
 import argparse
+import json
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -18,6 +21,61 @@ from pathlib import Path
 import common as C
 
 FILE = C.ROOT / "HOLAT.md"
+PREFIX = "<!-- handoff: "
+
+
+def video_note(video: str | Path) -> tuple[Path, str]:
+    source = Path(video).resolve()
+    folder = source.parent if C.is_inside(source, C.TEMP_DIR) and source.stem == "cut" else C.TEMP_DIR / C.slugify(source.stem)
+    if folder.resolve().parent != C.TEMP_DIR.resolve():
+        raise C.MontajError("Video eslatmasi faqat temp/<video>/ ichida bo'lishi kerak.")
+    return folder / "HOLAT.md", str(source)
+
+
+def read_note(path: Path) -> tuple[dict, str]:
+    text = path.read_text(encoding="utf-8")
+    line = text.splitlines()[0] if text else ""
+    try:
+        if not line.startswith(PREFIX) or not line.endswith(" -->"):
+            raise ValueError
+        data = json.loads(line[len(PREFIX):-4])
+        if not isinstance(data, dict) or not data.get("agent") or data.get("status") not in ("unfinished", "done"):
+            raise ValueError
+    except (ValueError, TypeError):
+        raise C.MontajError(f"Video eslatmasi metama'lumoti buzuq; ustidan yozilmadi: {path}") from None
+    return data, text
+
+
+def unfinished_notes() -> list[dict]:
+    rows = []
+    for path in sorted(C.TEMP_DIR.glob("*/HOLAT.md")):
+        try:
+            data, _ = read_note(path)
+            if data["status"] == "unfinished":
+                rows.append(dict(data, note=str(path)))
+        except (OSError, C.MontajError) as error:
+            rows.append({"agent": "noma'lum", "video": path.parent.name, "note": str(path), "error": str(error)})
+    return rows
+
+
+def write_video_note(video, text: str | None, agent: str, done=False) -> Path:
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", agent):
+        raise C.MontajError("Video eslatmasi uchun --agent claude yoki codex kabi aniq nom kerak.")
+    path, source = video_note(video)
+    with C.file_mutex(path.parent / ".handoff.guard"):
+        old, old_text = read_note(path) if path.exists() else ({}, "")
+        if old and old["agent"] != agent:
+            raise C.MontajError(f"Bu video {old['agent']} ga tegishli; {agent} uning eslatmasini o'zgartira olmaydi: {path}")
+        # cut.mp4 is a derived alias for the same video folder, not a new input claim.
+        alias = Path(source).name == "cut.mp4" and Path(source).parent == path.parent.resolve()
+        if old and old.get("video") != source and not alias:
+            raise C.MontajError(f"Bir xil temp nomi boshqa videoga tegishli: {old.get('video')}. Boshqa video nomi kerak.")
+        if done and not old:
+            raise C.MontajError("Tugatish uchun avval shu videoning eslatmasini yozing.")
+        body = old_text.split("\n", 1)[1] if done else f"# Holat ({time.strftime('%Y-%m-%d %H:%M')}, {agent})\n\n{text.strip()}\n"
+        data = {"agent": agent, "video": old.get("video", source), "status": "done" if done else "unfinished"}
+        C.atomic_text(path, PREFIX + json.dumps(data, ensure_ascii=False) + " -->\n" + body)
+    return path
 
 
 def ago(seconds: float) -> str:
@@ -67,17 +125,27 @@ STATUS = {"need_approval": "subtitr matni tasdiqlanishi kutilmoqda", "stills": "
           "done": "render tugagan", "ok": "tugagan", "error": "xato bilan to'xtagan"}
 
 
-def show() -> int:
+def show(video=None) -> int:
     C.info("=== Navbat almashish holati ===")
     if FILE.is_file():
         C.info(f"\nEslatma (HOLAT.md, {ago(time.time() - FILE.stat().st_mtime)} yozilgan):")
         C.info(FILE.read_text(encoding="utf-8").rstrip())
     else:
         C.info("\nEslatma yo'q (HOLAT.md yozilmagan): oldingi agent ishni tugatgan yoki hali boshlamagan.")
+    notes = unfinished_notes()
+    C.info("\nTugallanmagan video eslatmalari:" if notes else "\nTugallanmagan video eslatmasi yo'q.")
+    for row in notes:
+        C.info(f"  Egasi: {row['agent']}; video: {row['video']}\n    Eslatma: {row['note']}")
+        if row.get("error"):
+            C.warn(row["error"])
+    if video:
+        path, _ = video_note(video)
+        C.info(f"\nShu video eslatmasi ({path}):")
+        C.info(read_note(path)[1] if path.is_file() else "Hali yozilmagan.")
     busy = C.busy_state()
     if busy:
         C.info(f"\nBAND: {busy.get('what')} ({busy.get('agent')}), {ago(time.time() - float(busy.get('started', 0)))} "
-               "boshlangan. U tugamaguncha og'ir ish boshlamang.")
+               "boshlangan. Yangi og'ir ish navbatda kutadi.")
     else:
         C.info("\nBand emas: hozir hech qanday og'ir ish ketmayapti.")
     jobs = recent_jobs()
@@ -93,15 +161,23 @@ def show() -> int:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Agentlar orasida navbat almashish eslatmasi (HOLAT.md).")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("show", help="Hozirgi holatni ko'rsat")
+    sh = sub.add_parser("show", help="Loyiha, barcha tugallanmagan videolar va CPU holati")
+    sh.add_argument("--video", help="Shu videoning to'liq temp/<video>/HOLAT.md eslatmasi")
     s = sub.add_parser("set", help="Holatni yozib qo'y")
     s.add_argument("text", help="Nima qilindi, nima kutilmoqda, keyingi qadam (buyrug'i bilan)")
     s.add_argument("--agent", help="Kim yozdi: claude, codex, chat (standart: MONTAJ_AGENT yoki 'agent')")
-    sub.add_parser("clear", help="Eslatmani o'chir (ish to'liq tugaganda)")
+    s.add_argument("--video", help="Faqat shu video eslatmasi; yozilmasa loyiha HOLAT.md")
+    cl = sub.add_parser("clear", help="Video tugagan deb belgilanadi; loyihada eski clear xatti-harakati")
+    cl.add_argument("--video")
+    cl.add_argument("--agent")
     args = ap.parse_args()
     if args.cmd == "show":
-        return show()
+        return show(args.video)
     if args.cmd == "clear":
+        if args.video:
+            path = write_video_note(args.video, None, args.agent or os.environ.get("MONTAJ_AGENT", ""), done=True)
+            C.info(f"Video tugagan deb belgilandi, matn/tasdiqlar saqlandi: {path}")
+            return 0
         FILE.unlink(missing_ok=True)
         C.info("Eslatma tozalandi.")
         return 0
@@ -109,8 +185,13 @@ def main() -> int:
     if not text:
         raise C.MontajError("Bo'sh eslatma yozilmaydi.")
     agent = (args.agent or os.environ.get("MONTAJ_AGENT", "") or "agent").strip()
-    FILE.write_text(f"# Holat ({time.strftime('%Y-%m-%d %H:%M')}, {agent})\n\n{text}\n", encoding="utf-8")
-    C.info(f"Yozildi: {FILE}")
+    if args.video:
+        path = write_video_note(args.video, text, agent)
+    else:
+        path = FILE
+        with C.file_mutex(C.TEMP_DIR / ".project_handoff.guard"):
+            C.atomic_text(path, f"# Holat ({time.strftime('%Y-%m-%d %H:%M')}, {agent})\n\n{text}\n")
+    C.info(f"Yozildi: {path}")
     return 0
 
 

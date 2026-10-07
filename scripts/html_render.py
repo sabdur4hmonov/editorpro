@@ -111,7 +111,13 @@ def prepare(html_path: Path, style: dict, width: int, height: int, transparent: 
         text = text[:pos] + "\n" + inject + text[pos:]
     else:
         text = "<!doctype html><html><head><meta charset=\"utf-8\">\n" + inject + "</head><body>" + text + "</body></html>"
-    work = C.TEMP_DIR / ".html_render"
+    # Separate videos must not share Edge's user-data directory or intermediate graphics.
+    if C.is_inside(html_path, C.TEMP_DIR):
+        parts = html_path.resolve().relative_to(C.TEMP_DIR.resolve()).parts
+        name = parts[0] if len(parts) > 1 else C.slugify(html_path.stem)
+    else:
+        name = C.slugify(html_path.stem)
+    work = C.TEMP_DIR / name / ".html_render"
     work.mkdir(parents=True, exist_ok=True)
     out = work / (hashlib.md5(str(html_path.resolve()).encode("utf-8")).hexdigest()[:12] + ".html")
     out.write_text(text, encoding="utf-8")
@@ -132,7 +138,7 @@ def render(html_path: str | Path, out_path: str | Path, style: dict | None = Non
     page = prepare(html_path, style, width, height, transparent)
     shot = page.with_suffix(".png")
     shot.unlink(missing_ok=True)
-    profile = C.TEMP_DIR / ".html_render" / "profile"      # foydalanuvchining ochiq brauzeriga tegmaslik uchun alohida
+    profile = page.parent / "profile"      # har video uchun alohida brauzer profili
     cmd = [browser, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--mute-audio",
            "--no-first-run", "--no-default-browser-check", "--disable-extensions", "--disable-sync",
            "--disable-background-networking", "--force-device-scale-factor=1",
@@ -207,6 +213,7 @@ def main() -> int:
     ap.add_argument("-o", "--output", required=True, help="Natija rasm (.png shaffof, .jpg fonli)")
     ap.add_argument("--size", help="Sahifa o'lchami, masalan 1080x1920 (standart: style.json dagi video o'lchami)")
     ap.add_argument("--brand", help="Brend nomi (shrift va rang shundan olinadi)")
+    ap.add_argument("--style", help="Per-video yoki boshqa style.json fayli")
     ap.add_argument("--trim", action="store_true", help="Bo'sh (shaffof) chetlarni kesib tashla")
     ap.add_argument("--opaque", action="store_true", help="Shaffof emas, qora fon bilan")
     ap.add_argument("--wait", type=int, default=1200, help="Sahifa tayyor bo'lishini kutish, ms (standart 1200)")
@@ -221,7 +228,7 @@ def main() -> int:
             size = (w, h)
         except ValueError:
             raise C.MontajError("--size 1080x1920 ko'rinishida bo'lishi kerak.") from None
-    res = render(args.html, args.output, C.load_style(brand=args.brand), size, not args.opaque, args.trim,
+    res = render(args.html, args.output, C.load_style(args.style, args.brand), size, not args.opaque, args.trim,
                  args.wait, args.allow_network)
     C.info(f"TAYYOR: {res['output']} ({res['width']}x{res['height']})")
     return 0

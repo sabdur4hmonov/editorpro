@@ -3,6 +3,8 @@
 Million videosi foydalanuvchi tomonidan bekor qilingan. Uni qayta boshlamang va tasdiq so'ramang.
 Quyidagi buyruqlarda `<video>`, `<job>`, `<brend>` haqiqiy qiymatga almashtiriladi.
 Har yangi video oldidan HOLAT.md, AGENT_MEMORY, PLAYBOOK, NAMUNA_USLUBI va notes o'qiladi.
+Parallel montaj: PARALLEL.md. Faqat o'z temp/<video>/ papkangga va o'z output nomingga yoz;
+video tasdiqlari temp/<video>/HOLAT.md da. Umumiy batch/analysis natijalarini parallel ishda ishlatma.
 
 ## 1. Namuna bilan kadrma-kadr taqqoslash
 

@@ -8,6 +8,15 @@ argument-hint: "<brand name> [@instagram]"
 
 Arguments: `$ARGUMENTS`. Talk to the user in **Uzbek**, short numbered steps.
 
+Run scripts/handoff.py show first. If another agent owns an unfinished video, stop and tell the
+user: brands/, scripts/, style/style.json, docs/ and skills must not change, selftest must not
+run, and there are no git commits during parallel editing. Brand onboarding and shared feedback,
+glossary and AGENT_MEMORY updates run at the end by one agent when the other is idle.
+Never touch another agent's temp/<video>/ folder or note. An editing agent uses only its own
+temp/<video>/ and per-video style.json, records milestones with handoff.py set --video VIDEO
+--agent OWNER, and lets heavy jobs wait FIFO (MONTAJ_BUSY_TIMEOUT defaults to 7200 seconds).
+Project HOLAT.md remains project-wide. See docs/PARALLEL.md.
+
 1. Read `AGENTS.md` sections "Uslub va brendlar" and "Yangi mijoz (brend) qo'shish".
 2. Collect what exists; never invent brand facts. Needed: brand name, logo (transparent PNG),
    main colour, Instagram handle. Optional: font files, music, reference reels in

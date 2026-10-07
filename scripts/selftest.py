@@ -26,12 +26,12 @@ def check(name: str, ok: bool, detail: str = "") -> bool:
     return ok
 
 
-def script(name: str, *args, expect: int = 0) -> subprocess.CompletedProcess:
+def script(name: str, *args, expect: int = 0, env: dict | None = None) -> subprocess.CompletedProcess:
     """Skriptni xuddi foydalanuvchi kabi buyruq qatoridan ishga tushiradi."""
     # stdin yopiq: skript "y/N" deb so'rab, ko'rinmaydigan savolda osilib qolmasligi uchun
     proc = subprocess.run([sys.executable, str(SCRIPTS / name), *map(str, args)], cwd=str(C.ROOT),
                           stdin=subprocess.DEVNULL,
-                          capture_output=True, text=True, encoding="utf-8", errors="replace")
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
     if proc.returncode != expect:
         C.info("    --- chiqish ---\n" + "\n".join(
             "    " + l for l in (proc.stdout + proc.stderr).strip().splitlines()[-25:]))
@@ -53,6 +53,15 @@ def main() -> int:
     ap.add_argument("--no-whisper", action="store_true", help="Whisper bosqichini sinama")
     ap.add_argument("--offline", action="store_true", help="Internet kerak bo'lgan sinovni (rasm qidirish) o'tkazib yubor")
     args = ap.parse_args()
+
+    import os
+    import handoff
+    other_notes = [note for note in handoff.unfinished_notes() if note["agent"] != os.environ.get("MONTAJ_AGENT", "")]
+    if other_notes:
+        raise C.MontajError("Boshqa agentning tugallanmagan videosi bor; selftest ishlatilmaydi: "
+                            + ", ".join(f"{note['agent']}: {note['video']}" for note in other_notes))
+    if C.busy_state():
+        raise C.MontajError("Og'ir ish ishlayapti; selftest CPU belgisini sinash uchun avval uning tugashini kuting.")
 
     style = C.load_style()
     W, H = style["video"]["width"], style["video"]["height"]
@@ -290,13 +299,16 @@ def main() -> int:
     test_transcribe.run(check, video, WORK, args.no_whisper)
 
     C.info("\n10. Xavfsizlik qoidalari")
-    # bir vaqtda bitta og'ir ish: boshqa agent ishlayotgan bo'lsa ikkinchisi tushunarli xato bilan to'xtaydi
+    # CPU qulfi saqlanadi: kutish limiti tugamaguncha boshqa agentning ishini boshlamaydi.
+    import os as _os
     import json as _json
     import time as _time
     C.BUSY_FILE.write_text(_json.dumps({"pid": 1, "agent": "boshqa agent", "what": "sinov", "started": _time.time(),
                                         "alive_at": _time.time()}), encoding="utf-8")
-    p = script("pipeline.py", video, "--stills", "1", expect=1)
-    blocked = p.returncode == 1 and "boshqa ish ketyapti" in p.stderr
+    p = script("pipeline.py", video, "--stills", "1", expect=1,
+               env={**_os.environ, "MONTAJ_BUSY_TIMEOUT": "0.3"})
+    blocked = (p.returncode == 1 and "boshqa ish ketyapti" in p.stderr
+               and "Kutish limiti" in p.stderr and "[NAVBAT]" in p.stdout)
     C.BUSY_FILE.write_text(_json.dumps({"pid": 1, "agent": "boshqa agent", "what": "sinov", "started": 0, "alive_at": 0}),
                            encoding="utf-8")
     # haqiqiy HOLAT.md sinov paytida yo'qolmasligi kerak: baytma-bayt saqlab, oxirida joyiga qaytariladi
@@ -314,7 +326,7 @@ def main() -> int:
         elif note.is_file():
             note.unlink()
     ok = ok and (note.read_bytes() == real_note if real_note is not None else not note.exists())
-    check("navbat: band paytida ikkinchi ish to'xtaydi, eskirgan belgi to'siq bo'lmaydi, holat eslatmasi ishlaydi", ok,
+    check("navbat: band paytida kutadi, limitdan keyin to'xtaydi, eskirgan belgi to'siq bo'lmaydi, holat eslatmasi ishlaydi", ok,
           (p.stderr.strip().splitlines() or [""])[-1][:120] if not blocked else "")
     check("asl (test) video o'zgarmadi", before == (video.stat().st_size, video.stat().st_mtime_ns))
     p = script("render.py", video, "-o", C.INPUT_DIR / "bad.mp4", expect=1)
