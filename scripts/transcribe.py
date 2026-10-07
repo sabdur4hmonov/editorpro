@@ -487,6 +487,7 @@ def main() -> int:
             return print_model_info(args.model_info or str(style["whisper"].get("model", "")), args.allow_download)
         if not args.video:
             ap.error("video fayl kerak (yoki --model-info)")
+        C.busy_acquire(f"transkripsiya: {Path(args.video).name}")
         C.info(f"Transkripsiya: {args.video}")
         res = transcribe_video(Path(args.video), style, args.out_dir, args.name,
                                allow_download=True if args.allow_download else None)

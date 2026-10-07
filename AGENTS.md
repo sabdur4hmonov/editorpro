@@ -117,6 +117,7 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `apply_corrections.py` | Transkripsiya matnini tuzatadi, vaqtlarga tegmaydi (`words.fixed.json`). |
 | `glossary.py` | Lug'at: `add "xato" "to'g'ri" [--brand NOM]`, `list`, `remove`. |
 | `feedback.py` | Foydalanuvchi fikrlari: `add "matn" [--brand NOM]`, `show`. |
+| `handoff.py` | Navbat almashish: `show` (holat), `set "matn" --agent NOM`, `clear`. Eslatma: `HOLAT.md`. |
 | `selftest.py`, `test_transcribe.py`, `check_env.py`, `bench_whisper.py` | Sinov, muhit tekshiruvi, whisper tezligi. |
 | `watcher.py` | Chatdan kelgan topshiriqlarni bajaradi. |
 
@@ -355,6 +356,20 @@ Render qilishdan oldin `--stills` bilan tekshiriladigan ro'yxat:
 ## Agentlar bilan ishlash
 
 - **Bir vaqtda faqat bitta agent ishlaydi** (Claude Code yoki Codex). Ikkalasi birga ishlamaydi.
+  Foydalanuvchi ularni navbat bilan ishlatadi: birining limiti tugasa, ikkinchisi davom ettiradi.
+- **Ishni boshlashdan oldin** `.venv\Scripts\python.exe scripts\handoff.py show` ni ishga tushir: oldingi
+  agent qoldirgan eslatma (`HOLAT.md`), band belgisi, `temp/` dagi oxirgi ishlar holati va git ko'rinadi.
+  Eslatmada tugallanmagan ish bo'lsa, yangisini boshlama: o'shani davom ettir (yoki foydalanuvchidan so'ra).
+- **Ish davomida holatni yozib bor** (limit ogohlantirmasdan tugaydi, oxirida yozishga ulgurmaysan):
+  `.venv\Scripts\python.exe scripts\handoff.py set "..." --agent claude|codex`. Qachon: matn tasdiqqa
+  yuborilganda, foydalanuvchi javob berganda, `elements.json` yozilganda, render boshlanishidan oldin va
+  tugagach. Nima yoziladi: qaysi video va brend, nima qilindi, foydalanuvchidan nima kutilmoqda (uning
+  javobi bo'lsa so'zma-so'z), keyingi qadamning aniq buyrug'i. Ish to'liq tugasa: `handoff.py clear`.
+- Foydalanuvchi tasdiqlari (subtitr matni, yuklashga ruxsat) eslatmada yozilgan bo'lsagina kuchda.
+  Yozilmagan tasdiqni taxmin qilma: qayta so'ra.
+- Og'ir ishlar (`pipeline`, `compose`, `transcribe`, `compare_models`) bir vaqtda bittadan ishlaydi:
+  ikkinchisi "Hozir boshqa ish ketyapti" deb to'xtaydi (`temp/.busy.json`, o'zi o'chadi). Bu xato emas:
+  kut, belgini qo'lda o'chirma.
 - Ishni boshlashdan oldin `git status` va `git log --oneline -5` ni ko'r: oldingi agent nima qilgan.
 - Skript, `style.json`, brend yoki shu faylni o'zgartirgach, **darhol `git commit` qil**.
 - Skriptni o'zgartirgach `.venv\Scripts\python.exe scripts\selftest.py --no-whisper` ni ishga tushir.
@@ -416,7 +431,8 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
 - Ruxsatlar taklifi `docs/claude_settings.example.json` da (loyiha skriptlari so'rovsiz ishlaydi,
   `.env` o'qilmaydi, `input/` va `samples/` ga yozilmaydi). `.claude/settings.json` ga faqat
   foydalanuvchi rozi bo'lgach yoziladi. Batafsil: `docs/CLAUDE_CODE.md`.
-- Codex shu faylni (`AGENTS.md`) va `docs/PLAYBOOK.md` ni o'qib xuddi shu ishni qiladi.
+- Codex shu faylni (`AGENTS.md`) va `docs/PLAYBOOK.md` ni o'qib xuddi shu ishni qiladi. O'rnatish va navbat
+  almashish promptlari: `docs/CODEX.md`.
 
 ## Natijani tekshirish
 

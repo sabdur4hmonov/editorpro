@@ -102,6 +102,7 @@ def main() -> int:
     if not src["has_video"]:
         raise C.MontajError(f"Faylda video oqimi yo'q: {video}")
     work = C.job_dir(video)
+    C.busy_acquire(f"montaj: {video.name}")
     out_dir = C.OUTPUT_DIR / style["_brand"] if style.get("_brand") else C.OUTPUT_DIR   # har brend o'z papkasida
     out = Path(args.output) if args.output else out_dir / f"{C.output_stem(video.stem)}_final.mp4"
     C.guard_output(out, video)

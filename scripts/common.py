@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -77,6 +78,84 @@ def run_main(main_func) -> None:
         print("\n[TO'XTATILDI] Foydalanuvchi to'xtatdi.", file=sys.stderr)
         sys.exit(130)
     sys.exit(code or 0)
+
+
+# ---------------------------------------------------------------- bir vaqtda bitta og'ir ish
+
+BUSY_FILE = TEMP_DIR / ".busy.json"
+BUSY_STALE_SEC = 25.0          # shuncha vaqt yangilanmagan belgi eskirgan hisoblanadi (jarayon yopilgan)
+_busy_owned = False
+
+
+def busy_state() -> dict | None:
+    """Hozir ishlayotgan og'ir ish haqida ma'lumot (yo'q yoki eskirgan bo'lsa None)."""
+    try:
+        data = json.loads(BUSY_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(data, dict) or time.time() - float(data.get("alive_at", 0)) > BUSY_STALE_SEC:
+        return None
+    return data
+
+
+def busy_acquire(what: str) -> None:
+    """Og'ir ish (transkripsiya, render) boshlanishini belgilaydi. Boshqa agent ishlayotgan bo'lsa xato beradi.
+
+    Kompyuter kuchi bitta renderga yetadi va ikki agent bitta temp/ papkaga yozsa bir-birini buzadi:
+    shuning uchun bir vaqtda bitta og'ir ish. Belgi jarayon tugaganda o'zi o'chadi; jarayon majburan
+    yopilsa 25 soniyada eskiradi. Agent nomi MONTAJ_AGENT muhit o'zgaruvchisidan olinadi (ixtiyoriy).
+    """
+    global _busy_owned
+    if _busy_owned:
+        return
+    import atexit
+    import threading
+    TEMP_DIR.mkdir(parents=True, exist_ok=True)
+    me = {"pid": os.getpid(), "agent": os.environ.get("MONTAJ_AGENT", "").strip() or "noma'lum agent",
+          "what": what, "started": time.time(), "alive_at": time.time()}
+    for attempt in range(2):
+        try:
+            with open(BUSY_FILE, "x", encoding="utf-8") as fh:
+                json.dump(me, fh, ensure_ascii=False)
+            break
+        except FileExistsError:
+            other = busy_state()
+            if other is not None and other.get("pid") != me["pid"]:
+                ago = int(time.time() - float(other.get("started", time.time())))
+                raise MontajError(
+                    f"Hozir boshqa ish ketyapti: {other.get('what', '?')} ({other.get('agent', '?')}, {ago} soniya oldin "
+                    "boshlangan). Bir vaqtda bitta og'ir ish bajariladi: u tugashini kuting va qayta urinib ko'ring.\n"
+                    "Hech narsa ishlamayotgan bo'lsa (oyna yopilgan), yarim daqiqadan keyin o'zi ochiladi.")
+            try:
+                BUSY_FILE.unlink()                    # eskirgan belgi
+            except OSError:
+                pass
+    else:
+        raise MontajError(f"Band belgisini yozib bo'lmadi: {BUSY_FILE}")
+    _busy_owned = True
+    stop = threading.Event()
+
+    def beat() -> None:
+        while not stop.wait(5.0):
+            me["alive_at"] = time.time()
+            try:
+                tmp = BUSY_FILE.with_suffix(".tmp")
+                tmp.write_text(json.dumps(me, ensure_ascii=False), encoding="utf-8")
+                tmp.replace(BUSY_FILE)
+            except OSError:
+                pass
+
+    def release() -> None:
+        stop.set()
+        try:
+            data = json.loads(BUSY_FILE.read_text(encoding="utf-8"))
+            if data.get("pid") == me["pid"]:
+                BUSY_FILE.unlink()
+        except (OSError, ValueError):
+            pass
+
+    threading.Thread(target=beat, daemon=True).start()
+    atexit.register(release)
 
 
 def memory_status() -> dict | None:

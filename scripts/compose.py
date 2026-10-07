@@ -538,6 +538,7 @@ def main() -> int:
 
     style = C.load_style(args.style, args.brand)
     video = C.need_file(args.video, "Video")
+    C.busy_acquire(f"render: {video.name}")
     srt = C.need_file(args.subs, "SRT fayl") if args.subs else None
     words = C.read_json(args.words, "So'zlar fayli").get("words") if args.words else None
     cuts = C.read_json(args.cuts, "Kesish rejasi") if args.cuts else None

@@ -237,6 +237,7 @@ def main() -> int:
         style["whisper"]["beam_size"] = args.beam_size
     out_dir = Path(args.out_dir) if args.out_dir else C.TEMP_DIR / "compare" / C.slugify(media.stem)
     C.guard_output(out_dir / "compare.html", media)
+    C.busy_acquire(f"modellarni solishtirish: {media.name}")
     try:
         res = compare(media, models, style, out_dir, args.seconds, True if args.allow_download else None)
     except T.DownloadNeeded as exc:

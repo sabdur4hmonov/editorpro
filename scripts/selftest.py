@@ -293,6 +293,25 @@ def main() -> int:
     test_transcribe.run(check, video, WORK, args.no_whisper)
 
     C.info("\n10. Xavfsizlik qoidalari")
+    # bir vaqtda bitta og'ir ish: boshqa agent ishlayotgan bo'lsa ikkinchisi tushunarli xato bilan to'xtaydi
+    import json as _json
+    import time as _time
+    C.BUSY_FILE.write_text(_json.dumps({"pid": 1, "agent": "boshqa agent", "what": "sinov", "started": _time.time(),
+                                        "alive_at": _time.time()}), encoding="utf-8")
+    p = script("pipeline.py", video, "--stills", "1", expect=1)
+    blocked = p.returncode == 1 and "boshqa ish ketyapti" in p.stderr
+    C.BUSY_FILE.write_text(_json.dumps({"pid": 1, "agent": "boshqa agent", "what": "sinov", "started": 0, "alive_at": 0}),
+                           encoding="utf-8")
+    p2 = script("handoff.py", "set", "sinov eslatmasi", "--agent", "selftest")
+    p3 = script("handoff.py", "show")
+    note = C.ROOT / "HOLAT.md"
+    ok = (blocked and C.busy_state() is None and p2.returncode == 0 and p3.returncode == 0
+          and "sinov eslatmasi" in p3.stdout and "Band emas" in p3.stdout)
+    C.BUSY_FILE.unlink(missing_ok=True)
+    if note.is_file() and "sinov eslatmasi" in note.read_text(encoding="utf-8"):
+        note.unlink()
+    check("navbat: band paytida ikkinchi ish to'xtaydi, eskirgan belgi to'siq bo'lmaydi, holat eslatmasi ishlaydi", ok,
+          (p.stderr.strip().splitlines() or [""])[-1][:120] if not blocked else "")
     check("asl (test) video o'zgarmadi", before == (video.stat().st_size, video.stat().st_mtime_ns))
     p = script("render.py", video, "-o", C.INPUT_DIR / "bad.mp4", expect=1)
     check("input/ ga yozish rad etiladi", p.returncode == 1 and not (C.INPUT_DIR / "bad.mp4").exists())

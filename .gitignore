@@ -21,3 +21,5 @@ __pycache__/
 .env
 # Chatdan yuborilgan fayllar (Claude ilovasi shu papkaga nusxa qo`yadi)
 Claude outputs/
+# Agentlar orasidagi navbat almashish eslatmasi (faqat shu kompyuterda kerak)
+HOLAT.md
