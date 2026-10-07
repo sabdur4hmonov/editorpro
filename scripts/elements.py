@@ -833,8 +833,9 @@ class TextLayer(Layer):
 class VideoReader:
     """Qo'shimcha videodan kadrlarni ketma-ket o'qiydi (ffmpeg orqali, kerakli o'lchamda)."""
 
-    def __init__(self, path: Path, w: int, h: int, fps: float, cover: bool = True):
+    def __init__(self, path: Path, w: int, h: int, fps: float, cover: bool = True, focus_x: float = 0.5):
         self.path, self.w, self.h, self.fps = Path(path), int(w), int(h), fps
+        self.focus_x = M.clamp01(float(focus_x))   # cover: kadrning qaysi qismi qoladi (0 chap, 0.5 markaz, 1 o'ng)
         self.proc, self.pos, self.last = None, -1, None
         meta = C.ffprobe_info(path)
         self.duration = meta["duration"]
@@ -851,7 +852,8 @@ class VideoReader:
         if self.alpha and self.codec in ("vp9", "vp8"):   # WebM alfa kanali faqat libvpx dekoderi bilan o'qiladi
             cmd += ["-c:v", "libvpx-vp9" if self.codec == "vp9" else "libvpx"]
         fmt = "rgba" if self.alpha else "rgb24"
-        fit = (f"scale={self.w}:{self.h}:force_original_aspect_ratio=increase,crop={self.w}:{self.h}"
+        fit = (f"scale={self.w}:{self.h}:force_original_aspect_ratio=increase,"
+               f"crop={self.w}:{self.h}:(iw-{self.w})*{self.focus_x:.3f}:(ih-{self.h})/2"
                if self.cover else f"scale={self.w}:{self.h}")
         cmd += ["-i", str(self.path), "-an", "-vf", f"fps={self.fps:g},{fit},format={fmt}",
                 "-f", "rawvideo", "-pix_fmt", fmt, "-"]
@@ -896,7 +898,11 @@ class VideoReader:
 
 
 class BrollLayer(Layer):
-    """Qo'shimcha kadr: to'liq ekran ("full") yoki ekran ikkiga bo'linadi ("split": tepada gapiruvchi)."""
+    """Qo'shimcha kadr: to'liq ekran ("full") yoki ekran ikkiga bo'linadi ("split": tepada gapiruvchi).
+
+    Ovozi o'chiq (asl nutq davom etadi). bw: oq-qora, dim: 0..1 qoraytirish, offset: klipning qayeridan,
+    focus_x: gorizontal klip 9:16 ga kesilganda qaysi qismi qoladi (0 chap .. 1 o'ng).
+    """
     z = 10
 
     def __init__(self, ctx: Ctx, el: dict):
@@ -907,6 +913,10 @@ class BrollLayer(Layer):
             raise C.MontajError(f"broll.mode noto'g'ri: {self.mode!r}. Mumkin: full, split")
         self.fade = float(el.get("fade", 0.0))
         self.offset = float(el.get("offset", 0.0))
+        # namuna 15: b-roll oq-qora va biroz qoraytirilgan (ustidagi subtitr o'qilishi uchun).
+        # grade elementi (z=0) b-roll'dan oldin chiziladi, shuning uchun bu sozlamalar shu yerda.
+        self.bw = bool(el.get("bw", False))
+        self.dim = M.clamp01(float(el.get("dim", 0.0)))
         self.path = ctx.asset(el.get("file", ""), "B-roll fayli")
         self.rw, self.rh = ctx.W, ctx.H if self.mode == "full" else ctx.H // 2
         self.is_image = self.path.suffix.lower() in IMAGE_EXTS
@@ -918,7 +928,7 @@ class BrollLayer(Layer):
             self.still = np.asarray(img)
             self.reader = None
         elif self.path.suffix.lower() in C.VIDEO_EXTS:
-            self.reader = VideoReader(self.path, self.rw, self.rh, ctx.fps)
+            self.reader = VideoReader(self.path, self.rw, self.rh, ctx.fps, focus_x=float(el.get("focus_x", 0.5)))
         else:
             raise C.MontajError(f"B-roll uchun rasm yoki video kerak: {self.path.name}")
 
@@ -948,6 +958,11 @@ class BrollLayer(Layer):
         if content is None:
             return
         content = content[..., :3]
+        if self.bw:
+            gray = cv2.cvtColor(np.ascontiguousarray(content), cv2.COLOR_RGB2GRAY)
+            content = cv2.merge([gray, gray, gray])
+        if self.dim > 0:
+            content = cv2.convertScaleAbs(np.ascontiguousarray(content), alpha=1.0 - self.dim)
         if self.mode == "split":
             # gapiruvchi tepaga: yuz atrofidan W x H/2 bo'lak kesib olinadi
             half = H // 2

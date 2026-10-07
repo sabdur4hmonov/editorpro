@@ -90,6 +90,20 @@ class Rules(unittest.TestCase):
         layer.draw(frame, 0.8)
         self.assertGreater(int(frame.max()), 0)
 
+    def test_broll_bw_and_dim(self):
+        style = C.load_style()
+        style["video"].update(width=90, height=160)
+        ctx = E.Ctx(style)
+        WORK.mkdir(parents=True, exist_ok=True)
+        png = WORK / "broll_red.png"
+        Image.new("RGB", (90, 160), (200, 40, 40)).save(png)
+        layer = E.BrollLayer(ctx, {"start": 0, "end": 1, "file": str(png), "mode": "full", "bw": True, "dim": 0.5})
+        frame = np.zeros((160, 90, 3), np.uint8)
+        layer.draw(frame, 0.5)
+        r, g, b = (int(v) for v in frame[80, 45])
+        self.assertEqual((r, r), (g, b))                 # oq-qora
+        self.assertLess(r, 60)                          # qoraytirilgan (kulrang ~ 83 * 0.5)
+
     def test_emphasis_suggestions_keep_timings(self):
         import apply_corrections as AC
         words = [{"start": i*.3, "end": i*.3+.2, "word": word, "prob": .9}
