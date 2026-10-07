@@ -56,3 +56,31 @@ Tajriba o'zgarsa eski yozuvni yo'qotma: uning o'rnini bosuvchi yangi yozuvni ko'
   namuna 7 kadrida behind_person, handnote, arrow, profile ko'rib tekshirildi (soch cheti biroz notekis).
 - Keyingi agent: yangi himoya (preflight) eski sinovni yiqitsa, sinov ma'lumotini to'g'rilang, himoyani
   bo'shashtirmang. Limit tugashidan oldin commit qilinmagan ishni keyingi agent avval tekshirib commit qiladi.
+
+## 2026-10-07 — Claude — "doktor 1" (brendsiz, birinchi to'liq haqiqiy montaj) — foydalanuvchi tasdiqlagan
+
+Nima sekinlashtirdi (keyingi safar takrorlanmasin):
+- **Whisper small o'zbekchada yaroqsiz.** Matn butunlay buzildi; men buni sheva deb noto'g'ri taxmin qildim.
+  `yuldashev222/whisper-small-uz-v1-ct2` (HF keshida) gaplarni deyarli to'g'ri yozdi. O'zbek videoda darhol shu
+  model: `--model yuldashev222/...` (per-language standart taklif qilingan, foydalanuvchi javobi kutilmoqda).
+- **Savollar ro'yxati.** Har shubhali so'zni alohida so'rash foydalanuvchini charchatdi. Endi: taxminni o'zing
+  qo'llab `[?so'z]` bilan belgila, matn + reja + stills + rasmlar bitta xabarda (skilllarga yozildi).
+- **Rasm tanlash.** Ramkali stok foto rad etildi; kesilgan stiker kerak (`scripts/cutout.py`). Har rasm so'zga
+  ANIQ mos bo'lsin ("ba'zilari umuman mos emas" - foydalanuvchi). Joyi subtitr ostida, yuz/matn/qo'l ustida emas.
+  Bitta model hamma rasmda toza kesmaydi: IS-Net (och fonda och teri) va BiRefNet (probirka, stetoskop) ni
+  `--sheet` da solishtir. Asl rasmdagi izoh/harf bo'lsa `cv2.inpaint` bilan tozala (yurak modeli).
+- **To'liq ekranli stok b-roll rad etildi** (Pixabay, 3 klip). Faqat so'ralganda; namuna 15/16 tahlili
+  `NAMUNA_USLUBI.md` §5a da. `grade` b-roll'ga ta'sir qilmaydi -> `broll.bw/dim/focus_x` qo'shildi.
+- `images.py pick` OXIRGI qidiruvning `candidates.json` idan tanlaydi: bir necha qidiruvdan keyin noto'g'ri rasm
+  yuklandi (kislorod). Har qidiruvdan keyin json nusxasini saqla va pick'dan oldin qaytar.
+- Lug'at o'zgarsa pipeline opts o'zgaradi va qo'lda belgilangan `subs.srt` qayta yoziladi: tayyor ishni qayta
+  render qilganda `--no-glossary` qo'sh yoki belgilarni `corrections.json` ga ham yoz (shunday qilindi).
+
+Ishladi:
+- Per-video uslub: `style.json` nusxasi `temp/<job>/style.json`, `--style` bilan (load_style faylni to'liq almashtiradi).
+- Kasallik nomlari `~~nom~~` + `captions.mark2_big: true` (katta qizil quti, #E5383B to'q ko'k forma ustida o'qiladi).
+- Follow handle'siz: `icon` + kattaroq tugma (commit b9b3b8b, d4f44a0).
+- Dalil: commitlar b9b3b8b, d4f44a0, 2ad30c0, b56cb12, d2b23aa, 633bc2c; test_studio 13/13, selftest 44/44;
+  `output/doktor_1_final.mp4` 1080x1920 30 fps -14.0 LUFS, platforma [OK].
+
+Ochiq: finalda yuz manbaga nisbatan yumshoqroq (4K->1080 keyin zoom INTER_LINEAR, crf 20) - taklif berildi, kutilmoqda.
