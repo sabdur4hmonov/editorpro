@@ -67,6 +67,16 @@ Show stills, draft and final in the chat; defer shared learning during parallel 
     if you changed scripts, `style/style.json`, a brand or docs: run
     `scripts/selftest.py --no-whisper --offline`, then `git commit`.
 
+## Autonomy (derive, flag, never invent)
+
+- Derive names, numbers, places, offers and the call to action from the speech (transcript) and from text
+  clearly visible in frames (`frames.py ... -o temp/<job>/...`): signboard, uniform, screen, document. Use it as
+  text only; never cut a logo out of a frame.
+- Never invent a name, number, price, handle or claim. Anything uncertain goes into the ONE approval message
+  as `[?word]` with its source (time in the video, speech or frame).
+- Ask the user only for what cannot be derived (for example an Instagram handle, a brand to use, music or a logo
+  file) and ask it once, inside the approval message. Without a music or logo file: the video's own sound, no logo.
+
 ## Fast order: ONE approval message (user rule, 2026-10-07)
 
 The user does not want question lists. Each round trip costs them time.

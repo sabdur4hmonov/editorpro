@@ -20,7 +20,8 @@ va boshqa agentning unfinished videosi bo'lmasa:
 Manba faqat docs/claude_skills/. Nusxalar .claude/skills/ va .agents/skills/.
 Yangilash yangi paket o'rnatmaydi va boshqa fayllarni o'chirmaydi. Manba/nusxa o'zgarishini commit qil.
 Claude: `/namuna input\video.mp4 NOM`. Codex: `$namuna input\video.mp4 NOM`.
-Brendsiz bo'lsa NOM yozilmaydi. To'rtta skill ikkala agentga ham bir xil jarayonni beradi.
+Promo: Claude `/promo input\<promo papkasi>`, Codex `$promo input\<promo papkasi>` (docs/PROMO.md).
+Brendsiz bo'lsa NOM yozilmaydi. Beshta skill (montaj, namuna, brend, transcribe-uz, promo) ikkala agentga ham bir xil jarayonni beradi.
 
 ## Har montajdan keyin
 
@@ -44,7 +45,7 @@ Bu maxsus kichik adapter, to'liq MCP SDK emas.
 Uchta tool:
 
 - project_state — handoff.py show bilan bir xil holat.
-- read_guide — rules, playbook, sample_style, quality, memory yoki setup hujjatini o'qish.
+- read_guide — rules, playbook, sample_style, quality, memory, setup yoki promo hujjatini o'qish.
 - skills_status — ikkala agent nusxalarining manba bilan mosligini tekshirish.
 
 Render va fayl yozish mavjud CLI orqali bajariladi. MCP ixtiyoriy fayl yo'li yoki shell

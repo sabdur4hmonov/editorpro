@@ -37,6 +37,28 @@ class SetupTests(unittest.TestCase):
             sync_skills.sync(root, apply=True)
             self.assertIn("New instruction.", (root / ".agents/skills/montaj/SKILL.md").read_text())
 
+    def test_promo_skill_same_in_claude_and_codex(self):
+        root = sync_skills.ROOT
+        self.assertIn("promo", sync_skills.NAMES)
+        self.assertEqual(sync_skills.sync(root), [], "skill nusxalari manba bilan bir xil emas: sync_skills.py --apply")
+        source = (root / "docs/claude_skills/promo/SKILL.md").read_text(encoding="utf-8")
+        claude = (root / ".claude/skills/promo/SKILL.md").read_text(encoding="utf-8")
+        codex = (root / ".agents/skills/promo/SKILL.md").read_text(encoding="utf-8")
+        self.assertEqual(claude, sync_skills.expected(source, "claude"))
+        self.assertEqual(codex, sync_skills.expected(source, "codex"))
+        self.assertIn("name: promo", codex)
+        self.assertNotIn("argument-hint:", codex)
+        self.assertNotIn("$ARGUMENTS", codex)
+        for text in (claude, codex):
+            self.assertIn("## Autonomy", text)
+            self.assertIn("promo_looks.py", text)
+        for name in ("namuna", "montaj"):
+            self.assertIn("## Autonomy", (root / ".agents/skills" / name / "SKILL.md").read_text(encoding="utf-8"))
+        promo_doc = (root / "docs/PROMO.md").read_text(encoding="utf-8")
+        self.assertIn("`/promo input\\<promo nomi>`", promo_doc)
+        self.assertIn("`$promo input\\<promo nomi>`", promo_doc)
+        self.assertIn("$promo", (root / "AGENTS.md").read_text(encoding="utf-8"))
+
     def test_missing_source_does_not_write_copies(self):
         with tempfile.TemporaryDirectory(prefix="agent-setup-") as directory:
             root = Path(directory)

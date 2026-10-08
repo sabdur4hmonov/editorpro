@@ -135,3 +135,21 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
   (sync soni NAMES dan hisoblanadi), selftest --no-whisper 44/44.
 - Keyingi agent: promo ishida birinchi ishga tushirish `temp/<nom>/clips.json` shablon yaratadi - rollarni
   tekshirmasdan davom etma. Yon so'zlar subtitrdan olib tashlanadi (`corrections.json` "text": ""), aks holda ikki marta chiqadi.
+
+## 2026-10-08 — Claude — promo mustaqil ish va uslub xilma-xilligi — tekshirilgan
+
+- Foydalanuvchi qoidasi: promo uchun faqat kliplar beriladi. Nom, set, narx, taklif, chaqiriq faqat nutqdan yoki
+  kadrda aniq ko'ringan yozuvdan; shubhali -> `[?]` + manba (klip + vaqt). Yagona savol: Instagram manzili (bir marta).
+  Musiqa/logotip faylsiz: kliplarning o'z ovozi (`product_audio` standarti endi `keep`), logotipsiz.
+  Shu qoidalar AGENTS.md "Mustaqil ish" va namuna/montaj/promo skilllarida (## Autonomy).
+- Rollar: pipeline transkripsiyadan keyin "Kliplar bo'yicha nutq" jadvalini chiqaradi (`assemble.report`): ovozli
+  lekin so'zsiz klip -> product bo'lishi mumkin.
+- Uslub: `style/promo_looks.json` da 5 yo'nalish (warm_glow, clean_minimal, bold_caps, editorial_serif,
+  fresh_marker), `promo_looks.py palette/apply/record`; `apply` oxirgi promo yo'nalishini rad etadi
+  (`style/promo_history.json`). Sinov promo tarixga yozilmagan.
+- Topilgan xato: `load_history(path=HISTORY_PATH)` standart qiymati import paytida qotib qolardi; test
+  yo'lni almashtirganda `record` va `apply` boshqa fayllarni ishlatardi. Endi yo'l chaqiruv paytida olinadi.
+- Codex: `$promo input\<papka>`, Claude: `/promo input\<papka>`; test_agent_setup promo skillini ikkala nusxada tekshiradi.
+- Dalil: test_studio 17/17, test_agent_setup 12/12, selftest --no-whisper 44/44, sync_skills --check sinxron.
+- Keyingi agent: promoni yo'nalish tanlamasdan boshlama; palette natijasini va bir qator sababni tasdiq xabariga yoz;
+  final tayyor bo'lgach `promo_looks.py record` (aks holda keyingi promo takrorlanishi mumkin).

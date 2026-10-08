@@ -189,6 +189,54 @@ class Rules(unittest.TestCase):
         again = A.build(manifest, style)                       # o'zgarmagan ro'yxat qayta yig'ilmaydi
         self.assertEqual(Path(again["video"]).stat().st_mtime, Path(built["video"]).stat().st_mtime)
 
+    def test_promo_looks_valid_palette_and_no_repeat(self):
+        import promo_looks as PL
+        import assemble as A
+        looks = PL.load_looks()
+        self.assertGreaterEqual(len(looks), 4)
+        WORK.mkdir(parents=True, exist_ok=True)
+        allowed = {"label": {"glass", "x", "y", "width", "size", "image_size", "color", "kicker_color", "font", "preset"},
+                   "aside": {"spread", "dy", "size", "font", "color", "weight", "stagger", "margin", "preset", "glow"},
+                   "handnote": {"font", "size", "x", "y", "color"}}
+        old_hist = PL.HISTORY_PATH
+        PL.HISTORY_PATH = WORK / "promo_history_test.json"
+        try:
+            C.write_json({"history": []}, PL.HISTORY_PATH)
+            for name, look in looks.items():
+                self.assertIn(look["style"]["captions"].get("preset", "clean"), E.CAPTION_PRESETS, name)
+                self.assertIn(look["style"]["look"]["preset"], compose.LOOK_PRESETS, name)
+                for kind, fields in look.get("elements", {}).items():
+                    self.assertTrue(set(fields) <= allowed[kind], f"{name}.{kind}: {set(fields) - allowed[kind]}")
+                path = WORK / f"look_{name}.json"
+                C.write_json(C.load_style(), path)
+                PL.apply(name, path)
+                style = C.load_style(path)
+                style["video"].update(width=360, height=640)
+                ctx = E.Ctx(style)
+                for role, tag in look["tags"].items():
+                    preset, _, _ = E.split_cue_tag(tag + "sinov")
+                    self.assertTrue(preset is None or preset in E.CAPTION_PRESETS, f"{name}.{role}: {tag}")
+                    layer = E.CaptionLayer(ctx, [{"start": 0, "end": 1, "text": f"{tag}**990,000** so'm"}], None, 1)
+                    self.assertTrue(layer.items)
+            PL.record("bold_caps", "sinov_job", "#ff5a1f")
+            with self.assertRaises(C.MontajError):
+                PL.apply("bold_caps", WORK / "look_bold_caps.json")          # oldingi promo yo'nalishi takrorlanmaydi
+            PL.apply("bold_caps", WORK / "look_bold_caps.json", allow_repeat=True)
+        finally:
+            PL.HISTORY_PATH = old_hist
+        clip = WORK / "palette_red.mp4"
+        C.run([C.need_tool("ffmpeg"), "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0xC81E1E:s=180x320:r=10:d=1",
+               "-c:v", "libx264", "-pix_fmt", "yuv420p", clip])
+        pal = PL.palette(clip, n_frames=2, k=2)
+        r, g, b = (int(pal["accent_food"][i:i + 2], 16) for i in (1, 3, 5))
+        self.assertGreater(r, 200)
+        self.assertLess(max(g, b), 120)
+        rows = A.report([{"start": 0, "end": 2, "role": "speech", "file": "a.mp4"},
+                         {"start": 2, "end": 4, "role": "product", "file": "b.mp4"}],
+                        [{"start": 2.5, "end": 2.8, "word": "salom"}])
+        self.assertEqual([r["words"] for r in rows], [0, 1])
+        self.assertTrue(rows[0]["hint"] and rows[1]["hint"])
+
     def test_emphasis_suggestions_keep_timings(self):
         import apply_corrections as AC
         words = [{"start": i*.3, "end": i*.3+.2, "word": word, "prob": .9}

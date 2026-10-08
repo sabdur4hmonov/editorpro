@@ -98,7 +98,7 @@ def main() -> int:
         style["whisper"]["language"] = args.language
     if args.model:
         style["whisper"]["model"] = args.model
-    protect = None
+    protect = built = None
     source = Path(args.video)
     if source.is_dir() or source.suffix.lower() == ".json":
         # ko'p klipli montaj: kliplar avval bitta asosiy videoga yig'iladi (scripts/assemble.py)
@@ -215,6 +215,9 @@ def main() -> int:
 
         if words:
             T.print_squeezed(T.squeezed_runs(words))
+        if built and words is not None:
+            import assemble as A
+            A.print_report(built["segments"], words)
 
         # ---- lug'at: doim xato yoziladigan so'zlar to'g'rilanadi (vaqtlar o'zgarmaydi)
         if gloss and words:

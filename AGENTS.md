@@ -107,6 +107,7 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | Skript | Nima qiladi |
 |---|---|
 | `pipeline.py VIDEO` | Hammasini ketma-ket bajaradi. VIDEO o'rniga klip papkasi yoki `clips.json` berilsa avval `assemble.py` yig'adi. |
+| `promo_looks.py` | Promo uslub yo'nalishlari: `list`, `palette VIDEO` (kadr ranglari, accent taklifi), `apply NOM --style temp/<nom>/style.json --accent`, `record` (tarix, takrorni rad etadi). |
 | `assemble.py PAPKA/clips.json` | Ko'p klipli montaj: speech/product/voiceover kliplarini tartib bilan bitta asosiy videoga yig'adi (style o'lchami va fps), `temp/<nom>/segments.json`; product oraliqlari jimlik deb kesilmaydi. |
 | `transcribe.py VIDEO` | So'z-so'z vaqtli matn: `temp/<nom>/orig.words.json`, `orig.srt`. |
 | `auto_cut.py VIDEO` | Jim joy, takror va qo'lda berilgan oraliqlarni kesadi (`--apply`). |
@@ -332,6 +333,18 @@ qilmaydi, ikki variantni render qilib foydalanuvchiga tinglatadi va tanlovni esl
 Sahna chiqishi, intervyu, konsert kabi "tayyor ovozli" videolarda effektni kam ishlat yoki o'chir
 (`sfx.enabled: false`), jim joylarni kesma (`--no-cut`): pauza va kulgu mazmunning bir qismi.
 
+## Mustaqil ish (hamma montajlar)
+
+- Ism, raqam, narx, taom/mahsulot nomi, taklif va chaqiriq faqat **nutqdan** (transkripsiya) yoki kadrda
+  **aniq ko'ringan** yozuvdan (peshlavha, forma, quti, menyu, narx yorlig'i; `frames.py`) olinadi. Kadrdagi
+  logotip faqat matn sifatida o'qiladi, kesib logotip fayli qilinmaydi.
+- Hech narsa o'ylab topilmaydi. Shubhali narsa tasdiq xabarida `[?so'z]` va manbasi (klip + vaqt) bilan.
+- Foydalanuvchidan faqat topib bo'lmaydigan narsa so'raladi, bir marta, tasdiq xabari ichida (masalan
+  Instagram manzili). Musiqa va logotip fayli berilmasa: videoning o'z ovozi, logotipsiz.
+- Promo (ko'p klipli restoran/mahsulot) uchun: `docs/PROMO.md`, `/promo` (Codex: `$promo`). Har promo o'z
+  uslub yo'nalishida (`style/promo_looks.json`, `scripts/promo_looks.py`); oxirgi promo yo'nalishi takrorlanmaydi
+  (`style/promo_history.json`).
+
 ## Montaj sifati qoidalari
 
 Render qilishdan oldin `--stills` bilan tekshiriladigan ro'yxat:
@@ -470,7 +483,7 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
 ## Claude Code'da ishlatish
 
 - `/montaj input\video.mp4 NOM` — to'liq montaj. `/namuna input\video.mp4 NOM` — namunalardagidek montaj.
-  `/promo input\papka NOM` — ko'p klipli restoran/mahsulot promo (namuna 20, `docs/PROMO.md`).
+  `/promo input\papka` — ko'p klipli restoran/mahsulot promo, mustaqil (`docs/PROMO.md`). Codex'da `$promo input\papka`.
   `/brend NOM` — yangi mijoz qo'shish. `/transcribe-uz video` — matn va tuzatish.
   Manbasi `docs/claude_skills/`; ishlashi uchun `.claude/skills/` ga ko'chirilgan bo'lishi kerak
   (`docs/CLAUDE_CODE.md` dagi birinchi tekshiruv prompti buni qiladi). Ko'chirilmagan bo'lsa ham

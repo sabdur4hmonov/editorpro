@@ -5,7 +5,7 @@
     python scripts/pipeline.py input/promo --style ...     # pipeline ham papka/ro'yxat qabul qiladi
 
 Ro'yxat (clips.json), kliplar shu tartibda ketma-ket qo'yiladi:
-    {"name": "restoran_promo", "product_audio": "mute",
+    {"name": "restoran_promo", "product_audio": "keep",
      "clips": [
        {"file": "input/promo/01_oshpaz.mp4", "role": "speech"},
        {"file": "input/promo/02_qovurga.mp4", "role": "product", "in": 0.5, "out": 2.0},
@@ -15,8 +15,9 @@ Ro'yxat (clips.json), kliplar shu tartibda ketma-ket qo'yiladi:
 
 role:
   speech     - gapiruvchi kadr: tasvir va ovoz; keyin odatdagidek transkripsiya va jimlik kesiladi.
-  product    - nutqsiz mahsulot kadri: to'liq ekran, ovozi o'chiq (product_audio "keep" yoki klipda
-               "keep_audio": true bo'lsa qoladi). Bu oraliq jimlik deb KESILMAYDI (segments.json: protect).
+  product    - nutqsiz kadr (taom, qadoqlash, joy): to'liq ekran, klipning o'z ovozi qoladi (standart
+               product_audio "keep"; foydalanuvchi musiqa bersa "mute" yoki klipda "keep_audio": false).
+               Bu oraliq jimlik deb KESILMAYDI (segments.json: protect).
   voiceover  - alohida yozilgan ovoz (audio fayl yoki video ovozi). Tasviri "cover" dagi mahsulot kliplari,
                ketma-ket; ovozdan qisqa bo'lsa oxirgi kadr ushlab turiladi, uzun bo'lsa kesiladi.
 in/out (soniya) - klipning qaysi qismi olinadi; focus_x/focus_y (0..1) - 9:16 ga kesishda qaysi qism qoladi.
@@ -58,7 +59,7 @@ def template_for_folder(folder: Path) -> dict:
             continue
         meta = C.ffprobe_info(p)
         clips.append({"file": str(p), "role": "speech" if meta["has_audio"] else "product"})
-    return {"name": C.slugify(folder.name), "product_audio": "mute", "clips": clips}
+    return {"name": C.slugify(folder.name), "product_audio": "keep", "clips": clips}
 
 
 def load_manifest(source: Path) -> tuple:
@@ -197,7 +198,7 @@ def build(source: str | Path, style: dict) -> dict:
         if old.get("fingerprint") == fp:
             C.info(f"Klip ro'yxati o'zgarmagan: {out.name} qayta yig'ilmaydi.")
             return {"video": out, "protect": [tuple(p) for p in old.get("protect", [])], "segments": old["segments"]}
-    keep_audio = str(data.get("product_audio", "mute")) == "keep"
+    keep_audio = str(data.get("product_audio", "keep")) == "keep"
     files, segments, protect, pos = [], [], [], 0.0
     C.info(f"Kliplar yig'ilmoqda ({len(clips)} ta) -> {out}")
     for i, item in enumerate(clips):
@@ -206,7 +207,7 @@ def build(source: str | Path, style: dict) -> dict:
             seg = parts_dir / f"seg_{i:02d}.mp4"
         else:
             seg = parts_dir / f"seg_{i:02d}.mp4"
-            mute = item["role"] == "product" and not (keep_audio or item.get("keep_audio"))
+            mute = item["role"] == "product" and not item.get("keep_audio", keep_audio)
             dur = _segment(item, style, seg, mute)
         files.append(seg)
         segments.append({"start": round(pos, 3), "end": round(pos + dur, 3), "role": item["role"], "file": str(item["path"])})
@@ -222,6 +223,29 @@ def build(source: str | Path, style: dict) -> dict:
                   "protect": [list(p) for p in protect]}, seg_file)
     C.info(f"Yig'ildi: {out} ({pos:.2f}s), bo'laklar: {seg_file}")
     return {"video": out, "protect": protect, "segments": segments}
+
+
+def report(segments: list, words: list) -> list:
+    """Har bo'lakdagi so'zlar soni va rol bo'yicha maslahat (agent rollarni shunga qarab tekshiradi)."""
+    rows = []
+    for seg in segments:
+        n = sum(1 for w in words if seg["start"] <= (float(w["start"]) + float(w["end"])) / 2 < seg["end"])
+        hint = ""
+        if seg["role"] in ("speech", "voiceover") and n == 0:
+            hint = "nutq topilmadi: product bo'lishi mumkin"
+        elif seg["role"] == "product" and n > 0:
+            hint = "so'z eshitildi: speech/voiceover bo'lishi mumkin"
+        rows.append(dict(seg, words=n, hint=hint))
+    return rows
+
+
+def print_report(segments: list, words: list) -> list:
+    rows = report(segments, words)
+    C.info("\nKliplar bo'yicha nutq (rollarni tekshiring):")
+    for i, r in enumerate(rows, 1):
+        C.info(f"  {i:>2}. {r['role']:<9} {r['start']:7.2f}-{r['end']:7.2f}s  {r['words']:>3} so'z  {Path(r['file']).name}"
+               + (f"  <- {r['hint']}" if r["hint"] else ""))
+    return rows
 
 
 def main() -> int:

@@ -1,55 +1,96 @@
-# Restoran / mahsulot promo retsepti (namuna 20)
+# Restoran / mahsulot promo: mustaqil ish tartibi
 
-Manba: `samples/sample 20.MP4` (46 s, 1440x2560, 60 fps HEVC). 2026-10-08 da kadrma-kadr o'lchangan
-(`temp/sample20_study/`), tizimda `temp/promo_test/` da sinab ko'rilgan va namuna bilan solishtirilgan
-(`studio.py compare`). O'lchamlar 1080x1920 kadrga keltirilgan.
+Foydalanuvchi faqat kliplarni beradi. Taom nomlari, set raqamlari, narx, taklif va chaqiriqni agent
+**nutqdan va kadrlardan** topadi. Namuna 20 bitta misol, qolip emas: har promo o'z uslub yo'nalishida.
+Skill: `/promo` (Claude Code), `$promo` (Codex) — manba `docs/claude_skills/promo/SKILL.md`.
 
-## 1. Kadrlar tartibi (namuna 20)
+## Ishga tushirish (bitta qator)
 
-| Vaqt | Kadr | Ovoz | Ekranda |
-|---|---|---|---|
-| 0-1.4 | oshpaz kameraga | oshpaz | kichik so'zlar yuzning chap va o'ng tomonida birin-ketin ("juda / ham", "ko'pchilik / bizdan") |
-| 1.4-3.4 | oshpaz | oshpaz | katta kursiv sariq porlovchi ibora "5 kishilik", ostida kichik "set ...... so'rashdi" (ikki chetga) |
-| 3.6-5.4 | oshpaz + stol | oshpaz | oq kursiv "4 ta set" oshpaz **orqasida** (qalpoq oldida), ostida "tayyorlab ... qo'ydik" |
-| 5.5-15 | taomlar makro, sekin kamera | musiqa | tepada shisha yorliq: kesilgan taom rasmi + "1-set" + nom; har taomda almashadi, sakrab chiqadi |
-| 15-34 | taomlar makro | ovoz (VO) | kichik qalin oq subtitr, pastroq (y ~0.70), so'zlar aytilganda chiqadi |
-| 35-38.5 | oshpaz | oshpaz | kichik qator "5 kishilik setlarimiz narxi", keyin katta sariq "990,000", o'ngda "so'm" |
-| 39-44 | qadoqlash | musiqa | matnsiz |
-| 44.6-46 | oshpaz qutini ushlab | oshpaz | qo'lyozma so'zlar yuzning ikki yonida ("Go'sht ta'midan / zavqlaning") |
+Kliplar `input/<promo nomi>/` papkasida (nom bo'yicha tartib, masalan `01_...mp4`, `02_...mp4`).
 
-Kesishlar: 31 ta, taom kadrlari 1-2 s. Rang: iliq, kontrastli (`look.preset: warm` yoki `punchy`).
-Musiqa va effekt: namunada fon musiqa bor; tanlovni foydalanuvchi tinglab qiladi (agent eshitmaydi).
+| Agent | Foydalanuvchi yozadi |
+|---|---|
+| Claude Code | `/promo input\<promo nomi>` |
+| Codex | `$promo input\<promo nomi>` |
 
-## 2. Namuna -> tizim
+Brend bo'lsa oxiriga brend nomi qo'shiladi (`brands/<nom>/` mavjud bo'lsa). Boshqa hech narsa kerak emas.
 
-| Namunadagi narsa | Tizimda | Eslatma |
-|---|---|---|
-| Ko'p klip (oshpaz, taomlar, qadoqlash) | `pipeline.py <papka yoki clips.json>` -> `assemble.py` | product kadrlari jimlik deb kesilmaydi |
-| Yuz yonidagi so'zlar | `aside` elementi | joyi yuzdan hisoblanadi, kadr ichida qisiladi |
-| "5 kishilik" katta kursiv sariq | `{promo}**5 kishilik** set so'rashdi` | kichik so'zlar ikki chetga (`sub_justify`) |
-| "4 ta set" odam orqasida | `title` + `preset: promo` + `behind_person: true` | broll/stage/scene/grade bilan bir videoda emas |
-| Taom yorlig'i | `label` elementi (`items` har taom uchun) | rasm: `cutout.py` bilan kesilgan PNG |
-| Ovoz ostidagi subtitr | `{vo}...` bo'lak belgisi | preset `vo`: 44 px qalin, y 0.70 |
-| Narx | `{promo}5 kishilik setlarimiz narxi !!990,000!! so'm` | uch qator o'zi bo'linadi, "so'm" o'ngga; sanab chiqish yo'q (namunada ham yo'q) |
-| Qo'lyozma so'zlar | `aside` + `font: "Caveat"`, `size: 0.9`, `dy: -0.04` | |
-| 60 fps HEVC 1440x2560 | assemble/pipeline o'zi 30 fps 1080x1920 ga keltiradi | |
+## 1. Mustaqillik qoidalari (majburiy)
+
+1. **Nutq.** Har speech va voiceover klip transkripsiya qilinadi (o'zbekcha: `yuldashev222/whisper-small-uz-v1-ct2`).
+   Taom nomlari, set raqamlari, narx, taklif (necha kishilik, chegirma, yetkazib berish) va chaqiriq shu matndan olinadi.
+2. **Kadr.** `frames.py <klip> --n 8 -o temp/<nom>/...` va kerakli soniyada `--at`: qutidagi nom, forma,
+   peshlavha, menyu, narx yorlig'i **faqat aniq o'qilsa** matn sifatida olinadi. Logotip kadrdan kesib
+   olinmaydi va logotip fayli sifatida ishlatilmaydi.
+3. **Hech narsa o'ylab topilmaydi.** Aytilmagan yoki aniq ko'rinmagan narx, nom, raqam yo'q. Shubhali narsa
+   tasdiq xabarida `[?so'z]` va manbasi bilan: `[?Mol kochalkasi] (04_kochalka.mp4 1.2 s nutq)`,
+   `[?990 000] (07_narx.mp4 2.1 s: "to'qqiz yuz to'qson ming")`.
+4. **Rollar** (`speech`, `product`, `voiceover`; qadoqlash/joy kadrlari `product`) agent tomonidan aniqlanadi:
+   pipeline birinchi ishga tushganda `temp/<nom>/clips.json` shabloni (ovozli klip speech, ovozsiz product,
+   audio fayl voiceover) va transkripsiyadan keyin **"Kliplar bo'yicha nutq"** jadvali chiqadi (har klipdagi
+   so'zlar soni, "nutq topilmadi: product bo'lishi mumkin" kabi maslahat). Agent kadrlarni ko'rib rollarni
+   to'g'rilaydi, qayta ishga tushiradi va ro'yxatni tasdiq xabarida ko'rsatadi.
+5. **So'raladigan yagona narsa** (bir marta): obuna kartochkasi uchun Instagram manzili. Berilmasa `follow`
+   handle'siz (`icon`). Musiqa va logotip faqat foydalanuvchi bergan fayldan; berilmasa kliplarning o'z ovozi
+   qoladi (`product_audio: keep`, standart) va logotip qo'yilmaydi.
+
+## 2. Uslub yo'nalishlari (har promo o'zgacha)
+
+Ma'lumot: `style/promo_looks.json` (faqat mavjud preset, element, style kalitlari). Vosita: `scripts/promo_looks.py`.
+
+| Yo'nalish | Namunalar | Qachon | Ilmoq / qahramon / narx | Ko'rinish |
+|---|---|---|---|---|
+| `warm_glow` | 20, 6 | qorong'i iliq joy, gril/go'sht, jonli nutq, set+narx | `{promo}` kursiv porlovchi | `look: warm`, shisha yorliq, yon so'zlar |
+| `clean_minimal` | 2, 7, 8, 10, 13 | yorug' kafe, desert, qahva, sokin nutq | `{single}` / `*oq katta*` / `{clean}` | `look: natural`, porlashsiz, accent oq yoki yumshoq |
+| `bold_caps` | 5, 14, 17 | fast food, aksiya, tez baland nutq | `{caps}` / `{heavy}` / `{caps}` | `look: punchy`, to'yingan taom rangi, qattiq yorliq |
+| `editorial_serif` | 3, 12, 18 | premium restoran, milliy taom, sekin kamera | `{serif}` | `look: film`, krem/oltin accent, serif yon so'zlar |
+| `fresh_marker` | 13, 2 | salat, ichimlik, kunduzgi yorug'lik | `{caps}` / `{clean}` + `==marker==` | `look: cool`, yashil/yorqin taom rangi |
+
+Hamma yo'nalishda ovoz ostidagi bo'laklar `{vo}`, taomlar `label`, odam yonidagi so'zlar `aside`.
+
+Tanlash tartibi:
+
+1. `promo_looks.py list` — yo'nalishlar va oxirgi promolar. **Oxirgi promo yo'nalishi takrorlanmaydi**
+   (`apply` rad etadi; faqat foydalanuvchi so'rasa `--allow-repeat`).
+2. Kontent va kadrdan tanla: taom ranglari va joy (qorong'i/yorug', iliq/sovuq), nutq energiyasi, mahsulot turi.
+   Kerak bo'lsa namunalarni ko'r (`frames.py "samples/sample N.mp4" -o temp/<nom>/sN.jpg`).
+3. `promo_looks.py palette temp/<nom>/<nom>.mp4 --out temp/<nom>/palette.json` — kadrdagi asosiy ranglar,
+   `accent_warm`, `accent_food`, subtitr zonasi yorqinligi (0.6 dan yuqori: soya/gradiyent kerak).
+4. `promo_looks.py apply <yo'nalish> --style temp/<nom>/style.json --accent "#RRGGBB"` — per-video uslubga yozadi
+   (umumiy `style/style.json` ga emas).
+5. Tasdiq xabarida bir qator sabab: "bold_caps: yorqin burger ranglari va tez nutq; accent #FF5A1F burger qizilidan".
+6. Final tayyor bo'lgach: `promo_looks.py record <yo'nalish> --job <nom> --accent "#RRGGBB"` (gitda saqlanadi).
 
 ## 3. Ish tartibi
 
-1. Kliplar `input/<promo nomi>/` papkasiga, nom bo'yicha tartibda: `01_oshpaz.mp4`, `02_qovurga.mp4` ...
-   Alohida yozilgan ovoz bo'lsa `ovoz.m4a`.
-2. Birinchi ishga tushirish shablon yaratadi: `temp/<nom>/clips.json` (ovozli klip speech, ovozsiz product,
-   audio fayl voiceover). Tartib, rol, `in`/`out` va voiceover `cover` larini to'g'rilang.
-   Format va rollar: `scripts/assemble.py` boshidagi izoh.
-3. `.venv\Scripts\python.exe scripts\pipeline.py input\<promo> --style temp\<nom>\style.json`
-   (per-video uslub: `look.preset: warm`, kerak bo'lsa `zoom.enabled: false`, o'zbek nutqi uchun uz model).
-4. Matn: oshpaz gaplari odatdagidek tuzatiladi; VO bo'laklari boshiga `{vo}`, asosiy iboralar `{promo}`.
-   Yuz yonida chiqadigan so'zlar subtitrdan olinadi (`corrections.json` da `"text": ""`) va `aside` ga yoziladi.
-5. `elements.json`: `aside` (boshi va oxiri), `title` behind_person ("4 ta set"), `label` (taomlar, vaqtlari
-   `segments.json` dagi product bo'laklari boshidan), kerak bo'lsa `sfx`.
-6. `--stills` bilan tekshirish, foydalanuvchi tasdig'i, draft, final.
+1. `handoff.py show`; video eslatmasini egalash (`handoff.py set ... --video input\<promo nomi> --agent ...`).
+2. `pipeline.py input\<promo nomi> --style temp\<nom>\style.json --prepare-only` (per-video style: umumiy
+   `style.json` nusxasi + o'zbek modeli). Shablon va "Kliplar bo'yicha nutq" jadvalini ko'r, rollarni to'g'rila,
+   qayta ishga tushir. Product oraliqlari jimlik deb kesilmaydi.
+3. Kadrlar (`frames.py`), palitra, yo'nalish (§2).
+4. Matn: nutqdagi nomlar va narx; VO bo'laklari `{vo}`, qahramon/narx yo'nalish belgilari bilan. Odam yonida
+   chiqadigan so'zlar subtitrdan olinadi (`corrections.json` `"text": ""`) va `aside` ga yoziladi.
+5. `elements.json` (§5), taom yorlig'i rasmi mijoz kadridan (`frames.py --at`, `cutout.py`).
+6. **Bitta tasdiq xabari:** klip rollari jadvali, `[?]` belgili to'liq matn (manbasi bilan), topilgan nomlar/narx/taklif
+   (qayerdan), reja jadvali, yo'nalish + bir qator sabab, stills, Instagram manzili savoli (bir marta).
+7. "ha" -> draft -> "ha" -> final; `promo_looks.py record`; review.md, AGENT_MEMORY (parallel bo'lsa deferred_learning).
 
-## 4. Elementlar namunasi
+## 4. Namuna 20 tahlili (warm_glow misoli)
+
+`samples/sample 20.MP4` (46 s, 1440x2560, 60 fps HEVC), 2026-10-08 o'lchangan (`temp/sample20_study/`),
+`temp/promo_test/` da sinab namuna bilan solishtirilgan (`studio.py compare`). O'lchamlar 1080x1920 ga.
+
+| Vaqt | Kadr | Ovoz | Ekranda |
+|---|---|---|---|
+| 0-1.4 | oshpaz kameraga | oshpaz | kichik so'zlar yuzning chap va o'ngida birin-ketin |
+| 1.4-3.4 | oshpaz | oshpaz | katta kursiv sariq porlovchi "5 kishilik" (~165 px, kenglik 81%), ostida "set ...... so'rashdi" |
+| 3.6-5.4 | oshpaz + stol | oshpaz | oq kursiv "4 ta set" oshpaz orqasida (qalpoq oldida) |
+| 5.5-15 | taomlar makro | musiqa | tepada shisha yorliq (x 0.26-0.74, y 0.15-0.25): kesilgan taom + "1-set" + nom, har taomda sakrab almashadi |
+| 15-34 | taomlar | ovoz | kichik qalin oq subtitr (~40 px, y 0.70), so'zlar aytilganda |
+| 35-38.5 | oshpaz | oshpaz | kichik qator, keyin katta sariq "990,000" (sanamaydi), o'ngda "so'm" |
+| 39-46 | qadoqlash, oshpaz | musiqa/oshpaz | oxirida qo'lyozma so'zlar yuz yonida |
+
+## 5. Elementlar
 
 ```json
 {"elements": [
@@ -65,21 +106,18 @@ Musiqa va effekt: namunada fon musiqa bor; tanlovni foydalanuvchi tinglab qiladi
 ]}
 ```
 
-`label`: `x`, `y` (panel markazi), `width` (0.5), `size`, `image_size` (0.085), `color`, `kicker_color`, `glass`.
-`aside`: `spread` (yuzdan masofa, 0.27), `dy` (0), `size` (0.75), `font`, `color`, `stagger`, `margin` (0.05);
-item: `at`, `text`, `side`, `end`, `dy`, `size`, `stagger`.
-Taom yorlig'i rasmi: mijoz kadridan kesilgan taom (`frames.py --at` bilan kadr, `cutout.py` bilan fonsiz PNG).
+`label`: `x`, `y`, `width` (0.5), `size`, `image_size` (0.085), `color`, `kicker_color`, `glass`, `font`.
+`aside`: `spread` (0.27), `dy` (0), `size` (0.75), `font`, `color`, `weight`, `stagger`, `margin` (0.05);
+item: `at`, `text`, `side` (left/right), `end`, `dy`, `size`, `stagger`. Matndagi nomlar va raqamlar faqat nutq/kadrdan.
+`behind_person` broll/stage/scene/grade bilan bir videoda ishlatilmaydi (assemble kadrlari broll emas).
 
-## 5. O'lchangan tezlik (bu kompyuter, CPU)
+## 6. Tezlik (bu kompyuter, CPU)
 
-- 60 fps HEVC 1440x2560 kliplarni yig'ish (`assemble.py`): ~34 s har 10 s video uchun.
-- To'liq render (1080x1920, crf 17, slow, behind_person bilan): ~63 s har 10 s.
-- Bitta HEVC faylni yig'ishsiz to'g'ridan-to'g'ri: ~82 s har 10 s (dekodlash + kesish + render).
-- 46 s promo uchun taxminan: yig'ish ~2.5 daqiqa + render ~5 daqiqa.
+60 fps HEVC 1440x2560 yig'ish ~34 s / 10 s; to'liq render 1080x1920 ~63 s / 10 s; bitta HEVC to'g'ridan ~82 s / 10 s.
 
-## 6. Halol chegaralar
+## 7. Halol chegaralar
 
-- "5 kishilik" ning qiyshiq holda kirishi va o'ngga surilib chiqishi aynan takrorlanmagan: `pop` kirish va `fade` chiqish.
-- Narx raqami sanab chiqmaydi (namunada ham birdaniga chiqadi); kerak bo'lsa `stat` elementi bor, lekin u kursiv emas.
-- Kamera harakati (makro, sekin surilish) kadrning o'zida bo'lishi kerak: tizim faqat sekin zoom qo'shadi.
-- Musiqa faqat mijoz bergan fayldan.
+- Kirish/chiqish harakatlari (qiyshiq kirish, surilib chiqish) aniq takrorlanmaydi: mavjud `pop`/`fade`/`blur`.
+- Narx sanab chiqmaydi (`stat` bor, lekin kursiv emas). Kamera harakati kadrning o'zida bo'lishi kerak.
+- Kadrdagi yozuvni agent ko'rib o'qiydi (OCR yo'q): aniq o'qilmasa `[?]`.
+- Musiqa va logotip faqat foydalanuvchi faylidan; ovozni agent eshitmaydi, tanlovni foydalanuvchi qiladi.
