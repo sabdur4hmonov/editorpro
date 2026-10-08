@@ -55,7 +55,7 @@ def done(started: float) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="To'liq montaj: transcribe -> auto_cut -> subtitles -> render.")
-    ap.add_argument("video", help="Asl video (masalan input/video.mp4)")
+    ap.add_argument("video", help="Asl video (masalan input/video.mp4), yoki ko'p klipli montaj uchun klip papkasi / clips.json")
     ap.add_argument("-o", "--output", help="Natija (standart: output/<nom>_final.mp4)")
     ap.add_argument("--approve-subs", action="store_true",
                     help="Foydalanuvchi subtitr matnini ko'rib tasdiqladi, davom et")
@@ -98,7 +98,16 @@ def main() -> int:
         style["whisper"]["language"] = args.language
     if args.model:
         style["whisper"]["model"] = args.model
-    video = C.need_file(args.video, "Video")
+    protect = None
+    source = Path(args.video)
+    if source.is_dir() or source.suffix.lower() == ".json":
+        # ko'p klipli montaj: kliplar avval bitta asosiy videoga yig'iladi (scripts/assemble.py)
+        import assemble as A
+        C.busy_acquire(f"montaj: {source.name}")
+        built = A.build(source, style)
+        video, protect = built["video"], built["protect"]
+    else:
+        video = C.need_file(args.video, "Video")
     if video.suffix.lower() not in C.VIDEO_EXTS:
         C.warn(f"{video.suffix} kengaytmasi odatiy video emas, baribir sinab ko'raman.")
     C.need_tool("ffmpeg"), C.need_tool("ffprobe")
@@ -220,7 +229,8 @@ def main() -> int:
             t = step("2/4 Jim joylar va takrorlarni kesish")
             res = auto_cut.cut_video(video, style, words, work, apply=True,
                                      silence_db=args.silence_db, no_repeats=args.no_repeats,
-                                     remove=remove, trim=trim[0] if trim else None, no_silence=args.no_silence)
+                                     remove=remove, trim=trim[0] if trim else None, no_silence=args.no_silence,
+                                     protect=protect)
             cut_video, cut_words = Path(res["video"]), res["words"]
             done(t)
         else:

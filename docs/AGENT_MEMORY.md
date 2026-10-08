@@ -112,3 +112,26 @@ Ochiq: finalda yuz manbaga nisbatan yumshoqroq (4K->1080 keyin zoom INTER_LINEAR
   yordamchi natijalar o'z papkangda. Boshqa unfinished video bor paytda umumiy kod/docs/brend/
   skilllar va selftestga tegma; kod kerak bo'lsa to'xta va foydalanuvchiga ayt. Parallel commit
   yo'q; yakunda bitta idle agent deferred_learning yozuvlarini umumlashtiradi.
+
+## 2026-10-08 — Claude — "doktor 2" (parallel, deferred) va restoran promo setup (namuna 20) — tekshirilgan
+
+doktor 2 (output/doktor_2_final.mp4, foydalanuvchi "ha" bilan, effektli):
+- Bo'lak belgisi (`{caps}` ...) presetning o'z `glow` ini qaytarardi: qizil so'zlar atrofida tuman. Tuzatildi:
+  `CaptionLayer._cue_cfg` uslub faylidagi `font`, `accent` va endi `glow` ni ham saqlaydi. `captions.glow: null`
+  porlashni o'chirmaydi (caption_cfg None ni o'tkazib yuboradi): o'chirish `{"blur": 0, "opacity": 0}`.
+- `behind_person` broll/stage/scene/grade bilan BIR VIDEODA ishlamaydi (preflight butun video bo'yicha rad etadi).
+- B-roll gapga aniq mos bo'lsin; oq xalatda yalpiz/oq yozuv o'qilmaydi (feedback.py ga yozildi).
+
+Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
+- Yangi: `assemble.py` (speech/product/voiceover kliplari -> bitta asosiy video; product oraliqlari `protect`
+  bilan jimlik kesishidan himoyalangan), pipeline papka/clips.json qabul qiladi; presetlar `promo`
+  (kursiv porlovchi, `sub_justify`) va `vo`; elementlar `label` (taom yorlig'i) va `aside` (yuz yonidagi so'zlar).
+- Namuna 20 kliplarida sinov (`temp/promo_test`, `studio.py compare`): "5 kishilik", yorliq, VO subtitr, narx,
+  qo'lyozma joyi va o'lchami namunaga ustma-ust tushdi. Sinov kadrlarida namunaning o'z yozuvi ham bor (tayyor
+  video) - taqqoslashda ikkita matn ko'rinadi, bu kutilgan.
+- Tezlik (CPU): 60 fps HEVC 1440x2560 yig'ish ~34 s / 10 s; to'liq render ~63 s / 10 s; HEVC to'g'ridan ~82 s / 10 s.
+- Namuna musiqasi doimiy bo'lgani uchun sinovda jimlik kesilmadi; himoya sintetik test bilan isbotlangan.
+- Dalil: test_studio 16/16 (3 yangi: promo/justify/glow, label/aside, assemble+protect), test_agent_setup 11/11
+  (sync soni NAMES dan hisoblanadi), selftest --no-whisper 44/44.
+- Keyingi agent: promo ishida birinchi ishga tushirish `temp/<nom>/clips.json` shablon yaratadi - rollarni
+  tekshirmasdan davom etma. Yon so'zlar subtitrdan olib tashlanadi (`corrections.json` "text": ""), aks holda ikki marta chiqadi.

@@ -37,6 +37,7 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | `.env` | Maxfiy kalitlar (stok va AI rasm xizmatlari). Gitga kirmaydi, o'qib ko'rsatilmaydi. |
 | `docs/claude_skills/` | Claude Code uchun `/montaj`, `/namuna`, `/brend`, `/transcribe-uz` buyruqlari (manba; `.claude/skills/` ga ko'chiriladi). |
 | `docs/PLAYBOOK.md` | Montajor qo'llanmasi: qaror qabul qilish tartibi. **Har montajda o'qiladi.** |
+| `docs/PROMO.md` | Restoran/mahsulot promo retsepti (namuna 20): ko'p klip, yorliq, narx, ovoz subtitri. `/promo` skilli. |
 | `docs/NAMUNA_USLUBI.md` | Namuna videolar (`samples/`) uslubi: subtitr uslublari, animatsiyalar, elementlar. |
 | `scripts/` | Montaj skriptlari. |
 | `jobs/` | Watcher topshiriqlari va natijalari (chatdan montaj). |
@@ -105,7 +106,8 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 
 | Skript | Nima qiladi |
 |---|---|
-| `pipeline.py VIDEO` | Hammasini ketma-ket bajaradi. |
+| `pipeline.py VIDEO` | Hammasini ketma-ket bajaradi. VIDEO o'rniga klip papkasi yoki `clips.json` berilsa avval `assemble.py` yig'adi. |
+| `assemble.py PAPKA/clips.json` | Ko'p klipli montaj: speech/product/voiceover kliplarini tartib bilan bitta asosiy videoga yig'adi (style o'lchami va fps), `temp/<nom>/segments.json`; product oraliqlari jimlik deb kesilmaydi. |
 | `transcribe.py VIDEO` | So'z-so'z vaqtli matn: `temp/<nom>/orig.words.json`, `orig.srt`. |
 | `auto_cut.py VIDEO` | Jim joy, takror va qo'lda berilgan oraliqlarni kesadi (`--apply`). |
 | `script_align.py` | Tayyor skript matnini nutq vaqtlariga tekislaydi (pipeline `--script` shuni chaqiradi). |
@@ -202,7 +204,9 @@ qaytadan yaratiladi.
 - Ma'no tashiydigan so'zni belgilang (raqam, natija, mahsulot nomi), bog'lovchini emas.
 - Uslub `captions.preset`: `clean` (asosiy: namunalardagi kichik harfli zich uslub), `caps` (tor KATTA
   sarlavha), `heavy` (juda qalin so'z, harfma-harf), `italic`, `serif`, `single` (bir-ikki so'zdan),
-  `marker` (kichik, chapda, marker bilan), `karaoke` (ovozli xabar sahnasi), `glow`, `box`.
+  `marker` (kichik, chapda, marker bilan), `karaoke` (ovozli xabar sahnasi), `glow`, `box`,
+  `promo` (katta kursiv porlovchi ibora/narx, kichik so'zlar ikki chetga: `sub_justify`), `vo` (ovoz ostidagi kichik qalin subtitr).
+  Bo'lak belgisida (`{caps}` ...) uslub faylidagi `captions.font`, `accent` va `glow` saqlanadi.
   Joyi: `captions.position_y`. Atoqli otlar matnda qanday yozilsa shunday chiqadi (`Rus`, `SMM`).
 - **Namunalardagidek video** uchun: `docs/NAMUNA_USLUBI.md` va `/namuna` skilli
   (`docs/claude_skills/namuna/`). Tuzatilgan matnda (`corrections.json`) belgilar va `{uslub}` ham
@@ -237,6 +241,8 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `lower_third` | Ism va lavozim plashkasi | `name`, `role`, `x`, `y` |
 | `emoji` | Katta emoji, sakrab chiqadi. `sticker: true` oq hoshiyali stiker | `emoji`, `x`, `y`, `size`, `sticker`, `rotate`, `wiggle` |
 | `stage` | Videoni (yoki uning bir qismini) yumaloq kartochkaga oladi, orqasiga **yangi harakatli fon** chizadi | `crop [x0,y0,x1,y1]`, `width`, `y`, `radius`, `border`, `background`, `footer {text, from}`, `progress`, `punch [{at, scale}]`, `shake [{at, amp}]`, `flash [{at}]` |
+| `label` | Mahsulot yorlig'i: shisha panel, kesilgan rasm, kichik yozuv ("1-set") va nom; `items` bo'yicha almashadi | `items[{at, name, kicker, image}]`, `x`, `y`, `width`, `size`, `image_size`, `glass` |
+| `aside` | So'zlar odam yonida (yuzdan chap/o'ng), birin-ketin; qo'lyozma uchun `font: Caveat` | `items[{at, text, side, end, dy}]`, `spread`, `dy`, `size`, `font`, `color`, `stagger`, `margin` |
 | `follow` | Obuna kartochkasi: doira (logotip, nom yoki belgi), @manzil, tugma bosiladi | `handle` (ixtiyoriy), `logo`, `name` yoki `icon`, `button`, `done`, `tap`, `x`, `y`, `size`, `color` |
 | `scene` | To'liq ekranli chizilgan fon (ustiga matn, rasm, `voice` qo'yiladi) | `background {color1..4, pattern: dots/grid/none, rays, sparks}`, `fade` |
 | `grade` | Vaqtincha oq-qora (`mode: bw`) yoki qoraytirish (`dim`) | `mode`, `amount`, `fade` |
@@ -464,6 +470,7 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
 ## Claude Code'da ishlatish
 
 - `/montaj input\video.mp4 NOM` — to'liq montaj. `/namuna input\video.mp4 NOM` — namunalardagidek montaj.
+  `/promo input\papka NOM` — ko'p klipli restoran/mahsulot promo (namuna 20, `docs/PROMO.md`).
   `/brend NOM` — yangi mijoz qo'shish. `/transcribe-uz video` — matn va tuzatish.
   Manbasi `docs/claude_skills/`; ishlashi uchun `.claude/skills/` ga ko'chirilgan bo'lishi kerak
   (`docs/CLAUDE_CODE.md` dagi birinchi tekshiruv prompti buni qiladi). Ko'chirilmagan bo'lsa ham

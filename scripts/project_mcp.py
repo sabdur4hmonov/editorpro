@@ -13,7 +13,7 @@ import sync_skills
 GUIDES = {
     "rules": "AGENTS.md", "playbook": "docs/PLAYBOOK.md",
     "sample_style": "docs/NAMUNA_USLUBI.md", "quality": "docs/EDIT_QUALITY.md",
-    "memory": "docs/AGENT_MEMORY.md", "setup": "docs/AGENT_SETUP.md",
+    "memory": "docs/AGENT_MEMORY.md", "setup": "docs/AGENT_SETUP.md", "promo": "docs/PROMO.md",
 }
 VERSIONS = ("2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25")
 TOOLS = [

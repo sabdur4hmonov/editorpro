@@ -113,11 +113,36 @@ def parse_ranges(text: str | None) -> list:
     return out
 
 
+def subtract_ranges(removals: list, protect: list | None) -> list:
+    """Kesiladigan oraliqlardan himoyalangan qismlarni olib tashlaydi (qolgan bo'laklar saqlanadi)."""
+    if not protect:
+        return removals
+    out = []
+    for r in removals:
+        parts = [(r["start"], r["end"])]
+        for ps, pe in protect:
+            nxt = []
+            for s, e in parts:
+                if pe <= s or ps >= e:
+                    nxt.append((s, e))
+                    continue
+                if s < ps:
+                    nxt.append((s, ps))
+                if pe < e:
+                    nxt.append((pe, e))
+            parts = nxt
+        out += [dict(r, start=s, end=e) for s, e in parts if e - s > 1e-3]
+    return out
+
+
 def build_plan(video: Path, style: dict, words: list | None = None,
                silence_db: float | None = None, min_silence: float | None = None,
                no_repeats: bool = False, remove: list | None = None, trim: tuple | None = None,
-               no_silence: bool = False) -> dict:
-    """Kesish rejasini tuzadi (hali hech narsa kesilmaydi)."""
+               no_silence: bool = False, protect: list | None = None) -> dict:
+    """Kesish rejasini tuzadi (hali hech narsa kesilmaydi).
+
+    protect: [(boshi, oxiri)] - jimlik deb kesilmaydigan oraliqlar (masalan nutqsiz mahsulot kadrlari, assemble.py).
+    """
     cut = style["cut"]
     meta = C.ffprobe_info(video)
     if not meta["has_video"]:
@@ -146,12 +171,14 @@ def build_plan(video: Path, style: dict, words: list | None = None,
         removals = silence_removals(silences, duration, padding)
     else:
         C.warn("Videoda ovoz yo'q, jim joylarni aniqlab bo'lmaydi. Hech narsa kesilmaydi.")
+    removals = subtract_ranges(removals, protect)
 
     keep = complement(removals, duration)
     # juda qisqa bo'laklar (shovqin, chertish) olib tashlanadi, agar ichida so'z bo'lmasa
     for ks, ke in list(keep):
         has_word = any(ks <= (w["start"] + w["end"]) / 2 < ke for w in (words or []))
-        if ke - ks < min_keep and not has_word:
+        protected = any(ps < ke and ks < pe for ps, pe in (protect or []))
+        if ke - ks < min_keep and not has_word and not protected:
             removals.append({"start": ks, "end": ke, "reason": "juda qisqa bo'lak"})
     keep = complement(removals, duration)
 

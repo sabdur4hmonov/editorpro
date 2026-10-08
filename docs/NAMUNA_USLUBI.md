@@ -36,6 +36,8 @@ Agent uchun buyruq: `/namuna` (`docs/claude_skills/namuna/SKILL.md`).
 | `marker` | 13 | Intervyu, uzun gap; kichik, chapda, bir necha qator |
 | `karaoke` | 4, 10 | Ovozli xabar sahnasi ostida (Har So'z Bosh Harfda) |
 | `glow`, `box` | | Eski uslublar: KATTA harf porlash; so'z rangli qutida |
+| `promo` | 20 | Katta kursiv porlovchi ibora va narx, kichik so'zlar ikki chetga (restoran promo, `docs/PROMO.md`) |
+| `vo` | 20 | Ovoz ostidagi (voice-over) kichik qalin oq subtitr, y 0.70 |
 
 Bitta videoda uslublar aralashadi (namunalarda ham shunday): asosiy uslub `style.json`/`brand.json`
 da, alohida bo'lak uchun matn boshiga belgi qo'yiladi:

@@ -104,6 +104,91 @@ class Rules(unittest.TestCase):
         self.assertEqual((r, r), (g, b))                 # oq-qora
         self.assertLess(r, 60)                          # qoraytirilgan (kulrang ~ 83 * 0.5)
 
+    def test_promo_presets_justify_and_tag_glow(self):
+        style = C.load_style()
+        style["video"].update(width=540, height=960)
+        ctx = E.Ctx(style)
+        self.assertIn("promo", E.CAPTION_PRESETS)
+        self.assertIsNone(E.CAPTION_PRESETS["vo"]["glow"])
+        cfg = ctx.caption_cfg({"preset": "promo"})
+        block = E.RichBlock(ctx, "**5 kishilik** set so'rashdi", cfg)
+        hero = [w for w in block.words if w["emph"]]
+        sub = [w for w in block.words if not w["emph"]]
+        hero_l, hero_r = hero[0]["x"], hero[-1]["x"] + hero[-1]["w"]
+        self.assertAlmostEqual(sub[0]["x"], hero_l, delta=2)               # "set" chap chetda
+        self.assertAlmostEqual(sub[-1]["x"] + sub[-1]["w"], hero_r, delta=2)  # "so'rashdi" o'ng chetda
+        price = E.RichBlock(ctx, "5 kishilik setlarimiz narxi !!990,000!! so'm", cfg)
+        self.assertEqual(len({w["line"] for w in price.words}), 3)
+        num = [w for w in price.words if w["emph"]][0]
+        unit = price.words[-1]
+        self.assertAlmostEqual(unit["x"] + unit["w"], num["x"] + num["w"], delta=2)  # "so'm" o'ngga
+        style["captions"]["glow"] = {"blur": 0, "opacity": 0}
+        layer = E.CaptionLayer(E.Ctx(style), [{"start": 0, "end": 1, "text": "{caps}*sinov*"}], None, 1)
+        self.assertEqual(layer.items[0]["cfg"]["glow"], {"blur": 0, "opacity": 0})
+
+    def test_label_and_aside_elements(self):
+        style = C.load_style()
+        style["video"].update(width=540, height=960)
+        ctx = E.Ctx(style)
+        WORK.mkdir(parents=True, exist_ok=True)
+        png = WORK / "label_thumb.png"
+        Image.new("RGBA", (60, 40), (200, 120, 40, 255)).save(png)
+        label = E.LabelLayer(ctx, {"start": 0, "end": 3, "items": [
+            {"at": 0, "kicker": "1-set", "name": "Mol qovurg'asi", "image": str(png)},
+            {"at": 1.5, "kicker": "2-set", "name": "Qo'yning qo'li"}]})
+        self.assertEqual([round(i["end"], 2) for i in label.items], [1.5, 3.0])
+        frame = np.zeros((960, 540, 3), np.uint8)
+        label.draw(frame, 0.6)
+        self.assertGreater(int(frame.max()), 0)
+        with self.assertRaises(C.MontajError):
+            E.LabelLayer(ctx, {"start": 0, "end": 1, "items": [{"at": 0, "name": ""}]})
+        ctx.anchor = (0.5, 0.35)
+        aside = E.AsideLayer(ctx, {"start": 0, "end": 2, "items": [
+            {"at": 0, "text": "juda\nham", "side": "left"}, {"at": 0.3, "text": "ko'pchilik bizdan", "side": "right"}]})
+        left, right = aside.parts
+        self.assertLess(left.cx + left.block.width / 2, 0.5 * 540)
+        self.assertGreater(right.cx - right.block.width / 2, 0.5 * 540)
+        self.assertLessEqual(right.cx + right.block.width / 2, 540 * 0.95 + 1)    # kadr ichida
+        frame = np.zeros((960, 540, 3), np.uint8)
+        aside.draw(frame, 1.0)
+        self.assertGreater(int(frame.max()), 0)
+        with self.assertRaises(C.MontajError):
+            E.AsideLayer(ctx, {"start": 0, "end": 1, "items": [{"text": "x", "side": "top"}]})
+
+    def test_assemble_clips_and_protect_products(self):
+        import assemble as A
+        import auto_cut
+        self.assertEqual(auto_cut.subtract_ranges([{"start": 0, "end": 10, "reason": "jim"}], [(2, 4)]),
+                         [{"start": 0, "end": 2, "reason": "jim"}, {"start": 4, "end": 10, "reason": "jim"}])
+        clips = WORK / "assemble_src"
+        clips.mkdir(parents=True, exist_ok=True)
+        ff = C.need_tool("ffmpeg")
+        C.run([ff, "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=320x568:r=60:d=2", "-f", "lavfi", "-i",
+               "sine=f=440:d=2", "-c:v", "libx264", "-c:a", "aac", "-shortest", clips / "01_speech.mp4"])
+        C.run([ff, "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc=s=568x320:r=25:d=1.5", "-c:v", "libx264",
+               clips / "02_product.mp4"])
+        C.run([ff, "-v", "error", "-y", "-f", "lavfi", "-i", "sine=f=330:d=1.2", "-c:a", "aac", clips / "03_vo.m4a"])
+        manifest = WORK / "assemble_clips.json"
+        C.write_json({"name": "studio_assemble_test", "clips": [
+            {"file": str(clips / "01_speech.mp4"), "role": "speech"},
+            {"file": str(clips / "02_product.mp4"), "role": "product"},
+            {"file": str(clips / "03_vo.m4a"), "role": "voiceover", "cover": [{"file": str(clips / "02_product.mp4"), "out": 0.5}]}]},
+            manifest)
+        style = C.load_style()
+        style["video"].update(width=180, height=320, fps=15)
+        built = A.build(manifest, style)
+        meta = C.ffprobe_info(built["video"])
+        self.assertEqual((meta["width"], meta["height"]), (180, 320))
+        self.assertAlmostEqual(meta["duration"], 4.7, delta=0.25)
+        self.assertEqual([s["role"] for s in built["segments"]], ["speech", "product", "voiceover"])
+        self.assertEqual(len(built["protect"]), 1)
+        ps, pe = built["protect"][0]
+        plan = auto_cut.build_plan(built["video"], style, [], protect=built["protect"])
+        for r in plan["removed"]:
+            self.assertFalse(r["start"] < pe - 0.01 and ps + 0.01 < r["end"], f"mahsulot kesildi: {r}")
+        again = A.build(manifest, style)                       # o'zgarmagan ro'yxat qayta yig'ilmaydi
+        self.assertEqual(Path(again["video"]).stat().st_mtime, Path(built["video"]).stat().st_mtime)
+
     def test_emphasis_suggestions_keep_timings(self):
         import apply_corrections as AC
         words = [{"start": i*.3, "end": i*.3+.2, "word": word, "prob": .9}

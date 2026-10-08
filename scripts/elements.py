@@ -110,6 +110,26 @@ CAPTION_PRESETS = {
         "reveal": "cue", "animation": "fade", "anim_ms": 90, "slide_in": 0.0, "track_in": 0.0, "intro_scale": 1.0, "drift": 0.0,
         "exit": "none", "glow": None, "shadow": {"blur": 10, "dy": 2, "opacity": 0.3, "color": "#000000"},
     },
+    # restoran/mahsulot promo (namuna 20): katta kursiv ibora rangda porlaydi ("5 kishilik", "990,000"),
+    # kichik so'zlar asosiy ibora kengligiga ikki chetga taqsimlanadi ("set ...... so'rashdi"),
+    # asosiy ibora ostidagi yakka so'z o'ngga ("so'm"). Narx: "kichik qator\n!!990,000!!\nso'm"
+    "promo": {
+        "italic_main": True, "weight_main": 700, "weight_sub": 400, "weight_plain": 500,
+        "size_main": 200, "size_huge": 230, "size_sub": 60, "size_plain": 64,
+        "tracking": -0.03, "leading": 1.0, "case": "asis", "align": "center", "position_y": 0.65, "max_width": 0.9,
+        "fit_sub": False, "sub_justify": True, "reveal": "word", "animation": "blur", "anim_main": "pop",
+        "anim_ms": 260, "slide_in": 0.0, "track_in": 0.0, "intro_scale": 0.85, "intro_ms": 380, "drift": 0.02,
+        "exit": "fade", "exit_ms": 160, "glow": {"blur": 22, "opacity": 0.75},
+        "shadow": {"blur": 16, "dy": 4, "opacity": 0.45, "color": "#000000"},
+    },
+    # ovoz ostidagi (voice-over) kichik subtitr: qalin oq, pastroqda, so'zlar aytilganda chiqadi (namuna 20, 15-34 s)
+    "vo": {
+        "weight_plain": 700, "weight_sub": 700, "weight_main": 800, "size_plain": 44, "size_sub": 44,
+        "size_main": 56, "size_huge": 72, "tracking": -0.02, "leading": 1.12, "case": "asis", "strip_punct": False,
+        "align": "center", "position_y": 0.70, "max_width": 0.62, "fit_sub": False, "reveal": "word",
+        "animation": "fade", "anim_ms": 110, "slide_in": 0.0, "track_in": 0.0, "intro_scale": 1.0, "drift": 0.0,
+        "exit": "fade", "exit_ms": 100, "glow": None, "shadow": {"blur": 10, "dy": 2, "opacity": 0.75, "color": "#000000"},
+    },
 }
 
 
@@ -352,6 +372,8 @@ class RichBlock:
             cur_w += add
         if cur:
             lines.append(cur)
+        if emph and cfg.get("sub_justify"):
+            self._justify_sub(lines)
 
         self.words, self.boxes, self.marks = [], [], []
         leading = float(cfg.get("leading", 1.02))
@@ -426,6 +448,28 @@ class RichBlock:
             g["bx"], g["by"], g["bw"] = g["x0"] - px, g["y"] - top, w
         self.line_sizes = [line[0]["size"] for line in lines]
         self._bars: dict = {}
+
+    @staticmethod
+    def _justify_sub(lines: list) -> None:
+        """Kichik qatorlar asosiy ibora kengligiga ikki chetga taqsimlanadi (namuna 20: "set ...... so'rashdi").
+
+        Asosiy iboradan keyingi qatordagi yakka so'z o'ngga suriladi ("so'm"), undan oldingisi markazda qoladi.
+        """
+        big = [i for i, line in enumerate(lines) if line[0]["emph"]]
+        if not big:
+            return
+        hero_w = max(sum(t["w"] + t["gap"] for t in lines[i]) for i in big)
+        for li, line in enumerate(lines):
+            if line[0]["emph"]:
+                continue
+            spare = hero_w - sum(t["w"] + t["gap"] for t in line)
+            if spare <= 0:
+                continue
+            if len(line) > 1:
+                for t in line[1:]:
+                    t["gap"] += spare / (len(line) - 1)
+            elif li > big[0]:
+                line[0]["gap"] = spare
 
     def _fit_sub(self, tokens: list, cfg: dict, k: float, max_w: float, word_space: float, measure) -> None:
         """Kichik qator(lar)ni asosiy ibora kengligiga moslaydi (namunalardagi "blok" ko'rinishi).
@@ -729,7 +773,7 @@ class CaptionLayer(Layer):
                 raise C.MontajError(f"Subtitr belgisida noma'lum sozlama: {key} ({C.fmt_time(cue['start'])}). "
                                     f"Mumkin: {', '.join(sorted(set(self.TAG_NUM) | set(self.TAG_STR)))}")
         cfg = self.ctx.caption_cfg({"preset": over.get("preset", self.cfg.get("preset", "clean"))})
-        for key in ("font", "accent"):          # brend shrifti va rangi har qanday presetda saqlanadi
+        for key in ("font", "accent", "glow"):  # brend shrifti, rangi va porlashi har qanday presetda saqlanadi
             keep = self.ctx.style.get("captions", {}).get(key)
             if keep and key in over and key not in opts:
                 over[key] = keep
@@ -2385,12 +2429,137 @@ class PhoneLayer(Layer):
         M.blit(frame, self.sprite, self.cx, self.cy, opacity=opacity, scale=scale, anchor=(0, 0))
 
 
+class LabelLayer(Layer):
+    """Mahsulot yorlig'i (namuna 20): shisha panel, chap-yuqorisidan kesilgan taom rasmi chiqib turadi,
+    o'ng-yuqorida kichik yozuv (kicker: "1-set"), ostida nom ("Mol qovurg'asi").
+
+    items: [{at, name, kicker, image}] - har biri o'z vaqtida almashadi va butun yorliq sakrab chiqadi.
+    Bitta mahsulot uchun items o'rniga name/kicker/image yozsa ham bo'ladi.
+    Sozlamalar: x, y (panel markazi), width (panel kengligi), size, image_size (rasm balandligi, kadrga nisbatan),
+    color, kicker_color, glass (orqa xiralik, true/false).
+    """
+    z = 40
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        k = self.k = ctx.k * float(el.get("size", 1.0))
+        cap = ctx.caption_cfg({"preset": el.get("preset", "clean")})
+        font_name = el.get("font", cap["font"])
+        self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.2)) * ctx.H
+        self.w, self.h = int(float(el.get("width", 0.5)) * ctx.W), int(200 * k)
+        self.pad = 22 * k
+        self.radius = int(26 * k)
+        self.glass_on = bool(el.get("glass", True))
+        img_h = int(float(el.get("image_size", 0.085)) * ctx.H * float(el.get("size", 1.0)))
+        raw = el.get("items") or [{"at": el["start"], "name": el.get("name", ""), "kicker": el.get("kicker", ""),
+                                   "image": el.get("image")}]
+        shadow = {"blur": 12 * k, "dy": 3 * k, "opacity": 0.45}
+        self.items = []
+        for it in sorted(raw, key=lambda i: float(i.get("at", el["start"]))):
+            name = fix_apostrophes(str(it.get("name", "")).strip())
+            if not name:
+                raise C.MontajError("label: har bir item uchun 'name' kerak.")
+            size = 80 * k
+            font = ctx.fonts.get(font_name, size, 400)
+            while M.measure(font, name, 0) > self.w - 2 * self.pad and size > 24 * k:
+                size *= 0.93
+                font = ctx.fonts.get(font_name, size, 400)
+            name_spr = M.word_sprite(name, font, el.get("color", "#FFFFFF"), float(cap["tracking"]) * size * 0.5, shadow)
+            kicker_spr = None
+            if str(it.get("kicker", "")).strip():
+                kf = ctx.fonts.get(font_name, 46 * k, 400)
+                kicker_spr = M.word_sprite(fix_apostrophes(str(it["kicker"])), kf, el.get("kicker_color", "#FFFFFF"), 0, shadow)
+            image = None
+            if it.get("image"):
+                try:
+                    img = Image.open(ctx.asset(it["image"], "Yorliq rasmi")).convert("RGBA")
+                except C.MontajError:
+                    raise
+                except Exception as exc:
+                    raise C.MontajError(f"label rasmi ochilmadi: {exc}") from exc
+                img = img.resize((max(1, int(img.width * img_h / img.height)), img_h), Image.LANCZOS)
+                image = M.pil_sprite(img, shadow={"blur": 10 * k, "dy": 4 * k, "opacity": 0.4})
+            self.items.append({"at": float(it.get("at", el["start"])), "name": name_spr, "kicker": kicker_spr,
+                               "image": image})
+        for a, b in zip(self.items, self.items[1:]):
+            a["end"] = b["at"]
+        self.items[-1]["end"] = self.end
+        self.panel = M.rounded_rect_sprite(self.w, self.h, self.radius, (255, 255, 255, 0 if self.glass_on else 70),
+                                           border=(255, 255, 255, 110), border_width=max(1, int(2 * k)))
+        ctx.check_safe("Yorliq (label)", self.cx - self.w / 2, self.cy - self.h / 2 - img_h * 0.5,
+                       self.cx + self.w / 2, self.cy + self.h / 2)
+
+    def draw(self, frame, t: float) -> None:
+        cur = next((it for it in reversed(self.items) if it["at"] <= t), None)
+        if cur is None or t >= cur["end"]:
+            return
+        # har yangi mahsulotda yorliq kichikdan sakrab chiqadi; oxirgisi element tugaganda so'nadi
+        op, scale = appear(t, cur["at"], cur["end"] if cur is self.items[-1] else cur["end"] + 1.0)
+        w, h = self.w * scale, self.h * scale
+        x0, y0 = self.cx - w / 2, self.cy - h / 2
+        if self.glass_on:
+            M.glass(frame, int(x0), int(y0), max(2, int(w)), max(2, int(h)), max(1, int(self.radius * scale)),
+                    opacity=op, blur=18 * self.k, tint_alpha=0.12)
+        M.blit(frame, self.panel, x0, y0, opacity=op, scale=scale, anchor=(0, 0))
+        spr, adv = cur["name"]
+        M.blit(frame, spr, x0 + self.pad * scale, y0 + h * 0.80, opacity=op, scale=scale, anchor=(0, 0))
+        if cur["kicker"]:
+            spr, adv = cur["kicker"]
+            M.blit(frame, spr, x0 + w - self.pad * scale - adv * scale, y0 + h * 0.38, opacity=op, scale=scale, anchor=(0, 0))
+        if cur["image"]:
+            M.blit(frame, cur["image"], x0 + w * 0.3, y0 + h * 0.05, opacity=op, scale=scale, anchor=(0, 0))
+
+
+class AsideLayer(Layer):
+    """So'zlar odam atrofida (namuna 20: boshida chap/o'ngda kichik so'zlar, oxirida qo'lyozma so'zlar).
+
+    Joy yuzdan hisoblanadi (ctx.anchor): chapdagi matn yuz chizig'idan chapda o'ngga tekislanadi,
+    o'ngdagi matn o'ngda chapga. items: [{at, text, side: left|right, end, dy, stagger}], "\\n" yangi qator.
+    Umumiy sozlamalar: spread (yuz markazidan masofa, kadr kengligiga nisbatan, 0.27), dy (yuzdan pastga, 0),
+    preset, font (masalan "Caveat" qo'lyozma uchun), size (standart 0.75), color, weight, anim, stagger.
+    """
+    z = 45
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        ax, ay = ctx.anchor
+        spread, dy = float(el.get("spread", 0.27)), float(el.get("dy", 0.0))
+        self.parts = []
+        for it in el.get("items") or []:
+            side = str(it.get("side", "left"))
+            if side not in ("left", "right"):
+                raise C.MontajError(f"aside.side noto'g'ri: {side!r}. Mumkin: left, right")
+            sub = {key: el[key] for key in ("preset", "font", "color", "accent", "weight", "glow", "tracking", "anim", "case")
+                   if key in el}
+            sub.update(start=float(it.get("at", el["start"])), end=min(float(it.get("end", el["end"])), self.end),
+                       text=str(it.get("text", "")), align="right" if side == "left" else "left",
+                       size=float(it.get("size", el.get("size", 0.75))), stagger=float(it.get("stagger", el.get("stagger", 0))),
+                       x=0.5, y=ay + dy + float(it.get("dy", 0)))
+            layer = TextLayer(ctx, sub)
+            half = layer.block.width / 2
+            edge = (ax - spread) * ctx.W if side == "left" else (ax + spread) * ctx.W
+            layer.cx = edge - half if side == "left" else edge + half
+            # kadr ichida qolsin: yuz chetga yaqin bo'lsa matn chetdan chiqmasligi uchun ichkariga suriladi
+            margin = float(el.get("margin", 0.05)) * ctx.W
+            layer.cx = min(max(layer.cx, margin + half), ctx.W - margin - half)
+            ctx.check_safe(f"Yon so'z ({strip_markup(sub['text'])[:20]})", layer.cx - half, layer.cy - layer.block.height / 2,
+                           layer.cx + half, layer.cy + layer.block.height / 2)
+            self.parts.append(layer)
+
+    def draw(self, frame, t: float) -> None:
+        for part in self.parts:
+            if part.active(t):
+                part.draw(frame, t)
+
+
 ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "broll": BrollLayer,
                  "list": ListLayer, "choice": ChoiceLayer, "stat": StatLayer, "voice": VoiceLayer,
                  "callout": CalloutLayer, "lower_third": LowerThirdLayer, "emoji": EmojiLayer,
                  "icon": IconLayer, "stage": StageLayer, "burst": BurstLayer, "confetti": ConfettiLayer,
                  "follow": FollowLayer, "scene": SceneLayer, "grade": GradeLayer, "flash": FlashLayer,
-                 "handnote": HandnoteLayer, "arrow": ArrowLayer, "phone": PhoneLayer, "profile": PhoneLayer}
+                 "handnote": HandnoteLayer, "arrow": ArrowLayer, "phone": PhoneLayer, "profile": PhoneLayer,
+                 "label": LabelLayer, "aside": AsideLayer}
 # "at" bilan beriladigan qisqa hodisalar: boshlanishi "at", uzunligi "duration"
 TIMED_TYPES = {"burst": 2.0, "confetti": 2.6, "flash": 0.3}
 NON_LAYER_TYPES = {"sfx", "zoom"}

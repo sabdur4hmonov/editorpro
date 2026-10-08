@@ -22,7 +22,7 @@ class SetupTests(unittest.TestCase):
                 path = root / "docs/claude_skills" / name / "SKILL.md"
                 path.parent.mkdir(parents=True)
                 path.write_text(source, encoding="utf-8")
-            self.assertEqual(len(sync_skills.sync(root)), 8)
+            self.assertEqual(len(sync_skills.sync(root)), 2 * len(sync_skills.NAMES))
             self.assertFalse((root / ".agents").exists())  # --check never writes
             sync_skills.sync(root, apply=True)
             self.assertEqual(sync_skills.sync(root), [])

@@ -11,3 +11,5 @@ Foydalanuvchi bergan fikrlar. Har montajdan oldin o'qiladi. Yangi fikr: `python 
 - 2026-10-07: Ijodiyroq bo'l: kulgili (komediya) videoga ko'proq narsa qo'sh, fonni o'zgartir, kerak joyiga animatsiya qo'sh. Natija juda zo'r va professional bo'lsin.
 - 2026-10-07: Namuna videolardagi (samples/) subtitr yozuvi va animatsiyalari bilan bir xil videolar kerak, to'liq. Standart ko'rinish shu: docs/NAMUNA_USLUBI.md va /namuna skilli.
 - 2026-10-07: doktor 1: the full-frame stock b-roll version was rejected; the final has no b-roll.
+- 2026-10-08: B-roll va rasmlar gapga aniq mos bo'lsin: yuz yaqin kadri 'nafas yetishmovchiligi'ni ko'rsatmaydi, ingalyator kislorod emas; mos klip bo'lmasa qo'yilmaydi (doktor 2).
+- 2026-10-08: Oq xalat/och fonda yalpiz va oq matn o'qilmaydi: qahramon so'z qizil, kontursiz, porlashsiz, yumshoq soya va subtitr ortida yumshoq qorong'i gradiyent (doktor 2).

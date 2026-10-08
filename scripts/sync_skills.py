@@ -6,7 +6,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parent.parent
-NAMES = ("montaj", "namuna", "brend", "transcribe-uz")
+NAMES = ("montaj", "namuna", "brend", "transcribe-uz", "promo")
 
 
 def expected(source: str, agent: str) -> str:
@@ -37,7 +37,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true", help="Nusxalar eskirgan bo'lsa 1-kod")
-    mode.add_argument("--apply", action="store_true", help="Faqat to'rt SKILL.md nusxasini yangilash")
+    mode.add_argument("--apply", action="store_true", help="Faqat NAMES dagi SKILL.md nusxalarini yangilash")
     args = parser.parse_args()
     try:
         changed = sync(apply=args.apply)
