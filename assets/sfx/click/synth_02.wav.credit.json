@@ -1,0 +1,6 @@
+{
+  "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+  "license": "Project-original generated audio; no third-party recording",
+  "category": "click",
+  "kind": "synthesized"
+}

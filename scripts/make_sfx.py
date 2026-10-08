@@ -9,6 +9,7 @@ tashlang: shular ishlatiladi.
 from __future__ import annotations
 
 import argparse
+import shutil
 
 import common as C
 
@@ -34,6 +35,7 @@ RECIPES = {
 def main() -> int:
     ap = argparse.ArgumentParser(description="Asosiy ovoz effektlarini generatsiya qiladi (assets/sfx/).")
     ap.add_argument("--force", action="store_true", help="Bor fayllarni ham qayta yasash")
+    ap.add_argument('--library',action='store_true',help='Category folders, 2 synthesized variants, per-file provenance; no downloads')
     args = ap.parse_args()
     SFX_DIR.mkdir(parents=True, exist_ok=True)
     ffmpeg = C.need_tool("ffmpeg")
@@ -47,6 +49,26 @@ def main() -> int:
                "-ar", "48000", "-c:a", "pcm_s16le", out])
         made += 1
         C.info(f"  {name}.wav ({C.ffprobe_info(out)['duration']:.2f}s)")
+    if args.library:
+        from sound_design import CATEGORIES
+        for category in CATEGORIES:
+            folder=SFX_DIR/category; folder.mkdir(exist_ok=True)
+            source=SFX_DIR/f'{category}.wav'
+            if not source.is_file():
+                (folder/'README.md').write_text('Dedicated samples missing. User supplies licensed files and source/license sidecars. No automatic download.\n',encoding='utf-8')
+                continue
+            for n in (1,2):
+                target=folder/f'synth_{n:02d}.wav'
+                if not target.exists():
+                    if n==1: shutil.copy2(source,target)
+                    else: C.run([ffmpeg,'-hide_banner','-nostdin','-v','error','-y','-i',str(source),'-af','asetrate=52800,aresample=48000','-c:a','pcm_s16le',str(target)])
+                C.write_json({'source':'scripts/make_sfx.py original synthesis; variant 2 rate-shifted',
+                              'license':'Project-original generated audio; no third-party recording',
+                              'category':category,'kind':'synthesized'},target.with_suffix('.wav.credit.json'))
+                target.with_suffix('.wav.LICENSE.txt').write_text('Original sound synthesized by this project. No external recording or stock license. Generated for project use.\n',encoding='utf-8')
+        for source in SFX_DIR.glob('*.wav'):
+            if source.stem in RECIPES:
+                source.with_suffix('.wav.LICENSE.txt').write_text('Project-original synthesis: scripts/make_sfx.py. No third-party recording. Generated for project use.\n',encoding='utf-8')
     C.info(f"Tayyor: {made} ta yangi effekt, papka: {SFX_DIR}")
     return 0
 

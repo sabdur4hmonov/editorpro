@@ -172,3 +172,50 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
   ishonchi bilan `speech_min_prob` haqiqiy kliplarda sozlanmagan. Birinchi jonli sinovda report.html ni ko'rib sozla.
 - Keyingi agent: papka montajida pipeline chiqargan "Tasdiqqa chiqadigan qarorlar" ro'yxatini BITTA tasdiq xabariga
   qo'sh; foydalanuvchi javobini `temp/<nom>/takes.override.json` ga yoz; qo'lda tahrirlangan clips.json ustidan yozilmaydi.
+
+## 2026-10-08 — Codex — Sprint 1: motion, caption, SFX va dalil vositalari — texnik tekshirilgan
+
+- Baseline kod o'zgarmasdan 31560ed holatida renderlandi: doktor_1 cut.mp4 0..12s,
+  `temp/sprint1/before.mp4`, 1080x1920/30. Original job fayllari SHA256 manifest bilan
+  tekshiriladi; after shu matn/vaqt/elementlardan olinadi. Draft 304x540/30, full
+  1080x1920/30; ikkalasida subtle/stronger mix. A/B, caption/sticker filmstrip va cue
+  sheet/waveform shu papkada. Temp dalili gitda yo'q, boshqa laptopga qo'lda ko'chiriladi.
+- `motion` davomiylik/easing/stagger/enter-exit/optional blur uchun umumiy manba.
+  6 yangi caption entrance va 4 emphasis bor; o‘/g‘/tutuq clusterlari tracking va
+  harf animatsiyasida ajralmaydi. motion_choice.json draft/final tanlovini saqlaydi.
+  Parallel boshqa unfinished video bor paytda umumiy tarix yozilmaydi; kombinatsiya
+  farqlanishi kafolatlanmaydi, yakunda bitta idle agent tarixni yangilaydi.
+- Glyph audit: 9 global fontdan Caveat'da U+02BB (`ʻ`) yo'q, qolgan 8 o'tdi. Renderer
+  ishlatilgan brend/global fontni ham tekshiradi. Yangi shrift yuklanmadi.
+- SFX hero vaqti raw markupdan emas, rendererning haqiqiy word_reveal_time hisobidan
+  olinadi. Avtomatik effekt 3 kadr oldin, manfiy vaqt 0ga cheklanadi; zichlik 3/10s va
+  gap 1.5s, variant ketma-ket takrorlanmaydi. Nutqni alohida me'yorlash va mavjud
+  voice-margin tekshiruvi o'zgarmadi. Cue sheet real stem peak/LUFS, gain, relative
+  speech, visual time va leadni yozadi; stem limiterdan oldin, final WAV alohida o'lchanadi.
+- 12s dalilda 4 hero SFX: subtle nutqdan 21.4dB past; stronger 10dB past (3.8dB
+  qo'shimcha pasaytirish). Yakuniy AAC: ikkalasi -14.1 LUFS, peak -1.4/-1.5 dBTP,
+  platforma barcha qatorlari OK. Musiqa yo'q. Audio didi va real-time harakat sifati
+  foydalanuvchi tomonidan HALI TANLANMAGAN/TASDIQLANMAGAN.
+- Kutubxona 10 kategoriya: 7 tasida 2 sintez variant va per-file license/provenance;
+  dedicated hit/typing/impact yo'q (hit/impact eski thud fallback). Haqiqiy yozib olingan
+  effektlar barcha kategoriyada hali yo'q. Pixabay rasmiy API hujjatida SFX endpoint
+  hujjatlashtirilmagan: foydalanuvchi litsenziyali fayllarni beradi, avtomatik download yo'q.
+- Real regressiya: colour_sweep white sprite va accent glow paddinglari turlicha bo'lib,
+  selftest broadcasting xatosi berdi. Sprite originlari bo'yicha merge qilindi; unequal
+  padding, letter cascade/typewriter regressiya testi qo'shildi. Mavjud checklar zaiflashtirilmadi.
+- test_agent_setup bir urinishda Edge exit 0 bilan 10s ichida PNG yaratmadi (12/13).
+  Ichki browser sababi aniqlanmagan; takror va yakuniy run 13/13 o'tdi. html_render.py
+  hamda uning checki o'zgartirilmadi. Muammo qaytsa browser stderr/profile va PNG
+  vaqtini o'lchang; tasdiqlanmagan sababni CPU yukiga bog'lamang.
+- Dalil: test_motion 15/15; test_takes 17/17; test_studio 17/17; test_agent_setup 13/13;
+  oxirgi selftest --no-whisper 45/45; 5 skill Claude/Codex nusxalari sync --checkda teng,
+  Codex frontmatter validatorida valid. Navbat bilan o'tgan studio benchmark tezlik
+  taqqoslash uchun ishonchli emas; uni mustaqil CPU benchmark deb taqdim etmang.
+- NVENC, faster-whisper CUDA va ONNX auto/CPU fallback qo'shildi; init/inference fallback
+  mock bilan tekshirildi. Bu CPU kompyuterda GPU ishi sinovdan o'tkazilmadi, hech narsa
+  o'rnatilmadi/yuklanmadi. NEW_LAPTOP.md rasmiy manbalar va tasdiqlanmagan qadamlarni ajratadi;
+  ORT latest CUDA13 va CT2 CUDA12 mosligini yangi laptopda alohida tekshirish kerak.
+- Keyingi agent: MOTION.md va NEW_LAPTOP.mdni o'qi. Technical A/Bdagi 6.3s sokin kesma
+  va CTA yo'qligi baseline mazmunini saqlash uchun izohlangan. Stillsda yuz ochiq;
+  yurak stikerining qo'l ustiga tushishi baseline joylashuvi, yangi ijodiy QA tasdig'i emas.
+  Userga ikki mixni tinglat, tanlovni HOLATga yoz; tayyor yangi video deb taxmin qilma.

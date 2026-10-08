@@ -6,6 +6,11 @@ argument-hint: "<video path>"
 
 # /transcribe-uz — transcript first, corrected text, approved by the user
 
+Whisper `device: auto`, `compute_type: auto` select available CUDA/float16 or CPU/int8;
+initialization/inference failure retries CPU without downloading. See `docs/NEW_LAPTOP.md`
+for cache migration and untested GPU setup. Never change word timing for animation;
+`docs/MOTION.md` covers Uzbek apostrophe clusters and font glyph warnings in the later render.
+
 Argument: `$ARGUMENTS` (video path). Talk to the user in **Uzbek**, short numbered steps. The user
 is a beginner programmer.
 

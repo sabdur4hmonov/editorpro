@@ -354,6 +354,21 @@ Sahna chiqishi, intervyu, konsert kabi "tayyor ovozli" videolarda effektni kam i
 
 ## Montaj sifati qoidalari
 
+### Motion va ovoz dalili (Sprint 1)
+
+- `docs/MOTION.md` ni o'qi: umumiy `motion`, brend `style.motion`, per-video `motion_override`.
+  Davomiylik/easing/stagger shu yerdan; `motion_choice.json` draft/final tanlovini saqlaydi.
+- `review_tools.py filmstrip` bilan timecoded yaqin kadrlarni tekshir, o'zgarishda `ab` orqali
+  bir xil vaqtdagi before/afterni ko'rsat. Bu foydalanuvchining haqiqiy ritm tasdig'i o'rnini bosmaydi.
+- o‘/g‘/tutuq belgisi harf animatsiyasida ajralmaydi; glyph audit warningni yashirma.
+  Caveat'da U+02BB yo'q, mavjud boshqa shriftni tanla yoki foydalanuvchiga ayt.
+- Compose subtle/stronger mix, audio cue sheet va markerli waveform beradi. Ikkalasini chatda
+  tinglat; agent eshitganini da'vo qilmaydi. Nutq margin qoidasi saqlanadi.
+- Parallel umumiy motion tarixi yozilmaydi (`history_deferred`); o'z choice/deferred learningni
+  saqla, yakunda bitta idle agent tarixni yangilaydi.
+- Yangi kompyuter: `docs/NEW_LAPTOP.md`. Hardware auto + CPU fallback; capability GPU sinovi emas.
+  Bu kompyuterda GPU sinovi yo'q, yangi install/download avval foydalanuvchi ruxsati bilan.
+
 Render qilishdan oldin `--stills` bilan tekshiriladigan ro'yxat:
 
 1. Birinchi 1.5 soniyada kuchli boshlanish: sarlavha yoki eng muhim gap, harakat darhol boshlansin.
@@ -527,7 +542,8 @@ ffprobe -v error -show_entries format=duration:stream=codec_type,width,height,r_
 
 ## Texnik eslatmalar
 
-- Muhit holati: `temp/setup_report.txt`. NVIDIA yo'q: `video.use_nvenc` `false`, whisper `cpu`/`int8`.
+- Muhit holati: `temp/setup_report.txt`. NVIDIA yo'q: hardware/whisper `auto` CPU/int8 tanlaydi;
+  eski per-video cpu/int8 ham ishlaydi. Yangi laptop tartibi: `docs/NEW_LAPTOP.md`.
 - Motion render: ffmpeg kadrlarni ochadi → Python (Pillow + OpenCV) har kadrga zoom va qatlamlarni
   chizadi → ffmpeg kodlaydi. Yangi element turi `scripts/elements.py` ga `Layer` sinfi qilib qo'shiladi.
 - Gorizontal manba `video.fit: auto` da yuz atrofidan 9:16 qilib kesiladi; yuz topilmasa xira fon.

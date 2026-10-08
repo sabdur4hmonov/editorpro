@@ -149,6 +149,15 @@ class Fonts:
             if entry is None:
                 raise C.MontajError("Hech qanday shrift topilmadi. style/fonts/ papkasida .ttf fayllar bo'lishi kerak.")
         font = ImageFont.truetype(entry["path"], size)
+        glyph_key = ('uzbek',entry['path'])
+        if glyph_key not in self.warned:
+            self.warned.add(glyph_key)
+            from glyph_audit import missing
+            try:
+                absent=missing(entry['path'])
+                if absent: C.warn(f"Uzbek glyph missing: {family}: {absent}")
+            except (OSError,ValueError,IndexError) as error:
+                C.warn(f"Font cmap could not be verified: {family}: {error}")
         if entry["axes"]:
             values = []
             for axis in entry["axes"]:
@@ -247,7 +256,8 @@ def blit(frame: np.ndarray, spr: Sprite, x: float, y: float, opacity: float = 1.
 # ---------------------------------------------------------------- matn
 
 def text_advance(font, text: str, tracking: float) -> float:
-    return font.getlength(text) + tracking * max(0, len(text) - 1)
+    from motion_language import clusters
+    return font.getlength(text) + tracking * max(0, len(clusters(text)) - 1)
 
 
 def _draw_tracked(draw, x: float, y: float, text: str, font, fill, tracking: float, stroke: int = 0, stroke_fill=None):
@@ -255,9 +265,11 @@ def _draw_tracked(draw, x: float, y: float, text: str, font, fill, tracking: flo
     if abs(tracking) < 0.01:
         draw.text((x, y), text, font=font, fill=fill, anchor="ls", stroke_width=stroke, stroke_fill=stroke_fill)
         return
-    for i, ch in enumerate(text):
+    from motion_language import clusters
+    units = clusters(text)
+    for i, ch in enumerate(units):
         draw.text((x, y), ch, font=font, fill=fill, anchor="ls", stroke_width=stroke, stroke_fill=stroke_fill)
-        nxt = text[i + 1:i + 2]
+        nxt = units[i + 1] if i + 1 < len(units) else ""
         x += (font.getlength(ch + nxt) - font.getlength(nxt) if nxt else font.getlength(ch)) + tracking
 
 

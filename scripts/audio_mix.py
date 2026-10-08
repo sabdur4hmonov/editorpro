@@ -152,6 +152,12 @@ def build_audio(video: Path, out_wav: Path, style: dict, total: float, music: Pa
         if measured:
             C.info(f"       ovoz: {measured['input_i']} LUFS -> {a.get('loudnorm_i', -14)} LUFS")
         LAST_REPORT = {"additions": False}
+        if scfg.get('cue_sheet',False):
+            import review_tools
+            report={'events':[],'mix':review_tools.metrics(out_wav,work),'note':'Speech only, no SFX/music events.'}
+            C.write_json(report,work/'audio_cues.json')
+            (work/'audio_cues.md').write_text('# Audio cue sheet\n\nSpeech only; no SFX/music events.\n',encoding='utf-8')
+            review_tools.waveform(out_wav,[],work/'audio_waveform.png')
         return out_wav
 
     # ---- 2) nutq va qo'shimchalar alohida fayllarga
@@ -220,6 +226,13 @@ def build_audio(video: Path, out_wav: Path, style: dict, total: float, music: Pa
     final_margin = None if margin is None else round(margin + reduce_db, 1)
     LAST_REPORT = {"additions": True, "music": music is not None, "sfx": len(events), "required_db": required,
                    "margin_db": final_margin, "reduced_db": round(reduce_db, 1)}
+    if scfg.get('cue_sheet',False):
+        import review_tools
+        report=review_tools.audio_report(v_wav,a_wav,out_wav,style,events,music,reduce_db,duck_sfx,duck_music,sfx)
+        report['design_events']=sfx or []
+        report['final_bus_margin_percentile_db']=final_margin
+        C.write_json(report,work/'audio_cues.json')
+        LAST_REPORT['cue_sheet']=str(work/'audio_cues.json')
     line = (f"       ovoz: nutq {measured['input_i']} LUFS -> {a.get('loudnorm_i', -14)} LUFS (alohida me'yorlandi)"
             if measured else "       ovoz: asl ovoz yo'q yoki jim")
     line += (f", musiqa: {music.name}" if music else "") + (f", effektlar: {len(events)}" if events else "")

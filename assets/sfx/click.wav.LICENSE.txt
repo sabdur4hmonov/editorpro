@@ -1,0 +1,1 @@
+Project-original synthesis: scripts/make_sfx.py. No third-party recording. Generated for project use.

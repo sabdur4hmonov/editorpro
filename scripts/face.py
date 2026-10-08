@@ -19,7 +19,7 @@ import common as C
 MODEL = C.ROOT / "assets" / "models" / "face_yunet.onnx"
 
 
-def detect(video: str | Path, samples: int = 10, quiet: bool = False) -> dict | None:
+def detect(video: str | Path, samples: int = 10, quiet: bool = False, style: dict | None = None) -> dict | None:
     """Yuz markazi va o'lchami (kadrga nisbatan 0..1). Topilmasa None."""
     try:
         import cv2
@@ -46,8 +46,18 @@ def detect(video: str | Path, samples: int = 10, quiet: bool = False) -> dict | 
         cv2.utils.logging.setLogLevel(cv2.utils.logging.LOG_LEVEL_ERROR)  # keraksiz ogohlantirishlarni yashirish
     except Exception:
         pass
+    import hardware
+    backend,target=hardware.opencv_backend(cv2,(style or {}).get('hardware',{}).get('onnx','auto'))
+    def create(cpu=False):
+        return cv2.FaceDetectorYN.create(str(MODEL), "", (w, h), 0.6, 0.3, 50,
+                                        cv2.dnn.DNN_BACKEND_OPENCV if cpu else backend,
+                                        cv2.dnn.DNN_TARGET_CPU if cpu else target)
     try:
-        det = cv2.FaceDetectorYN.create(str(MODEL), "", (w, h), 0.6, 0.3, 50)
+        try: det=create()
+        except cv2.error:
+            if target==cv2.dnn.DNN_TARGET_CPU: raise
+            C.warn('YuNet CUDA init failed; CPU fallback.')
+            target=cv2.dnn.DNN_TARGET_CPU; det=create(cpu=True)
     except Exception as exc:
         if not quiet:
             C.warn(f"Yuz modelini yuklab bo'lmadi ({exc}). Kadr markazi ishlatiladi.")
@@ -57,8 +67,13 @@ def detect(video: str | Path, samples: int = 10, quiet: bool = False) -> dict | 
         img = np.frombuffer(proc.stdout, np.uint8, w * h * 3, i * w * h * 3).reshape(h, w, 3)
         try:
             _, faces = det.detect(img)
-        except Exception:
-            faces = None
+        except cv2.error:
+            if target!=cv2.dnn.DNN_TARGET_CPU:
+                C.warn('YuNet CUDA inference failed; CPU fallback.')
+                target=cv2.dnn.DNN_TARGET_CPU
+                det=create(cpu=True)
+                _,faces=det.detect(img)
+            else: faces = None
         if faces is None or len(faces) == 0:
             continue
         x, y, fw, fh = max(faces, key=lambda f: f[2] * f[3])[:4]  # eng katta yuz

@@ -23,6 +23,28 @@
     "preset": "ultrafast"
   },
 
+  "hardware": {
+    "_izoh": "auto: mavjud NVIDIA/runtime bo'lsa tanlaydi; ishlamasa CPU. Bu kompyuterda GPU sinov qilinmagan.",
+    "encode": "auto",
+    "onnx": "auto"
+  },
+
+  "motion": {
+    "_izoh": "Umumiy harakat tili: docs/MOTION.md. Brend style.motion yoki per-video style.json bilan almashtiriladi. Tanlov temp/<video>/motion_choice.json da saqlanadi.",
+    "enabled": true,
+    "speed": "medium",
+    "scales": {"fast": 0.75, "medium": 1.0, "slow": 1.3},
+    "durations_ms": {"caption": 260, "exit": 160, "sticker": 360, "title": 300, "label": 300, "follow": 420, "transition": 240, "punch": 300},
+    "easing": {"enter": "snappy", "exit": "soft"},
+    "spring": {"omega": 12.0, "zeta": 0.62},
+    "overshoot": 1.1,
+    "stagger": {"word_ms": 35, "letter_ms": 24, "max_total_ms": 180},
+    "pairs": {"spring_pop": "scale_down", "slide_overshoot": "slide_out", "scale_blur": "blur", "typewriter": "fade", "mask_up": "mask_down", "letter_cascade": "fade"},
+    "blur": {"enabled": false, "max_px": 3},
+    "variety": true,
+    "choice": {}
+  },
+
   "quality": {
     "_izoh": "Preflight ijodiy ogohlantirishlari: avtomatik did bahosi emas, ataylab sokin sahnalarni agent izohlaydi.",
     "hook_sec": 1.5,
@@ -171,7 +193,15 @@
     "duck": true,
     "min_gap_sec": 1.5,
     "on_big_word": "pop",
-    "on_element": "whoosh"
+    "on_element": "whoosh",
+    "event_map": {"hero": "pop", "sticker": "whoosh", "broll_in": "swipe", "title": "whoosh", "label": "click", "number": "ding", "follow_tap": "click"},
+    "lead_frames": 3,
+    "max_per_10_sec": 3,
+    "cue_sheet": true,
+    "profile": "subtle",
+    "mixes": {"subtle": -18, "stronger": -2},
+    "mix_gain_db": 0,
+    "seed": 0
   },
 
   "look": {
@@ -202,8 +232,8 @@
   "whisper": {
     "_izoh": "model: tayyor nom (tiny, base, small - standart, medium), Hugging Face manzili (muallif/model, faster-whisper formatida, masalan yuldashev222/whisper-small-uz-v1-ct2) yoki kompyuterdagi model papkasi. Kompyuterda yo'q model o'zi yuklanmaydi: hajmi ko'rsatiladi va ruxsat so'raladi (--allow-download). Modellarni solishtirish: scripts/compare_models.py. language: uz | ru | en | auto. compute_type: int8 (CPU). beam_size: 5. Bir martalik almashtirish: transcribe.py --model / --language / --compute-type / --beam-size.",
     "model": "small",
-    "compute_type": "int8",
-    "device": "cpu",
+    "compute_type": "auto",
+    "device": "auto",
     "cpu_threads": 4,
     "language": "uz",
     "beam_size": 5,

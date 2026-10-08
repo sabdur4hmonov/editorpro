@@ -118,7 +118,16 @@ item: `at`, `text`, `side` (left/right), `end`, `dy`, `size`, `stagger`. Matndag
 
 ## 7. Halol chegaralar
 
-- Kirish/chiqish harakatlari (qiyshiq kirish, surilib chiqish) aniq takrorlanmaydi: mavjud `pop`/`fade`/`blur`.
+- Sprint 1 `docs/MOTION.md`: umumiy duration/easing/stagger, 6 yangi word entrance, 4 urg'u,
+  matched exits va label/follow/b-roll harakatlari. Custom qiyshiq/3D harakat alohida grafika talab qiladi.
 - Narx sanab chiqmaydi (`stat` bor, lekin kursiv emas). Kamera harakati kadrning o'zida bo'lishi kerak.
 - Kadrdagi yozuvni agent ko'rib o'qiydi (OCR yo'q): aniq o'qilmasa `[?]`.
 - Musiqa va logotip faqat foydalanuvchi faylidan; ovozni agent eshitmaydi, tanlovni foydalanuvchi qiladi.
+
+## 8. Harakat va ovoz dalili
+
+Per-video `motion_override`ni yo'nalishga mosla, `motion_choice.json`ni saqla. Yorliq/narx/follow
+kirishida `review_tools.py filmstrip`, o'zgarishda bir xil vaqtli `ab`. Matn tasdig'idan keyin
+compose subtle/stronger mix va har biriga audio cue sheet + waveform beradi (`docs/MOTION.md`).
+Ikkalasini chatda tinglat; texnik o'lchov ritm/ovoz tasdig'i emas. Parallel umumiy tarix/learning
+yakunda yoziladi. Yangi laptop: `docs/NEW_LAPTOP.md`; GPU bu kompyuterda sinovdan o'tmagan.

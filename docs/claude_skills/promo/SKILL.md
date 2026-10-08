@@ -6,6 +6,12 @@ argument-hint: "<clip folder in input/ or clips.json> [brand]"
 
 # /promo — autonomous multi-clip promo
 
+Read `docs/MOTION.md`: shared motion, per-video `motion_override`, recorded choice, glyph
+warnings, timecoded filmstrips for labels/price/follow and aligned before/after sheets.
+After subtitle approval, show compose's subtle/stronger mixes and cue sheets/waveforms.
+The user judges sound and motion; do not claim technical meters prove taste. Parallel shared
+history/learning waits until idle. Migration: `docs/NEW_LAPTOP.md`; GPU paths are untested here.
+
 Arguments: `$ARGUMENTS` (clip folder or `clips.json`, optional existing brand).
 Talk to the user in **Uzbek**, short numbered steps. Read first, fully: `docs/PROMO.md`, then `AGENTS.md`,
 `docs/PLAYBOOK.md`, `docs/AGENT_MEMORY.md`. Never guess a field or flag: check `--help`, `scripts/assemble.py`,

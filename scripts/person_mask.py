@@ -47,10 +47,19 @@ def download() -> None:
 
 
 class PersonMask:
-    def __init__(self):
+    def __init__(self, mode='auto'):
         if not verify():
             raise C.MontajError("PPHumanSeg modeli yo'q yoki SHA256 mos emas. Avval foydalanuvchi roziligi bilan "
                                 "person_mask.py --download --allow-download. Model o'zi yuklanmaydi.")
+        self.ort_session=None
+        import hardware
+        providers=hardware.onnx_providers(mode)
+        if providers[0]=='CUDAExecutionProvider':
+            try:
+                import onnxruntime as ort
+                self.ort_session=ort.InferenceSession(str(MODEL),providers=providers)
+            except Exception as error:
+                C.warn(f'ONNX CUDA init failed; OpenCV CPU fallback: {error}')
         try:
             self.net = cv2.dnn.readNet(str(MODEL))
             self.net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
@@ -61,9 +70,16 @@ class PersonMask:
     def infer(self, rgb: np.ndarray) -> np.ndarray:
         # Upstream: RGB, 192x192, mean/std 0.5 after division by 255.
         image = cv2.resize(rgb, (192, 192)).astype(np.float32) / 127.5 - 1.0
-        self.net.setInput(cv2.dnn.blobFromImage(image))
+        blob=cv2.dnn.blobFromImage(image)
+        self.net.setInput(blob)
         try:
-            output = self.net.forward()
+            if self.ort_session is not None:
+                try: output=self.ort_session.run(None,{self.ort_session.get_inputs()[0].name:blob})[0]
+                except Exception as error:
+                    C.warn(f'ONNX CUDA inference failed; CPU fallback: {error}')
+                    self.ort_session=None
+                    output=self.net.forward()
+            else: output = self.net.forward()
         except cv2.error as error:
             raise C.MontajError(f"PPHumanSeg hisoblash xatosi: {error}") from error
         if output.shape != (1, 2, 192, 192):

@@ -252,6 +252,9 @@ def zoom_frame(frame: np.ndarray, z: float, cx: float, cy: float) -> np.ndarray:
 
 def gather_sfx(style: dict, elements: list, cues: list, words: list | None) -> list:
     """Ovoz effektlari ro'yxati: elements.json dagi "sfx" lar + (yoqilgan bo'lsa) avtomatik."""
+    if 'event_map' in style.get('sfx',{}):
+        import sound_design
+        return sound_design.gather(style,elements,cues,words,C.brand_dir(style))
     events = [{"at": float(el.get("at", el.get("start", 0))), "name": el.get("name", "pop"),
                **({"volume_db": float(el["volume_db"])} if "volume_db" in el else {})}
               for el in elements if el.get("type") == "sfx"]
@@ -374,6 +377,8 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     fps = float(style["video"]["fps"])
     work = C.job_dir(video) if not C.is_inside(video, C.TEMP_DIR) else video.parent
     brand_dir = C.brand_dir(style)
+    import motion_language as ML
+    style = ML.choose(style,work)
     ctx = E.Ctx(style, brand_dir)
 
     base_dur = meta["duration"]
@@ -392,9 +397,9 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     segmenter = None
     if any(el.get("behind_person") for el in elements):
         from person_mask import PersonMask
-        segmenter = PersonMask()
+        segmenter = PersonMask(style.get('hardware',{}).get('onnx','auto'))
 
-    face = F.detect(video, quiet=True) if style.get("zoom", {}).get("face_aware", True) else None
+    face = F.detect(video, quiet=True, style=style) if style.get("zoom", {}).get("face_aware", True) else None
     graph, fit = fit_graph(meta, style, face, brand_dir)
     ctx.anchor = face_in_output(meta, W, H, face, fit)
     plan = zoom_plan(style, cuts, base_dur)
@@ -469,10 +474,13 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         C.info("  1/3: ovoz yig'ilmoqda...")
         if music is None and style["audio"].get("music_file"):
             music = ctx.asset(style["audio"]["music_file"], "Musiqa fayli")
-        wav = audio_mix.build_audio(video, work / "final_audio.wav", style, total, music,
+        paired=bool(style.get('sfx',{}).get('mixes')) and style.get('sfx',{}).get('enabled')
+        audio_dir=work/'audio_mixes'/out_path.stem/style['sfx'].get('profile','subtle') if paired else work
+        wav = audio_mix.build_audio(video, audio_dir / "final_audio.wav", style, total, music,
                                     gather_sfx(style, elements, cues, words), brand_dir)
 
-        want_nvenc = bool(style["video"].get("use_nvenc", False)) if nvenc is None else nvenc
+        import hardware
+        want_nvenc = hardware.encoder(style,nvenc)
         if want_nvenc and not C.has_encoder("h264_nvenc"):
             C.warn("Bu FFmpeg da h264_nvenc yo'q. CPU (libx264) ishlatiladi.")
             want_nvenc = False
@@ -516,6 +524,8 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
                     try:
                         enc.stdin.write(cur.tobytes() if cur is not frame else buf)
                     except (BrokenPipeError, OSError):
+                        if want_nvenc:
+                            break  # enc.wait below reports failure and retries the whole job on CPU.
                         raise C.MontajError("Kodlovchi (ffmpeg) to'xtab qoldi:\n" + _tail(enc_log)) from None
                     if time.time() - shown > 5:
                         shown = time.time()
@@ -549,6 +559,11 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             out_meta["checks"].append(("Nutq ustunligi", "ok" if rep["margin_db"] >= rep["required_db"] - 0.5 else "ogoh",
                                        f"qo'shimchalar nutqdan {rep['margin_db']:g} dB past (talab {rep['required_db']:g} dB)"
                                        + (f", {rep['reduced_db']:g} dB pasaytirildi" if rep.get("reduced_db") else "")))
+        if paired:
+            import sound_design
+            out_meta['mixes']=sound_design.alternate_mixes(video,out_path,work,style,total,elements,cues,words,music,
+                                                          brand_dir,dict(rep))
+        out_meta['audio']=dict(rep)
         return out_meta
     finally:
         for layer in layers:
@@ -564,6 +579,8 @@ def print_report(meta: dict, style: dict) -> None:
             C.info(f"  [{'OK' if state == 'ok' else 'OGOH' if state == 'ogoh' else 'XATO'}] {name}: {detail}")
     for note in meta.get("notes") or []:
         C.warn(note)
+    for name,mix in (meta.get('mixes') or {}).items():
+        C.info(f"  Mix {name}: {mix['file']} | cue sheet: {mix['audio'].get('cue_sheet','no events')}")
 
 
 def main() -> int:

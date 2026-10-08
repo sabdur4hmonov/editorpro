@@ -30,7 +30,7 @@ DEFAULT_MODEL = "isnet-general-use"
 NON_COMMERCIAL = ("bria",)
 
 
-def session(model: str):
+def session(model: str, device: str = 'auto'):
     if any(model.startswith(bad) for bad in NON_COMMERCIAL):
         raise C.MontajError(f"{model}: litsenziyasi tijoratga ruxsat bermaydi (BRIA, CC BY-NC). "
                             f"{DEFAULT_MODEL} ishlating.")
@@ -38,7 +38,14 @@ def session(model: str):
         from rembg import new_session
     except ImportError as exc:
         raise C.MontajError("rembg o'rnatilmagan: .venv\\Scripts\\python.exe -m pip install \"rembg[cpu]\"") from exc
-    return new_session(model)
+    import hardware
+    providers=hardware.onnx_providers(device)
+    try:
+        return new_session(model,providers=providers)
+    except Exception as error:
+        if providers[0]=='CPUExecutionProvider': raise
+        C.warn(f'rembg CUDA init failed; CPU fallback: {error}')
+        return new_session(model,providers=['CPUExecutionProvider'])
 
 
 def clean_alpha(img: Image.Image, floor: int = 12, erode: int = 1) -> Image.Image:
@@ -71,7 +78,13 @@ def cut(src: Path, sess, out: Path | None = None, max_side: int = 1600, suffix: 
     img = Image.open(src).convert("RGB")
     if max(img.size) > max_side:
         img.thumbnail((max_side, max_side), Image.LANCZOS)
-    res = remove(img, session=sess, post_process_mask=True)
+    try:
+        res = remove(img, session=sess, post_process_mask=True)
+    except Exception as error:
+        if 'CUDAExecutionProvider' not in sess.inner_session.get_providers(): raise
+        C.warn(f'rembg CUDA inference failed; CPU fallback: {error}')
+        sess.inner_session.set_providers(['CPUExecutionProvider'])
+        res = remove(img, session=sess, post_process_mask=True)
     res = trim(clean_alpha(res))
     out = out or src.with_name(f"{src.stem}.{suffix}.png")
     res.save(out)
@@ -109,10 +122,11 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Rasmdan fonni olib tashlaydi (shaffof PNG).")
     ap.add_argument("images", nargs="+", help="Rasm fayllari (jpg/png)")
     ap.add_argument("--model", default=DEFAULT_MODEL, help=f"rembg modeli (standart {DEFAULT_MODEL})")
+    ap.add_argument('--device',choices=('auto','cpu','cuda'),default='auto',help='ONNX provider; unavailable CUDA falls back to CPU')
     ap.add_argument("--sheet", help="Tekshirish varag'i (jpg)")
     ap.add_argument("--suffix", default="cut", help="Natija nomi: <nom>.<suffix>.png (ikki modelni solishtirish uchun)")
     args = ap.parse_args()
-    sess = session(args.model)
+    sess = session(args.model,args.device)
     outs = []
     for name in args.images:
         src = C.need_file(name, "Rasm")

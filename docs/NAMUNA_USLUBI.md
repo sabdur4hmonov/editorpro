@@ -149,3 +149,22 @@ B-roll ichiga tushgan stiker-rasmlarni olib tashla. Bola klipida yuz markazda bo
   odam atrofidagi kontur (14) uchun alohida mijoz animatsiyasi/qo'lda grafika kerak.
 - **Kino lavhalari, musiqa, logotip**: faqat foydalanuvchi bergan fayldan.
 - **Ovoz**: agent eshitmaydi. Effekt va musiqa ikki variantda render qilinib, foydalanuvchi tanlaydi.
+
+## 8. Sprint 1 — umumiy motion va o'lchanadigan ovoz
+
+`docs/MOTION.md` — ikkala agent uchun retsept. Yangi `motion` bo'limi davomiylik, easing,
+stagger va enter/exit juftlarini caption/title/sticker/label/follow/b-rollga beradi; brend
+`style.motion`, video `motion_override` bilan boshqaradi. Olti yangi word entrance va to'rtta
+urg'u eski presetlarni to'ldiradi; `motion_choice.json` qayta renderda tanlovni saqlaydi.
+o‘/g‘/tutuq belgisi harf animatsiyasida ajralmaydi; glyph audit missing belgiga ogohlantiradi.
+
+Namuna kirish tezligini taxminiy "smooth" deb baholama: `review_tools.py filmstrip`da 12
+yaqin timecoded kadrni ko'r, o'zgarishda `ab` bir xil soniyalarda oldin/keyin ko'rsatsin.
+Caption o'qilishi, overshootning safe zone/yuzga kirishi, exitning keyingi cuega o'tishi tekshiriladi.
+Haqiqiy harakat didini foydalanuvchi draftda baholaydi.
+
+SFX eventdan 2–3 kadr oldin, takrorlanmagan variant va 10s zichlik limiti bilan keladi.
+Compose subtle/stronger audio va cue sheet + markerli waveform chiqaradi; nutq margin qoidasi
+saqlanadi. Ikkalasini chatda tinglat, javobni video HOLAT.mdga yoz. Pixar/kinodan ovoz ko'chirma;
+faqat mahalliy litsenziyali SFX. Hozir kutubxona sintez, haqiqiy yozuvlar hali kerak.
+Parallel umumiy motion tarixi/learningni bitta idle agent yakunda yozadi.

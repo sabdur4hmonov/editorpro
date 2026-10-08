@@ -5,6 +5,13 @@ description: Edit a video so it looks like the reference reels in samples/ (the 
 
 # /namuna — edit in the sample style
 
+Read `docs/MOTION.md`: shared durations/easing, per-video `motion_override`, six new word
+entrances, emphasis/paired exits, persisted `motion_choice.json`, Uzbek glyph warnings.
+Use timecoded `review_tools.py filmstrip` for motion and aligned `ab` for before/after.
+After text approval, show compose's subtle/stronger mixes with cue sheets/waveforms; let the
+user judge motion and sound. Keep parallel history/learning in your own job until idle.
+Migration and untested GPU paths: `docs/NEW_LAPTOP.md`; no unapproved installs/downloads.
+
 Arguments: `<arguments supplied in the user prompt>` (video path, optional brand, optional script file).
 Talk to the user in **Uzbek**, short numbered steps. The user is a beginner programmer and a
 professional video editor; the reference for "good" is the 14 reels in `samples/`.
@@ -56,8 +63,8 @@ Never write into `input/` or `samples/`.
    (`scripts/frames.py "samples/sample 7.mp4" --n 8` etc.): size, weight, position, yellow amount.
    Fix and repeat until it matches. Nothing may leave the safe frame.
 7. **Approval, then render.** Show the user the caption text and the stills. Only after a clear
-   yes: `--approve-subs`. For sound choices render two variants (`--elements` with and without
-   `sfx`, `-o` different names) and let the user listen: you cannot hear.
+   yes: `--approve-subs`. Show compose's subtle/stronger variants and cue sheets per
+   `docs/MOTION.md`; the user listens and chooses, you cannot hear.
 8. **After the render.** `scripts/frames.py output/<file>.mp4 --n 8`, check the report lines
    (`Tekshiruv`, `Platforma`, `Nutq ustunligi`). Report in Uzbek: file, what was done, what is
    still different from the samples, questions.
@@ -117,8 +124,8 @@ caption block, never over face, text or hands. Full-frame stock b-roll only when
   Handnotes use a handwriting font, arrows draw along a path. 3D type and custom illustrated scenes
   still need separate graphics (see `docs/NAMUNA_USLUBI.md` §7).
 - Movie clips, music and logos come only from files the user gives.
-- You judge frames, not motion or sound. For motion, take three close frames:
-  `scripts/frames.py <video> --at 2.00,2.08,2.20`.
+- You judge frames, not motion or sound. For motion use timecoded `review_tools.py filmstrip`;
+  `frames.py --at` still works for quick stills. User draft review is separate.
 
 ## Parallel work and handoff
 

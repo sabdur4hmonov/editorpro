@@ -5,6 +5,13 @@ description: Edit a raw talking-head video into a finished vertical Reel for a b
 
 # /montaj — full edit of one video
 
+Read `docs/MOTION.md` for shared motion settings, per-video `motion_override`, persisted
+`motion_choice.json`, Uzbek glyph warnings, timecoded filmstrips and aligned A/B sheets.
+After subtitle approval, show compose's subtle/stronger mixes with each cue sheet/waveform;
+the user judges motion and sound, technical meters are not listening approval. During parallel
+editing keep choices/learning in your own job; shared history is deferred until idle.
+New machine migration and untested GPU paths: `docs/NEW_LAPTOP.md`. No unapproved installs/downloads.
+
 Arguments: `<arguments supplied in the user prompt>` (video path, optional brand name, optional script file).
 
 You are the editor. The user (a beginner programmer, professional video editor) gives a raw video and a

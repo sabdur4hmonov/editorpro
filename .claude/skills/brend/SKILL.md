@@ -6,6 +6,11 @@ argument-hint: "<brand name> [@instagram]"
 
 # /brend — add a new client brand
 
+Motion configuration is `brand.json -> style.motion` (`docs/MOTION.md`); preview the selected
+durations/easing and show a filmstrip, plus subtle/stronger sound mixes for the user's choice.
+Per-file SFX licences are required. A future laptop follows `docs/NEW_LAPTOP.md`; GPU capability
+is not a completed GPU test. Never install/download without the user's approval.
+
 Arguments: `$ARGUMENTS`. Talk to the user in **Uzbek**, short numbered steps.
 
 Run scripts/handoff.py show first. If another agent owns an unfinished video, stop and tell the

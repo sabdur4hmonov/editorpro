@@ -146,7 +146,8 @@ def render(video: Path, out_path: Path, style: dict, subs_ass: Path | None = Non
 
     graph = video_chain(meta, style, subs_ass) + ";" + audio_chain(
         meta["has_audio"], music_idx, style, duration, loudnorm)
-    want_nvenc = bool(style["video"].get("use_nvenc", False)) if nvenc is None else nvenc
+    import hardware
+    want_nvenc = hardware.encoder(style,nvenc)
     if want_nvenc and not C.has_encoder("h264_nvenc"):
         C.warn("Bu FFmpeg da h264_nvenc yo'q. CPU (libx264) ishlatiladi.")
         want_nvenc = False

@@ -199,14 +199,8 @@ def memory_advice(model_bytes: int | None) -> str:
 def load_model(wcfg: dict, allow_download: bool | None = None):
     """faster-whisper modelini yuklaydi. Model keshda bo'lmasa ruxsatsiz internetdan yuklamaydi."""
     WhisperModel = _fw_import()
-    device = str(wcfg.get("device", "cpu")).lower()
-    compute = str(wcfg.get("compute_type", "int8"))
-    if device == "auto":
-        try:
-            import ctranslate2
-            device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
-        except Exception:
-            device = "cpu"
+    import hardware
+    device,compute=hardware.whisper_device(wcfg)
     kwargs = {"device": device, "compute_type": compute}
     if device == "cpu":
         kwargs["cpu_threads"] = int(wcfg.get("cpu_threads", 4))
@@ -231,6 +225,12 @@ def load_model(wcfg: dict, allow_download: bool | None = None):
         # keshdagi papka yo'li beriladi: internetga umuman chiqilmaydi
         return WhisperModel(st["path"], **kwargs)
     except Exception as exc:  # xotira yetmadi, GPU kutubxonasi yo'q, model buzuq va h.k.
+        if device=='cuda':
+            C.warn(f'Whisper CUDA unavailable; CPU/int8 fallback: {exc}')
+            try:
+                return WhisperModel(st['path'],device='cpu',compute_type='int8',cpu_threads=int(wcfg.get('cpu_threads',4)))
+            except Exception as cpu_error:
+                exc=cpu_error
         text = str(exc).lower()
         if isinstance(exc, MemoryError) or "alloc" in text or "memory" in text:
             now = C.memory_status()
@@ -377,6 +377,12 @@ def transcribe_audio(wav: Path, wcfg: dict, model=None) -> dict:
         if wcfg.get("merge_split_words", True):
             words = merge_split_words(words)
     except Exception as exc:
+        device=getattr(getattr(model,'model',None),'device','cpu')
+        if device=='cuda':
+            C.warn(f'Whisper CUDA inference failed; retry on CPU/int8: {exc}')
+            cpu_cfg=dict(wcfg,device='cpu',compute_type='int8')
+            cpu_model=load_model(cpu_cfg,allow_download=False)
+            return transcribe_audio(wav,cpu_cfg,model=cpu_model)
         raise C.MontajError(f"Whisper transkripsiya paytida xato berdi: {exc}") from exc
     return {
         "language": tinfo.language,
