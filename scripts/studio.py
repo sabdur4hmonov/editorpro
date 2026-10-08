@@ -364,7 +364,7 @@ def cover(args) -> int:
     line_h = size * 1.2
     top = bottom - len(lines) * line_h
     for i, line in enumerate(lines):
-        draw.text((cx, top + i * line_h), line, anchor="mt", font=font, fill=cfg["color"],
+        M.draw_text(draw,(cx, top + i * line_h), line, anchor="mt", font=font, fill=cfg["color"],
                   stroke_width=max(1, int(H/640)), stroke_fill="#101014")
     draw.rounded_rectangle((cx-available/2, top-size*.45, cx-available/2+available*.3, top-size*.38),
                            radius=max(1, size*.03), fill=cfg["accent"])

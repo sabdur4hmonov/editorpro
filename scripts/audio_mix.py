@@ -152,6 +152,14 @@ def build_audio(video: Path, out_wav: Path, style: dict, total: float, music: Pa
         if measured:
             C.info(f"       ovoz: {measured['input_i']} LUFS -> {a.get('loudnorm_i', -14)} LUFS")
         LAST_REPORT = {"additions": False}
+        if a.get('export_stems',False):
+            import shutil
+            stems=work/'stems'; stems.mkdir(exist_ok=True)
+            shutil.copy2(out_wav,stems/'speech.wav')
+            for name in ('sfx','music'):
+                C.run([C.need_tool('ffmpeg'),'-hide_banner','-nostdin','-v','error','-y',
+                       '-f','lavfi','-i',f'anullsrc=r={sr}:cl=stereo','-t',str(total),
+                       '-c:a','pcm_f32le',str(stems/(name+'.wav'))])
         if scfg.get('cue_sheet',False):
             import review_tools
             report={'events':[],'mix':review_tools.metrics(out_wav,work),'note':'Speech only, no SFX/music events.'}
@@ -226,7 +234,7 @@ def build_audio(video: Path, out_wav: Path, style: dict, total: float, music: Pa
     final_margin = None if margin is None else round(margin + reduce_db, 1)
     LAST_REPORT = {"additions": True, "music": music is not None, "sfx": len(events), "required_db": required,
                    "margin_db": final_margin, "reduced_db": round(reduce_db, 1)}
-    if scfg.get('cue_sheet',False):
+    if scfg.get('cue_sheet',False) or a.get('export_stems',False):
         import review_tools
         report=review_tools.audio_report(v_wav,a_wav,out_wav,style,events,music,reduce_db,duck_sfx,duck_music,sfx)
         report['design_events']=sfx or []

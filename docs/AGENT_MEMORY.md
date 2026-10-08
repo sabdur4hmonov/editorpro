@@ -237,3 +237,49 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
   no-PNG ichki sabab topildi deb aytilmaydi. Failure hamon aniq xato, checklar susaymadi.
 - Dalil: test_part0 5/5, test_motion 15/15, haqiqiy agent setup/HTML 13/13, selftest
   --no-whisper 45/45. Keyingi agent real fayllarning sahifasini taxmin qilmasin.
+
+
+## 2026-10-09 — Codex: Sprint 2, measured dynamics and native editor package
+
+- Part 0 separate commit 7241191, user chose exactly "Stronger — kuchliroq".
+  Source/licence reply "yoq"; disk still has 22 synthesized / 0 real SFX, no invented licence.
+- B-roll ranks concrete/action/place/number/abstract and long static spans across short captions.
+  Mixed video/photo search + existing credited cutouts + optional assets/library. This machine has
+  no assets/library directory. Candidate checks measure 9:16 retained area/native pixels/duration,
+  sampled Lab/HSV, text-like Canny contours/corner density. They do NOT identify watermarks/logos.
+  Transparent preview background excluded from colour measurement. Short video's final seek is
+  kept two frame periods before duration; a real regression test revealed that late seek failure.
+- Exact semantics/age/action require visual review. Bad diving helmet, alcohol and generic/ordinary
+  bed search results excluded. Oversize 30MB limit and HTTP429 reported, never relabelled usable.
+  3-column sheets for oxygen/urine/bed shown together; some columns are the same photo's cutouts.
+  User selection is STILL PENDING: no new candidate burned in, no accepted history fabricated.
+  broll_history stores actual accepted/rejected reasons; latest asset decision wins, old votes cannot
+  outvote a new rejection. Shared sync refuses unfinished videos; per-job history survives.
+- Energy: measured word starts/sec, mono RMS dBFS, interval-union pause; structure is explicitly a
+  keyword/number heuristic with manual overrides. Style drives zoom/visual punches, caption amplitude,
+  automatic element interval, SFX density/gain, continuous backdrop clock. Explicit elements retained;
+  original speech cuts/text/word timing unchanged. Longer excerpt starts at 14s, not a fresh hook.
+  NumPy spectral-flux onset candidates need no install; not a guaranteed BPM grid.
+- Native FCP7 xmeml v5 source cuts/main timeline, editable SRT, per-graphic ProRes 4444 straight alpha,
+  post-ducking/pre-limiter speech/SFX/music stems. Base grade/zoom/context effects rasterized; word
+  animation is not transferred to editable captions. Stereo stems become six audio channel tracks.
+  Actual doktor_1 source is 25fps, sequence 30fps; FFmpeg fps round=near CFR prefix copy in temp,
+  original untouched, source seconds + frame-grid rounding documented. No embedded TC => file relative.
+  Both native cuts.json dict ranges and pair shorthand tested; unsupported drop-frame/speed rejected.
+- Real 12s export passed parsing: 2 XML, 7 captions, 1 alpha graphic, 3 stems; actual alpha encode/decode
+  and corrupted-XML detection tests. GUI imports into Resolve/Premiere UNVERIFIED. Official docs and
+  SRT/menu uncertainties in docs/EXPORT.md. No new install or GPU execution.
+- Studio uncovered direct Pillow use of Font wrapper in cover; fixed via fallback draw with mt anchor,
+  test covers missing Caveat glyph and positioning. Checks were not weakened.
+- Evidence temp/sprint2: 12s full 1080x1920/30fps + draft and 24s draft, paired mixes, A/B, 12-frame
+  filmstrips, energy plots and audio cue sheets. These demonstrate dynamics with OLD approved elements;
+  new B-roll waits for selection. Stronger bus margin 14.90dB short / 12.58dB long (rule 10dB).
+  Full render checks OK; excerpt preflight notes missing CTA/static span, preserved intentionally.
+  Motion/audio taste approval PENDING. Original job SHA256 manifest unchanged.
+- Required tests: takes 17/17, studio 17/17 (draft benchmark 3.44x), agent setup 13/13,
+  motion 15/15, part0 5/5, sprint2 21/21, isolated selftest --no-whisper 45/45.
+  Selftest must run ALONE through completion, not just start while idle: spawning a job mid-test
+  made its busy-lock check fail; final isolated rerun passed. Keep that guard/check intact.
+- Source skills updated then sync_skills --apply / --check for Claude and Codex.
+  Next: user chooses recommended oxygen1/urine3/bed1, auto or none; record verbatim, accept then
+  sprint2_demo.py after / reports. Do not fabricate a selection or claim the whole sprint is approved.

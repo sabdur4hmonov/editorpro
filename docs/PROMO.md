@@ -131,3 +131,13 @@ kirishida `review_tools.py filmstrip`, o'zgarishda bir xil vaqtli `ab`. Matn tas
 compose subtle/stronger mix va har biriga audio cue sheet + waveform beradi (`docs/MOTION.md`).
 Ikkalasini chatda tinglat; texnik o'lchov ritm/ovoz tasdig'i emas. Parallel umumiy tarix/learning
 yakunda yoziladi. Yangi laptop: `docs/NEW_LAPTOP.md`; GPU bu kompyuterda sinovdan o'tmagan.
+
+## 9. Nutq energiyasi, tanlov va qo'lda yakunlash
+
+`docs/BROLL_DYNAMICS.md`: dynamics style diapazonlari nutq energiyasiga qarab zoom/caption/SFX
+va automatic element tezligini moslaydi. Mahsulot, narx va CTA faqat mavjud nutq/kadrdan;
+heuristic label yangi fakt o'ylab topishga ruxsat emas. Qo'lda tanlangan element saqlanadi.
+B-roll: 3 ustunli tanlov varaqlarini bitta xabarda, rangli/aniq mos/2.5–4s/pastki gradient.
+Accepted/rejected sababini o'z tarixiga yoz; shared history faqat boshqa agent idle paytda.
+Energy curve va filmstrip/A/Bni ko'rsat. `docs/EXPORT.md` orqali XML/SRT/alpha/stem paketi;
+word animation transferi va GUI importi haqidagi cheklovni mijozga ayt.

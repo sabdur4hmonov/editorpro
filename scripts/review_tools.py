@@ -4,6 +4,7 @@ import argparse
 import math
 import tempfile
 import wave
+import shutil
 from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -99,6 +100,8 @@ def audio_report(voice, additions, final, style, events, music, reduction, duck_
     if music:
         specs.append(dict(at=0,file=str(music),volume_db=float(style['audio'].get('music_volume_db',-20)),kind='music'))
     total=len(v)/sr
+    keep=bool(style['audio'].get('export_stems',False))
+    buses={name:np.zeros_like(v) for name in ('sfx','music')} if keep else {}
     with tempfile.TemporaryDirectory(dir=work,prefix='cue_') as td:
         for i,e in enumerate(specs):
             stem=Path(td)/f'{i}.wav'
@@ -119,6 +122,9 @@ def audio_report(voice, additions, final, style, events, music, reduction, duck_
             chain+=f";[{'duck' if duck else 'raw'}]volume={-reduction}dB[out]"
             C.run_ffmpeg_graph(inputs,chain,['-map','[out]','-t',str(total),'-c:a','pcm_s16le','-ar',str(sr),str(stem)],work)
             info=metrics(stem,work); a,_=pcm(stem)
+            if keep:
+                bus='sfx' if e.get('bus')=='sfx' else 'music'
+                n=min(len(a),len(v)); buses[bus][:n]+=a[:n]
             active=np.max(np.abs(a),axis=1)>10**(-70/20)
             speech=np.sqrt(np.mean(v*v,axis=1))>10**(-45/20)
             n=min(len(active),len(speech)); active=active[:n]; speech=speech[:n]
@@ -130,6 +136,15 @@ def audio_report(voice, additions, final, style, events, music, reduction, duck_
                 margin=round(20*math.log10(max(vr,1e-12)/max(ar,1e-12)),2)
             rows.append(dict(e,**info,speech_margin_rms_db=margin,global_reduction_db=reduction,
                              measurement='rendered isolated stem, sidechain applied, before final limiter'))
+    if keep:
+        import subprocess
+        stems=work/'stems'; stems.mkdir(exist_ok=True)
+        shutil.copy2(voice,stems/'speech.wav')
+        for name,data in buses.items():
+            proc=subprocess.run([C.need_tool('ffmpeg'),'-hide_banner','-nostdin','-v','error','-y',
+                 '-f','f32le','-ar',str(sr),'-ac','2','-i','-','-c:a','pcm_f32le',str(stems/(name+'.wav'))],
+                 input=data.astype('<f4').tobytes(),capture_output=True)
+            if proc.returncode: raise C.MontajError('Audio stem encode: '+proc.stderr.decode('utf-8','replace')[-400:])
     report={'events':rows,'voice':metrics(voice,work),'mix':metrics(final,work),
             'required_voice_margin_db':style['audio'].get('voice_margin_db',10),
             'bus_margin_percentile_db':__import__('audio_mix').voice_margin(voice,additions),

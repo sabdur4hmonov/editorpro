@@ -65,19 +65,24 @@ def gather(style,elements,cues,words,brand_dir=None):
     def event_rank(event):
         return (priority.index(event[1]) if event[1] in priority else len(priority), event[0])
     for visual,kind in sorted(events,key=event_rank):
+        import energy_curve
         category=event_map.get(kind)
         if not category: continue
         at=max(0,visual-lead/fps)
         if any(abs(at-e['at'])<gap for e in out): continue
         times=[e['at'] for e in out]+[at]
         if any(sum(t-10<x<=t for x in times)>density for t in times): continue
+        if style.get('_energy'):
+            local_limit=min(density,max(1,round(energy_curve.value(style,visual,'sfx_per_10s'))))
+            if sum(abs(e['at']-at)<5 for e in out)>=local_limit: continue
         candidates=variants(category,brand_dir)
         if not candidates:
             C.warn(f'SFX category missing: {category}; event {kind} skipped.'); continue
         choices=[p for p in candidates if str(p)!=last.get(category)] or candidates
         path=rng.choice(choices); last[category]=str(path)
         out.append({'at':at,'visual_at':visual,'lead_frames_actual':round((visual-at)*fps,3),'kind':kind,
-                    'category':category,'name':str(path),'volume_db':float(cfg.get('volume_db',-14))+offset})
+                    'category':category,'name':str(path),'volume_db':float(cfg.get('volume_db',-14))+offset+
+                    energy_curve.value(style,visual,'sfx_gain_db')})
     return sorted(out,key=lambda e:e['at'])
 
 def alternate_mixes(video,rendered,work,style,total,elements,cues,words,music,brand_dir,primary_report):

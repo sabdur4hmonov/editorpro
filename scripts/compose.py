@@ -387,6 +387,10 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     cues = C.parse_srt(srt) if srt else []
     elements = read_elements(elements_file)
 
+    import energy_curve
+    style, elements = energy_curve.prepare(video, words, cues, elements, style, work)
+    ctx.style = style
+
     import studio
     precheck = studio.preflight(style, cues, elements, base_dur, validate_layers=False)
     C.write_json(precheck, work / "preflight.json")

@@ -168,3 +168,13 @@ Compose subtle/stronger audio va cue sheet + markerli waveform chiqaradi; nutq m
 saqlanadi. Ikkalasini chatda tinglat, javobni video HOLAT.mdga yoz. Pixar/kinodan ovoz ko'chirma;
 faqat mahalliy litsenziyali SFX. Hozir kutubxona sintez, haqiqiy yozuvlar hali kerak.
 Parallel umumiy motion tarixi/learningni bitta idle agent yakunda yozadi.
+
+Sprint 2: `docs/BROLL_DYNAMICS.md` bo'yicha b-roll nomzodlari va nutq energiyasi.
+Har momentga 3 ustunli sheet; hammasini bitta xabarda ko'rsat, user raqam/auto tanlasin.
+Exact match, rang, 2.5–4s, pastki gradient; kuchsiz nomzoddan ko'ra hech narsa yaxshi.
+Bir suratning cutout nusxalari alohida source emasligini ayt. Auto oldidan agent ko'rish tekshiruvi,
+matn va tanlov tasdiqlari o'z HOLAT.mdda. Rejected sababini broll_history saqlaydi, parallel sync yo'q.
+`dynamics` sokin joyni sokin, peakni kuchli qiladi; nutqni qayta kesmaydi. Energy image, filmstrip,
+A/B va ikkala audio mixni chatda ko'rsat. Stronger umumiy default, har yangi videoda tinglash alohida.
+Glyph yetishmasa `font_fallback.py` o'sha belgini mavjud shriftga almashtiradi; so'z va apostrof ajralmaydi.
+Qo'lda davom ettirish uchun editor eksporti: `docs/EXPORT.md`, GUI tasdiqlanmagan chegaralarni ayt.

@@ -567,9 +567,12 @@ class RichBlock:
         anim = max(0.001, float(cfg.get("anim_ms", 220)) / 1000.0)
         reveal = str(cfg.get("reveal", "word"))
         blur_px = float(cfg.get("blur_px", 14)) * k
+        import energy_curve
+        intensity=energy_curve.value(self.ctx.style,start,'caption_intensity')
+        blur_px *= intensity
         # ---- butun blok: kirish masshtabi, sekin o'sish, chiqish
         life = max(0.2, end - start)
-        intro_from = float(cfg.get("intro_scale", 1.0))
+        intro_from = 1-(1-float(cfg.get("intro_scale", 1.0)))*intensity
         scale = intro_from + (1 - intro_from) * M.ease_out((t - start) / max(0.001, float(cfg.get("intro_ms", 450)) / 1000.0))
         scale *= 1.0 + float(cfg.get("drift", 0.0)) * M.clamp01((t - start) / life)
         exit_mode, exit_dur = str(cfg.get("exit", "fade")), max(0.001, float(cfg.get("exit_ms", 100)) / 1000.0)
@@ -600,7 +603,7 @@ class RichBlock:
         # ---- so'zlar orasi boshida keng, keyin zichlashadi (qator markaziga nisbatan)
         track_in = float(cfg.get("track_in", 0.0))
         spread = track_in * (1 - M.ease_out((t - start) / max(0.001, float(cfg.get("track_ms", 1100)) / 1000.0))) if track_in else 0.0
-        slide_in = float(cfg.get("slide_in", 0.0))
+        slide_in = float(cfg.get("slide_in", 0.0))*intensity
         slide_dur = max(0.001, float(cfg.get("slide_ms", 900)) / 1000.0)
         half_w, half_h = self.width / 2, self.height / 2
 
@@ -620,7 +623,7 @@ class RichBlock:
                 pix[:int(spr.h * M.clamp01(q))] = 0
                 spr = M.Sprite(pix, spr.ox, spr.oy)
             if mc and cfg.get('emphasis') == 'scale_punch' and punch_word:
-                extra *= 1 + .07 * math.sin(M.clamp01((t-punch_start)/ML.duration(mc,'punch'))*math.pi)
+                extra *= 1 + .07 * intensity * math.sin(M.clamp01((t-punch_start)/ML.duration(mc,'punch'))*math.pi)
             M.blit(frame, spr, fx - ax, fy - ay, opacity=opacity * out, scale=scale * extra,
                    blur=blur + out_blur, anchor=(ax, ay))
 
@@ -709,9 +712,9 @@ class RichBlock:
                         put(lspr, w["x"] + sx + lx + (j - (n - 1) / 2) * wide * tighten, w["y"],
                             opacity=base_op * le, blur=(1 - le) * blur_px * 0.6)
                     else:
-                        dy = (1 - le) * w["size"] * 0.28 * (-1 if from_above else 1)
+                        dy = (1 - le) * w["size"] * 0.28 * intensity * (-1 if from_above else 1)
                         spring=M.spring(lp,float(mc['spring']['omega']),float(mc['spring']['zeta'])) if mc else M.spring(lp)
-                        put(lspr, w["x"] + sx + lx, w["y"], lw / 2, -w["size"] * 0.30, 0.35 + 0.65 * spring,
+                        put(lspr, w["x"] + sx + lx, w["y"], lw / 2, -w["size"] * 0.30, 1-.65*intensity*(1-spring),
                             base_op * M.clamp01(lp * 3.0), dy=dy * scale)
                 continue
             if mode == "none" or p >= 1:
@@ -721,14 +724,14 @@ class RichBlock:
                 mb = float(mc['blur']['max_px'])*k*(1-M.clamp01(p)) if mc and mc['blur']['enabled'] else 0
                 if mode=='spring_pop':
                     spring=M.spring(p,float(mc['spring']['omega']),float(mc['spring']['zeta'])) if mc else M.spring(p)
-                    put(spr,w['x']+sx,w['y'],w['w']/2,-w['size']*.35,.72+.28*spring,opacity,blur=mb)
+                    put(spr,w['x']+sx,w['y'],w['w']/2,-w['size']*.35,1-.28*intensity*(1-spring),opacity,blur=mb)
                 elif mode=='slide_overshoot':
-                    put(spr,w['x']+sx,w['y'],opacity=opacity,dx=(1-M.ease_back(p,mc['overshoot'] if mc else 1.1))*w['size']*.45,blur=mb)
+                    put(spr,w['x']+sx,w['y'],opacity=opacity,dx=(1-M.ease_back(p,mc['overshoot'] if mc else 1.1))*w['size']*.45*intensity,blur=mb)
                 elif mode=='scale_blur':
-                    put(spr,w['x']+sx,w['y'],w['w']/2,-w['size']*.35,.85+.15*e,opacity,blur=(1-M.clamp01(e))*blur_px)
+                    put(spr,w['x']+sx,w['y'],w['w']/2,-w['size']*.35,1-.15*intensity*(1-e),opacity,blur=(1-M.clamp01(e))*blur_px)
                 elif mode=='mask_up':
                     part=spr.pix.copy(); part[:max(0,int(spr.h*(1-M.clamp01(e))))]=0
-                    put(M.Sprite(part,spr.ox,spr.oy),w['x']+sx,w['y'],opacity=base_op,dy=(1-e)*8*k)
+                    put(M.Sprite(part,spr.ox,spr.oy),w['x']+sx,w['y'],opacity=base_op,dy=(1-e)*8*k*intensity)
                 else: # emoji inside typewriter/cascade: whole sprite, no broken glyph
                     put(spr,w['x']+sx,w['y'],opacity=opacity)
             elif mode == "pop":
@@ -809,7 +812,9 @@ class Layer:
         tin=min(ML.duration(mc,key),max(.001,(end-start)*.4))
         tout=min(ML.duration(mc,'exit'),max(.001,(end-start)*.3))
         p=(t-start)/tin; out=1-M.clamp01(ML.curve((t-(end-tout))/tout,mc,'exit'))
-        return M.clamp01(p*3)*out,(.8+.2*ML.curve(p,mc))*(.94+.06*out)
+        import energy_curve
+        intensity=energy_curve.value(self.ctx.style,start,'caption_intensity')
+        return M.clamp01(p*3)*out,(1-.2*intensity*(1-ML.curve(p,mc)))*(1-.06*intensity*(1-out))
 
     def draw(self, frame, t: float) -> None:
         raise NotImplementedError
@@ -1077,6 +1082,7 @@ class BrollLayer(Layer):
         # grade elementi (z=0) b-roll'dan oldin chiziladi, shuning uchun bu sozlamalar shu yerda.
         self.bw = bool(el.get("bw", False))
         self.dim = M.clamp01(float(el.get("dim", 0.0)))
+        self.lower_gradient = dict(el.get('lower_gradient',{}))
         self.path = ctx.asset(el.get("file", ""), "B-roll fayli")
         self.rw, self.rh = ctx.W, ctx.H if self.mode == "full" else ctx.H // 2
         self.is_image = self.path.suffix.lower() in IMAGE_EXTS
@@ -1126,6 +1132,11 @@ class BrollLayer(Layer):
             content = cv2.merge([gray, gray, gray])
         if self.dim > 0:
             content = cv2.convertScaleAbs(np.ascontiguousarray(content), alpha=1.0 - self.dim)
+        if self.lower_gradient:
+            top=M.clamp01(float(self.lower_gradient.get('from',.52)))
+            amount=M.clamp01(float(self.lower_gradient.get('amount',.5)))
+            ramp=np.clip((np.linspace(0,1,content.shape[0])-top)/max(.001,1-top),0,1)
+            content=(content.astype(np.float32)*(1-ramp[:,None,None]*amount)).astype(np.uint8)
         if self.mode == "split":
             # gapiruvchi tepaga: yuz atrofidan W x H/2 bo'lak kesib olinadi
             half = H // 2
@@ -1835,6 +1846,7 @@ class Backdrop:
 
     def __init__(self, ctx: Ctx, cfg: dict):
         W, H = ctx.W, ctx.H
+        self.ctx = ctx
         self.W, self.H, self.k = W, H, ctx.k
         accent = M.rgb(cfg.get("accent", ctx.caption_cfg()["accent"]))
         c1, c2 = M.rgb(cfg.get("color1", "#05050A")), M.rgb(cfg.get("color2", "#120C22"))
@@ -1904,6 +1916,8 @@ class Backdrop:
 
     def draw(self, frame, t: float, boost: float = 0.0) -> None:
         """boost 0..1: chaqnash (zarba paytida projektorlar va yorug'lik bir zum kuchayadi)."""
+        import energy_curve
+        t=energy_curve.clock(self.ctx.style,t)
         low = self.base.copy()
         gain = 1.0 + 0.9 * boost
         for col, cx, cy, ax, ay, period, ph, width, amp in self.glows:

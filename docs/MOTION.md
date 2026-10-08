@@ -122,3 +122,18 @@ va audio yoqqani faqat foydalanuvchi tomonidan baholanadi.
 # Faqat taqqoslash varaqlarini qayta olish:
 .venv\Scripts\python.exe scripts\sprint1_demo.py --reports-only
 ```
+
+## Sprint 2: nutqqa bog'liq dinamika va editor paketi
+
+`docs/BROLL_DYNAMICS.md`: per-second WPS/RMS/pause va matn tuzilishi taxmini;
+`dynamics` diapazonlari zoom, visual-cut, automatic element zichligi, caption move/scale/blur,
+SFX density/gain va background clockni boshqaradi. Explicit user elementlar saqlanadi.
+Nutq kesishlari va subtitr vaqtlari o'zgarmaydi. `energy_curve.png` rejali voqealarni ko'rsatadi.
+
+`docs/EXPORT.md`: FCP7 XML, source timecode cut list, editable SRT, straight-alpha ProRes
+grafikalar va speech/sfx/music stemlar. GUI import sinovi hali o'tkazilmagan; format cheklovini o'qi.
+`sprint2_demo.py before`, keyin yozilgan B-roll tasdig'idan so'ng `after`, keyin `reports`:
+bir xil doktor_1 0..12s va 14..38s. 12s full va draft, 24s draft; paired mixlar va cue sheet.
+Original job SHA256 tekshiriladi. Motion/audio didini test yoki agent tasdiqlamaydi.
+Tanlov kutilayotganda `after-existing` faqat avvalgi tasdiqlangan elementlar bilan energiya
+farqini ko'rsatadi; yangi B-roll qo'shilmaydi va bu cheklov review/HOLAT'da yoziladi.

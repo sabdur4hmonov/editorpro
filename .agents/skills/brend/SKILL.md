@@ -37,3 +37,23 @@ Project HOLAT.md remains project-wide. See docs/PARALLEL.md.
 6. Prove it on a real frame: run `/montaj`-style `--stills` on any video with `--brand <name>`,
    show the image, adjust until the user agrees.
 7. `git commit` the new brand folder.
+
+## Sprint 2 shared tools
+
+Read `docs/BROLL_DYNAMICS.md` and `docs/EXPORT.md` before using these tools.
+Rank visual moments from the transcript; measure crop/resolution/duration/colour and
+text-like contours, then visually check exact object/action/age. Proxy checks do not
+prove watermark/logo absence. Show all 3-column moment contact sheets in ONE approval
+message; user selects numbers/auto/none, recorded verbatim in the video's HOLAT.md.
+Prefer colour, a lower gradient, 2.5–4s and exact match; a weak clip is worse than none.
+Explain when columns are variants of the same source. Unchecked candidates never auto-render.
+Accepted/rejected with the user's reason go in per-video broll_history.json; publish to
+style/broll_history.json only after every other agent is idle. Not selected is not rejected.
+Dynamics uses measured WPS/RMS/word pauses and a labelled transcript-structure heuristic.
+Brand/per-video style keys control zoom, visual-cut/automatic-element/SFX density,
+caption intensity and background speed; preserve explicit user elements and speech timings.
+Show energy curve, timecoded filmstrips/A-B and BOTH audio mixes/cue sheets in this chat.
+Stronger is the general default, not approval of an unheard new mix.
+For hand finishing export native FCP7 XML, editable SRT, ProRes alpha graphics and three
+audio stems; parse back, disclose rasterised base motion and unverified GUI imports.
+Never infer paid-plugin/OTIO/FCPXML support. No new downloads or installs for beat detection.

@@ -542,6 +542,21 @@ ffprobe -v error -show_entries format=duration:stream=codec_type,width,height,r_
 
 ## Texnik eslatmalar
 
+- Sprint 2: `docs/BROLL_DYNAMICS.md` va `docs/EXPORT.md`ni o'qi. B-roll momentlari matndan
+  leksik rank qilinadi, semantic moslik agent tomonidan kadrdan tekshiriladi. Har momentga
+  3 ustun, hamma sheet bir tasdiq xabarida; user raqam/auto/none. Crop/colour/text proxy
+  logo yoki watermark yo'qligini isbotlamaydi. Kuchsiz yoki unchecked candidate ishlatilmaydi.
+- B-roll accepted/rejected aynan sabab bilan per-video `broll_history.json`; umumiy
+  `style/broll_history.json`ga `sync-history` faqat barcha agent idle bo'lgach. Tanlanmagan rejected emas.
+- `dynamics` WPS/RMS/word pause va structure heuristicdan boshqariladi; labelni tekshir/override qil.
+  Caption intensity, zoom/visual-cut, automatic element/SFX density, background speed style keylarida.
+  Matn/so'z vaqti va speech cut o'zgarmaydi; explicit element o'chirilmaydi. Energy/filmstrip/A/B
+  va paired audio cue sheets chatda. Stronger default — bu yangi video ovozi tasdiqlandi degani emas.
+- Editor eksportida XML/SRT/MOV/stem qayta parse qilinadi; GUI import alohida, tekshirilmagan deb ayt.
+  FCP7 XML, integer NDF sequence fps, speed=1; source FPS farqida CFR working copy,
+  original seconds + frame grid yaxlitlash manifestda. Drop-frame/retime aniq xato.
+  Base motion/context raster, original source cut timeline va editable caption alohida.
+
 - Muhit holati: `temp/setup_report.txt`. NVIDIA yo'q: hardware/whisper `auto` CPU/int8 tanlaydi;
   eski per-video cpu/int8 ham ishlaydi. Yangi laptop tartibi: `docs/NEW_LAPTOP.md`.
 - Motion render: ffmpeg kadrlarni ochadi → Python (Pillow + OpenCV) har kadrga zoom va qatlamlarni

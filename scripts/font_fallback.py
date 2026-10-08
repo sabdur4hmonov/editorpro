@@ -65,6 +65,11 @@ class Font:
         x, y = xy
         if anchor == 'la':
             y += self.primary.getmetrics()[0]
+        elif anchor == 'mt':
+            # Pillow's middle/top anchor: centre by advance and align the glyph ink top.
+            x -= self.getlength(text)/2
+            tops=[font.getbbox(run,anchor='ls')[1] for run,font in runs if run]
+            y -= min(tops,default=0)
         elif anchor != 'ls':
             raise C.MontajError(f'Fallback text anchor not supported: {anchor}')
         for run, font in runs:
