@@ -1,0 +1,246 @@
+{
+  "files": [
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "click",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\click\\synth_01.wav",
+      "sha256": "f54c84e6ab173485e8b85f79b5741b034f163c816a982b290103f83efc88d6f3",
+      "duration": 0.05
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "click",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\click\\synth_02.wav",
+      "sha256": "8539354d372984429a749fce6fbda6ace3c20049fd558eb1549f524efb5d93ee",
+      "duration": 0.045
+    },
+    {
+      "license_verified": true,
+      "source": "scripts/make_sfx.py original synthesis",
+      "license": "Project-original generated audio; no third-party recording",
+      "kind": "synthesized",
+      "usable": true,
+      "file": "assets\\sfx\\click.wav",
+      "category": "click",
+      "sha256": "f54c84e6ab173485e8b85f79b5741b034f163c816a982b290103f83efc88d6f3",
+      "duration": 0.05
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "ding",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\ding\\synth_01.wav",
+      "sha256": "ad84e661f51b4fce9ac9aaad49a4d162b6e3aff728f63d2b416f28258cbd26e8",
+      "duration": 0.9
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "ding",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\ding\\synth_02.wav",
+      "sha256": "9bd2d58a0dfb8d1acd7a56a978727cc83114c59579269d737bd592a9d25532e3",
+      "duration": 0.818
+    },
+    {
+      "license_verified": true,
+      "source": "scripts/make_sfx.py original synthesis",
+      "license": "Project-original generated audio; no third-party recording",
+      "kind": "synthesized",
+      "usable": true,
+      "file": "assets\\sfx\\ding.wav",
+      "category": "ding",
+      "sha256": "ad84e661f51b4fce9ac9aaad49a4d162b6e3aff728f63d2b416f28258cbd26e8",
+      "duration": 0.9
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "pop",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\pop\\synth_01.wav",
+      "sha256": "73ffecfc92d2d1e991ea4d15c76db3efd295811c46d63e239c58c5d41035920e",
+      "duration": 0.16
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "pop",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\pop\\synth_02.wav",
+      "sha256": "3a9b1c2176c562d1116107646ca7580c2bf84e3d72d9477ab7292efde20b49be",
+      "duration": 0.145
+    },
+    {
+      "license_verified": true,
+      "source": "scripts/make_sfx.py original synthesis",
+      "license": "Project-original generated audio; no third-party recording",
+      "kind": "synthesized",
+      "usable": true,
+      "file": "assets\\sfx\\pop.wav",
+      "category": "pop",
+      "sha256": "73ffecfc92d2d1e991ea4d15c76db3efd295811c46d63e239c58c5d41035920e",
+      "duration": 0.16
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "riser",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\riser\\synth_01.wav",
+      "sha256": "80251e6503af205de2a23e479e308e743a78a97af4b394a5859060fc93da6690",
+      "duration": 1.2
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "riser",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\riser\\synth_02.wav",
+      "sha256": "3de51d75bfdfbca1874a22ae29469c8bfbe7d5f0c3bb3c6d93cd537c69fc6e85",
+      "duration": 1.091
+    },
+    {
+      "license_verified": true,
+      "source": "scripts/make_sfx.py original synthesis",
+      "license": "Project-original generated audio; no third-party recording",
+      "kind": "synthesized",
+      "usable": true,
+      "file": "assets\\sfx\\riser.wav",
+      "category": "riser",
+      "sha256": "80251e6503af205de2a23e479e308e743a78a97af4b394a5859060fc93da6690",
+      "duration": 1.2
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "swipe",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\swipe\\synth_01.wav",
+      "sha256": "94721fac49e057077faf91ef5098e38b99c839f649ea75adc5e12dc51d47a353",
+      "duration": 0.28
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "swipe",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\swipe\\synth_02.wav",
+      "sha256": "65903940cd7bfa7fcde01dcb30e22ee7deefe279b4ebd65a14855ff8779ac377",
+      "duration": 0.255
+    },
+    {
+      "license_verified": true,
+      "source": "scripts/make_sfx.py original synthesis",
+      "license": "Project-original generated audio; no third-party recording",
+      "kind": "synthesized",
+      "usable": true,
+      "file": "assets\\sfx\\swipe.wav",
+      "category": "swipe",
+      "sha256": "94721fac49e057077faf91ef5098e38b99c839f649ea75adc5e12dc51d47a353",
+      "duration": 0.28
+    },
+    {
+      "license_verified": true,
+      "source": "scripts/make_sfx.py original synthesis",
+      "license": "Project-original generated audio; no third-party recording",
+      "kind": "synthesized",
+      "usable": true,
+      "file": "assets\\sfx\\thud.wav",
+      "category": "thud",
+      "sha256": "17746b008493495f5db9f4b6a734fc940f0df25912f0836d04bbca97f836a1d6",
+      "duration": 0.35
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "tick",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\tick\\synth_01.wav",
+      "sha256": "86f7796aa2ed9d70b2497d3dd77f1a4d59a022a2d7c096a9f68a4e5000de5987",
+      "duration": 0.06
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "tick",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\tick\\synth_02.wav",
+      "sha256": "66f7f153f837f6822b3b5e1dffd819a78dc938da8ae946dffb81ecfce7d9c561",
+      "duration": 0.055
+    },
+    {
+      "license_verified": true,
+      "source": "scripts/make_sfx.py original synthesis",
+      "license": "Project-original generated audio; no third-party recording",
+      "kind": "synthesized",
+      "usable": true,
+      "file": "assets\\sfx\\tick.wav",
+      "category": "tick",
+      "sha256": "86f7796aa2ed9d70b2497d3dd77f1a4d59a022a2d7c096a9f68a4e5000de5987",
+      "duration": 0.06
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "whoosh",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\whoosh\\synth_01.wav",
+      "sha256": "8a75adcdc1841f3fbe957141e9b8daf81ce2593be07384207eb0ef6d3126c16b",
+      "duration": 0.55
+    },
+    {
+      "source": "scripts/make_sfx.py original synthesis; variant 2 rate-shifted",
+      "license": "Project-original generated audio; no third-party recording",
+      "category": "whoosh",
+      "kind": "synthesized",
+      "license_verified": true,
+      "usable": true,
+      "file": "assets\\sfx\\whoosh\\synth_02.wav",
+      "sha256": "0c44ce30a6c5e52c66ad55ee5f291015cf1ccb581639a810161b211c977aa593",
+      "duration": 0.5
+    },
+    {
+      "license_verified": true,
+      "source": "scripts/make_sfx.py original synthesis",
+      "license": "Project-original generated audio; no third-party recording",
+      "kind": "synthesized",
+      "usable": true,
+      "file": "assets\\sfx\\whoosh.wav",
+      "category": "whoosh",
+      "sha256": "8a75adcdc1841f3fbe957141e9b8daf81ce2593be07384207eb0ef6d3126c16b",
+      "duration": 0.55
+    }
+  ]
+}

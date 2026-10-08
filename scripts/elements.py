@@ -2523,7 +2523,7 @@ class PhoneLayer(Layer):
                 while font.getlength(label) > width-pad*2 and size > 4:
                     size *= .9
                     font = ctx.fonts.get(cfg["font"], size, weight)
-                draw.text((pad, y), label, font=font, fill=color)
+                M.draw_text(draw, (pad, y), label, font, color)
                 y += size*1.45
             bio = fix_apostrophes(str(el.get("bio", "")))
             if bio:
@@ -2537,7 +2537,7 @@ class PhoneLayer(Layer):
                 if y+len(lines)*width*.08 > height-pad or any(font.getlength(line) > width-pad*2 for line in lines):
                     raise C.MontajError("Profil bio juda uzun; qisqartiring yoki phone ishlating.")
                 for line in lines:
-                    draw.text((pad, y), line, font=font, fill="#E0E0E8")
+                    M.draw_text(draw, (pad, y), line, font, '#E0E0E8')
                     y += width*.08
         if phone:
             draw.rounded_rectangle((width*.38, width*.035, width*.62, width*.07), radius=max(1, int(width*.02)), fill="#606068")

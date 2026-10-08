@@ -219,3 +219,21 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
   va CTA yo'qligi baseline mazmunini saqlash uchun izohlangan. Stillsda yuz ochiq;
   yurak stikerining qo'l ustiga tushishi baseline joylashuvi, yangi ijodiy QA tasdig'i emas.
   Userga ikki mixni tinglat, tanlovni HOLATga yoz; tayyor yangi video deb taxmin qilma.
+
+## 2026-10-09 — Codex — Sprint 2 Part 0 — foydalanuvchi tanlovi va texnik tuzatishlar
+
+- User javobi aynan: "Stronger — kuchliroq"; umumiy sfx.profile stronger, feedback va HOLATga yozildi.
+- User SFX source/licence saqlamagan ("yoq"). Disk inventarida yangi real fayl topilmadi:
+  22 sintez fayli. sfx_library.py manba, licence, SHA256 va davomiylik indeksini yaratadi;
+  ma'lum sintez provenance saqlanadi, noma'lum real fayl UNVERIFIED, avtomatik tanlanmaydi.
+  Real fayl verified sidecar bilan berilsa birinchi, sintez faqat fallback. Yuklash bo'lmadi.
+- SFX priority b-roll/stickerga zichlik ichida joy beradi; hero captionlar barcha joyni
+  egallab qo'ymaydi. 10s oynalar va min gap saqlandi.
+- Font fallback har belgi bo'yicha: Caveat o/g o'z shriftida, yetishmagan U+02BB Inter'dan,
+  bir baseline va fallbackning haqiqiy glyph pikseli test bilan tekshirildi. Motion/phone
+  grafik draw yo'llari bir xil fallbackdan foydalanadi. HTML browser CSS fallbacki alohida.
+- Edge PNG yo'q/corrupt/timeout bo'lsa bir marta yangi profil bilan bounded retry;
+  aniq warning, har attempt UTC vaqt/code/seconds/stderr bilan job JSONL logida. Eski
+  no-PNG ichki sabab topildi deb aytilmaydi. Failure hamon aniq xato, checklar susaymadi.
+- Dalil: test_part0 5/5, test_motion 15/15, haqiqiy agent setup/HTML 13/13, selftest
+  --no-whisper 45/45. Keyingi agent real fayllarning sahifasini taxmin qilmasin.

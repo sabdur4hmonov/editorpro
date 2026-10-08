@@ -43,6 +43,8 @@ Parallel ikki job mustaqil seed oladi; tarixga umumiy yozish kechiktirilgani uch
 kombinatsiyasi mutlaqo farqli bo'lishiga kafolat yo'q. Kerak bo'lsa o'z `choice`ni aniq belgila.
 
 `glyph_audit.py` barcha shrift cmaplarini tekshiradi; renderer ishlatilgan shriftni ham tekshiradi.
+Motion renderer yetishmagan belgini baseline bo'yicha mavjud boshqa shrift bilan chizadi
+(avval Inter); qolgan harflar asl shriftda qoladi. Hech qaysi shrift qoplamasa aniq warning.
 2026-10-08: 9 shriftdan Caveat'da `ʻ` (U+02BB) yo'q; Inter/Montserrat/Onest/Oswald/Playfair/Unbounded
 o‘ g‘ ʻ ni qoplaydi. Ogohlantirishni yashirma: boshqa mavjud shriftni tanla yoki foydalanuvchiga ayt.
 Yangi shrift ruxsatsiz yuklanmaydi.
@@ -58,6 +60,15 @@ Brendning `sfx/<category>/` papkasi umumiydan avval tanlanadi; eski tekis faylla
 Pixabay [rasmiy API hujjatida](https://pixabay.com/api/docs/) rasm va video endpointlari bor;
 SFX endpointi hujjatlashtirilmagan. Saytdagi Sound Effects bo'limini API deb qabul qilma.
 SFX yuklash avtomatizatsiyasi qo'shilmadi; foydalanuvchi fayl va litsenziyasini o'zi beradi.
+`sfx_library.py` mahalliy fayllarni SHA256/duration/source/licence bilan indekslaydi.
+Litsenziya/source sidecarlari bor real fayllar sintezdan ustun; manbasi yo'q real fayl
+UNVERIFIED deb yoziladi va avtomatik tanlanmaydi. 2026-10-09 inventar: 22 sintez, 0 real.
+B-roll/sticker/follow voqealari hero captionlardan oldin zichlik joylarini oladi;
+limit hamma 10s oynalarda saqlanadi. `sfx.event_priority` bilan tartibni almashtirish mumkin.
+
+HTML PNG hajmi 0.5s barqaror va rasm to'liq ochiladigan bo'lsin, browser qaytgach 10s limit.
+Xatoda bir marta yangi profil bilan retry; har jarayon 120s chegaralangan. Aniq warning va
+video `.html_render/browser_attempts.jsonl`da UTC vaqt, urinish, code, timeout va stderr tail bor.
 
 `sfx.event_map`: hero -> pop, sticker -> whoosh, broll_in -> swipe, title -> whoosh,
 label -> click, number -> ding, follow_tap -> click. Avtomatik effekt 3 kadr oldin boshlanadi
@@ -65,7 +76,7 @@ label -> click, number -> ding, follow_tap -> click. Avtomatik effekt 3 kadr old
 `min_gap_sec` 1.5 va `max_per_10_sec` 3 zichlikni cheklaydi. Seedli variant tasodifiy tanlanadi,
 kamida ikki variant bo'lsa ketma-ket bir fayl qaytarilmaydi. Qo'lda yozilgan `sfx` vaqti o'zgarmaydi.
 
-Standart `sfx.mixes: {"subtle": -18, "stronger": -2}`, `profile: "subtle"`.
+Standart `sfx.mixes: {"subtle": -18, "stronger": -2}`, `profile: "stronger"` (foydalanuvchi tanlovi 2026-10-09).
 Bu bazaviy `volume_db` ustiga qo'shiladigan dB; barcha effektga, qo'lda berilganga ham qo'llanadi.
 `compose` vizualni bir marta kodlaydi, keyin ikkinchi mixni shu video oqimiga biriktiradi:
 `<nom>.mp4` va `<nom>_stronger.mp4`. `audio_mixes/<output stem>/<profile>/`da audio,

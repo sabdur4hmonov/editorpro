@@ -155,7 +155,7 @@ class Fonts:
             from glyph_audit import missing
             try:
                 absent=missing(entry['path'])
-                if absent: C.warn(f"Uzbek glyph missing: {family}: {absent}")
+                if absent: C.warn(f"Uzbek glyph missing: {family}: {[f'U+{ord(ch):04X}' for ch in absent if len(ch)==1]}")
             except (OSError,ValueError,IndexError) as error:
                 C.warn(f"Font cmap could not be verified: {family}: {error}")
         if entry["axes"]:
@@ -172,8 +172,10 @@ class Fonts:
                 font.set_variation_by_axes(values)
             except Exception:
                 pass
-        self.cache[key] = font
-        return font
+        from font_fallback import Font
+        wrapped = Font(font, self, weight, italic)
+        self.cache[key] = wrapped
+        return wrapped
 
 
 # ---------------------------------------------------------------- sprite (shaffof rasm bo'lagi)
@@ -263,21 +265,29 @@ def text_advance(font, text: str, tracking: float) -> float:
 def _draw_tracked(draw, x: float, y: float, text: str, font, fill, tracking: float, stroke: int = 0, stroke_fill=None):
     """Matnni harflar orasidagi masofa (tracking) bilan chizadi. y - asos chizig'i (baseline)."""
     if abs(tracking) < 0.01:
-        draw.text((x, y), text, font=font, fill=fill, anchor="ls", stroke_width=stroke, stroke_fill=stroke_fill)
+        draw_text(draw, (x, y), text, font, fill, 'ls', stroke, stroke_fill)
         return
     from motion_language import clusters
     units = clusters(text)
     for i, ch in enumerate(units):
-        draw.text((x, y), ch, font=font, fill=fill, anchor="ls", stroke_width=stroke, stroke_fill=stroke_fill)
+        draw_text(draw, (x, y), ch, font, fill, 'ls', stroke, stroke_fill)
         nxt = units[i + 1] if i + 1 < len(units) else ""
         x += (font.getlength(ch + nxt) - font.getlength(nxt) if nxt else font.getlength(ch)) + tracking
+
+
+def draw_text(draw, xy, text, font, fill, anchor='la', stroke_width=0, stroke_fill=None):
+    if hasattr(font, 'draw'):
+        font.draw(draw, xy, text, fill, anchor, stroke_width, stroke_fill)
+    else:
+        draw.text(xy, text, font=font, fill=fill, anchor=anchor,
+                  stroke_width=stroke_width, stroke_fill=stroke_fill)
 
 
 def text_sprite(text: str, font, color: str, tracking: float = 0.0, shadow: dict | None = None,
                 glow: dict | None = None, stroke: dict | None = None) -> tuple:
     """Bitta so'z yoki ibora uchun sprite. (sprite, kenglik) qaytaradi. Sprite nuqtasi: chap + asos chizig'i."""
-    ascent, descent = font.getmetrics()
     adv = text_advance(font, text, tracking)
+    ascent, descent = font.getmetrics()
     sh_blur = float((shadow or {}).get("blur", 0))
     sh_dx, sh_dy = float((shadow or {}).get("dx", 0)), float((shadow or {}).get("dy", 0))
     gl_blur = float((glow or {}).get("blur", 0))

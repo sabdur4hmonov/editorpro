@@ -198,7 +198,7 @@
     "lead_frames": 3,
     "max_per_10_sec": 3,
     "cue_sheet": true,
-    "profile": "subtle",
+    "profile": "stronger",
     "mixes": {"subtle": -18, "stronger": -2},
     "mix_gain_db": 0,
     "seed": 0

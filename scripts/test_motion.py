@@ -18,6 +18,7 @@ import audio_mix
 class MotionTests(unittest.TestCase):
     def style(self):
         st=C.load_style(); st['video'].update(width=360,height=640,fps=30)
+        st['sfx']['profile']='subtle'  # Compare the two profiles regardless of user default.
         st['motion']['choice']={'enter':'slide_overshoot','sub':'mask_up','emphasis':'underline_draw'}
         st['captions'].update(preset='clean',font='Inter',accent='#FFD040',position_y=.6)
         return st

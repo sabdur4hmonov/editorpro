@@ -26,6 +26,9 @@ import shutil
 import subprocess
 import sys
 import time
+import json
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
 from PIL import Image, ImageFont
@@ -33,6 +36,63 @@ from PIL import Image, ImageFont
 import common as C
 
 FONT_EXTS = {".ttf", ".otf"}
+
+
+def wait_for_shot(shot: Path, timeout: float = 10.0) -> bool:
+    deadline = time.monotonic() + timeout
+    last_size = -1
+    stable_since = time.monotonic()
+    while time.monotonic() < deadline:
+        now = time.monotonic()
+        try:
+            size = shot.stat().st_size if shot.is_file() else 0
+        except OSError:
+            size = 0
+        if size != last_size:
+            last_size, stable_since = size, now
+        elif size >= 100 and now-stable_since >= .5:
+            try:
+                with Image.open(shot) as img:
+                    img.verify()
+                return True
+            except (OSError, ValueError, SyntaxError):
+                pass
+        time.sleep(min(.1, max(0, deadline-time.monotonic())))
+    return False
+
+
+def browser_shot(cmd: list, shot: Path, page: Path, attempts: int = 2):
+    """One bounded retry, isolated retry profile, JSONL evidence in this job only."""
+    log = page.parent/'browser_attempts.jsonl'
+    last = None
+    for attempt in range(1, attempts+1):
+        command = list(cmd)
+        if attempt > 1:
+            command = [f'--user-data-dir={page.parent / ("retry_profile_"+uuid.uuid4().hex)}'
+                       if x.startswith('--user-data-dir=') else x for x in command]
+        shot.unlink(missing_ok=True)
+        start = time.monotonic()
+        timed_out = False
+        try:
+            last = subprocess.run(command, stdin=subprocess.DEVNULL, capture_output=True,
+                                  text=True, encoding='utf-8', errors='replace', timeout=120)
+            ready = wait_for_shot(shot)
+        except subprocess.TimeoutExpired:
+            timed_out, ready = True, False
+        tail = '\n'.join((getattr(last, 'stderr', '') or getattr(last, 'stdout', '') or '').strip().splitlines()[-6:])
+        with log.open('a', encoding='utf-8') as stream:
+            stream.write(json.dumps(dict(time_utc=datetime.now(timezone.utc).isoformat(),
+                page=str(page), attempt=attempt, ready=ready, timeout=timed_out,
+                returncode=getattr(last, 'returncode', None), seconds=round(time.monotonic()-start, 3),
+                stderr_tail=tail), ensure_ascii=False)+'\n')
+        if ready:
+            return last, attempt
+        if attempt < attempts:
+            C.warn(f'HTML PNG retry {attempt}/{attempts}: rasm tayyor emas; yangi browser profili. Log: {log}')
+    if timed_out:
+        raise C.MontajError(f'Brauzer 120 soniyada javob bermadi; {attempts} urinish tugadi. Log: {log}')
+    raise C.MontajError(f'Brauzer rasm chiqarmadi (kod {getattr(last, "returncode", None)}). '
+                       f'Brauzer: {cmd[0]}; {attempts} urinish. Log: {log}\n{tail}')
 
 
 def find_browser() -> str:
@@ -151,33 +211,7 @@ def render(html_path: str | Path, out_path: str | Path, style: dict | None = Non
     if os.name != "nt" and hasattr(os, "geteuid") and os.geteuid() == 0:
         cmd.append("--no-sandbox")
     cmd.append(page.as_uri())
-    try:
-        proc = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, encoding="utf-8",
-                              errors="replace", timeout=120)
-    except subprocess.TimeoutExpired:
-        raise C.MontajError("Brauzer 120 soniyada javob bermadi (sahifa juda og'ir yoki brauzer osilib qoldi).") from None
-    # Edge qaytganidan keyin PNG yana ~1.5 s yozilishi mumkin. Hajmi
-    # 0.5 s o'zgarmaguncha kutamiz; 10 s sekin kompyuter uchun zaxira.
-    deadline = time.monotonic() + 10.0
-    last_size = -1
-    stable_since = time.monotonic()
-    shot_ready = False
-    while time.monotonic() < deadline:
-        now = time.monotonic()
-        try:
-            size = shot.stat().st_size if shot.is_file() else 0
-        except OSError:
-            size = 0
-        if size != last_size:
-            last_size = size
-            stable_since = now
-        elif size >= 100 and now - stable_since >= 0.5:
-            shot_ready = True
-            break
-        time.sleep(min(0.1, max(0.0, deadline - time.monotonic())))
-    if not shot_ready:
-        tail = "\n".join((proc.stderr or proc.stdout or "").strip().splitlines()[-6:])
-        raise C.MontajError(f"Brauzer rasm chiqarmadi (kod {proc.returncode}). Brauzer: {browser}\n{tail}")
+    proc, attempts = browser_shot(cmd, shot, page)
     try:
         img = Image.open(shot).convert("RGBA")
     except Exception as exc:
@@ -204,7 +238,8 @@ def render(html_path: str | Path, out_path: str | Path, style: dict | None = Non
         bg.save(out_path, quality=93)
     shot.unlink(missing_ok=True)
     page.unlink(missing_ok=True)
-    return {"output": str(out_path), "width": img.width, "height": img.height, "browser": browser}
+    return {"output": str(out_path), "width": img.width, "height": img.height, "browser": browser,
+            'attempts': attempts, 'attempt_log': str(page.parent/'browser_attempts.jsonl')}
 
 
 def main() -> int:

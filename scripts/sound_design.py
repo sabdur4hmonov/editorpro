@@ -16,14 +16,22 @@ def mix_gain(cfg):
 
 def variants(category,brand_dir=None):
     import audio_mix
+    from sfx_library import provenance
     dirs=([Path(brand_dir)/'sfx'] if brand_dir else [])+[C.ROOT/'assets/sfx']
+    real, synth = [], []
     for folder in dirs:
         found=sorted(p for p in (folder/category).glob('*') if p.suffix.lower() in audio_mix.SFX_EXTS)
-        if found: return found
+        for path in found:
+            meta=provenance(path)
+            if meta['kind']=='real' and meta['usable']: real.append(path)
+            elif meta['kind']=='synthesized': synth.append(path)
         for ext in audio_mix.SFX_EXTS:
             path=folder/(LEGACY.get(category,category)+ext)
-            if path.is_file(): return [path]
-    return []
+            if path.is_file():
+                meta=provenance(path)
+                if meta['kind']=='real' and meta['usable']: real.append(path)
+                elif meta['kind']=='synthesized' and not found: synth.append(path)
+    return real or synth
 
 def gather(style,elements,cues,words,brand_dir=None):
     import elements as E
@@ -53,12 +61,16 @@ def gather(style,elements,cues,words,brand_dir=None):
     gap=max(0,float(cfg.get('min_gap_sec',1.5)))
     seed=hashlib.sha256(str(style.get('motion',{}).get('choice',{})).encode()+str(cfg.get('seed',0)).encode()).digest()
     rng=random.Random(int.from_bytes(seed[:8],'big')); last={}; out=list(explicit)
-    for visual,kind in sorted(events):
+    priority=cfg.get('event_priority',['broll_in','sticker','follow_tap','title','number','label','hero'])
+    def event_rank(event):
+        return (priority.index(event[1]) if event[1] in priority else len(priority), event[0])
+    for visual,kind in sorted(events,key=event_rank):
         category=event_map.get(kind)
         if not category: continue
         at=max(0,visual-lead/fps)
         if any(abs(at-e['at'])<gap for e in out): continue
-        if sum(at-10<e['at']<=at for e in out)>=density: continue
+        times=[e['at'] for e in out]+[at]
+        if any(sum(t-10<x<=t for x in times)>density for t in times): continue
         candidates=variants(category,brand_dir)
         if not candidates:
             C.warn(f'SFX category missing: {category}; event {kind} skipped.'); continue
