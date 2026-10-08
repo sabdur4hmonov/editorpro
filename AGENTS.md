@@ -37,6 +37,7 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | `.env` | Maxfiy kalitlar (stok va AI rasm xizmatlari). Gitga kirmaydi, o'qib ko'rsatilmaydi. |
 | `docs/claude_skills/` | Claude Code uchun `/montaj`, `/namuna`, `/brend`, `/transcribe-uz` buyruqlari (manba; `.claude/skills/` ga ko'chiriladi). |
 | `docs/PLAYBOOK.md` | Montajor qo'llanmasi: qaror qabul qilish tartibi. **Har montajda o'qiladi.** |
+| `docs/TAKES.md` | Klip papkasi: yomon/takroriy dubllarni topish, eng yaxshisini so'z chegarasida kesish, tartib, `report.html`. |
 | `docs/PROMO.md` | Restoran/mahsulot promo retsepti (namuna 20): ko'p klip, yorliq, narx, ovoz subtitri. `/promo` skilli. |
 | `docs/NAMUNA_USLUBI.md` | Namuna videolar (`samples/`) uslubi: subtitr uslublari, animatsiyalar, elementlar. |
 | `scripts/` | Montaj skriptlari. |
@@ -106,7 +107,8 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 
 | Skript | Nima qiladi |
 |---|---|
-| `pipeline.py VIDEO` | Hammasini ketma-ket bajaradi. VIDEO o'rniga klip papkasi yoki `clips.json` berilsa avval `assemble.py` yig'adi. |
+| `pipeline.py VIDEO` | Hammasini ketma-ket bajaradi. VIDEO o'rniga klip papkasi berilsa avval `takes.py` (dubl tanlash), keyin `assemble.py` yig'adi; `clips.json` berilsa to'g'ridan yig'adi (`--no-takes`). |
+| `takes.py PAPKA` | Klip papkasi: har klip transkripsiyasi, skript (`script.txt`) yoki skriptsiz gaplarga moslash, dubllarni baholash (sabab bilan), eng yaxshisini so'z chegarasida kesish, tartib, nutqsiz klip joyi taklifi; `temp/<nom>/clips.json`, `report.html`, `takes.json`; qo'lda: `takes.override.json`. `--verify` yig'ilgan videoni tekshiradi. |
 | `promo_looks.py` | Promo uslub yo'nalishlari: `list`, `palette VIDEO` (kadr ranglari, accent taklifi), `apply NOM --style temp/<nom>/style.json --accent`, `record` (tarix, takrorni rad etadi). |
 | `assemble.py PAPKA/clips.json` | Ko'p klipli montaj: speech/product/voiceover kliplarini tartib bilan bitta asosiy videoga yig'adi (style o'lchami va fps), `temp/<nom>/segments.json`; product oraliqlari jimlik deb kesilmaydi. |
 | `transcribe.py VIDEO` | So'z-so'z vaqtli matn: `temp/<nom>/orig.words.json`, `orig.srt`. |
@@ -142,6 +144,9 @@ va tuzatishlar raqami mos kelmay qoladi.
 
 ## Ish tartibi
 
+0. **takes** (faqat klip papkasi) — dubllar tanlanadi, so'z chegarasida kesiladi, tartiblanadi va bitta videoga
+   yig'iladi (`docs/TAKES.md`). Past ishonchli qarorlar (close call, qaror kerak, nutqsiz klip joyi, taxminiy tartib)
+   tasdiq xabariga chiqadi, jim qabul qilinmaydi.
 1. **transcribe** — asl videodan matn va so'z vaqtlari.
 2. **auto_cut** — kesish ro'yxatini ko'rsatadi, keyin kesadi: `temp/<nom>/cut.mp4`, `cuts.json`.
    So'z vaqtlari kesilgan videoga o'tkaziladi (`cut.words.json`).
@@ -341,6 +346,8 @@ Sahna chiqishi, intervyu, konsert kabi "tayyor ovozli" videolarda effektni kam i
 - Hech narsa o'ylab topilmaydi. Shubhali narsa tasdiq xabarida `[?so'z]` va manbasi (klip + vaqt) bilan.
 - Foydalanuvchidan faqat topib bo'lmaydigan narsa so'raladi, bir marta, tasdiq xabari ichida (masalan
   Instagram manzili). Musiqa va logotip fayli berilmasa: videoning o'z ovozi, logotipsiz.
+- Klip papkasi (bir nechta dubl, skript bilan yoki skriptsiz): `docs/TAKES.md`. Kliplar tartibi, dubl tanlovi va nutqsiz
+  klip joyi past ishonchli bo'lsa tasdiq xabarida; javob `temp/<nom>/takes.override.json` ga yoziladi.
 - Promo (ko'p klipli restoran/mahsulot) uchun: `docs/PROMO.md`, `/promo` (Codex: `$promo`). Har promo o'z
   uslub yo'nalishida (`style/promo_looks.json`, `scripts/promo_looks.py`); oxirgi promo yo'nalishi takrorlanmaydi
   (`style/promo_history.json`).
@@ -483,6 +490,8 @@ marta bosib ochadi, oyna ochiq turguncha `jobs/inbox/` ga tushgan topshiriqlar b
 ## Claude Code'da ishlatish
 
 - `/montaj input\video.mp4 NOM` — to'liq montaj. `/namuna input\video.mp4 NOM` — namunalardagidek montaj.
+  Video o'rniga klip papkasi (`input\papka`, ixtiyoriy `script.txt`) berilsa avval dubl tanlash (`docs/TAKES.md`);
+  Codex'da `$montaj input\papka`, `$namuna input\papka`.
   `/promo input\papka` — ko'p klipli restoran/mahsulot promo, mustaqil (`docs/PROMO.md`). Codex'da `$promo input\papka`.
   `/brend NOM` — yangi mijoz qo'shish. `/transcribe-uz video` — matn va tuzatish.
   Manbasi `docs/claude_skills/`; ishlashi uchun `.claude/skills/` ga ko'chirilgan bo'lishi kerak

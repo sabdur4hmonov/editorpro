@@ -153,3 +153,22 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
 - Dalil: test_studio 17/17, test_agent_setup 12/12, selftest --no-whisper 44/44, sync_skills --check sinxron.
 - Keyingi agent: promoni yo'nalish tanlamasdan boshlama; palette natijasini va bir qator sababni tasdiq xabariga yoz;
   final tayyor bo'lgach `promo_looks.py record` (aks holda keyingi promo takrorlanishi mumkin).
+
+## 2026-10-08 — Claude — klip papkasi: dubl tanlash (takes) — tekshirilgan (sintetik), jonli sinov kutilmoqda
+
+- Yangi: `scripts/takes.py` (docs/TAKES.md), pipeline papka berilganda birinchi bosqich (`--no-takes` o'chiradi; papkada
+  o'z `clips.json` bo'lsa qo'lda ro'yxat ustun). A rejim `script.txt` bilan (gaplarga Smith-Waterman moslash, 2-nomzod va
+  farq), B rejim skriptsiz (gaplar guruhi; tartib: nomdagi raqam -> metadata -> mazmun, oxirgisi taxminiy).
+- Mavjud kod qayta ishlatildi: assemble (in/out + yangi `fade`), script_align (norm, align_pairs, subtitr skriptdan),
+  transcribe (`hotwords` qo'shildi, faster-whisper 1.2.1 qo'llaydi), face.py modeli, glossary. Yangi kutubxona yo'q.
+- Topilgan xato: `script_align.norm` `ʻ` va `ʼ` ni harf deb qoldirardi (isalnum True): `oʻzbek` != `o'zbek`. Tuzatildi.
+- Saboqlar (sintetik o'lchovdan): (1) "ee" jarimasi so'z yetishmasligidan kuchsiz bo'lsa to'ldiruvchili dubl tanlanadi -
+  `weights.coverage` 60 (1 so'z ~8 ball), filler 8; (2) "qaytadan" faqat darhol oldidagi dublga tegishli (orada <=1 so'z);
+  (3) to'xtatilgan urinishlar guruhlashda "ko'prik" bo'lmasin: avval oddiy gaplar, keyin urinishlar biriktiriladi;
+  (4) tartib so'zi ("ikkinchii") yumshoq taniladi, aks holda "birinchi set"/"ikkinchi set" dubl bo'lib qo'shiladi.
+- Dalil: test_takes 17/17 (aniqlik: skript bilan 99.6/99.3/98.8%, skriptsiz 97.8/97.8/96.3% - gap/dubl/tartib),
+  test_studio 17/17, test_agent_setup 13/13, selftest --no-whisper 45/45, sync_skills --check sinxron.
+- Taxmin (hali isbotlanmagan): kadr chegaralari (`takes.limits`: blur_var, dark_luma, shake_px) va o'zbek whisper
+  ishonchi bilan `speech_min_prob` haqiqiy kliplarda sozlanmagan. Birinchi jonli sinovda report.html ni ko'rib sozla.
+- Keyingi agent: papka montajida pipeline chiqargan "Tasdiqqa chiqadigan qarorlar" ro'yxatini BITTA tasdiq xabariga
+  qo'sh; foydalanuvchi javobini `temp/<nom>/takes.override.json` ga yoz; qo'lda tahrirlangan clips.json ustidan yozilmaydi.

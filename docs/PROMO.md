@@ -25,11 +25,12 @@ Brend bo'lsa oxiriga brend nomi qo'shiladi (`brands/<nom>/` mavjud bo'lsa). Bosh
 3. **Hech narsa o'ylab topilmaydi.** Aytilmagan yoki aniq ko'rinmagan narx, nom, raqam yo'q. Shubhali narsa
    tasdiq xabarida `[?so'z]` va manbasi bilan: `[?Mol kochalkasi] (04_kochalka.mp4 1.2 s nutq)`,
    `[?990 000] (07_narx.mp4 2.1 s: "to'qqiz yuz to'qson ming")`.
-4. **Rollar** (`speech`, `product`, `voiceover`; qadoqlash/joy kadrlari `product`) agent tomonidan aniqlanadi:
-   pipeline birinchi ishga tushganda `temp/<nom>/clips.json` shabloni (ovozli klip speech, ovozsiz product,
-   audio fayl voiceover) va transkripsiyadan keyin **"Kliplar bo'yicha nutq"** jadvali chiqadi (har klipdagi
-   so'zlar soni, "nutq topilmadi: product bo'lishi mumkin" kabi maslahat). Agent kadrlarni ko'rib rollarni
-   to'g'rilaydi, qayta ishga tushiradi va ro'yxatni tasdiq xabarida ko'rsatadi.
+4. **Dubllar va rollar** (`speech`, `product`, `voiceover`; qadoqlash/joy kadrlari `product`) agent tomonidan aniqlanadi.
+   Papka berilganda pipeline avval dubl tanlashni ishlatadi (`docs/TAKES.md`): har gapning eng yaxshi dubli so'z
+   chegarasida kesiladi, nutqsiz kliplar `product` bo'lib joyi taklif qilinadi, `temp/<nom>/report.html` chiqadi.
+   Transkripsiyadan keyin **"Kliplar bo'yicha nutq"** jadvali ham chiqadi. Agent kadrlarni ko'rib rollar, ovoz
+   `cover` va joylarni `temp/<nom>/takes.override.json` ga (`clips`, `place`) yozadi, qayta ishga tushiradi va
+   ro'yxatni tasdiq xabarida ko'rsatadi.
 5. **So'raladigan yagona narsa** (bir marta): obuna kartochkasi uchun Instagram manzili. Berilmasa `follow`
    handle'siz (`icon`). Musiqa va logotip faqat foydalanuvchi bergan fayldan; berilmasa kliplarning o'z ovozi
    qoladi (`product_audio: keep`, standart) va logotip qo'yilmaydi.
@@ -65,8 +66,8 @@ Tanlash tartibi:
 
 1. `handoff.py show`; video eslatmasini egalash (`handoff.py set ... --video input\<promo nomi> --agent ...`).
 2. `pipeline.py input\<promo nomi> --style temp\<nom>\style.json --prepare-only` (per-video style: umumiy
-   `style.json` nusxasi + o'zbek modeli). Shablon va "Kliplar bo'yicha nutq" jadvalini ko'r, rollarni to'g'rila,
-   qayta ishga tushir. Product oraliqlari jimlik deb kesilmaydi.
+   `style.json` nusxasi + o'zbek modeli). Dubl tanlash qarorlari, `report.html` va "Kliplar bo'yicha nutq" jadvalini
+   ko'r, rollar/joylarni `takes.override.json` ga yoz, qayta ishga tushir. Product oraliqlari jimlik deb kesilmaydi.
 3. Kadrlar (`frames.py`), palitra, yo'nalish (§2).
 4. Matn: nutqdagi nomlar va narx; VO bo'laklari `{vo}`, qahramon/narx yo'nalish belgilari bilan. Odam yonida
    chiqadigan so'zlar subtitrdan olinadi (`corrections.json` `"text": ""`) va `aside` ga yoziladi.

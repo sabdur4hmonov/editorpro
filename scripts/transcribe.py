@@ -362,6 +362,7 @@ def transcribe_audio(wav: Path, wcfg: dict, model=None) -> dict:
             vad_parameters={"min_silence_duration_ms": 300},
             condition_on_previous_text=False,
             initial_prompt=wcfg.get("initial_prompt") or None,
+            **({"hotwords": wcfg["hotwords"]} if wcfg.get("hotwords") else {}),   # takes.py: skript so'zlari
         )
         words, segs = [], []
         for seg in segments:  # generator: aynan shu yerda haqiqiy ish bajariladi

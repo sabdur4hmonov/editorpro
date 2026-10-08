@@ -20,7 +20,11 @@ role:
                Bu oraliq jimlik deb KESILMAYDI (segments.json: protect).
   voiceover  - alohida yozilgan ovoz (audio fayl yoki video ovozi). Tasviri "cover" dagi mahsulot kliplari,
                ketma-ket; ovozdan qisqa bo'lsa oxirgi kadr ushlab turiladi, uzun bo'lsa kesiladi.
-in/out (soniya) - klipning qaysi qismi olinadi; focus_x/focus_y (0..1) - 9:16 ga kesishda qaysi qism qoladi.
+in/out (soniya) - klipning qaysi qismi olinadi; focus_x/focus_y (0..1) - 9:16 ga kesishda qaysi qism qoladi;
+fade (soniya) - bo'lak boshi va oxirida ovoz yumshoq kirib-chiqadi (takes.py yozadi).
+
+Papka berilsa pipeline avval scripts/takes.py ni ishlatadi (dubl tanlash, so'z chegarasida kesish, tartib):
+u temp/<nom>/clips.json ni yozadi. Papkada o'zining clips.json bo'lsa yoki --no-takes bo'lsa shablon ishlatiladi.
 
 Har klip style.json dagi video.width x video.height, video.fps ga keltiriladi (60 fps HEVC 1440x2560 ham),
 natija temp/<nom>/<nom>.mp4 va temp/<nom>/segments.json. Asl fayllar faqat o'qiladi.
@@ -143,7 +147,10 @@ def _segment(item: dict, style: dict, out: Path, mute: bool) -> float:
             C.warn(f"{item['path'].name}: speech klipida ovoz yo'q, jim ovoz qo'yildi.")
         cmd += ["-f", "lavfi", "-t", f"{dur:.3f}", "-i", "anullsrc=r=48000:cl=stereo", "-map", "0:v:0", "-map", "1:a:0"]
     else:
-        cmd += ["-map", "0:v:0", "-map", "0:a:0", "-af", "apad"]
+        # fade: takes.py so'z chegarasida kesgan bo'lak - kesish joyida chertish bo'lmasin
+        f = min(float(item.get("fade", 0) or 0), dur / 4)
+        fades = f"afade=t=in:st=0:d={f:.4f},afade=t=out:st={dur - f:.4f}:d={f:.4f}," if f > 0 else ""
+        cmd += ["-map", "0:v:0", "-map", "0:a:0", "-af", fades + "apad"]
     cmd += ["-vf", _vf(style, item), *_encode_args(style), "-t", f"{dur:.3f}", str(out)]
     C.run(cmd)
     return C.ffprobe_info(out)["duration"]

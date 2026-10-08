@@ -298,6 +298,13 @@ def main() -> int:
     import test_transcribe
     test_transcribe.run(check, video, WORK, args.no_whisper)
 
+    C.info("\n9b. Klip papkasi: dubl tanlash (whispersiz, sintetik so'zlar)")
+    p = script("test_takes.py", "--quick")
+    lines = [l.strip() for l in p.stdout.splitlines() if l.strip().startswith(("skript bilan", "skriptsiz"))]
+    check("dubl tanlash: gaplarga moslash, eng yaxshi dubl, tartib, so'z chegarasida kesish, ulanish tekshiruvi",
+          p.returncode == 0, " / ".join(("skript: " if l.startswith("skript bilan") else "skriptsiz: ")
+                                        + l.split("|", 1)[-1].strip() for l in lines))
+
     C.info("\n10. Xavfsizlik qoidalari")
     # CPU qulfi saqlanadi: kutish limiti tugamaguncha boshqa agentning ishini boshlamaydi.
     import os as _os

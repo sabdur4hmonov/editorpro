@@ -59,6 +59,28 @@ class SetupTests(unittest.TestCase):
         self.assertIn("`$promo input\\<promo nomi>`", promo_doc)
         self.assertIn("$promo", (root / "AGENTS.md").read_text(encoding="utf-8"))
 
+    def test_takes_recipe_in_every_folder_skill(self):
+        root = sync_skills.ROOT
+        for name in ("montaj", "namuna", "promo"):
+            source = (root / "docs/claude_skills" / name / "SKILL.md").read_text(encoding="utf-8")
+            claude = (root / ".claude/skills" / name / "SKILL.md").read_text(encoding="utf-8")
+            codex = (root / ".agents/skills" / name / "SKILL.md").read_text(encoding="utf-8")
+            self.assertEqual(claude, sync_skills.expected(source, "claude"))
+            self.assertEqual(codex, sync_skills.expected(source, "codex"))
+            for text in (claude, codex):
+                self.assertIn("## Clip folder (takes", text)
+                self.assertIn("docs/TAKES.md", text)
+                self.assertIn("takes.override.json", text)
+                self.assertIn("never skipped", text)
+        agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+        for needle in ("takes.py PAPKA", "docs/TAKES.md", "$montaj input\\papka"):
+            self.assertIn(needle, agents)
+        takes_doc = (root / "docs/TAKES.md").read_text(encoding="utf-8")
+        for needle in ("`/montaj input\\<papka>`", "`$montaj input\\<papka>`", "takes.override.json", "Jonli sinov"):
+            self.assertIn(needle, takes_doc)
+        import project_mcp
+        self.assertEqual(project_mcp.GUIDES["takes"], "docs/TAKES.md")
+
     def test_missing_source_does_not_write_copies(self):
         with tempfile.TemporaryDirectory(prefix="agent-setup-") as directory:
             root = Path(directory)

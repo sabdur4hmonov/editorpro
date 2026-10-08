@@ -18,6 +18,10 @@ Tasdiqlangan (tuzatilgan) so'zlar fayli bo'lsa (scripts/apply_corrections.py nat
      python scripts/pipeline.py input/video.mp4 --words temp/video/orig.words.fixed.json
    Whisper qayta ishlamaydi: matn ham, vaqt ham shu fayldan olinadi.
 
+Klip papkasi berilsa (input/<papka>/): avval dubl tanlash (scripts/takes.py, docs/TAKES.md) - yomon va takroriy
+urinishlar tashlanadi, har gapning eng yaxshisi so'z chegarasida kesiladi, tartib (papkadagi script.txt yoki --script,
+bo'lmasa fayl nomi / metadata / mazmun), keyin assemble.py yig'adi. Hisobot: temp/<nom>/report.html.
+
 Lug'at (style/glossary.json va brands/<nom>/glossary.json) har safar o'zi qo'llanadi (--no-glossary o'chiradi).
 Foydalanuvchi eslatmalari (style/notes.md, brands/<nom>/notes.md) boshida ko'rsatiladi.
 
@@ -67,6 +71,8 @@ def main() -> int:
     ap.add_argument("--trim", help="Faqat shu oraliq qolsin, asl video bo'yicha: 5-42")
     ap.add_argument("--script", help="Tayyor skript matni (.txt): subtitr matni shundan, vaqti whisperdan olinadi")
     ap.add_argument("--no-script", action="store_true", help="Video yonidagi shu nomli .txt ni ishlatma")
+    ap.add_argument("--no-takes", action="store_true",
+                    help="Klip papkasida dubl tanlashni o'tkazib yubor (kliplar butunligicha, assemble.py shabloni)")
     ap.add_argument("--words", help="Tasdiqlangan so'zlar fayli (words.fixed.json): whisper o'rniga shu ishlatiladi")
     ap.add_argument("--no-glossary", action="store_true", help="Lug'atni qo'llama")
     ap.add_argument("--music", help="Fon musiqa fayli")
@@ -98,13 +104,20 @@ def main() -> int:
         style["whisper"]["language"] = args.language
     if args.model:
         style["whisper"]["model"] = args.model
-    protect = built = None
+    protect = built = takes = None
     source = Path(args.video)
     if source.is_dir() or source.suffix.lower() == ".json":
-        # ko'p klipli montaj: kliplar avval bitta asosiy videoga yig'iladi (scripts/assemble.py)
+        # ko'p klipli montaj: avval dubl tanlash (scripts/takes.py), keyin bitta asosiy videoga yig'iladi (assemble.py)
         import assemble as A
         C.busy_acquire(f"montaj: {source.name}")
-        built = A.build(source, style)
+        build_from = source
+        if source.is_dir() and not args.no_takes:
+            import takes as TK
+            takes = TK.prepare(source, style, args.script)
+            if takes:
+                build_from = takes["manifest"]
+                args.no_repeats = True         # takrorlar dubl tanlashda hal qilingan (o'xshash gaplar kesilmasin)
+        built = A.build(build_from, style)
         video, protect = built["video"], built["protect"]
     else:
         video = C.need_file(args.video, "Video")
@@ -136,7 +149,10 @@ def main() -> int:
     want_cut = bool(style["cut"].get("enabled", True)) and not args.no_cut
     # tayyor skript: --script yoki video yonidagi shu nomli .txt
     script_file = None
-    if args.script:
+    if takes is not None:
+        # dubl tanlash skripti: subtitr faqat montajga tushgan gaplardan (temp/<nom>/script.lines.txt)
+        script_file = Path(takes["script_lines"]) if takes.get("script_lines") else None
+    elif args.script:
         script_file = C.need_file(args.script, "Skript fayli")
     elif not args.no_script and video.with_suffix(".txt").is_file():
         script_file = video.with_suffix(".txt")
@@ -226,6 +242,9 @@ def main() -> int:
                 C.info(f"\n  Lug'at bo'yicha {len(changed)} ta joy to'g'rilandi: "
                        + ", ".join(f"{old} -> {new}" for _, old, new in changed[:12])
                        + (" ..." if len(changed) > 12 else ""))
+        if takes is not None and words:
+            import takes as TK
+            TK.verify(work, words, style)      # yig'ilgan video: qamrov, tushib qolgan/ortiqcha so'z, ulanishlar
 
         # ---- 2. kesish
         if want_cut:

@@ -31,6 +31,7 @@ CYR = {"а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "
        "у": "u", "ф": "f", "х": "x", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sh", "ъ": "", "ы": "i", "ь": "",
        "э": "e", "ю": "yu", "я": "ya", "ў": "o", "қ": "q", "ғ": "g", "ҳ": "h"}
 WRAP = {"huge": "!!", "big_accent": "**", "big": "*", "accent": "_"}
+APOSTROPHES = "'`´ʻʼ‘’"   # o' o‘ oʻ: hammasi bir xil (ʻ va ʼ harf hisoblanadi, shuning uchun alohida olib tashlanadi)
 MATCH = 0.7          # shundan yuqori o'xshashlik "bir xil so'z" hisoblanadi
 GAP = -0.45          # tashlab ketilgan so'z uchun jarima
 
@@ -41,7 +42,7 @@ def norm(token: str) -> str:
     for ch in token.lower():
         if ch in CYR:
             out.append(CYR[ch])
-        elif ch.isalnum():
+        elif ch.isalnum() and ch not in APOSTROPHES:
             out.append(ch)
     return "".join(out)
 

@@ -12,14 +12,35 @@ Talk to the user in **Uzbek**, short numbered steps. Read first, fully: `docs/PR
 `scripts/promo_looks.py`, `scripts/elements.py`. Python is `.venv/Scripts/python.exe` from the project root.
 Never read `.env`. Never write into `input/` or `samples/`.
 
+## Clip folder (takes: best take per line, right order)
+
+When the input is a folder of clips (with or without `script.txt`), `pipeline.py` first runs `scripts/takes.py`
+(read `docs/TAKES.md`): it transcribes every clip, finds bad and repeated takes, keeps the best take of each line,
+cuts at word boundaries (padding, quietest point, short fade), orders the lines (script order; without a script:
+numbered names -> recording time -> content, the last one low confidence) and assembles. Originals are never changed;
+"removing" only means leaving a take out of the edit list.
+
+1. `pipeline.py input/<folder> --style temp/<job>/style.json --prepare-only`. Read the printed "Tasdiqqa chiqadigan
+   qarorlar" list and `temp/<job>/report.html` (status colours, score and reason, runner-up, cut thumbnails).
+2. For clips without speech and for every close call / needs-decision / missing line, look at the frames
+   (`frames.py <clip> --n 6 -o temp/<job>/...`), write your proposal into `temp/<job>/takes.override.json`
+   (`pin`, `force`, `exclude`, `place`, `order`, `clip_order`, `clips`) and re-run. Never accept a low-confidence item silently.
+3. The ONE approval message carries: `report.html`, the order and its source, each close call / needs decision /
+   missing line with your choice and reason, the places of clips without speech, the marked subtitle text, stills.
+   The subtitle text approval is never skipped.
+4. Write the user's answer into the override file and the video note, re-run. After transcription of the assembled
+   video the pipeline prints the verification (coverage %, missing / extra / out-of-order words, every junction):
+   report any problem.
+
 ## Autonomy (the user gives only the clips)
 
 1. Everything comes from the footage: transcribe all speech and voice-over clips; read clearly visible text in
    frames (box, uniform, signboard, menu, price tag) with `frames.py` - as text only, never cut out a logo.
 2. Item names, set numbers, price, offer and call to action only if said or clearly visible. Never invent.
    Uncertain -> `[?word]` with its source (clip + time) in the approval message.
-3. Decide the clip roles yourself from the sound, the "Kliplar bo'yicha nutq" table and the frames; fix
-   `temp/<job>/clips.json` and re-run. Show the role list in the approval message.
+3. Decide the clip roles yourself from the sound, the "Kliplar bo'yicha nutq" table, `report.html` and the frames;
+   write roles and voice-over `cover` into `temp/<job>/takes.override.json` -> `clips` and re-run (a hand-edited
+   `clips.json` wins over the takes proposal). Show the role list in the approval message.
 4. Ask only once, only for the Instagram handle of the follow card (none given -> no handle). Music and logo
    only from files the user gives; otherwise the clips' own sound, no logo.
 

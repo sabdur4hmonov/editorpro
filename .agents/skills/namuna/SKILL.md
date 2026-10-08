@@ -65,6 +65,26 @@ Never write into `input/` or `samples/`.
    At the end, when the other agent is idle, one agent updates feedback, glossary and AGENT_MEMORY,
    and any approved shared settings, then commits.
 
+## Clip folder (takes: best take per line, right order)
+
+When the input is a folder of clips (with or without `script.txt`), `pipeline.py` first runs `scripts/takes.py`
+(read `docs/TAKES.md`): it transcribes every clip, finds bad and repeated takes, keeps the best take of each line,
+cuts at word boundaries (padding, quietest point, short fade), orders the lines (script order; without a script:
+numbered names -> recording time -> content, the last one low confidence) and assembles. Originals are never changed;
+"removing" only means leaving a take out of the edit list.
+
+1. `pipeline.py input/<folder> --style temp/<job>/style.json --prepare-only`. Read the printed "Tasdiqqa chiqadigan
+   qarorlar" list and `temp/<job>/report.html` (status colours, score and reason, runner-up, cut thumbnails).
+2. For clips without speech and for every close call / needs-decision / missing line, look at the frames
+   (`frames.py <clip> --n 6 -o temp/<job>/...`), write your proposal into `temp/<job>/takes.override.json`
+   (`pin`, `force`, `exclude`, `place`, `order`, `clip_order`, `clips`) and re-run. Never accept a low-confidence item silently.
+3. The ONE approval message carries: `report.html`, the order and its source, each close call / needs decision /
+   missing line with your choice and reason, the places of clips without speech, the marked subtitle text, stills.
+   The subtitle text approval is never skipped.
+4. Write the user's answer into the override file and the video note, re-run. After transcription of the assembled
+   video the pipeline prints the verification (coverage %, missing / extra / out-of-order words, every junction):
+   report any problem.
+
 ## Autonomy (derive, flag, never invent)
 
 - Derive names, numbers, places, offers and the call to action from the speech (transcript) and from text
