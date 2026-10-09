@@ -1,0 +1,1 @@
+Original sound synthesized by this project (scripts/sfx_synth.py, numpy). No external recording or stock licence. Generated for project use.

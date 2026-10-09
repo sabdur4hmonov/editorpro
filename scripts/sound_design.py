@@ -18,20 +18,22 @@ def variants(category,brand_dir=None):
     import audio_mix
     from sfx_library import provenance
     dirs=([Path(brand_dir)/'sfx'] if brand_dir else [])+[C.ROOT/'assets/sfx']
-    real, synth = [], []
+    real, synth = [], []          # synth: (synth_version, path)
     for folder in dirs:
         found=sorted(p for p in (folder/category).glob('*') if p.suffix.lower() in audio_mix.SFX_EXTS)
         for path in found:
             meta=provenance(path)
             if meta['kind']=='real' and meta['usable']: real.append(path)
-            elif meta['kind']=='synthesized': synth.append(path)
+            elif meta['kind']=='synthesized': synth.append((int(meta.get('synth_version',1)),path))
         for ext in audio_mix.SFX_EXTS:
             path=folder/(LEGACY.get(category,category)+ext)
             if path.is_file():
                 meta=provenance(path)
                 if meta['kind']=='real' and meta['usable']: real.append(path)
-                elif meta['kind']=='synthesized' and not found: synth.append(path)
-    return real or synth
+                elif meta['kind']=='synthesized' and not found: synth.append((int(meta.get('synth_version',1)),path))
+    if real: return real          # licensed real recordings always win over synthesis
+    newest=max((v for v,_ in synth),default=0)
+    return [p for v,p in synth if v==newest]
 
 def gather(style,elements,cues,words,brand_dir=None):
     import elements as E

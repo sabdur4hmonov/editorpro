@@ -24,3 +24,9 @@ __pycache__/
 Claude outputs/
 # Agentlar orasidagi navbat almashish eslatmasi (faqat shu kompyuterda kerak)
 HOLAT.md
+# Sotib olingan SFX: do'kon litsenziyasi odatda qayta tarqatishni taqiqlaydi. Faqat assets/sfx/index.json
+# va assets/sfx/_licenses/*.md gitda; audio va ularning yonidagi credit/LICENSE fayllari faqat shu kompyuterda.
+assets/sfx/_inbox/
+assets/sfx/_unsorted/
+assets/sfx/**/real__*
+brands/**/sfx/real__*

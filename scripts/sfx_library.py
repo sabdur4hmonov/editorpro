@@ -25,6 +25,7 @@ def index(folder):
     rows=[]
     for path in sorted(Path(folder).rglob('*')):
         if path.suffix.lower() not in audio_mix.SFX_EXTS or not path.is_file(): continue
+        if any(part.startswith('_') for part in path.relative_to(folder).parts[:-1]): continue  # _inbox/_preview/_unsorted
         meta=provenance(path)
         if not meta.get('source'):
             meta.update(source='UNKNOWN: user supplied; original page not provided',

@@ -29,7 +29,7 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | `style/glossary.json`, `brands/<nom>/glossary.json` | Lug'at: whisper doim xato yozadigan so'zlar (avtomatik to'g'rilanadi). |
 | `style/fonts/` | Shriftlar: Inter, Montserrat, Onest, Oswald, Unbounded, Playfair Display, Caveat. |
 | `brands/<nom>/` | Brend profili: `brand.json`, `logo.png`, `notes.md`, `glossary.json`, `fonts/`, `music/`, `sfx/`. |
-| `assets/sfx/` | Ovoz effektlari: pop, click, tick, thud, ding, whoosh, swipe, riser. |
+| `assets/sfx/` | Ovoz effektlari, 10 kategoriya papkasi (whoosh, swipe, pop, click, tick, hit, impact, riser, ding, typing): sintez v2 + import qilingan haqiqiy fayllar (`real__*`, gitga kirmaydi). `docs/SFX.md`. |
 | `assets/models/` | Yuzni topish modeli (YuNet). |
 | `assets/emoji/` | Emoji rasmlari (Noto, bitta zip ichida). |
 | `assets/icons/` | 1500+ vektor belgi (Phosphor, MIT): `icon` elementi va `icons.py`. |
@@ -37,6 +37,7 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | `.env` | Maxfiy kalitlar (stok va AI rasm xizmatlari). Gitga kirmaydi, o'qib ko'rsatilmaydi. |
 | `docs/claude_skills/` | Claude Code uchun `/montaj`, `/namuna`, `/brend`, `/transcribe-uz` buyruqlari (manba; `.claude/skills/` ga ko'chiriladi). |
 | `docs/PLAYBOOK.md` | Montajor qo'llanmasi: qaror qabul qilish tartibi. **Har montajda o'qiladi.** |
+| `docs/SFX.md` | Ovoz effektlari: numpy sintez v2, sotib olinadigan to'plam tavsiyasi, `_inbox` dan import, litsenziya, git qoidasi. |
 | `docs/TAKES.md` | Klip papkasi: yomon/takroriy dubllarni topish, eng yaxshisini so'z chegarasida kesish, tartib, `report.html`. |
 | `docs/PROMO.md` | Restoran/mahsulot promo retsepti (namuna 20): ko'p klip, yorliq, narx, ovoz subtitri. `/promo` skilli. |
 | `docs/NAMUNA_USLUBI.md` | Namuna videolar (`samples/`) uslubi: subtitr uslublari, animatsiyalar, elementlar. |
@@ -121,7 +122,9 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `frames.py VIDEO` | Tayyor videodan kadrlar varag'i (natijani ko'rib tekshirish uchun). |
 | `compose.py VIDEO` | Motion render: zoom, subtitr animatsiyasi, elementlar, brend, ovoz. |
 | `subtitles.py`, `render.py` | Eski oddiy dvigatel (`captions.engine: ass`): ASS subtitr va render. |
-| `audio_mix.py`, `make_sfx.py` | Ovozni yig'ish; ovoz effektlarini generatsiya qilish. |
+| `audio_mix.py`, `make_sfx.py` | Ovozni yig'ish; eski (v1) effekt generatori. |
+| `sfx_synth.py` | SFX sintez v2 (numpy): 10 kategoriya × 4 variant, bir xil balandlik, `_preview/`. |
+| `sfx_import.py` | Sotib olingan to'plam: `assets/sfx/_inbox/` → konvert, jimlik kesish, normalizatsiya, kategoriya, litsenziya eslatmasi, indeks (`--shop`, `--license`). |
 | `face.py VIDEO` | Yuz joylashuvini topadi. |
 | `reactions.py VIDEO --words ...` | Nutqsiz baland joylarni topadi (kulgu, qarsak): effekt va emoji vaqti uchun. Taxmin, kadrdan tekshir. |
 | `new_brand.py NOM` | Yangi brend papkasi va `brand.json` yaratadi. |

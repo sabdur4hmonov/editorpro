@@ -1,20 +1,13 @@
 # SFX kutubxonasi
 
-Kategoriya papkalari: whoosh, pop, click, hit, riser, ding, swipe, typing, tick, impact.
-Mavjud tovushlar scripts/make_sfx.py yordamida sintez qilingan. synth01 — eski loyiha WAV'i,
-synth02 — shu ovozning balandroq pitch varianti. Bu haqiqiy field recording emas.
-Har WAV yonida LICENSE.txt va credit.json bor. Eski 8 tekis fayl moslik uchun saqlangan.
+Kategoriyalar: whoosh, pop, click, hit, riser, ding, swipe, typing, tick, impact. To'liq qo'llanma: `docs/SFX.md`.
 
-7 kategoriya to'ldirilgan: whoosh, pop, click, riser, ding, swipe, tick (ikkitadan variant).
-Yetishmayotgan alohida kategoriyalar: **hit, typing, impact**. Hit/impact vaqtincha thud.wav'dan
-foydalanadi; typing avtomatik qo'yilmaydi. Haqiqiy yozib olingan variantlar barcha 10 kategoriyada yo'q.
+- `synth_v2_NN.wav` — `scripts/sfx_synth.py` (numpy) bilan yasalgan, loyihaning o'z tovushi, har kategoriyada 4 ta.
+  Eski `synth_01/02.wav` va tekis `pop.wav`... (v1, `scripts/make_sfx.py`) moslik uchun qoldi; v2 bor ekan ular tanlanmaydi.
+- `real__<paket>__<nom>.wav` — sotib olingan to'plamdan `scripts/sfx_import.py` bilan import qilingan. Litsenziyasi
+  tasdiqlangan haqiqiy fayl har doim sintezdan ustun. Bu fayllar gitga kirmaydi (`.gitignore`).
+- `_preview/<kategoriya>.wav` — kategoriyani eshitib ko'rish uchun variantlar ketma-ket.
+- `_inbox/` — sotib olingan zip/papka shu yerga; `_unsorted/` — nomidan kategoriya aniqlanmaganlar; `_licenses/` — paket litsenziyasi.
+- `index.json` — `scripts/sfx_library.py` indeksi (manba, litsenziya, sha256, davomiylik).
 
-Pixabay rasmiy API: https://pixabay.com/api/docs/ — image/video endpointlar; sound effects endpointi
-hujjatlashtirilmagan. Brauzerdan avtomatik SFX yuklash yo'li qo'shilmagan.
-Foydalanuvchi kerakli WAV/MP3ni va litsenziya matnini o'zi beradi: faylga original sahifa URL'i,
-muallif, litsenziya va yuklangan sana qo'shilsin. Faqat tijoratda ruxsatli fayllar.
-Bir kategoriyaga kamida 2 turli yozuv: immediate repeat'ni oldini olish mumkin bo'ladi.
-
-Sintez kutubxonasini yaratish (mavjud fayllar --force'siz almashtirilmaydi):
-`.venv\Scripts\python.exe scripts\make_sfx.py --library`.
-Ovozni agent eshitmaydi: subtle/stronger tanlovni foydalanuvchi qiladi.
+Agent ovozni eshitmaydi: subtle/stronger va effekt tanlovini foydalanuvchi tinglab tasdiqlaydi.
