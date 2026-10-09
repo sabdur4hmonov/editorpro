@@ -324,3 +324,23 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
 - Earlier memory line "final committed version not Claude-reviewed" was stale: original review in
   temp/style_study/build_review.md includes acceptance/tests of 925672a/1926d6e. Tracked verbatim as
   STYLE_STUDY/build_review_claude_committed.md; newest solo changes have no independent Claude review.
+
+## 2026-10-10 — Codex — proof checkpoint and next real video
+
+- Part2 saved as 508fa16. Final 12 suites168/168; latest isolated selftest43/43, exact final script hashes
+  rechecked. Offline/--no-whisper scope and preserved production note guard in STYLE_STUDY/tests.md.
+- 14 own approved-content short review exports, stronger/subtle, actual-PTS reference-vs-new sheets,
+  same-clip A/B, cue sheets/waveforms in temp/style_study/finish/gallery.html. Original sample media
+  used in analysis JPEGs only; no export copies logos/footage/audio/font. Old proofs retained.
+- A now an original lung hero (0.36s,54% configured width); B2 ONE pivot fan with count icons, no
+  fake medicine names. A/C/D technical gates pass; B1/B2 still fail source cut cadence. No target
+  changed to inflate score. C unnecessary photo removed. No matching claim for absent raw formats.
+- Manual limitations recorded: B2 fan low in platform UI area, D calendar decorative numeral should
+  be calendar-blank on real edit. These are review demonstrations, not approved platform finals.
+  Technical score does not establish every design/semantic issue or sound/motion taste.
+- Sample42 bracket cannot be transferred to a doctor count as invented medical winners. A/B2
+  sixth saved iteration cap respected; no new footage/list/dialog/role fabricated to fix a failed gate.
+- Doctor4 AND5 already have final exports/completed notes, so "whichever lacks final" has no eligible
+  job. Doctor1/3 notes remain open. User now asks to save promptly and trial a NEW video from scratch.
+  Read new input path/job and use normal ONE approval message before burn-in; keep creative/raw-format
+  trial and user sound judgment outstanding. Reuse cache and selected format/family docs to save tokens.

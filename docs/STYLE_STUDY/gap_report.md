@@ -30,4 +30,18 @@ Static diagonal/arch card mask mavjud; HARAKATLI video panel wipe hali partial. 
 
 Proofs3iteration tugadi: mexanika ishlaydi, professional reference reproduction hali teng emas. A kichik pill kalkulyator propiga teng emas va captionni qaytaradi; B2 row shared-pivot fan emas, ortiqcha "5" takrori; B1 chiqishda yuzni qisqa yopadi; C chiqishda safe-zone chetiga yaqinlashishi mumkin; D pan originaldan ancha qisqa. Kontrast A smog oynasida ritm ko‘rigi bilan qayta baholansin. Foydalanuvchining ≤3 iteration chegarasi sabab keyingi render qilinmadi.
 
-CPU: Canvas/TrackedText full-frame RGBA alloc/warp qiladi; qisqa sahnalarda ishlat. Bbox/static-child caching keyingi optimizatsiya. Agent ovoz didini yoki harakatning professionalligini tasdiqlamaydi. Final build mustaqil Claude test-review hali pending.
+CPU: Canvas/TrackedText full-frame RGBA alloc/warp qiladi; qisqa sahnalarda ishlat. Bbox/static-child caching keyingi optimizatsiya. Agent ovoz didini yoki harakatning professionalligini tasdiqlamaydi. 925672a/1926d6e build mustaqil Claude reviewdan o‘tgan (build_review_claude_committed.md); so‘nggi solo continuation hali mustaqil qayta ko‘rilmagan.
+
+## Solo continuation (avvalgi iteration3 hisobotini almashtirmaydi)
+
+Shared-pivot fan/stack/spread, original obyekt hero/path/trail/2.5D, semantic graphics proposals,
+caption-label no-repeat va per-frame face safety qo‘shildi. Missing-face/unknown hech qachon gate pass emas.
+B1 exit yuz muammosi tuzatildi; A label o‘rniga original o‘pka grafika, B2 row o‘rniga haqiqiy fan.
+Caption masking asl matn va so‘z vaqtlarini o‘zgartirmaydi. Yangi skilllar format rejasini eski
+universal talking-head qoidalaridan ustun qo‘yadi; sokin suhbatga majburiy follow/SFX/grafika yo‘q.
+
+14 yangi qisqa proof, original-vs-new PTS strips, kuchli/sokin mix va texnik gate:
+`solo_finish.md` / `solo_proof_summary.json`, `temp/style_study/finish/gallery.html`.
+A/C/D gate o‘tdi; B1/B2 cut density fail saqlandi. To‘liq source texnikasi bilan tenglik da’vo qilinmaydi:
+yo‘q dialog/rakurs/syujet/rolni bitta doktor kadri bilan yaratib bo‘lmaydi. D hali reference pan emas.
+True3D/fold/haqiqiy pen stroke foydalanuvchi tomonidan keyingi GPU laptopgacha kechiktirilgan.

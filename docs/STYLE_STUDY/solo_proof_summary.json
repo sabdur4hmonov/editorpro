@@ -1,0 +1,794 @@
+[
+  {
+    "reference": "samples/sample 33.mp4",
+    "reference_window_start": 1.56,
+    "own_window_start": 4.94,
+    "actual_decoded_pts": [
+      [
+        1.56,
+        1.68,
+        1.76,
+        1.88,
+        1.96,
+        2.08,
+        2.16,
+        2.28
+      ],
+      [
+        4.966666666666667,
+        5.066666666666666,
+        5.166666666666667,
+        5.266666666666667,
+        5.366666666666666,
+        5.466666666666667,
+        5.566666666666666,
+        5.666666666666667
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "A",
+    "status": "close",
+    "reason": "Own lung object, rotation/trail, 0.36s entrance and 54% configured width replace the redundant tag. Source is a photographic calculator with ~60% width and folding; true 3D/folds explicitly deferred.",
+    "iteration": 6,
+    "duration": 6.96,
+    "configured_entrance_frames_30fps": [
+      10.799999999999999
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 209,
+      "frames_with_face": 209,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "measured_pass",
+    "score": 100.0,
+    "fix_list": [],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/sample 35.mp4",
+    "reference_window_start": 8.4,
+    "own_window_start": 4.68,
+    "actual_decoded_pts": [
+      [
+        8.4,
+        8.52,
+        8.6,
+        8.72,
+        8.8,
+        8.92,
+        9.0,
+        9.12
+      ],
+      [
+        4.7,
+        4.8,
+        4.9,
+        5.0,
+        5.1,
+        5.2,
+        5.3,
+        5.4
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "B1",
+    "status": "not matched",
+    "reason": "Four-person count is meaningful and exit is face-safe; it is NOT s35 mint-ticket unfold/editorial document montage. Approved excerpt contains a statistic, no document/scene sequence; true folds deferred. Cut target remains failed.",
+    "iteration": 5,
+    "duration": 7.12,
+    "configured_entrance_frames_30fps": [
+      9.0
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 214,
+      "frames_with_face": 214,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "needs_fix_or_measurement",
+    "score": 91.7,
+    "fix_list": [
+      {
+        "key": "cuts_per_min",
+        "status": "fail",
+        "value": 0.0,
+        "target": [
+          5,
+          21
+        ],
+        "method": "verified editorial cuts; zoom/overlay changes are not cuts"
+      }
+    ],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/sample 26.mp4",
+    "reference_window_start": 4.3,
+    "own_window_start": 1.26,
+    "actual_decoded_pts": [
+      [
+        4.32,
+        4.4,
+        4.52,
+        4.6,
+        4.72,
+        4.8,
+        4.92,
+        5.0
+      ],
+      [
+        1.2666666666666666,
+        1.3666666666666667,
+        1.4666666666666666,
+        1.5666666666666667,
+        1.6666666666666667,
+        1.7666666666666666,
+        1.8666666666666667,
+        1.9666666666666666
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "B2",
+    "status": "close",
+    "reason": "Shared-pivot fan, one active accent, no duplicate 5 or vitamin label. Caption separated from fan. Source reveals five distinct spoken nouns; our speech only says five medicines, so no invented names or fake per-item word sync. Cut target remains failed.",
+    "iteration": 6,
+    "duration": 5.56,
+    "configured_entrance_frames_30fps": [
+      9.0
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 167,
+      "frames_with_face": 167,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "needs_fix_or_measurement",
+    "score": 91.7,
+    "fix_list": [
+      {
+        "key": "cuts_per_min",
+        "status": "fail",
+        "value": 0.0,
+        "target": [
+          12,
+          38
+        ],
+        "method": "verified editorial cuts; zoom/overlay changes are not cuts"
+      }
+    ],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/sample 32.mp4",
+    "reference_window_start": 20.96,
+    "own_window_start": 1.66,
+    "actual_decoded_pts": [
+      [
+        20.96,
+        21.08,
+        21.16,
+        21.28,
+        21.36,
+        21.48,
+        21.56,
+        21.68
+      ],
+      [
+        1.6666666666666667,
+        1.7666666666666666,
+        1.8666666666666667,
+        1.9666666666666666,
+        2.066666666666667,
+        2.1666666666666665,
+        2.2666666666666666,
+        2.3666666666666667
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "C",
+    "status": "close",
+    "reason": "Smaller white captions and one continuous calm answer. Removed irrelevant polaroid. Source photo reflow is NOT reproduced: the excerpt contains no building/photo evidence to illustrate it.",
+    "iteration": 5,
+    "duration": 8.2,
+    "configured_entrance_frames_30fps": [],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 246,
+      "frames_with_face": 246,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "measured_pass",
+    "score": 100.0,
+    "fix_list": [],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/sample 37.mp4",
+    "reference_window_start": 2.3,
+    "own_window_start": 1.82,
+    "actual_decoded_pts": [
+      [
+        2.3,
+        2.4,
+        2.5,
+        2.6,
+        2.7,
+        2.8,
+        2.9,
+        3.0
+      ],
+      [
+        1.8333333333333333,
+        1.9333333333333333,
+        2.033333333333333,
+        2.1333333333333333,
+        2.2333333333333334,
+        2.3333333333333335,
+        2.433333333333333,
+        2.533333333333333
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "D",
+    "status": "not matched",
+    "reason": "Calendar object illustrates 8-10 times; technical gate passes. It is NOT the source continuous canvas-pan commercial; no relevant photographed product/story scene exists in this doctor passage.",
+    "iteration": 4,
+    "duration": 7.32,
+    "configured_entrance_frames_30fps": [
+      10.200000000000001
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 220,
+      "frames_with_face": 220,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "measured_pass",
+    "score": 100.0,
+    "fix_list": [],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/Talking head.mp4",
+    "reference_window_start": 0.6,
+    "own_window_start": 4.94,
+    "actual_decoded_pts": [
+      [
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        1.3
+      ],
+      [
+        4.966666666666667,
+        5.066666666666666,
+        5.166666666666667,
+        5.266666666666667,
+        5.366666666666666,
+        5.466666666666667,
+        5.566666666666666,
+        5.666666666666667
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "talking_head",
+    "status": "close",
+    "reason": "Single speaker retained and concrete lung illustration. No copied giant orbiting numbers or phone screens: they would add unspoken claims.",
+    "iteration": 1,
+    "duration": 6.96,
+    "configured_entrance_frames_30fps": [
+      10.799999999999999
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 209,
+      "frames_with_face": 209,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "measured_pass",
+    "score": 100.0,
+    "fix_list": [],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/Interview.mp4",
+    "reference_window_start": 1,
+    "own_window_start": 1.66,
+    "actual_decoded_pts": [
+      [
+        1.0,
+        1.12,
+        1.2,
+        1.32,
+        1.4,
+        1.52,
+        1.6,
+        1.72
+      ],
+      [
+        1.6666666666666667,
+        1.7666666666666666,
+        1.8666666666666667,
+        1.9666666666666666,
+        2.066666666666667,
+        2.1666666666666665,
+        2.2666666666666666,
+        2.3666666666666667
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "interview",
+    "status": "not matched",
+    "reason": "Source excerpt is an approved single seated doctor; it cannot create a missing interviewer/reverse shot. Calm caption/photo treatment only.",
+    "iteration": 2,
+    "duration": 8.2,
+    "configured_entrance_frames_30fps": [],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 246,
+      "frames_with_face": 246,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "measured_pass",
+    "score": 100.0,
+    "fix_list": [],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/Kadr rakursli.mp4",
+    "reference_window_start": 1.6,
+    "own_window_start": 1.82,
+    "actual_decoded_pts": [
+      [
+        1.6,
+        1.72,
+        1.8,
+        1.92,
+        2.0,
+        2.12,
+        2.2,
+        2.32
+      ],
+      [
+        1.8333333333333333,
+        1.9333333333333333,
+        2.033333333333333,
+        2.1333333333333333,
+        2.2333333333333334,
+        2.3333333333333335,
+        2.433333333333333,
+        2.533333333333333
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "kadr_rakursli",
+    "status": "not matched",
+    "reason": "No synced second camera angle exists in the approved excerpt; a fake crop is not a new camera angle.",
+    "iteration": 1,
+    "duration": 7.32,
+    "configured_entrance_frames_30fps": [
+      10.200000000000001
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 220,
+      "frames_with_face": 220,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "measured_pass",
+    "score": 100.0,
+    "fix_list": [],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/Syudjetli.mp4",
+    "reference_window_start": 0.2,
+    "own_window_start": 4.94,
+    "actual_decoded_pts": [
+      [
+        0.2,
+        0.32,
+        0.4,
+        0.52,
+        0.6,
+        0.72,
+        0.8,
+        0.92
+      ],
+      [
+        4.966666666666667,
+        5.066666666666666,
+        5.166666666666667,
+        5.266666666666667,
+        5.366666666666666,
+        5.466666666666667,
+        5.566666666666666,
+        5.666666666666667
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "syudjetli",
+    "status": "not matched",
+    "reason": "This approved excerpt has no action/decision/scene sequence; story requires filmed narrative shots, not extra cards.",
+    "iteration": 1,
+    "duration": 6.96,
+    "configured_entrance_frames_30fps": [
+      10.799999999999999
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 209,
+      "frames_with_face": 209,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "needs_fix_or_measurement",
+    "score": 83.3,
+    "fix_list": [
+      {
+        "key": "graphics_per_min",
+        "status": "fail",
+        "value": 17.24137931034483,
+        "target": [
+          4,
+          16
+        ],
+        "method": "top-level visual element starts; group children separately in event spacing"
+      },
+      {
+        "key": "calm_stretch",
+        "status": "fail",
+        "value": false,
+        "target": null,
+        "method": "longest span without added graphic 1.240s; captions/source motion can remain"
+      }
+    ],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/Obrazli.mp4",
+    "reference_window_start": 2.96,
+    "own_window_start": 1.82,
+    "actual_decoded_pts": [
+      [
+        2.9612946279612946,
+        3.0864197530864197,
+        3.1698365031698366,
+        3.2949616282949616,
+        3.3783783783783785,
+        3.461795128461795,
+        3.5869202535869205,
+        3.670337003670337
+      ],
+      [
+        1.8333333333333333,
+        1.9333333333333333,
+        2.033333333333333,
+        2.1333333333333333,
+        2.2333333333333334,
+        2.3333333333333335,
+        2.433333333333333,
+        2.533333333333333
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "obrazli",
+    "status": "not matched",
+    "reason": "No performed character/costume/reaction footage exists in the approved excerpt. Graphics cannot establish staged role acting.",
+    "iteration": 1,
+    "duration": 7.32,
+    "configured_entrance_frames_30fps": [
+      10.200000000000001
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 220,
+      "frames_with_face": 220,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "measured_pass",
+    "score": 100.0,
+    "fix_list": [],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/Savol javob.mp4",
+    "reference_window_start": 1,
+    "own_window_start": 4.68,
+    "actual_decoded_pts": [
+      [
+        1.0,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.6,
+        1.7
+      ],
+      [
+        4.7,
+        4.8,
+        4.9,
+        5.0,
+        5.1,
+        5.2,
+        5.3,
+        5.4
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "savol_javob",
+    "status": "not matched",
+    "reason": "No approved question-answer exchange in this passage. A fabricated question or choice would add unspoken content.",
+    "iteration": 1,
+    "duration": 7.12,
+    "configured_entrance_frames_30fps": [
+      9.0
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 214,
+      "frames_with_face": 214,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "needs_fix_or_measurement",
+    "score": 91.7,
+    "fix_list": [
+      {
+        "key": "cuts_per_min",
+        "status": "fail",
+        "value": 0.0,
+        "target": [
+          5,
+          21
+        ],
+        "method": "verified editorial cuts; zoom/overlay changes are not cuts"
+      }
+    ],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/Tepa-past.mp4",
+    "reference_window_start": 2,
+    "own_window_start": 4.94,
+    "actual_decoded_pts": [
+      [
+        2.0,
+        2.1,
+        2.2,
+        2.3,
+        2.4,
+        2.5,
+        2.6,
+        2.7
+      ],
+      [
+        4.966666666666667,
+        5.066666666666666,
+        5.166666666666667,
+        5.266666666666667,
+        5.366666666666666,
+        5.466666666666667,
+        5.566666666666666,
+        5.666666666666667
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "tepa_past",
+    "status": "close",
+    "reason": "One doctor above smog b-roll, then full-frame doctor. Split geometry present; reference has two speakers + screen recording, so content structure differs.",
+    "iteration": 1,
+    "duration": 6.96,
+    "configured_entrance_frames_30fps": [
+      10.799999999999999
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 209,
+      "frames_with_face": 209,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "needs_fix_or_measurement",
+    "score": 83.3,
+    "fix_list": [
+      {
+        "key": "graphics_per_min",
+        "status": "fail",
+        "value": 17.24137931034483,
+        "target": [
+          4,
+          16
+        ],
+        "method": "top-level visual element starts; group children separately in event spacing"
+      },
+      {
+        "key": "calm_stretch",
+        "status": "fail",
+        "value": false,
+        "target": null,
+        "method": "longest span without added graphic 1.240s; captions/source motion can remain"
+      }
+    ],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/Birinchi yuzdan.mp4",
+    "reference_window_start": 1,
+    "own_window_start": 1.66,
+    "actual_decoded_pts": [
+      [
+        1.0,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.6,
+        1.7
+      ],
+      [
+        1.6666666666666667,
+        1.7666666666666666,
+        1.8666666666666667,
+        1.9666666666666666,
+        2.066666666666667,
+        2.1666666666666665,
+        2.2666666666666666,
+        2.3666666666666667
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "birinchi_yuzdan",
+    "status": "not matched",
+    "reason": "Original doctor framing is not the close selfie/checklist reference; horizontal reframing tests fit only, not literal POV or a new spoken list.",
+    "iteration": 2,
+    "duration": 8.2,
+    "configured_entrance_frames_30fps": [],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0026,
+      "frames_checked": 246,
+      "frames_with_face": 246,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "needs_fix_or_measurement",
+    "score": 90.0,
+    "fix_list": [
+      {
+        "key": "caption_size_pct_h",
+        "status": "fail",
+        "value": 4.166666666666666,
+        "target": [
+          2.0,
+          4.0
+        ],
+        "method": "median actual fitted font line size / render height; NOT ink bbox or unidentified reference font"
+      },
+      {
+        "key": "voice_margin",
+        "status": "unknown",
+        "value": null,
+        "target": null,
+        "method": "measured additions relative to speech; never change the voice to boost SFX"
+      }
+    ],
+    "creative_approval": false,
+    "sound_approval": false
+  },
+  {
+    "reference": "samples/sample 42.mp4",
+    "reference_window_start": 0,
+    "own_window_start": 1.26,
+    "actual_decoded_pts": [
+      [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7
+      ],
+      [
+        1.2666666666666666,
+        1.3666666666666667,
+        1.4666666666666666,
+        1.5666666666666667,
+        1.6666666666666667,
+        1.7666666666666666,
+        1.8666666666666667,
+        1.9666666666666666
+      ]
+    ],
+    "alignment": "Different semantic events/footage; aligned observation windows, not pixel similarity or identical edits.",
+    "name": "sample42",
+    "status": "not matched",
+    "reason": "No tournament/comparison decisions in this approved speech; it demonstrates persistent count state only. Creating a bracket winner would invent a medical claim.",
+    "iteration": 1,
+    "duration": 5.56,
+    "configured_entrance_frames_30fps": [
+      9.0
+    ],
+    "own_editorial_cuts": 0,
+    "face": {
+      "ok": true,
+      "max_cover": 0.0,
+      "frames_checked": 167,
+      "frames_with_face": 167,
+      "limit": 0.03,
+      "verification": "measured"
+    },
+    "gate": "needs_fix_or_measurement",
+    "score": 91.7,
+    "fix_list": [
+      {
+        "key": "cuts_per_min",
+        "status": "fail",
+        "value": 0.0,
+        "target": [
+          12,
+          38
+        ],
+        "method": "verified editorial cuts; zoom/overlay changes are not cuts"
+      }
+    ],
+    "creative_approval": false,
+    "sound_approval": false
+  }
+]
