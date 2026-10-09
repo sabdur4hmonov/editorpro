@@ -1,0 +1,122 @@
+{
+  "suites": [
+    {
+      "suite": "test_motion_design.py",
+      "args": [],
+      "returncode": 0,
+      "seconds": 1.94,
+      "summary": [
+        "MOTION DESIGN NATIJA: 25/25",
+        "Ran 25 tests in 0.998s",
+        "OK"
+      ]
+    },
+    {
+      "suite": "test_motion.py",
+      "args": [],
+      "returncode": 0,
+      "seconds": 6.94,
+      "summary": [
+        "MOTION NATIJA: 15/15",
+        "Ran 15 tests in 5.850s",
+        "OK"
+      ]
+    },
+    {
+      "suite": "test_part0.py",
+      "args": [],
+      "returncode": 0,
+      "seconds": 1.28,
+      "summary": [
+        "Ran 5 tests in 0.474s",
+        "OK"
+      ]
+    },
+    {
+      "suite": "test_sprint2.py",
+      "args": [],
+      "returncode": 0,
+      "seconds": 15.76,
+      "summary": [
+        "Ran 21 tests in 14.131s",
+        "OK"
+      ]
+    },
+    {
+      "suite": "test_parallel.py",
+      "args": [],
+      "returncode": 0,
+      "seconds": 19.3,
+      "summary": [
+        "Ran 8 tests in 18.913s",
+        "OK"
+      ]
+    },
+    {
+      "suite": "test_takes.py",
+      "args": [],
+      "returncode": 0,
+      "seconds": 22.02,
+      "summary": [
+        "Ran 17 tests in 21.574s",
+        "OK"
+      ]
+    },
+    {
+      "suite": "test_studio.py",
+      "args": [],
+      "returncode": 0,
+      "seconds": 39.47,
+      "summary": [
+        "STUDIO NATIJA: 17/17",
+        "Ran 17 tests in 38.837s",
+        "OK"
+      ]
+    },
+    {
+      "suite": "test_agent_setup.py",
+      "args": [],
+      "returncode": 0,
+      "seconds": 16.52,
+      "summary": [
+        "Ran 13 tests in 16.180s",
+        "OK"
+      ]
+    },
+    {
+      "suite": "test_transcribe.py",
+      "args": [
+        "--no-whisper"
+      ],
+      "returncode": 0,
+      "seconds": 1.55,
+      "summary": [
+        "NATIJA: 9/9 tekshiruv o'tdi."
+      ]
+    },
+    {
+      "suite": "selftest.py",
+      "args": [
+        "--no-whisper"
+      ],
+      "returncode": 1,
+      "seconds": 0.2,
+      "summary": []
+    }
+  ],
+  "isolated_selftest": {
+    "returncode": 0,
+    "seconds": 134.16,
+    "summary": [
+      "    [XATO] PREFLIGHT: 1-subtitr: noma'lum preset: yoq-uslub",
+      "NATIJA: 43/43 tekshiruv o'tdi."
+    ],
+    "scope": "unchanged source copy --no-whisper --offline; production direct selftest refused preserved unfinished Claude note; no check weakened; network download checks intentionally not run per study no-download rule",
+    "source_hashes": 166,
+    "clone_root": "D:\\Coding projects\\editor pro\\temp\\style_study\\codex\\selftest_workspace"
+  },
+  "production_selftest": "precondition refused: preserved unfinished Claude doktor_1; guard unchanged",
+  "scope": "No Whisper inference/new model; offline selftest skips two network checks. Nine suites130/130, isolated43/43. No GPU test.",
+  "skills_sync": "--apply and --check: SKILLS sinxron",
+  "diff_check": "git diff --check passed"
+}

@@ -1,0 +1,920 @@
+{
+  "video": "s29",
+  "agent": "claude",
+  "schema": 1,
+  "sha1": "04db62a946c81fd9cb0b4f50c5a62078b2d12937",
+  "type": "B1_editorial_paper",
+  "technical": {
+    "duration": 54.61,
+    "width": 720,
+    "height": 1280,
+    "fps": 25.0,
+    "integrated_lufs": -14.5,
+    "true_peak_dbtp": -0.5,
+    "lra_lu": 3.8,
+    "speech": true,
+    "language": "uz",
+    "wpm": 141.0
+  },
+  "rhythm": {
+    "cut_source": "content27 (19 cuts) checked on overview pages; transitions at 7.48, 32.18, 34.82, 37.46, 46.62, 47.74, 48.62 are invert/white-panel wipes",
+    "cuts": [
+      1.96,
+      5.08,
+      7.48,
+      16.2,
+      20.76,
+      23.36,
+      25.08,
+      28.12,
+      30.4,
+      32.16,
+      34.92,
+      37.44,
+      39.24,
+      45.0,
+      46.6,
+      47.76,
+      48.56,
+      49.84,
+      54.32
+    ],
+    "first_cut": 1.96,
+    "cut_interval": {
+      "n": 18,
+      "mean": 2.909,
+      "median": 2.4,
+      "p10": 1.28,
+      "p90": 4.56,
+      "min": 0.8,
+      "max": 8.72
+    },
+    "hook": {
+      "start": 0.0,
+      "end": 5.08,
+      "evidence": "s29 0-5.1 overview_01: result first (IELTS 6.5, AMERIKADA grant) before the story"
+    },
+    "cta": {
+      "start": 49.8,
+      "end": 54.46,
+      "text": "agar sizni ham maqsadingiz amerikada o'qish bo'lsa, 4prepga kelishingizni maslahat beraman (spoken, single-word captions only)",
+      "evidence": "s29 49.8-54.4 overview_06"
+    },
+    "outro": {
+      "start": 53.6,
+      "kind": "fade to black ~0.8 s, no card",
+      "evidence": "s29 53.6-54.4 overview_06 (val 54 at 53.9)"
+    }
+  },
+  "speech": {
+    "words": 128,
+    "wpm": 141.0,
+    "pauses": [
+      {
+        "start": 13.0,
+        "end": 13.46,
+        "dur": 0.46
+      },
+      {
+        "start": 22.84,
+        "end": 23.26,
+        "dur": 0.42
+      }
+    ],
+    "pause_stats": {
+      "n": 2,
+      "mean": 0.44,
+      "median": 0.42,
+      "p10": 0.42,
+      "p90": 0.46,
+      "min": 0.42,
+      "max": 0.46
+    },
+    "cut_position": {
+      "pause": 0,
+      "word_gap": 11,
+      "mid_word": 8
+    },
+    "note": "2 gaps >= 0.3 s (0.42, 0.46) in 54 s. Transcript tail 'o'zbekistonda o'tmoqda...' after the fade is a whisper hallucination."
+  },
+  "texts": [
+    {
+      "id": "t1",
+      "text": "#...DA (green arc text on the shoulder)",
+      "role": "hook_title",
+      "font_guess": "condensed caps on a curved path",
+      "case": "upper",
+      "weight": "black",
+      "italic": false,
+      "color": "#1EA35A",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 3.0,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        5,
+        32,
+        40,
+        55
+      ],
+      "appear": 0.3,
+      "disappear": 1.96,
+      "anim_in": {
+        "type": "present at first frames",
+        "frames": 0
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s29 0.30-1.06 m_frames_0.30-1.10.jpg"
+    },
+    {
+      "id": "t2",
+      "text": "IELTS 6.5 (rotated to the paper)",
+      "role": "number",
+      "font_guess": "ultra-condensed caps",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 9.0,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        35,
+        55,
+        70,
+        72
+      ],
+      "appear": 0.94,
+      "disappear": 1.96,
+      "anim_in": {
+        "type": "fade-in, rotated ~-12 deg to match the held certificate",
+        "frames": 3
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "word",
+      "evidence": "s29 0.94-1.02 m_frames_0.30-1.10.jpg; overview_01 1.0-1.8"
+    },
+    {
+      "id": "t3",
+      "text": "AMERIKADA / ... grant asosida o'qish imkoniyatiga ega bo'ldim",
+      "role": "title",
+      "font_guess": "condensed caps on an arc above the head, green",
+      "case": "upper",
+      "weight": "black",
+      "italic": false,
+      "color": "#1EA35A",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 9.0,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        3,
+        8,
+        90,
+        30
+      ],
+      "appear": 2.07,
+      "disappear": 5.08,
+      "anim_in": {
+        "type": "fade 2-3 frames then slow scale-up",
+        "frames": 3
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s29 1.95-2.35 m_frames_1.95-2.40.jpg; badge sticker pops 2.15"
+    },
+    {
+      "id": "t4",
+      "text": "VIZA OLISH / uncha oson bo'lmadi",
+      "role": "title",
+      "font_guess": "ultra-condensed caps + small regular sub",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 12.0,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        12,
+        55,
+        88,
+        72
+      ],
+      "appear": 5.2,
+      "disappear": 7.48,
+      "anim_in": {
+        "type": "word-by-word fade (VIZA, then OLISH), sub words one by one",
+        "frames": 6
+      },
+      "anim_out": {
+        "type": "invert/white wipe",
+        "frames": 2
+      },
+      "per_word_sync": "word",
+      "evidence": "s29 5.2-6.4 overview_01 r4-5"
+    },
+    {
+      "id": "t5",
+      "text": "LEKIN / natijalarni ko'rib",
+      "role": "title",
+      "font_guess": "ultra-condensed caps (Bebas/Anton-like) + justified small sub",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 19.0,
+      "measure": "estimate (gridded frame)",
+      "box": [
+        33,
+        52,
+        73,
+        74
+      ],
+      "appear": 16.19,
+      "disappear": 17.9,
+      "anim_in": {
+        "type": "opacity fade-in after the small sub-line words",
+        "frames": 9,
+        "easing_guess": "linear/ease_in_out",
+        "overshoot": false,
+        "stagger_frames": null,
+        "from": "opacity 0.1",
+        "to": "1"
+      },
+      "anim_out": {
+        "type": "cut to small caption",
+        "frames": 0
+      },
+      "per_word_sync": "word",
+      "evidence": "s29 16.15-16.71 m_frames_16.15-16.75.jpg; size m_grid_frames 17.2"
+    },
+    {
+      "id": "t6",
+      "text": "dastlabki tayyorgarlikni / IELTS / o'rganishdan boshladim",
+      "role": "title",
+      "font_guess": "ultra-condensed caps",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 15.0,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        30,
+        38,
+        70,
+        60
+      ],
+      "appear": 19.2,
+      "disappear": 20.76,
+      "anim_in": {
+        "type": "slow scale-up of the caps word",
+        "frames": 30
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "word",
+      "evidence": "s29 19.2-20.6 overview_03 r1"
+    },
+    {
+      "id": "t7",
+      "text": "Birinchi natijam IELTS 6.5 bo'ldi (+ hand-drawn red circle)",
+      "role": "caption",
+      "font_guess": "handwriting script",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 3.0,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        35,
+        60,
+        85,
+        70
+      ],
+      "appear": 21.0,
+      "disappear": 23.36,
+      "anim_in": {
+        "type": "typewriter, ~1 letter per frame",
+        "frames": null
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "letter",
+      "evidence": "s29 21.0-22.4 overview_03 r2; m_grid_frames 22.4"
+    },
+    {
+      "id": "t8",
+      "text": "Keyin esa SATga o'qidim (white on red box) + script lines below",
+      "role": "caption",
+      "font_guess": "handwriting script; first line in a red marker box",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": "#C8102E",
+      "stroke_or_shadow": null,
+      "size_pct_h": 2.5,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        15,
+        60,
+        80,
+        72
+      ],
+      "appear": 23.4,
+      "disappear": 28.12,
+      "anim_in": {
+        "type": "typewriter; red box grows with the text",
+        "frames": null
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "letter",
+      "evidence": "s29 23.4-28.0 overview_03 r3-6"
+    },
+    {
+      "id": "t9",
+      "text": "kegin esa viza / INTERVYU / boshladik",
+      "role": "title",
+      "font_guess": "ultra-condensed caps + small sub above and below",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 12.0,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        20,
+        52,
+        80,
+        70
+      ],
+      "appear": 28.78,
+      "disappear": 30.42,
+      "anim_in": {
+        "type": "opacity fade-in after the small sub-line words",
+        "frames": 9,
+        "easing_guess": "linear/ease_in_out",
+        "overshoot": false,
+        "stagger_frames": null,
+        "from": "opacity 0.1",
+        "to": "1"
+      },
+      "anim_out": {
+        "type": "white flash transition",
+        "frames": 5
+      },
+      "per_word_sync": "word",
+      "evidence": "s29 28.70-29.46 m_frames_28.70-29.50.jpg"
+    },
+    {
+      "id": "t10",
+      "text": "ikkinchi marta / intervyuga ham / kirib / admissions / processing / oldim! ...",
+      "role": "caption",
+      "font_guess": "grotesk medium (Inter-like)",
+      "case": "lower",
+      "weight": "medium",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 2.5,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        35,
+        62,
+        65,
+        65
+      ],
+      "appear": 39.26,
+      "disappear": 44.98,
+      "anim_in": {
+        "type": "cut-on per 1-2 words",
+        "frames": 0
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "word",
+      "evidence": "s29 39.2-44.8 overview_05; m_grid_frames 39.4"
+    },
+    {
+      "id": "t11",
+      "text": "endi oldimda yangi bor! / MAQSADLAR",
+      "role": "title",
+      "font_guess": "ultra-condensed caps, sub above",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FFFCFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 15.0,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        17,
+        57,
+        83,
+        74
+      ],
+      "appear": 45.53,
+      "disappear": 46.62,
+      "anim_in": {
+        "type": "opacity fade-in after the small sub-line words",
+        "frames": 9,
+        "easing_guess": "linear/ease_in_out",
+        "overshoot": false,
+        "stagger_frames": null,
+        "from": "opacity 0.1",
+        "to": "1"
+      },
+      "anim_out": {
+        "type": "invert/white wipe",
+        "frames": 2
+      },
+      "per_word_sync": "word",
+      "evidence": "s29 45.45-46.01 m_frames_45.45-46.05.jpg; m_grid_frames 46.3"
+    },
+    {
+      "id": "t12",
+      "text": "Amerikada o'qish / yangi insonlar / yangi imkoniyatlar",
+      "role": "caption",
+      "font_guess": "grotesk bold",
+      "case": "lower",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 3.5,
+      "measure": "estimate (m_grid_frames)",
+      "box": [
+        30,
+        60,
+        70,
+        70
+      ],
+      "appear": 46.66,
+      "disappear": 49.8,
+      "anim_in": {
+        "type": "present on cut",
+        "frames": 0
+      },
+      "anim_out": {
+        "type": "invert/white wipe",
+        "frames": 2
+      },
+      "per_word_sync": "cue",
+      "evidence": "s29 46.66-49.6 strips_05 r4-6"
+    }
+  ],
+  "animations": [
+    {
+      "target": "transition",
+      "type": "invert + white panel wipe",
+      "start": 7.48,
+      "frames": 3,
+      "evidence": "s29 7.40-7.56 m_frames_7.40-8.10.jpg",
+      "values": {
+        "description": "1-2 frames colour-inverted (negative) + a white panel covering most of the frame, next shot also inverted 1 frame, then normal"
+      }
+    },
+    {
+      "target": "transition",
+      "type": "invert + white panel wipe",
+      "start": 32.18,
+      "frames": 3,
+      "evidence": "s29 32.18-32.26 strips_04 r3"
+    },
+    {
+      "target": "transition",
+      "type": "invert + white panel wipe",
+      "start": 34.82,
+      "frames": 3,
+      "evidence": "s29 34.82-34.94 strips_04 r5"
+    },
+    {
+      "target": "transition",
+      "type": "invert + white panel wipe",
+      "start": 37.46,
+      "frames": 3,
+      "evidence": "s29 37.46-37.54 strips_04 r6"
+    },
+    {
+      "target": "transition",
+      "type": "invert + white panel wipe (top-down)",
+      "start": 46.62,
+      "frames": 3,
+      "evidence": "s29 46.62-46.70 strips_05 r4"
+    },
+    {
+      "target": "transition",
+      "type": "invert + white panel wipe",
+      "start": 47.66,
+      "frames": 3,
+      "evidence": "s29 47.66-47.78 strips_05 r5"
+    },
+    {
+      "target": "transition",
+      "type": "invert + white panel wipe",
+      "start": 48.58,
+      "frames": 3,
+      "evidence": "s29 48.58-48.66 strips_05 r6"
+    },
+    {
+      "target": "transition",
+      "type": "white overexposure flash fading out",
+      "start": 30.42,
+      "frames": 5,
+      "evidence": "s29 30.42-30.58 strips_04 r1"
+    },
+    {
+      "target": "transition",
+      "type": "white overexposure flash fading out",
+      "start": 45.02,
+      "frames": 4,
+      "evidence": "s29 45.02-45.14 strips_05 r2"
+    },
+    {
+      "target": "layout",
+      "type": "stacked split-screen panels with wavy white dividers, panels slide up",
+      "start": 7.52,
+      "frames": 7,
+      "values": {
+        "panels": "2 -> 3",
+        "divider": "wavy white line",
+        "slide_up_frames": 7,
+        "slide_up_at": 11.54
+      },
+      "method": "visual (m_frames_11.50-12.15)",
+      "evidence": "s29 7.52-16.2 overview_01-02, m_frames_11.50-12.15.jpg"
+    },
+    {
+      "target": "frame (photo b-roll)",
+      "type": "slow pull-out",
+      "start": 46.7,
+      "frames": 24,
+      "values": {
+        "scale_from": 1.0,
+        "scale_to": 0.979
+      },
+      "method": "opencv ECC",
+      "evidence": "s29 m_zoom_46.70-47.66.json"
+    },
+    {
+      "target": "frame (speaker 16.2-20.7)",
+      "type": "slow pull-out then push-in",
+      "start": 16.25,
+      "frames": 111,
+      "values": {
+        "face_height_px": [
+          212,
+          197,
+          183,
+          183,
+          202,
+          212
+        ],
+        "at": [
+          16.3,
+          17.5,
+          18.5,
+          19.3,
+          20.0,
+          20.6
+        ],
+        "ecc_scale_min": 0.72
+      },
+      "method": "YuNet face height (preferred) + ECC (biased by the large text overlay: magnitude too large)",
+      "evidence": "s29 m_zoom_16.25-20.70.json"
+    },
+    {
+      "target": "outro",
+      "type": "fade to black",
+      "start": 53.6,
+      "frames": 20,
+      "evidence": "s29 53.6-54.4 overview_06"
+    }
+  ],
+  "colour": {
+    "scenes": [
+      {
+        "start": 0,
+        "end": 5.08,
+        "palette": [
+          "warm autumn",
+          "green #1EA35A text"
+        ],
+        "background": "footage (sat 85-104)"
+      },
+      {
+        "start": 5.08,
+        "end": 7.48,
+        "palette": [
+          "neutral grey"
+        ],
+        "background": "footage (sat 54)"
+      },
+      {
+        "start": 7.48,
+        "end": 16.2,
+        "palette": [
+          "bright neutral"
+        ],
+        "background": "stacked panels, bright (val 143-155, sat 37-46)"
+      },
+      {
+        "start": 16.2,
+        "end": 20.76,
+        "palette": [
+          "neutral, low sat"
+        ],
+        "background": "footage (sat 37)"
+      },
+      {
+        "start": 20.76,
+        "end": 28.12,
+        "palette": [
+          "B&W"
+        ],
+        "background": "staged b-roll in B&W (sat 12-18)"
+      },
+      {
+        "start": 28.12,
+        "end": 37.46,
+        "palette": [
+          "bright office"
+        ],
+        "background": "staged b-roll colour, bright (val 125-152)"
+      },
+      {
+        "start": 37.46,
+        "end": 39.24,
+        "palette": [
+          "B&W"
+        ],
+        "background": "VISA REJECTED scene B&W (sat 8)"
+      },
+      {
+        "start": 39.24,
+        "end": 46.62,
+        "palette": [
+          "green park",
+          "neutral"
+        ],
+        "background": "speaker footage"
+      },
+      {
+        "start": 46.62,
+        "end": 49.8,
+        "palette": [
+          "saturated photos"
+        ],
+        "background": "campus photos (sat 80-104)"
+      },
+      {
+        "start": 49.8,
+        "end": 54.46,
+        "palette": [
+          "neutral"
+        ],
+        "background": "speaker, then fade to black"
+      }
+    ],
+    "text_colours": [
+      "#FFFFFF",
+      "#1EA35A",
+      "#C8102E"
+    ],
+    "treatment": "B&W for setbacks (first IELTS, SAT struggle, visa rejected), colour for wins; bright high-key office scenes"
+  },
+  "graphics": [
+    {
+      "id": "g1",
+      "type": "sticker",
+      "start": 2.15,
+      "end": 5.08,
+      "box": [
+        55,
+        12,
+        70,
+        20
+      ],
+      "content": "badge/flag stickers next to AMERIKADA",
+      "evidence": "m_frames_1.95-2.40"
+    },
+    {
+      "id": "g2",
+      "type": "broll",
+      "start": 7.52,
+      "end": 16.2,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "2-3 stacked panels with wavy dividers (arrival, document check)",
+      "evidence": "overview_01-02"
+    },
+    {
+      "id": "g3",
+      "type": "broll",
+      "start": 20.76,
+      "end": 39.24,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "staged story b-roll with an actress (study, SAT, interview, visa approved/rejected); looks generated or staged",
+      "evidence": "overview_03-05"
+    },
+    {
+      "id": "g4",
+      "type": "other",
+      "start": 22.0,
+      "end": 23.36,
+      "box": [
+        55,
+        63,
+        75,
+        70
+      ],
+      "content": "hand-drawn red circle around 6.5",
+      "evidence": "m_grid_frames 22.4"
+    },
+    {
+      "id": "g5",
+      "type": "photo",
+      "start": 46.66,
+      "end": 49.8,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "campus / students / lab photos with slow push",
+      "evidence": "strips_05"
+    }
+  ],
+  "audio": {
+    "music": "unknown (non-speech RMS median -20.8 dB vs speech -15.7 dB: something fills the gaps)",
+    "speech_lufs_est": null,
+    "music_under_speech_db": null,
+    "ducking": null,
+    "onsets_near_visual_events": [
+      {
+        "t": 1.96,
+        "event": "cut",
+        "delta_ms": 176
+      },
+      {
+        "t": 5.08,
+        "event": "cut",
+        "delta_ms": 5
+      },
+      {
+        "t": 7.48,
+        "event": "cut",
+        "delta_ms": 229
+      },
+      {
+        "t": 16.2,
+        "event": "cut",
+        "delta_ms": 588
+      },
+      {
+        "t": 20.76,
+        "event": "cut",
+        "delta_ms": -25
+      },
+      {
+        "t": 23.36,
+        "event": "cut",
+        "delta_ms": -94
+      },
+      {
+        "t": 25.08,
+        "event": "cut",
+        "delta_ms": 21
+      },
+      {
+        "t": 28.12,
+        "event": "cut",
+        "delta_ms": 464
+      },
+      {
+        "t": 30.4,
+        "event": "cut",
+        "delta_ms": -28
+      },
+      {
+        "t": 32.16,
+        "event": "cut",
+        "delta_ms": 46
+      },
+      {
+        "t": 34.92,
+        "event": "cut",
+        "delta_ms": 26
+      },
+      {
+        "t": 37.44,
+        "event": "cut",
+        "delta_ms": -56
+      },
+      {
+        "t": 39.24,
+        "event": "cut",
+        "delta_ms": 71
+      },
+      {
+        "t": 45.0,
+        "event": "cut",
+        "delta_ms": -23
+      },
+      {
+        "t": 46.6,
+        "event": "cut",
+        "delta_ms": -462
+      },
+      {
+        "t": 47.76,
+        "event": "cut",
+        "delta_ms": -43
+      },
+      {
+        "t": 48.56,
+        "event": "cut",
+        "delta_ms": -448
+      },
+      {
+        "t": 49.84,
+        "event": "cut",
+        "delta_ms": 60
+      },
+      {
+        "t": 54.32,
+        "event": "cut",
+        "delta_ms": -1704
+      }
+    ],
+    "cut_onset_alignment": {
+      "ratio": "11/19",
+      "chance": 0.314
+    },
+    "cuts_on_beat": {
+      "tested": false,
+      "ratio": null,
+      "chance": null,
+      "method": "spectral-flux onsets (z>2, 80 ms min gap); RMS dB per 23 ms; speech = transcript word spans; onsets include speech: NOT a beat test"
+    },
+    "sfx_candidates": [],
+    "expected_visual_sfx_events": [
+      7.48,
+      32.18,
+      34.82,
+      37.46,
+      46.62
+    ],
+    "method": "measured only; expected_visual_sfx_events = edit events, no sound detected or classified"
+  },
+  "open_questions": [
+    "music bed and whooshes on the invert/white wipes (listening)",
+    "is the staged b-roll AI-generated? (would matter for our pipeline: we cannot generate it)"
+  ],
+  "continued_by": "codex solo; peer historical files preserved; pilot_review_codex.md contains verified caveats"
+}

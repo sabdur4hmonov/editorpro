@@ -252,7 +252,12 @@ def blit(frame: np.ndarray, spr: Sprite, x: float, y: float, opacity: float = 1.
         k = int(opacity * 256)
         alpha = (alpha * k) >> 8
         color = (color * k) >> 8
-    dst[:] = (color + (dst.astype(np.uint16) * (255 - alpha) + 127) // 255).astype(np.uint8)
+    if dst.shape[2] == 4:
+        # Premultiplied RGBA canvas: source-over on both color and alpha.
+        dst[..., :3] = (color + (dst[..., :3].astype(np.uint16) * (255-alpha)+127)//255).astype(np.uint8)
+        dst[..., 3:4] = (alpha + (dst[..., 3:4].astype(np.uint16) * (255-alpha)+127)//255).astype(np.uint8)
+    else:
+        dst[:] = (color + (dst.astype(np.uint16) * (255 - alpha) + 127) // 255).astype(np.uint8)
 
 
 # ---------------------------------------------------------------- matn
@@ -292,7 +297,11 @@ def text_sprite(text: str, font, color: str, tracking: float = 0.0, shadow: dict
     sh_dx, sh_dy = float((shadow or {}).get("dx", 0)), float((shadow or {}).get("dy", 0))
     gl_blur = float((glow or {}).get("blur", 0))
     st_w = int(round(float((stroke or {}).get("width", 0))))
-    pad = int(math.ceil(max(sh_blur * 3 + max(abs(sh_dx), abs(sh_dy)), gl_blur * 3, st_w) + 6))
+    depth = float((stroke or {}).get('depth', 0))
+    ex_dx, ex_dy = float((stroke or {}).get('dx', 1)), float((stroke or {}).get('dy', 1))
+    if not all(math.isfinite(v) for v in (depth,ex_dx,ex_dy,st_w)) or not 0 <= depth <= 64 or max(abs(ex_dx),abs(ex_dy)) > 2:
+        raise C.MontajError('stroke.depth 0..64px; dx/dy -2..2 bo‘lsin.')
+    pad = int(math.ceil(max(sh_blur * 3 + max(abs(sh_dx), abs(sh_dy)), gl_blur * 3, st_w, depth*max(abs(ex_dx),abs(ex_dy))) + 6))
     w, h = int(math.ceil(adv)) + pad * 2, ascent + descent + pad * 2
     base_y = pad + ascent
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
@@ -316,10 +325,21 @@ def text_sprite(text: str, font, color: str, tracking: float = 0.0, shadow: dict
         layer.putalpha(gm)
         img.alpha_composite(layer)
     draw = ImageDraw.Draw(img)
-    if st_w > 0:
+    if depth > 0:
+        # Flat relief, not a 3D mesh. Paint back-to-front to avoid disconnected slices.
+        for step in range(int(math.ceil(depth)),0,-1):
+            _draw_tracked(draw, pad+step*ex_dx, base_y+step*ex_dy, text, font,
+                          rgb((stroke or {}).get('depth_color','#333333'))+(255,),tracking)
+    if st_w > 0 and not (stroke or {}).get('outline_only'):
         _draw_tracked(draw, pad, base_y, text, font, rgb(stroke.get("color", "#000000")) + (255,), tracking,
                       st_w, rgb(stroke.get("color", "#000000")) + (255,))
-    _draw_tracked(draw, pad, base_y, text, font, rgb(color) + (255,), tracking)
+    if (stroke or {}).get('outline_only'):
+        # Subtract the glyph interior, preserving antialiased perimeter.
+        ring=np.maximum(0,np.asarray(mask_of(st_w),dtype=np.int16)-np.asarray(mask_of(),dtype=np.int16)).astype(np.uint8)
+        layer=Image.new('RGBA',(w,h),rgb((stroke or {}).get('color',color))+(0,))
+        layer.putalpha(Image.fromarray(ring)); img=Image.alpha_composite(img,layer)
+    else:
+        _draw_tracked(draw, pad, base_y, text, font, rgb(color) + (255,), tracking)
     return from_pil(img, -pad, -base_y), adv
 
 

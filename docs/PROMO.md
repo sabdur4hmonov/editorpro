@@ -141,3 +141,7 @@ B-roll: 3 ustunli tanlov varaqlarini bitta xabarda, rangli/aniq mos/2.5–4s/pas
 Accepted/rejected sababini o'z tarixiga yoz; shared history faqat boshqa agent idle paytda.
 Energy curve va filmstrip/A/Bni ko'rsat. `docs/EXPORT.md` orqali XML/SRT/alpha/stem paketi;
 word animation transferi va GUI importi haqidagi cheklovni mijozga ayt.
+
+## Namuna family
+
+Promo `D_cinematic_commercial` / subtype `promo`, content-derived offer/price saqlanadi. Bu guruhning editor-showcase yoki campus-vlog ritmini restoran promosiga avtomatik ko‘chirmang. `docs/style_dna/D_cinematic_commercial/playbook.md`, `docs/MOTION_DESIGN.md`.

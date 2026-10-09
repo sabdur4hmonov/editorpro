@@ -178,3 +178,7 @@ matn va tanlov tasdiqlari o'z HOLAT.mdda. Rejected sababini broll_history saqlay
 A/B va ikkala audio mixni chatda ko'rsat. Stronger umumiy default, har yangi videoda tinglash alohida.
 Glyph yetishmasa `font_fallback.py` o'sha belgini mavjud shriftga almashtiradi; so'z va apostrof ajralmaydi.
 Qo'lda davom ettirish uchun editor eksporti: `docs/EXPORT.md`, GUI tasdiqlanmagan chegaralarni ayt.
+
+## 41 namuna: yangi guruh DNA
+
+`docs/STYLE_STUDY/README.md` va `docs/style_dna/` beshta family. `/namuna` va `$namuna` content/footage bo‘yicha eng yaqinini tanlaydi, per-video stylega apply qiladi va ONE approvalda guruh/sababni aytadi. Brend rang/shrift va user feedback ustun. Har3s qoidasi ijodiy qo‘llanma: intervyuning sokin gapini majburan effekt bilan bo‘lmang. Texnikalar `docs/MOTION_DESIGN.md`; tekshirilmagan easing/3D/ovoz yashirilmaydi.

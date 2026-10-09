@@ -1,0 +1,339 @@
+{
+  "groups": [
+    {
+      "group": "A",
+      "duration_s": 6.967,
+      "sample": "s33",
+      "source_frames_observed_intervals": 14,
+      "source_fps": 25,
+      "source_seconds": 0.56,
+      "own_keyframe_intervals": 17,
+      "own_fps": 30,
+      "own_seconds": 0.5666666666666667,
+      "seconds_delta": 0.006667,
+      "comparison_limit": "calculator folding != pill; entrance interval only",
+      "actual_export_checks": [
+        [
+          "O'lcham",
+          "ok",
+          "540x960"
+        ],
+        [
+          "Video kodek",
+          "ok",
+          "h264, yuv420p"
+        ],
+        [
+          "Kadr tezligi",
+          "ok",
+          "30 fps"
+        ],
+        [
+          "Davomiylik",
+          "ok",
+          "7.0s (chegara 90s)"
+        ],
+        [
+          "Ovoz",
+          "ok",
+          "aac, 48000 Hz"
+        ],
+        [
+          "Balandlik",
+          "ok",
+          "-14.0 LUFS (maqsad -14 +-2)"
+        ],
+        [
+          "Eng baland nuqta",
+          "ok",
+          "-1.5 dBTP"
+        ],
+        [
+          "Nutq ustunligi",
+          "ok",
+          "qo'shimchalar nutqdan 21 dB past (talab 10 dB)"
+        ]
+      ],
+      "audio": {
+        "additions": true,
+        "music": false,
+        "sfx": 2,
+        "required_db": 10.0,
+        "margin_db": 21.0,
+        "reduced_db": 0.0,
+        "cue_sheet": "D:\\Coding projects\\editor pro\\temp\\style_study\\codex\\proof\\A\\audio_mixes\\style_study_A\\stronger\\audio_cues.json"
+      },
+      "wall_seconds": 16.17,
+      "iteration": 3,
+      "headline_match": "different approved doctor wording; size/position deliberately adapted to face",
+      "source_original_unchanged": true
+    },
+    {
+      "group": "B1",
+      "duration_s": 7.133,
+      "sample": "s35",
+      "source_frames_observed_intervals": 13,
+      "source_fps": 25,
+      "source_seconds": 0.52,
+      "own_keyframe_intervals": 16,
+      "own_fps": 30,
+      "own_seconds": 0.5333333333333333,
+      "seconds_delta": 0.013333,
+      "comparison_limit": "real folded ticket vs flat ticket rotation; matched duration only",
+      "actual_export_checks": [
+        [
+          "O'lcham",
+          "ok",
+          "540x960"
+        ],
+        [
+          "Video kodek",
+          "ok",
+          "h264, yuv420p"
+        ],
+        [
+          "Kadr tezligi",
+          "ok",
+          "30 fps"
+        ],
+        [
+          "Davomiylik",
+          "ok",
+          "7.1s (chegara 90s)"
+        ],
+        [
+          "Ovoz",
+          "ok",
+          "aac, 48000 Hz"
+        ],
+        [
+          "Balandlik",
+          "ok",
+          "-13.9 LUFS (maqsad -14 +-2)"
+        ],
+        [
+          "Eng baland nuqta",
+          "ok",
+          "-1.5 dBTP"
+        ],
+        [
+          "Nutq ustunligi",
+          "ok",
+          "qo'shimchalar nutqdan 25.8 dB past (talab 10 dB)"
+        ]
+      ],
+      "audio": {
+        "additions": true,
+        "music": false,
+        "sfx": 3,
+        "required_db": 10.0,
+        "margin_db": 25.8,
+        "reduced_db": 0.0,
+        "cue_sheet": "D:\\Coding projects\\editor pro\\temp\\style_study\\codex\\proof\\B1\\audio_mixes\\style_study_B1\\stronger\\audio_cues.json"
+      },
+      "wall_seconds": 26.92,
+      "iteration": 3,
+      "headline_match": "different approved doctor wording; size/position deliberately adapted to face",
+      "source_original_unchanged": true
+    },
+    {
+      "group": "B2",
+      "duration_s": 5.567,
+      "sample": "s26",
+      "source_frames_observed_intervals": 31,
+      "source_fps": 25,
+      "source_seconds": 1.24,
+      "own_keyframe_intervals": 12,
+      "own_fps": 30,
+      "own_seconds": 0.4,
+      "seconds_delta": -0.84,
+      "comparison_limit": "source fan window is left-censored; individual own pill entrance is not a full fan duration match",
+      "actual_export_checks": [
+        [
+          "O'lcham",
+          "ok",
+          "540x960"
+        ],
+        [
+          "Video kodek",
+          "ok",
+          "h264, yuv420p"
+        ],
+        [
+          "Kadr tezligi",
+          "ok",
+          "30 fps"
+        ],
+        [
+          "Davomiylik",
+          "ok",
+          "5.6s (chegara 90s)"
+        ],
+        [
+          "Ovoz",
+          "ok",
+          "aac, 48000 Hz"
+        ],
+        [
+          "Balandlik",
+          "ok",
+          "-14.3 LUFS (maqsad -14 +-2)"
+        ],
+        [
+          "Eng baland nuqta",
+          "ok",
+          "-1.5 dBTP"
+        ],
+        [
+          "Nutq ustunligi",
+          "ok",
+          "qo'shimchalar nutqdan 11.3 dB past (talab 10 dB)"
+        ]
+      ],
+      "audio": {
+        "additions": true,
+        "music": false,
+        "sfx": 2,
+        "required_db": 10.0,
+        "margin_db": 11.3,
+        "reduced_db": 0.0,
+        "cue_sheet": "D:\\Coding projects\\editor pro\\temp\\style_study\\codex\\proof\\B2\\audio_mixes\\style_study_B2\\stronger\\audio_cues.json"
+      },
+      "wall_seconds": 20.12,
+      "iteration": 3,
+      "headline_match": "different approved doctor wording; size/position deliberately adapted to face",
+      "source_original_unchanged": true
+    },
+    {
+      "group": "C",
+      "duration_s": 8.2,
+      "sample": "s32",
+      "source_frames_observed_intervals": 22,
+      "source_fps": 25,
+      "source_seconds": 0.88,
+      "own_keyframe_intervals": 37,
+      "own_fps": 30,
+      "own_seconds": 1.2333333333333334,
+      "seconds_delta": 0.353333,
+      "comparison_limit": "source reflow and own shrink-out differ; geometry and timing not claimed identical",
+      "actual_export_checks": [
+        [
+          "O'lcham",
+          "ok",
+          "540x960"
+        ],
+        [
+          "Video kodek",
+          "ok",
+          "h264, yuv420p"
+        ],
+        [
+          "Kadr tezligi",
+          "ok",
+          "30 fps"
+        ],
+        [
+          "Davomiylik",
+          "ok",
+          "8.2s (chegara 90s)"
+        ],
+        [
+          "Ovoz",
+          "ok",
+          "aac, 48000 Hz"
+        ],
+        [
+          "Balandlik",
+          "ok",
+          "-14.4 LUFS (maqsad -14 +-2)"
+        ],
+        [
+          "Eng baland nuqta",
+          "ok",
+          "-1.5 dBTP"
+        ],
+        [
+          "Nutq ustunligi",
+          "ok",
+          "qo'shimchalar nutqdan 10 dB past (talab 10 dB), 8.4 dB pasaytirildi"
+        ]
+      ],
+      "audio": {
+        "additions": true,
+        "music": false,
+        "sfx": 3,
+        "required_db": 10.0,
+        "margin_db": 10.0,
+        "reduced_db": 8.4,
+        "cue_sheet": "D:\\Coding projects\\editor pro\\temp\\style_study\\codex\\proof\\C\\audio_mixes\\style_study_C\\stronger\\audio_cues.json"
+      },
+      "wall_seconds": 26.94,
+      "iteration": 3,
+      "headline_match": "different approved doctor wording; size/position deliberately adapted to face",
+      "source_original_unchanged": true
+    },
+    {
+      "group": "D",
+      "duration_s": 7.333,
+      "sample": "s37",
+      "source_frames_observed_intervals": 20,
+      "source_fps": 30,
+      "source_seconds": 0.6666666666666666,
+      "own_keyframe_intervals": 20,
+      "own_fps": 30,
+      "own_seconds": 0.6666666666666666,
+      "seconds_delta": 0.0,
+      "comparison_limit": "own pan uses same20 output intervals; source displacement ~-49.86% vs own -17%, intentionally restrained",
+      "actual_export_checks": [
+        [
+          "O'lcham",
+          "ok",
+          "540x960"
+        ],
+        [
+          "Video kodek",
+          "ok",
+          "h264, yuv420p"
+        ],
+        [
+          "Kadr tezligi",
+          "ok",
+          "30 fps"
+        ],
+        [
+          "Davomiylik",
+          "ok",
+          "7.3s (chegara 90s)"
+        ],
+        [
+          "Ovoz",
+          "ok",
+          "aac, 48000 Hz"
+        ],
+        [
+          "Balandlik",
+          "ok",
+          "-14.4 LUFS (maqsad -14 +-2)"
+        ],
+        [
+          "Eng baland nuqta",
+          "ok",
+          "-1.4 dBTP"
+        ]
+      ],
+      "audio": {
+        "additions": true,
+        "music": false,
+        "sfx": 2,
+        "required_db": 10.0,
+        "margin_db": null,
+        "reduced_db": 0.0,
+        "cue_sheet": "D:\\Coding projects\\editor pro\\temp\\style_study\\codex\\proof\\D\\audio_mixes\\style_study_D\\stronger\\audio_cues.json"
+      },
+      "wall_seconds": 23.97,
+      "iteration": 3,
+      "headline_match": "different approved doctor wording; size/position deliberately adapted to face",
+      "source_original_unchanged": true
+    }
+  ]
+}

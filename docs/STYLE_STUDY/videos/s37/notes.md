@@ -1,0 +1,169 @@
+# s37 observation notes
+
+All thirteen overview pages read. Every added short subtitle envelope recorded; signs/slides/lab labels are natural footage text, selected legible items below, microprint unresolved. Cuts detector includes camera whip artifacts, not manually verified all92.
+
+Source hash: d88fd4a239996e4fcd530e7a544d25771e1a26e0
+
+- 0.200–0.900: `IELTS 6 / BILAN`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 0.550s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 1.200–2.400: `UTAH VALLEY / University`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 1.800s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 2.800–3.800: `O‘QISHINGIZ / MUMKINLIGINI / BILARMIDINGIZ?`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 3.300s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 4.000–4.600: `bugun ushbu joyda`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 4.300s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 4.600–5.200: `mehmon bo‘lib`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 4.900s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 5.200–5.600: `ko‘ramiz`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 5.400s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 5.600–6.200: `universitetni`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 5.900s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 6.200–6.600: `kontrakti va`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 6.400s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 6.600–7.600: `grantlari haqida`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 7.100s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 7.600–8.400: `videoni oxirisida`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 8.000s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 8.400–8.900: `borishimiz bilan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 8.650s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 8.900–9.400: `universitet`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 9.150s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 9.400–9.800: `haqida to‘liq`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 9.600s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 9.800–10.200: `tushuntirib`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 10.000s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 10.200–10.600: `berishdi`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 10.400s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 10.600–11.400: `ushbu universitetda`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 11.000s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 11.400–12.600: `350 tadan ko‘p`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 12.000s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 12.600–13.200: `sohalar mavjud`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 12.900s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 13.200–14.600: `ekan va 48700`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 13.900s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 14.600–15.600: `ta talaba o‘qiyrkan.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 15.100s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 15.600–16.400: `shunga qaramasdan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 16.000s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 16.400–17.200: `bitta professorga`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 16.800s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 17.200–18.400: `25 ta talaba to‘g‘ri`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 17.800s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 18.400–18.800: `kelarkan.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 18.600s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 18.800–19.400: `prezentatsiyadan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 19.100s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 19.400–20.400: `so‘ng universitetga`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 19.900s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 20.400–21.000: `sayohatimiz`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 20.700s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 21.000–21.400: `boshlandi.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 21.200s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 21.400–22.000: `binolari ichida`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 21.700s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 22.000–23.200: `o‘zimizni bayrog‘imizni`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 22.600s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 23.200–23.800: `ham ko‘rib juda`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 23.500s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 23.800–24.600: `ham xursand bo‘lib`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 24.200s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 24.600–24.900: `ketdim.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 24.750s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 24.900–25.600: `birinchi kirgan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 25.250s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 25.600–26.600: `joyimiz universitetni`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 26.100s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 26.600–27.600: `o‘zini kiyim`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 27.100s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 27.600–28.200: `sotadigan joy.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 27.900s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 28.200–29.200: `ushbu joyda o‘zizga`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 28.700s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 29.200–30.200: `bemalol apple.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 29.700s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 30.200–30.600: `produktlari`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 30.400s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 30.600–31.000: `deysizmi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 30.800s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 31.000–31.800: `xohlagan narsangizni`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 31.400s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 31.800–32.400: `sotib olsangiz`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 32.100s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 32.400–32.800: `bo‘ladi.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 32.600s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 32.800–33.800: `eng qiziq tarafi`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 33.300s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 33.800–34.400: `ushbu universitet`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 34.100s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 34.400–35.000: `division one`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 34.700s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 35.000–35.800: `school bo‘lib,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 35.400s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 35.800–36.400: `agarda sizda`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 36.100s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 36.400–37.200: `katta yutuqlaringiz`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 36.800s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 37.200–38.000: `bo‘ladigan bo‘lsa,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 37.600s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 38.000–39.600: `bemalol yotoqxoningiz,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 38.800s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 39.600–40.400: `o‘qishingiz,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 40.000s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 40.400–41.600: `ovqatlanishingizni`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 41.000s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 41.600–42.000: `universitet`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 41.800s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 42.000–42.800: `qoplab beradi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 42.400s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 42.800–43.800: `ushbu universitetni`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 43.300s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 43.800–44.800: `binolari kerak`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 44.300s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 44.800–45.600: `bo‘lsa harvard`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 45.200s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 45.600–46.200: `deysizmi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 45.900s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 46.200–47.200: `stanfordmi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 46.700s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 47.200–47.600: `hamma joyga borib`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 47.400s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 47.600–48.400: `ko‘rganman.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 48.000s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 48.400–49.400: `ulardan anchagina`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 48.900s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 49.400–50.200: `zamonaviyroq`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 49.800s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 50.200–50.600: `ekan,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 50.400s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 50.600–51.200: `binolarni ko‘p`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 50.900s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 51.200–52.200: `qismi bir-biriga`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 51.700s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 52.200–52.600: `ulanib ketgan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 52.400s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 52.600–53.400: `va eng qiziq tarafi`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 53.000s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 53.400–54.400: `ushbu universitet`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 53.900s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 54.400–55.200: `shahardan atigina`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 54.800s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 55.200–56.400: `40 minut yo‘lda,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 55.800s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 56.400–57.200: `bu degani o‘zizni`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 56.800s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 57.200–58.200: `bemalol eplab`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 57.700s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 58.200–59.600: `ketish imkoniyatini`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 58.900s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 59.600–59.900: `beradi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 59.750s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 59.900–60.200: `talabalar,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 60.050s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 60.200–61.000: `dam olish uchun`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 60.600s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 61.000–61.800: `ham alohida imkoniyat`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 61.400s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 61.800–62.600: `qilib qo‘yishgan,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 62.200s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 62.600–63.600: `bittagina bino,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 63.100s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 63.600–64.600: `siz prosto kelib`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 64.100s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 64.600–65.000: `playstation`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 64.800s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 65.000–65.600: `o‘ynaysizmi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 65.300s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 65.600–66.600: `stol tennisimi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 66.100s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 66.600–67.200: `bilyardmi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 66.900s videos/s37/overview_07.jpg (5fps discovery, ±0.2s).
+- 67.200–68.400: `kompyuter o‘yinlari,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 67.800s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 68.400–69.400: `trenajorni zal,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 68.900s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 69.400–70.400: `hamma narsasi`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 69.900s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 70.400–71.200: `immenna shu binoda`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 70.800s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 71.200–71.600: `mavjud,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 71.400s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 71.600–72.200: `agarda pilot`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 71.900s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 72.200–73.200: `bo‘lishni xohlasangiz,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 72.700s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 73.200–74.000: `utadagi yagona`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 73.600s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 74.000–75.200: `pilot litsenziyasi`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 74.600s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 75.200–76.000: `beradigan universitet`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 75.600s videos/s37/overview_08.jpg (5fps discovery, ±0.2s).
+- 76.000–77.600: `va biznes yo‘nalishida`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 76.800s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 77.600–78.600: `garvardda qanaqa`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 78.100s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 78.600–79.200: `akkreditatsiya`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 78.900s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 79.200–80.200: `bo‘ladigan bo‘lsa,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 79.700s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 80.200–80.600: `ushbu universitetda`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 80.400s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 80.600–81.800: `ham shunaqa ekan,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 81.200s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 81.800–82.600: `lekin universitet`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 82.200s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 82.600–83.600: `100% talabani`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 83.100s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 83.600–84.400: `qabul qiladi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 84.000s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 84.400–85.200: `juda ham qiziqarli...`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 84.800s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 85.200–86.200: `computer science`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 85.700s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+- 86.200–86.800: `engineering`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 86.500s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 86.800–88.200: `binosiga 25 million`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 87.500s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 88.200–89.400: `dollar pul tikishgan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 88.800s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 89.400–89.600: `ekan,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 89.500s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 89.600–90.800: `laboratoriyalari`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 90.200s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 90.800–91.600: `juda ham katta,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 91.200s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 91.600–93.000: `dron yasamoqchimisiz,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 92.300s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 93.000–94.000: `yokida qanaqadir`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 93.500s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 94.000–95.200: `katta suniy intelekt`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 94.600s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 95.200–95.600: `orqali startup`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 95.400s videos/s37/overview_10.jpg (5fps discovery, ±0.2s).
+- 95.600–96.600: `qilmoqchimisiz,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 96.100s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 96.600–97.800: `shu joyda o‘qishingiz`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 97.200s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 97.800–98.800: `kerak.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 98.300s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 98.800–99.800: `kontrakti o‘zi`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 99.300s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 99.800–100.400: `necha pul,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 100.100s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 100.400–101.000: `kontrakti yiliga`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 100.700s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 101.000–102.000: `$19.000,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 101.500s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 102.000–103.200: `agarda sat 1400`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 102.600s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 103.200–104.800: `va gpa 3.9 bo‘ladigan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 104.000s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 104.800–105.600: `bo‘lsa,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 105.200s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 105.600–106.600: `tekinga o‘qishingiz`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 106.100s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 106.600–106.900: `mumkin,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 106.750s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 106.900–107.600: `lekin vaqtliroq`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 107.250s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 107.600–108.400: `topshirishingiz`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 108.000s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 108.400–108.800: `kerak.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 108.600s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 108.800–109.600: `unga qaramasdan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 109.200s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 109.600–111.000: `birinchi yilingizga`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 110.300s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 111.000–112.400: `plyus minus $9000`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 111.700s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 112.400–113.200: `to‘lab o‘qish`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 112.800s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 113.200–113.800: `imkoniyatini`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 113.500s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 113.800–114.200: `beradi,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 114.000s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 114.200–115.000: `agarda polnistyu`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 114.600s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 115.000–115.800: `kontrakti grantlari`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 115.400s videos/s37/overview_13.jpg (5fps discovery, ±0.2s).
+- 115.800–116.400: `haqida to‘liq`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 116.100s videos/s37/overview_13.jpg (5fps discovery, ±0.2s).
+- 116.400–116.600: `informatsiya`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 116.500s videos/s37/overview_13.jpg (5fps discovery, ±0.2s).
+- 116.600–117.600: `olishni xohlaydigan`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 117.100s videos/s37/overview_13.jpg (5fps discovery, ±0.2s).
+- 117.600–118.000: `bo‘lsangiz,`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 117.800s videos/s37/overview_13.jpg (5fps discovery, ±0.2s).
+- 118.000–118.800: `direktor orqali`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 118.400s videos/s37/overview_13.jpg (5fps discovery, ±0.2s).
+- 118.800–119.600: `bizga aloqaga`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 119.200s videos/s37/overview_13.jpg (5fps discovery, ±0.2s).
+- 119.600–119.859: `chiqing.`; white short sans subtitles; hook dark caps/script over turquoise grid; s37 119.730s videos/s37/overview_13.jpg (5fps discovery, ±0.2s).
+- 8.900–10.600: `FALL ADMISSION DEADLINE / AUGUST 1 / SPRING ADMISSION DEADLINE / DECEMBER 1 / SUMMER ADMISSION DEADLINE / APRIL 1`; natural presentation slide; s37 9.750s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 11.400–12.600: `350+`; natural presentation slide; s37 12.000s videos/s37/overview_02.jpg (5fps discovery, ±0.2s).
+- 26.000–28.200: `VALLEY FEST`; shop sign; s37 27.100s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 33.800–34.800: `pepsi`; arena sign; s37 34.300s videos/s37/overview_04.jpg (5fps discovery, ±0.2s).
+- 49.000–49.400: `ACCOUNTABILITY / CARE`; vertical banner; s37 49.200s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 52.200–52.600: `Design / ... Office`; natural directional sign; s37 52.400s videos/s37/overview_06.jpg (5fps discovery, ±0.2s).
+- 99.000–99.600: `A PLACE FOR / DISCOVERY`; natural poster; s37 99.300s videos/s37/overview_11.jpg (5fps discovery, ±0.2s).
+- 112.400–114.400: `CHELSEA AND CASEY BAUGH ...`; natural building name, final suffix unreadable; s37 113.400s videos/s37/overview_12.jpg (5fps discovery, ±0.2s).
+- 0.000–4.000: collage: turquoise grid with globe/map/pencil/record, CRT computer and two framed photos, continuous composition pan; s37 2.000s videos/s37/overview_01.jpg (5fps discovery, ±0.2s).
+- 4.000–38.600: footage: walking university-tour shots, many camera pans; basketball montage33.8–38.6; s37 21.300s videos/s37/overview_03.jpg (5fps discovery, ±0.2s).
+- 38.600–39.600: split: three stacked dorm pictures; s37 39.100s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 45.200–48.400: split: three stacked campus pictures for named universities with yellow/orange light leaks; s37 46.800s videos/s37/overview_05.jpg (5fps discovery, ±0.2s).
+- 48.400–119.859: footage: tour including lab, robot, walkways, directional signs; captions remain small; s37 84.129s videos/s37/overview_09.jpg (5fps discovery, ±0.2s).
+
+Native event: {"start": 2.3, "end": 2.9667, "observed_intervals": 20, "inclusive_frame_count": 21, "fps": 30.0, "description": "continuous canvas pan, not camera footage", "easing_guess": "not identified from bounded frames", "overshoot": null, "stagger": null, "source_method": "decoded PTS; counted elapsed intervals, not inclusive images", "evidence": "codex\\measurements\\s37\\native_ae4cdc8946ff.json", "confidence": "medium", "alternative": "Pre-rendered composite; original keyframes unknown. Some windows explicitly censored."}

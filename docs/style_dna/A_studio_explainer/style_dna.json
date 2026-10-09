@@ -1,0 +1,226 @@
+{
+  "schema": 1,
+  "id": "A_studio_explainer",
+  "description": "Seated explainer; preserve speaker, semantic cards and one hero phrase.",
+  "members": [
+    "s02",
+    "s03",
+    "s05",
+    "s06",
+    "s09",
+    "s16",
+    "s25",
+    "s33"
+  ],
+  "source_hashes": {
+    "s02": "5f5c9b0ec7273650148389afd1bf98b260c2041a",
+    "s03": "015a08abd832d0d31389ca6281fc8102e4d44003",
+    "s05": "5e5383d077b4c19fe6a9f62452f6cc9bf47922ba",
+    "s06": "c6c1f6a27f9bf470726de54d32f43ea933062519",
+    "s09": "746fd3ff4f83766ae907ee325d08706d683e3adf",
+    "s16": "7427bde914c30bd6dabcb6ef0647ba7a2d62b8cd",
+    "s25": "8087d8d6b175ac0a1b83815260ab636901ebe7c4",
+    "s33": "92eff39f360c44df13d63f747f503843d237cb73"
+  },
+  "evidence_policy": ">=3 distinct source hashes = recurring pattern; 1–2 = observation; timing/rhythm not universal rule",
+  "techniques": [
+    {
+      "id": "trajectory",
+      "witnesses": [
+        "s25"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s25/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "material_cards",
+      "witnesses": [
+        "s33"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s33/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "relief_type",
+      "witnesses": [
+        "s25"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s25/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "active_pills",
+      "witnesses": [
+        "s25"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s25/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "caption_entrances",
+      "witnesses": [
+        "s33"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s33/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "behind_person",
+      "witnesses": [
+        "s05"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s05/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "handwriting_stroke",
+      "witnesses": [
+        "s25"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s25/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "bespoke_illustration",
+      "witnesses": [
+        "s09",
+        "s33"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s09/perception.json",
+        "codex/analysis/s33/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    }
+  ],
+  "cut_rhythm": {
+    "statistics": "per-source perception.rhythm; candidate cuts not pooled as verified cuts",
+    "rule": "semantic cuts, allow calm intervals; D requires subtype",
+    "candidate_group_medians": {
+      "cuts_per_min": 9.55,
+      "median_shot_s": 2.62,
+      "wpm": 146.5,
+      "source": "docs/STYLE_STUDY/peer_global_stats.md",
+      "use": "detector reference only; not auto-cut rule"
+    }
+  },
+  "animation_presets": {
+    "unit": "source fps + elapsed intervals, convert seconds to output fps",
+    "native_examples": [
+      {
+        "video": "s25",
+        "range": [
+          12.8,
+          13.16
+        ],
+        "intervals": 9,
+        "evidence": "codex/analysis/s25/perception.json"
+      },
+      {
+        "video": "s33",
+        "range": [
+          1.56,
+          2.12
+        ],
+        "intervals": 14,
+        "evidence": "codex/analysis/s33/perception.json"
+      }
+    ]
+  },
+  "style_patch": {
+    "captions": {
+      "preset": "clean"
+    },
+    "motion": {
+      "enabled": true,
+      "durations_ms": {
+        "title": 300,
+        "label": 360,
+        "sticker": 360,
+        "transition": 360
+      },
+      "choice": {
+        "enter": "slide_overshoot",
+        "sub": "mask_up",
+        "emphasis": "underline_draw"
+      }
+    },
+    "motion_design": {
+      "fast_blur_px": 2,
+      "material_seed": 41
+    }
+  },
+  "suggested_accent": "#F3B04E",
+  "brand_override": "Existing brand/approved per-video color and font win; do not impose sampled brand colors",
+  "zoom": "content-driven energy + optional canvas keyframes; no constant zoom",
+  "graphics": [
+    "trajectory",
+    "material_cards",
+    "relief_type",
+    "active_pills",
+    "caption_entrances",
+    "behind_person",
+    "handwriting_stroke",
+    "bespoke_illustration"
+  ],
+  "sound": {
+    "measured_mix_lufs": [
+      -14.3,
+      -14.3,
+      -14.2,
+      -14.1,
+      -14.1,
+      -14.3,
+      -14.1,
+      -14.2
+    ],
+    "sfx_level_relative_to_speech": null,
+    "stem_separation_available": false,
+    "cuts_on_beat_verified": false,
+    "apply": "existing stronger/subtle paired mixes + voice margin; source sound taste awaiting user"
+  },
+  "hook": "derive from actual speech, group hierarchy only; no invented promises",
+  "outro": "use only actual spoken CTA; no forced subscription card on narrative excerpt",
+  "timing_application": {
+    "status": "editor-chosen initial default from selected native example, not universal preset fit",
+    "evidence": "s25 phone rise ~10 intervals@25"
+  },
+  "application_scope": "Caption/motion defaults; material/card/canvas/trajectory geometry and semantic cuts require agent plan. No auto template generator.",
+  "hook_text_candidate": {
+    "max_first_on_screen_s": 0.3,
+    "source": "Claude hook sheet22/24 checked",
+    "automatic_preflight": false,
+    "confidence": "medium",
+    "alternative": "reused template openings"
+  }
+}

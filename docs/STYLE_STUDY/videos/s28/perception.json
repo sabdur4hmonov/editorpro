@@ -1,0 +1,2019 @@
+{
+  "video": "s28",
+  "agent": "codex",
+  "schema": 2,
+  "sha1": "67b338279be8c7c3fa7c5adce3ce42e839c9a83e",
+  "type": "B2_kinetic_creator",
+  "status": "analysis with explicit coverage limits",
+  "coverage": "All five 5fps pages read. Small robot-dialogue subtitles are partly unreadable and require native checks. Electrical outline is a visual observation, not a claim about synthesis or SFX. One selected native event measured, not every animation; unknown fields stay null.",
+  "historical_owner": "See groups.md; continued solo under codex/takeover.md",
+  "technical": {
+    "file": "samples/sample 28.mp4",
+    "slug": "s28",
+    "sha1": "67b338279be8c7c3fa7c5adce3ce42e839c9a83e",
+    "duration": 41.886,
+    "width": 720,
+    "height": 1280,
+    "fps": 25.0,
+    "vcodec": "h264",
+    "size_bytes": 4676833,
+    "has_audio": true,
+    "acodec": "aac",
+    "sample_rate": 44100,
+    "channels": 2,
+    "integrated_lufs": -14.2,
+    "true_peak_dbtp": -0.5,
+    "lra_lu": 3.9,
+    "cuts_content27": 21,
+    "cuts_adaptive": 19,
+    "events": 14,
+    "speech": true,
+    "language": "ru",
+    "words": 102,
+    "model": "small",
+    "seconds": 22.8
+  },
+  "rhythm": {
+    "cut_source": "candidate detector; not all verified",
+    "cut_candidates": [
+      3.48,
+      5.64,
+      6.48,
+      9.52,
+      10.76,
+      11.92,
+      13.0,
+      14.2,
+      15.72,
+      18.8,
+      21.6,
+      24.16,
+      25.16,
+      25.88,
+      28.6,
+      29.76,
+      30.52,
+      31.76,
+      33.04,
+      36.12,
+      40.6
+    ],
+    "cuts": null,
+    "first_cut": null,
+    "candidate_statistics": {
+      "cuts": [
+        3.48,
+        5.64,
+        6.48,
+        9.52,
+        10.76,
+        11.92,
+        13.0,
+        14.2,
+        15.72,
+        18.8,
+        21.6,
+        24.16,
+        25.16,
+        25.88,
+        28.6,
+        29.76,
+        30.52,
+        31.76,
+        33.04,
+        36.12,
+        40.6
+      ],
+      "first_cut": 3.48,
+      "shot_lengths_including_source_edges": {
+        "n": 22,
+        "mean": 1.903909,
+        "median": 1.283,
+        "p10": 0.856,
+        "p90": 3.08,
+        "min": 0.72,
+        "max": 4.48
+      },
+      "between_cut_intervals_only": {
+        "n": 20,
+        "mean": 1.856,
+        "median": 1.26,
+        "p10": 0.832,
+        "p90": 3.08,
+        "min": 0.72,
+        "max": 4.48
+      },
+      "method": "Candidate detector timestamps, not yet visually verified; start/end edges stated."
+    },
+    "hook": {
+      "start": 0,
+      "end": 3.4,
+      "evidence": "s28 1.700s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Narrative boundary is editorial judgement, not objective detector."
+    },
+    "cta": {
+      "start": 36.0,
+      "end": 40.6,
+      "evidence": "s28 38.300s videos/s28/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Narrative boundary is editorial judgement, not objective detector."
+    },
+    "outro": null
+  },
+  "speech": {
+    "transcribed_words": 101,
+    "invalid_words": [
+      {
+        "index": 8,
+        "reason": "invalid/zero/overrun timing",
+        "word": "Это"
+      }
+    ],
+    "wpm_full_runtime": 144.678,
+    "union_transcribed_word_span_seconds": 34.6,
+    "word_span_wpm": 175.145,
+    "word_gaps": [
+      {
+        "start": 3.36,
+        "end": 3.88,
+        "duration": 0.52
+      },
+      {
+        "start": 7.3,
+        "end": 7.58,
+        "duration": 0.28
+      },
+      {
+        "start": 9.44,
+        "end": 9.74,
+        "duration": 0.3
+      },
+      {
+        "start": 17.18,
+        "end": 17.46,
+        "duration": 0.28
+      },
+      {
+        "start": 23.22,
+        "end": 23.5,
+        "duration": 0.28
+      },
+      {
+        "start": 25.62,
+        "end": 25.88,
+        "duration": 0.26
+      },
+      {
+        "start": 29.32,
+        "end": 29.74,
+        "duration": 0.42
+      },
+      {
+        "start": 31.78,
+        "end": 32.96,
+        "duration": 1.18
+      }
+    ],
+    "word_gap_statistics": {
+      "n": 8,
+      "mean": 0.44,
+      "median": 0.29,
+      "p10": 0.274,
+      "p90": 0.718,
+      "min": 0.26,
+      "max": 1.18
+    },
+    "method": "Whisper word spans only; word gaps are not verified acoustic silence; WPM not on-screen text."
+  },
+  "texts": [
+    {
+      "id": "t1",
+      "text": "3 / ГЛАВНЫХ / ПРИЗНАКА",
+      "role": "caption_or_graphic_label",
+      "appear": 0.4,
+      "disappear": 1.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        9,
+        3,
+        96,
+        30
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime outline huge number + white condensed italic",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime outline huge number + white condensed italic",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 1.000s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t2",
+      "text": "ЧТО СЦЕНАРИЙ / НАПИСАЛ",
+      "role": "caption_or_graphic_label",
+      "appear": 1.6,
+      "disappear": 2.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        16,
+        7,
+        96,
+        28
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white condensed italic",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white condensed italic",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 2.000s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t3",
+      "text": "ИСКУССТВЕННЫЙ / ИНТЕЛЛЕКТ / AI",
+      "role": "caption_or_graphic_label",
+      "appear": 2.6,
+      "disappear": 3.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        9,
+        2,
+        99,
+        34
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white over lime outlined background letters",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white over lime outlined background letters",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 3.000s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t4",
+      "text": "Это действительно ... / ...",
+      "role": "caption_or_graphic_label",
+      "appear": 4.2,
+      "disappear": 5.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        28,
+        45,
+        70,
+        48
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "tiny robot dialogue, incomplete literal",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "tiny robot dialogue, incomplete literal",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 4.800s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t5",
+      "text": "ЗАТКНИСЬ",
+      "role": "caption_or_graphic_label",
+      "appear": 6.8,
+      "disappear": 7.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        21,
+        56,
+        66,
+        63
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "red compressed and then wide caps",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "red compressed and then wide caps",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 7.100s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t6",
+      "text": "1 / МАСКИРОВКА ШАБЛОННОЙ МЫСЛИ / ПОД УМНУЮ",
+      "role": "caption_or_graphic_label",
+      "appear": 7.8,
+      "disappear": 9.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        7,
+        4,
+        96,
+        56
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime number + black rounded title card",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime number + black rounded title card",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 8.600s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t7",
+      "text": "Это не ты выгорел это твоя душа / наконец сказала правду",
+      "role": "caption_or_graphic_label",
+      "appear": 10.2,
+      "disappear": 12.0,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        8,
+        6,
+        91,
+        12
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "tiny white dialogue",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "tiny white dialogue",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 11.100s videos/s28/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t8",
+      "text": "КРАСИВО / НО ПУСТО",
+      "role": "caption_or_graphic_label",
+      "appear": 13,
+      "disappear": 14.2,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        13,
+        13,
+        94,
+        32
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white/lime condensed italic",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white/lime condensed italic",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 13.600s videos/s28/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t9",
+      "text": "2 / РВАНЫЕ КОРОТКИЕ / ПРЕДЛОЖЕНИЯ",
+      "role": "caption_or_graphic_label",
+      "appear": 14.6,
+      "disappear": 15.8,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        7,
+        0,
+        99,
+        59
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime huge outline + black rounded title",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime huge outline + black rounded title",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 15.200s videos/s28/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t10",
+      "text": "Ты не сломан. Ты устал. / ...",
+      "role": "caption_or_graphic_label",
+      "appear": 16.0,
+      "disappear": 18.8,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        30,
+        45,
+        75,
+        50
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "tiny white dialogue, final line unreadable",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "tiny white dialogue, final line unreadable",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 17.400s videos/s28/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t11",
+      "text": "ЛЮДИ ТАК НЕ ГОВОРЯТ / ... СЧИТЫВАЕТ ЭТО ЗА СЕКУНДУ",
+      "role": "caption_or_graphic_label",
+      "appear": 19,
+      "disappear": 21.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        28,
+        42,
+        95,
+        57
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white italic + tiny lime sub; first subword uncertain",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white italic + tiny lime sub; first subword uncertain",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 20.300s videos/s28/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t12",
+      "text": "3 / ПОСЛЕДНЕЕ / ... / НЕЙРОСЕТЬ / НЕ ИМЕЕТ ПОЗИЦИИ",
+      "role": "caption_or_graphic_label",
+      "appear": 22,
+      "disappear": 24.2,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        8,
+        1,
+        99,
+        59
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime outline + white title/black card; intermediate sub uncertain",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime outline + white title/black card; intermediate sub uncertain",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 23.100s videos/s28/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t13",
+      "text": "МОЖНО ЛИ ИЗМЕНИТЬ ЧЕЛОВЕКУ / ЕСЛИ РАЗЛЮБИЛ?",
+      "role": "caption_or_graphic_label",
+      "appear": 26.2,
+      "disappear": 28.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        8,
+        3,
+        94,
+        14
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime small + white main",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime small + white main",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 27.400s videos/s28/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "low",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t14",
+      "text": "ВСЕГО ОДИН ПРИЗНАК / ЗАРАЖАЕТ ВЕСЬ РОЛИК / И ВЫЗЫВАЕТ ОТТОРЖЕНИЕ",
+      "role": "caption_or_graphic_label",
+      "appear": 33.4,
+      "disappear": 36,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        8,
+        7,
+        96,
+        24
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime small and white italic hero",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime small and white italic hero",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 34.700s videos/s28/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t15",
+      "text": "ЧТОБЫ ИЗБЕЖАТЬ / ПИШИ СЦЕНАРИИ / ТВОИМ ГОЛОСОМ",
+      "role": "caption_or_graphic_label",
+      "appear": 36.2,
+      "disappear": 38.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        13,
+        42,
+        91,
+        59
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime/white phrase stagger",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime/white phrase stagger",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 37.300s videos/s28/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t16",
+      "text": "НАПИШИ СЛОВО / СЦЕНАРИЙ / В КОММЕНТАРИЯХ",
+      "role": "caption_or_graphic_label",
+      "appear": 38.8,
+      "disappear": 40.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        5,
+        43,
+        95,
+        64
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime kicker + dark blue compressed caps + lime sub",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime kicker + dark blue compressed caps + lime sub",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s28 39.700s videos/s28/overview_05.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    }
+  ],
+  "graphics": [
+    {
+      "id": "g1",
+      "start": 0,
+      "end": 0.6,
+      "type": "electric_outline",
+      "content": "lime broken luminous strokes coalesce to outlined 3",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 0.300s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g2",
+      "start": 0.6,
+      "end": 3.4,
+      "type": "behind_person",
+      "content": "giant hook over warehouse speaker",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 2.000s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g3",
+      "start": 3.6,
+      "end": 6.6,
+      "type": "grade",
+      "content": "second speaker blue-coloured, large AI knot behind; not copied",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 5.100s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g4",
+      "start": 7.4,
+      "end": 9.4,
+      "type": "number",
+      "content": "outlined 1 with rounded black explanatory card",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 8.400s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g5",
+      "start": 10,
+      "end": 12,
+      "type": "grade",
+      "content": "blue close-up robot-character framing",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 11.000s videos/s28/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g6",
+      "start": 14.2,
+      "end": 15.8,
+      "type": "number",
+      "content": "electrical 2 outline then title card",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 15.000s videos/s28/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g7",
+      "start": 21.6,
+      "end": 24.2,
+      "type": "number",
+      "content": "electrical 3 outline then title card",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 22.900s videos/s28/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g8",
+      "start": 24.4,
+      "end": 25.8,
+      "type": "zoom",
+      "content": "blue face cut to tighter eye crop",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 25.100s videos/s28/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g9",
+      "start": 31.8,
+      "end": 32.8,
+      "type": "footage",
+      "content": "two cast shadows on ground",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 32.300s videos/s28/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g10",
+      "start": 40.6,
+      "end": 41.886,
+      "type": "footage",
+      "content": "blue hand over red chair, no CTA text",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s28 41.243s videos/s28/overview_05.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    }
+  ],
+  "animations": [
+    {
+      "start": 14.24,
+      "end": 14.68,
+      "observed_intervals": 11,
+      "inclusive_frame_count": 12,
+      "fps": 25.0,
+      "description": "black chapter pill enters from right",
+      "easing_guess": "not identified from bounded frames",
+      "overshoot": null,
+      "stagger": null,
+      "source_method": "decoded PTS; counted elapsed intervals, not inclusive images",
+      "evidence": "codex\\measurements\\s28\\native_0c83f217570f.json",
+      "confidence": "medium",
+      "alternative": "Pre-rendered composite; original keyframes unknown. Some windows explicitly censored."
+    }
+  ],
+  "colour": {
+    "scenes": [
+      {
+        "start": 0,
+        "end": 0.6,
+        "palette": [
+          "#BBC216",
+          "#998D69",
+          "#16250B",
+          "#767D0F",
+          "#BFC769"
+        ],
+        "sample_at": 0.2,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s28 0.300s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)"
+      },
+      {
+        "start": 0.6,
+        "end": 3.4,
+        "palette": [
+          "#9A8670",
+          "#0F140D",
+          "#786246",
+          "#AFAEA6",
+          "#4D3D27"
+        ],
+        "sample_at": 2.0,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s28 2.000s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)"
+      },
+      {
+        "start": 3.6,
+        "end": 6.6,
+        "palette": [
+          "#060E0F",
+          "#1D2A23",
+          "#858981",
+          "#475352",
+          "#B0BFC3"
+        ],
+        "sample_at": 5.0,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s28 5.100s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)"
+      },
+      {
+        "start": 7.4,
+        "end": 9.4,
+        "palette": [
+          "#10180E",
+          "#A59E8D",
+          "#8F6F4D",
+          "#3D3C20",
+          "#B2CA14"
+        ],
+        "sample_at": 8.4,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s28 8.400s videos/s28/overview_01.jpg (5fps discovery, ±0.2s)"
+      },
+      {
+        "start": 10,
+        "end": 12,
+        "palette": [
+          "#060D10",
+          "#2C332F",
+          "#87AABF",
+          "#5987A7",
+          "#304F6E"
+        ],
+        "sample_at": 11.0,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s28 11.000s videos/s28/overview_02.jpg (5fps discovery, ±0.2s)"
+      }
+    ],
+    "text_colours": [],
+    "treatment": null
+  },
+  "audio": {
+    "version": "mixed_audio_pts_1",
+    "sha1": "67b338279be8c7c3fa7c5adce3ce42e839c9a83e",
+    "source": "samples/sample 28.mp4",
+    "method": "mixed mono RMS, 2048-sample Hann spectral-flux windows / 512-hop at 22050Hz; timestamp window centre; EBU stereo original verbose log",
+    "rms_in_transcribed_word_spans_dbfs": -14.227,
+    "rms_outside_transcribed_word_spans_dbfs": -22.596,
+    "speech_lufs": null,
+    "music_under_speech_db": null,
+    "ducking": null,
+    "onsets": [
+      {
+        "t": 0.348299,
+        "z": 3.9641
+      },
+      {
+        "t": 1.184218,
+        "z": 2.1057
+      },
+      {
+        "t": 1.369977,
+        "z": 2.4889
+      },
+      {
+        "t": 1.578957,
+        "z": 2.0755
+      },
+      {
+        "t": 2.159456,
+        "z": 3.4515
+      },
+      {
+        "t": 2.461315,
+        "z": 4.5044
+      },
+      {
+        "t": 2.670295,
+        "z": 3.8853
+      },
+      {
+        "t": 3.041814,
+        "z": 3.0983
+      },
+      {
+        "t": 3.761633,
+        "z": 2.5671
+      },
+      {
+        "t": 3.854512,
+        "z": 2.2922
+      },
+      {
+        "t": 3.970612,
+        "z": 2.1441
+      },
+      {
+        "t": 4.063492,
+        "z": 2.9717
+      },
+      {
+        "t": 4.295692,
+        "z": 2.9508
+      },
+      {
+        "t": 5.24771,
+        "z": 2.8298
+      },
+      {
+        "t": 5.990748,
+        "z": 3.2294
+      },
+      {
+        "t": 6.130068,
+        "z": 3.9537
+      },
+      {
+        "t": 6.733787,
+        "z": 4.0784
+      },
+      {
+        "t": 6.896327,
+        "z": 3.7441
+      },
+      {
+        "t": 7.128526,
+        "z": 4.0199
+      },
+      {
+        "t": 7.685805,
+        "z": 4.3951
+      },
+      {
+        "t": 8.010884,
+        "z": 2.8899
+      },
+      {
+        "t": 8.150204,
+        "z": 3.6633
+      },
+      {
+        "t": 8.707483,
+        "z": 4.2947
+      },
+      {
+        "t": 11.447438,
+        "z": 2.63
+      },
+      {
+        "t": 12.144036,
+        "z": 2.9512
+      },
+      {
+        "t": 13.235374,
+        "z": 4.5709
+      },
+      {
+        "t": 13.978413,
+        "z": 4.9673
+      },
+      {
+        "t": 14.837551,
+        "z": 2.5563
+      },
+      {
+        "t": 15.092971,
+        "z": 2.102
+      },
+      {
+        "t": 15.44127,
+        "z": 3.0253
+      },
+      {
+        "t": 15.882449,
+        "z": 2.3978
+      },
+      {
+        "t": 16.068209,
+        "z": 3.5672
+      },
+      {
+        "t": 16.904127,
+        "z": 4.5027
+      },
+      {
+        "t": 17.600726,
+        "z": 4.4579
+      },
+      {
+        "t": 17.972245,
+        "z": 4.5727
+      },
+      {
+        "t": 18.483084,
+        "z": 2.1716
+      },
+      {
+        "t": 19.017143,
+        "z": 2.7877
+      },
+      {
+        "t": 19.156463,
+        "z": 2.2726
+      },
+      {
+        "t": 20.108481,
+        "z": 2.6082
+      },
+      {
+        "t": 20.201361,
+        "z": 3.4218
+      },
+      {
+        "t": 20.874739,
+        "z": 2.1424
+      },
+      {
+        "t": 21.966077,
+        "z": 3.0423
+      },
+      {
+        "t": 22.360816,
+        "z": 3.4636
+      },
+      {
+        "t": 22.941315,
+        "z": 3.2412
+      },
+      {
+        "t": 23.684354,
+        "z": 3.9186
+      },
+      {
+        "t": 24.520272,
+        "z": 2.509
+      },
+      {
+        "t": 24.891791,
+        "z": 3.1778
+      },
+      {
+        "t": 25.309751,
+        "z": 2.1543
+      },
+      {
+        "t": 25.47229,
+        "z": 2.9032
+      },
+      {
+        "t": 26.122449,
+        "z": 2.8831
+      },
+      {
+        "t": 26.354649,
+        "z": 2.8364
+      },
+      {
+        "t": 26.633288,
+        "z": 2.6797
+      },
+      {
+        "t": 27.144127,
+        "z": 3.7247
+      },
+      {
+        "t": 27.887166,
+        "z": 2.6362
+      },
+      {
+        "t": 28.026485,
+        "z": 3.4512
+      },
+      {
+        "t": 28.560544,
+        "z": 2.4732
+      },
+      {
+        "t": 28.699864,
+        "z": 3.4166
+      },
+      {
+        "t": 28.815964,
+        "z": 2.9272
+      },
+      {
+        "t": 29.442902,
+        "z": 3.5415
+      },
+      {
+        "t": 29.907302,
+        "z": 2.4626
+      },
+      {
+        "t": 30.162721,
+        "z": 3.1934
+      },
+      {
+        "t": 30.325261,
+        "z": 2.9906
+      },
+      {
+        "t": 31.045079,
+        "z": 3.8905
+      },
+      {
+        "t": 31.602358,
+        "z": 2.0786
+      },
+      {
+        "t": 33.250975,
+        "z": 5.827
+      },
+      {
+        "t": 33.668934,
+        "z": 2.9186
+      },
+      {
+        "t": 34.760272,
+        "z": 3.079
+      },
+      {
+        "t": 35.80517,
+        "z": 2.3677
+      },
+      {
+        "t": 36.199909,
+        "z": 2.6779
+      },
+      {
+        "t": 36.757188,
+        "z": 3.3327
+      },
+      {
+        "t": 37.012608,
+        "z": 3.2001
+      },
+      {
+        "t": 37.244807,
+        "z": 3.269
+      },
+      {
+        "t": 38.196825,
+        "z": 3.7352
+      },
+      {
+        "t": 38.707664,
+        "z": 3.4102
+      },
+      {
+        "t": 39.055964,
+        "z": 5.2399
+      },
+      {
+        "t": 39.195283,
+        "z": 2.4447
+      }
+    ],
+    "cut_onset_alignment": [
+      {
+        "visual_candidate_t": 3.48,
+        "onset_t": 3.761633,
+        "delta_ms": 281.633
+      },
+      {
+        "visual_candidate_t": 5.64,
+        "onset_t": 5.990748,
+        "delta_ms": 350.748
+      },
+      {
+        "visual_candidate_t": 6.48,
+        "onset_t": 6.733787,
+        "delta_ms": 253.787
+      },
+      {
+        "visual_candidate_t": 9.52,
+        "onset_t": 8.707483,
+        "delta_ms": -812.517
+      },
+      {
+        "visual_candidate_t": 10.76,
+        "onset_t": 11.447438,
+        "delta_ms": 687.438
+      },
+      {
+        "visual_candidate_t": 11.92,
+        "onset_t": 12.144036,
+        "delta_ms": 224.036
+      },
+      {
+        "visual_candidate_t": 13.0,
+        "onset_t": 13.235374,
+        "delta_ms": 235.374
+      },
+      {
+        "visual_candidate_t": 14.2,
+        "onset_t": 13.978413,
+        "delta_ms": -221.587
+      },
+      {
+        "visual_candidate_t": 15.72,
+        "onset_t": 15.882449,
+        "delta_ms": 162.449
+      },
+      {
+        "visual_candidate_t": 18.8,
+        "onset_t": 19.017143,
+        "delta_ms": 217.143
+      },
+      {
+        "visual_candidate_t": 21.6,
+        "onset_t": 21.966077,
+        "delta_ms": 366.077
+      },
+      {
+        "visual_candidate_t": 24.16,
+        "onset_t": 24.520272,
+        "delta_ms": 360.272
+      },
+      {
+        "visual_candidate_t": 25.16,
+        "onset_t": 25.309751,
+        "delta_ms": 149.751
+      },
+      {
+        "visual_candidate_t": 25.88,
+        "onset_t": 26.122449,
+        "delta_ms": 242.449
+      },
+      {
+        "visual_candidate_t": 28.6,
+        "onset_t": 28.560544,
+        "delta_ms": -39.456
+      },
+      {
+        "visual_candidate_t": 29.76,
+        "onset_t": 29.907302,
+        "delta_ms": 147.302
+      },
+      {
+        "visual_candidate_t": 30.52,
+        "onset_t": 30.325261,
+        "delta_ms": -194.739
+      },
+      {
+        "visual_candidate_t": 31.76,
+        "onset_t": 31.602358,
+        "delta_ms": -157.642
+      },
+      {
+        "visual_candidate_t": 33.04,
+        "onset_t": 33.250975,
+        "delta_ms": 210.975
+      },
+      {
+        "visual_candidate_t": 36.12,
+        "onset_t": 36.199909,
+        "delta_ms": 79.909
+      },
+      {
+        "visual_candidate_t": 40.6,
+        "onset_t": 39.195283,
+        "delta_ms": -1404.717
+      }
+    ],
+    "short_term": [
+      {
+        "t": 0.0999773,
+        "momentary_lufs": -120.7,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -70.0,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 0.599977,
+        "momentary_lufs": -12.1,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -13.7,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 1.099977,
+        "momentary_lufs": -13.1,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -12.3,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 1.599977,
+        "momentary_lufs": -14.9,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -12.8,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 2.099977,
+        "momentary_lufs": -15.6,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -13.2,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 2.599977,
+        "momentary_lufs": -15.1,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -13.6,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 3.099977,
+        "momentary_lufs": -19.9,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 3.599977,
+        "momentary_lufs": -16.2,
+        "short_term_lufs": -15.0,
+        "integrated_so_far_lufs": -14.6,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 4.099977,
+        "momentary_lufs": -12.5,
+        "short_term_lufs": -15.1,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 4.599977,
+        "momentary_lufs": -14.3,
+        "short_term_lufs": -15.3,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 5.099977,
+        "momentary_lufs": -13.9,
+        "short_term_lufs": -14.7,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 5.599977,
+        "momentary_lufs": -11.9,
+        "short_term_lufs": -14.1,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 6.099977,
+        "momentary_lufs": -10.6,
+        "short_term_lufs": -13.1,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 6.599977,
+        "momentary_lufs": -10.2,
+        "short_term_lufs": -12.1,
+        "integrated_so_far_lufs": -13.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 7.099977,
+        "momentary_lufs": -9.5,
+        "short_term_lufs": -11.4,
+        "integrated_so_far_lufs": -12.9,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 7.599977,
+        "momentary_lufs": -16.1,
+        "short_term_lufs": -11.2,
+        "integrated_so_far_lufs": -12.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 8.099977,
+        "momentary_lufs": -13.2,
+        "short_term_lufs": -11.2,
+        "integrated_so_far_lufs": -12.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 8.599977,
+        "momentary_lufs": -13.5,
+        "short_term_lufs": -11.3,
+        "integrated_so_far_lufs": -12.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 9.099977,
+        "momentary_lufs": -16.9,
+        "short_term_lufs": -11.9,
+        "integrated_so_far_lufs": -12.9,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 9.599977,
+        "momentary_lufs": -15.1,
+        "short_term_lufs": -12.7,
+        "integrated_so_far_lufs": -13.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 10.099977,
+        "momentary_lufs": -13.5,
+        "short_term_lufs": -13.9,
+        "integrated_so_far_lufs": -13.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 10.599977,
+        "momentary_lufs": -18.3,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -13.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 11.099977,
+        "momentary_lufs": -15.6,
+        "short_term_lufs": -15.2,
+        "integrated_so_far_lufs": -13.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 11.599977,
+        "momentary_lufs": -13.2,
+        "short_term_lufs": -14.9,
+        "integrated_so_far_lufs": -13.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 12.099977,
+        "momentary_lufs": -13.5,
+        "short_term_lufs": -14.5,
+        "integrated_so_far_lufs": -13.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 12.599977,
+        "momentary_lufs": -15.3,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -13.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 13.099977,
+        "momentary_lufs": -17.3,
+        "short_term_lufs": -14.9,
+        "integrated_so_far_lufs": -13.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 13.599977,
+        "momentary_lufs": -13.5,
+        "short_term_lufs": -14.5,
+        "integrated_so_far_lufs": -13.5,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 14.099977,
+        "momentary_lufs": -13.7,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -13.5,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 14.599977,
+        "momentary_lufs": -13.0,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -13.6,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 15.099977,
+        "momentary_lufs": -14.4,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -13.5,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 15.599977,
+        "momentary_lufs": -17.2,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -13.6,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 16.099977,
+        "momentary_lufs": -12.7,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -13.6,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 16.599977,
+        "momentary_lufs": -15.0,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -13.6,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 17.099977,
+        "momentary_lufs": -13.9,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -13.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 17.599977,
+        "momentary_lufs": -20.9,
+        "short_term_lufs": -15.0,
+        "integrated_so_far_lufs": -13.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 18.099977,
+        "momentary_lufs": -13.3,
+        "short_term_lufs": -15.1,
+        "integrated_so_far_lufs": -13.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 18.599977,
+        "momentary_lufs": -16.0,
+        "short_term_lufs": -14.9,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 19.099977,
+        "momentary_lufs": -11.6,
+        "short_term_lufs": -14.7,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 19.599977,
+        "momentary_lufs": -13.8,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 20.099977,
+        "momentary_lufs": -13.9,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 20.599977,
+        "momentary_lufs": -13.0,
+        "short_term_lufs": -13.7,
+        "integrated_so_far_lufs": -13.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 21.099977,
+        "momentary_lufs": -15.2,
+        "short_term_lufs": -13.9,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 21.599977,
+        "momentary_lufs": -25.0,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 22.099977,
+        "momentary_lufs": -13.7,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 22.599977,
+        "momentary_lufs": -12.4,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 23.099977,
+        "momentary_lufs": -14.0,
+        "short_term_lufs": -14.5,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 23.599977,
+        "momentary_lufs": -13.2,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 24.099977,
+        "momentary_lufs": -12.6,
+        "short_term_lufs": -14.0,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 24.599977,
+        "momentary_lufs": -14.2,
+        "short_term_lufs": -13.5,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 25.099977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -13.4,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 25.599977,
+        "momentary_lufs": -14.8,
+        "short_term_lufs": -13.9,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 26.099977,
+        "momentary_lufs": -15.5,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -13.9,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 26.599977,
+        "momentary_lufs": -14.2,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 27.099977,
+        "momentary_lufs": -13.1,
+        "short_term_lufs": -14.5,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 27.599977,
+        "momentary_lufs": -15.5,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 28.099977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -13.9,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 28.599977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -13.9,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 29.099977,
+        "momentary_lufs": -18.2,
+        "short_term_lufs": -14.5,
+        "integrated_so_far_lufs": -13.9,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 29.599977,
+        "momentary_lufs": -16.7,
+        "short_term_lufs": -14.9,
+        "integrated_so_far_lufs": -13.9,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 30.099977,
+        "momentary_lufs": -15.1,
+        "short_term_lufs": -15.4,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 30.599977,
+        "momentary_lufs": -14.0,
+        "short_term_lufs": -15.1,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 31.099977,
+        "momentary_lufs": -15.0,
+        "short_term_lufs": -15.1,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 31.599977,
+        "momentary_lufs": -14.2,
+        "short_term_lufs": -15.3,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 32.099977,
+        "momentary_lufs": -19.3,
+        "short_term_lufs": -15.3,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 32.599977,
+        "momentary_lufs": -32.8,
+        "short_term_lufs": -15.8,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 33.099977,
+        "momentary_lufs": -22.1,
+        "short_term_lufs": -16.5,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 33.599977,
+        "momentary_lufs": -12.5,
+        "short_term_lufs": -16.4,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 34.099977,
+        "momentary_lufs": -12.2,
+        "short_term_lufs": -15.4,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 34.599977,
+        "momentary_lufs": -14.0,
+        "short_term_lufs": -15.3,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 35.099977,
+        "momentary_lufs": -14.7,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 35.599977,
+        "momentary_lufs": -15.7,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 36.099977,
+        "momentary_lufs": -19.6,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 36.599977,
+        "momentary_lufs": -13.2,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 37.099977,
+        "momentary_lufs": -13.2,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 37.599977,
+        "momentary_lufs": -14.9,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 38.099977,
+        "momentary_lufs": -16.3,
+        "short_term_lufs": -15.2,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 38.599977,
+        "momentary_lufs": -19.2,
+        "short_term_lufs": -15.4,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 39.099977,
+        "momentary_lufs": -11.4,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 39.599977,
+        "momentary_lufs": -14.0,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 40.099977,
+        "momentary_lufs": -15.2,
+        "short_term_lufs": -15.0,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 40.599977,
+        "momentary_lufs": -34.2,
+        "short_term_lufs": -15.9,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 41.099977,
+        "momentary_lufs": -29.7,
+        "short_term_lufs": -16.5,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 41.599977,
+        "momentary_lufs": -41.4,
+        "short_term_lufs": -16.9,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      }
+    ],
+    "cuts_on_beat": {
+      "tested": false,
+      "ratio": null,
+      "reason": "mixed-track onsets may be syllables; not isolated music/beat"
+    },
+    "caveats": [
+      "Word spans may miss syllables; outside spans is NOT isolated music.",
+      "RMS is not LUFS.",
+      "Onset candidates are not confirmed SFX.",
+      "Early short-term meter values need full3s window."
+    ]
+  },
+  "open_questions": [
+    "Exact font/isolated audio unavailable.",
+    "Unresolved microprint flagged in literal cues."
+  ],
+  "measurement_files": [
+    "codex\\measurements\\s28\\m_mixed_audio.json",
+    "codex\\measurements\\s28\\m_preliminary_stats.json",
+    "codex\\measurements\\s28\\native_0c83f217570f.json"
+  ],
+  "opencv_motion": []
+}

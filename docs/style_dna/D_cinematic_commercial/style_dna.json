@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "id": "D_cinematic_commercial",
+  "description": "Heterogeneous commercial/showcase/vlog; select a subtype before copying rhythm.",
+  "members": [
+    "s01",
+    "s11",
+    "s18",
+    "s19",
+    "s20",
+    "s21",
+    "s37"
+  ],
+  "source_hashes": {
+    "s01": "b145e0a0c49f3c56cefa133332c4dde2121dd676",
+    "s11": "6bba5a325a5a0f487985bb5ec4e7eec3f4b947fe",
+    "s18": "28732cbaa2ab08e3989bf46b687643bb62ca92cc",
+    "s19": "ee5f66c6d8acf7bf7aa6efba6b343453e9c84b27",
+    "s20": "5dc9d541218b2916279efce6b08bc6f8868624bd",
+    "s21": "27173e2efaa42a8351a0eda6c68f29da3ae972a5",
+    "s37": "d88fd4a239996e4fcd530e7a544d25771e1a26e0"
+  },
+  "evidence_policy": ">=3 distinct source hashes = recurring pattern; 1–2 = observation; timing/rhythm not universal rule",
+  "techniques": [
+    {
+      "id": "trajectory",
+      "witnesses": [
+        "s21",
+        "s37"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s21/perception.json",
+        "codex/analysis/s37/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "material_cards",
+      "witnesses": [
+        "s21"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s21/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "panel_wipes",
+      "witnesses": [
+        "s37"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s37/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "caption_entrances",
+      "witnesses": [
+        "s37"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s37/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "bespoke_illustration",
+      "witnesses": [
+        "s11",
+        "s19",
+        "s37"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s11/perception.json",
+        "codex/analysis/s19/perception.json",
+        "codex/analysis/s37/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "audio_stems_beats",
+      "witnesses": [
+        "s21",
+        "s37"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s21/perception.json",
+        "codex/analysis/s37/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    }
+  ],
+  "cut_rhythm": {
+    "statistics": "per-source perception.rhythm; candidate cuts not pooled as verified cuts",
+    "rule": "semantic cuts, allow calm intervals; D requires subtype",
+    "candidate_group_medians": {
+      "cuts_per_min": 13.9,
+      "median_shot_s": 1.66,
+      "wpm": 140.5,
+      "source": "docs/STYLE_STUDY/peer_global_stats.md",
+      "use": "detector reference only; not auto-cut rule"
+    }
+  },
+  "animation_presets": {
+    "unit": "source fps + elapsed intervals, convert seconds to output fps",
+    "native_examples": [
+      {
+        "video": "s21",
+        "range": [
+          3.4,
+          3.5
+        ],
+        "intervals": 3,
+        "evidence": "codex/analysis/s21/perception.json"
+      },
+      {
+        "video": "s37",
+        "range": [
+          2.3,
+          2.9667
+        ],
+        "intervals": 20,
+        "evidence": "codex/analysis/s37/perception.json"
+      }
+    ]
+  },
+  "style_patch": {
+    "motion": {
+      "enabled": true,
+      "durations_ms": {
+        "title": 400,
+        "label": 667,
+        "sticker": 667,
+        "transition": 520
+      },
+      "choice": {
+        "enter": "slide_overshoot",
+        "sub": "mask_up",
+        "emphasis": "box_wipe"
+      }
+    },
+    "motion_design": {
+      "fast_blur_px": 2,
+      "material_seed": 41
+    }
+  },
+  "suggested_accent": "#F0A35A",
+  "brand_override": "Existing brand/approved per-video color and font win; do not impose sampled brand colors",
+  "zoom": "content-driven energy + optional canvas keyframes; no constant zoom",
+  "graphics": [
+    "trajectory",
+    "material_cards",
+    "panel_wipes",
+    "caption_entrances",
+    "bespoke_illustration",
+    "audio_stems_beats"
+  ],
+  "sound": {
+    "measured_mix_lufs": [
+      -17.4,
+      -14.1,
+      -14.2,
+      -14.1,
+      -17.0,
+      -14.3,
+      -15.3
+    ],
+    "sfx_level_relative_to_speech": null,
+    "stem_separation_available": false,
+    "cuts_on_beat_verified": false,
+    "apply": "existing stronger/subtle paired mixes + voice margin; source sound taste awaiting user"
+  },
+  "hook": "derive from actual speech, group hierarchy only; no invented promises",
+  "outro": "use only actual spoken CTA; no forced subscription card on narrative excerpt",
+  "timing_application": {
+    "status": "editor-chosen initial default from selected native example, not universal preset fit",
+    "evidence": "s37 canvas pan20 intervals@30; heterogeneous, subtype required"
+  },
+  "application_scope": "Caption/motion defaults; material/card/canvas/trajectory geometry and semantic cuts require agent plan. No auto template generator.",
+  "hook_text_candidate": {
+    "max_first_on_screen_s": 0.3,
+    "source": "Claude hook sheet22/24 checked",
+    "automatic_preflight": false,
+    "confidence": "medium",
+    "alternative": "reused template openings"
+  },
+  "subtype_patches": {
+    "promo": {
+      "captions": {
+        "preset": "promo"
+      }
+    },
+    "showcase": {
+      "captions": {
+        "preset": "single"
+      }
+    },
+    "vlog": {
+      "captions": {
+        "preset": "clean"
+      }
+    }
+  }
+}

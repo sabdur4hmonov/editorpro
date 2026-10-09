@@ -283,3 +283,14 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
 - Source skills updated then sync_skills --apply / --check for Claude and Codex.
   Next: user chooses recommended oxygen1/urine3/bed1, auto or none; record verbatim, accept then
   sprint2_demo.py after / reports. Do not fabricate a selection or claim the whole sprint is approved.
+
+## 2026-10-09 — Codex style study, solo finish after Claude limit
+
+- 41 source report folders +5 DNA/playbooks; 1–20 brief reuse,21–41 overview/literal discovery + selected native PTS events. Every animation/exit/microprint is NOT fully measured; coverage.json.
+- Independent Claude analysis/merge/diff and two initial proof reviews found and reconciled; historical_* records and reply_by_codex.md. Final committed tests/iteration3 not independently Claude-reviewed.
+- New opt-in trajectory, procedural paper/grid/ticket/polaroid/film/pill, pivot/active state, canvas camera, flat relief, one-source layout morph; reused captions/energy/SFX/export. Canvas child behind_person rejected clearly; per-style seam; callable registry; invert flash raster source effect. D promo/showcase/vlog use distinct caption presets, brand last.
+- 5 approved doctor excerpts 5.57–8.20s, three iterations each, before/after + stronger/subtle + frame/time/alpha numbers; A full1080x1920/30. Original41 SHA1 and approved doctor source hashes unchanged. Peer video folders/notes untouched.
+- Quality gaps: B1 exit briefly covers face; A tag repeats caption and does not recreate the big calculator; B2 row is not shared-pivot fan, duplicate representations of five. Do not label professional equivalence or creative approval. ≤3 iteration cap respected.
+- Source count threshold≥3 distinct hashes; source invert candidates2–4frames, source cut detectors remain candidates, not universal cut rate. Onset != beat, RMS != LUFS, reference mixed track != isolated SFX margin. Agent cannot judge sound taste.
+- Main selftest refuses preserved unfinished Claude video note; no guard weakened. Run unchanged source copy with isolated temp/notes and --no-whisper --offline; production precondition remains. Final tests in docs/STYLE_STUDY/tests.md.
+- 4-core CPU full RGBA canvas/TrackedText is costly; use short scenes; static child/bbox cache still future work. True3D/fold, exact handwriting, video diagonal wipes and exhaustive timing/font identity remain gaps. No install/upload/new library.

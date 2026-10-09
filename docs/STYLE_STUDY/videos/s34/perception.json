@@ -1,0 +1,2704 @@
+{
+  "video": "s34",
+  "agent": "codex",
+  "schema": 1,
+  "sha1": "23c1d286eb7baa78393ead848c3d5d1ab40de4c5",
+  "type": "B1_editorial_paper",
+  "status": "pilot analysed; uncertainty retained",
+  "technical": {
+    "duration": 52.312,
+    "width": 720,
+    "height": 1280,
+    "fps": 25.0,
+    "integrated_lufs": -14.2,
+    "true_peak_dbtp": -0.5,
+    "lra_lu": 5.9,
+    "speech": true,
+    "language": "uz",
+    "wpm": 150.252,
+    "wpm_denominator": "whole runtime",
+    "language_detection_caveat": "phase0 free-detector mapping is heuristic; on-screen Uzbek corroborates; not language ground truth",
+    "transcript_model": "yuldashev222/whisper-small-uz-v1-ct2"
+  },
+  "rhythm": {
+    "cut_source": "content27 candidate shot changes visually checked on every cached strip row; s34 final black edge separated",
+    "cuts": [
+      1.36,
+      9.0,
+      12.92,
+      18.0
+    ],
+    "first_cut": 1.36,
+    "cut_interval": {
+      "n": 3,
+      "mean": 5.546667,
+      "median": 5.08,
+      "p10": 4.152,
+      "p90": 7.128,
+      "min": 3.92,
+      "max": 7.64
+    },
+    "shot_lengths_including_edges": {
+      "n": 5,
+      "mean": 10.4624,
+      "median": 5.08,
+      "p10": 2.384,
+      "p90": 23.6432,
+      "min": 1.36,
+      "max": 34.312
+    },
+    "hook": {
+      "start": 0,
+      "end": 4.96,
+      "evidence": "s34 certificate hook0..1.36 then TEKINGA campus3.16..4.96; native m_strip_8689a9ebcb67d8,b96d7e5a1ac2e8",
+      "confidence": "medium",
+      "alternative": "hook semantically ends spoken o‘qishingiz mumkin ratherthan titleexit"
+    },
+    "cta": {
+      "start": 45.2,
+      "end": 51.98,
+      "text": "grant/prezentatsiya uchun izohda Aziz yozish (speech), final screen “Aziz”",
+      "evidence": "s34 transcript finalsegment + key93bfcb6edce8 rows22..23",
+      "confidence": "medium",
+      "alternative": "visual CTA only50.2..51.3; spoken lead-in earlier"
+    },
+    "outro": {
+      "start": 52.2,
+      "kind": "hard black terminal frames; not narrative camera cut",
+      "evidence": "s34 strips04 row2, lastnonblack52.18 firstblack52.22 nominal ±1f",
+      "confidence": "high",
+      "alternative": "black pad ofexport"
+    }
+  },
+  "speech": {
+    "words": 131,
+    "wpm": 150.252,
+    "word_span_wpm": 159.951,
+    "pauses": [
+      {
+        "start": 8.12,
+        "end": 8.44,
+        "dur": 0.32
+      },
+      {
+        "start": 22.64,
+        "end": 22.96,
+        "dur": 0.32
+      }
+    ],
+    "pause_stats": {
+      "n": 2,
+      "mean": 0.32,
+      "median": 0.32,
+      "p10": 0.32,
+      "p90": 0.32,
+      "min": 0.32,
+      "max": 0.32
+    },
+    "cut_on_pause_ratio": 0.0,
+    "method": "Whisper word spans only; word gaps are not verified acoustic silence; WPM not on-screen text.",
+    "transcription_is_not_screen_text": true
+  },
+  "texts": [
+    {
+      "id": "t1",
+      "text": "IELTS 6 bilan",
+      "role": "hook_title",
+      "font_guess": "grotesk bold; family unidentified",
+      "case": "mixed",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FAFAFA",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 8.4,
+      "measure": "estimate",
+      "box": [
+        6,
+        65,
+        71,
+        84
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 0,
+      "disappear": 1.36,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word stack scale/fade; starts partial",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 0.800000s codex\\measurements\\s34\\key_93bfcb6edce8\\00_0.800000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t2",
+      "text": "IELTS; 6",
+      "role": "other",
+      "font_guess": "black grotesk regular; family unidentified",
+      "case": "upper",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "black",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3,
+      "measure": "estimate",
+      "box": [
+        61,
+        40,
+        80,
+        57
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 0,
+      "disappear": 1.36,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "certificate printed text; tinyotherprint unreadable",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 0.800000s codex\\measurements\\s34\\key_93bfcb6edce8\\00_0.800000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t3",
+      "text": "ushbu Amerikadagi universitetga",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "white",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 2.7,
+      "measure": "estimate",
+      "box": [
+        24,
+        52,
+        78,
+        60
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 1.6,
+      "disappear": 2.9,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 3.520000s codex\\measurements\\s34\\key_93bfcb6edce8\\01_3.520000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t4",
+      "text": "TEKINGA",
+      "role": "title",
+      "font_guess": "ultra condensed tall sans; family unidentified",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#F4F5F5",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 21,
+      "measure": "estimate",
+      "box": [
+        15,
+        21,
+        91,
+        43
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 3.16,
+      "disappear": 4.96,
+      "timing_uncertainty_sec": 0.04,
+      "anim_in": {
+        "type": "blur/opacity + rise tobehind-person rest",
+        "frames": 8,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "native decoded-PTS strips"
+      },
+      "anim_out": {
+        "type": "blur/fade",
+        "frames": 5
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 PTS3.16..3.48 m_strip_8689a9ebcb67d8_01.jpg; exit4.76..4.96 m_strip_b96d7e5a1ac2e8_01.jpg",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t5",
+      "text": "o‘qishingiz mumkin.",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "white",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 2.6,
+      "measure": "estimate",
+      "box": [
+        25,
+        18,
+        80,
+        21
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 3.6,
+      "disappear": 4.96,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 3.520000s codex\\measurements\\s34\\key_93bfcb6edce8\\01_3.520000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t6",
+      "text": "universitetning akreditatsiyasi",
+      "role": "caption",
+      "font_guess": "italic serif; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": true,
+      "color": "#E7DEC8",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.5,
+      "measure": "estimate",
+      "box": [
+        18,
+        51,
+        49,
+        63
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 5.8,
+      "disappear": 7.5,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "sideword reveal",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 6.800000s codex\\measurements\\s34\\key_93bfcb6edce8\\02_6.800000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t7",
+      "text": "KUCHLIKI",
+      "role": "title",
+      "font_guess": "ultra condensed tall sans; family unidentified",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#EBEFEF",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 21,
+      "measure": "estimate",
+      "box": [
+        12,
+        20,
+        85,
+        44
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 7.8,
+      "disappear": 8.8,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "blur/fade behind-person",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 8.400000s codex\\measurements\\s34\\key_93bfcb6edce8\\03_8.400000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t8",
+      "text": "Computer Science Engineering sohasiga",
+      "role": "caption",
+      "font_guess": "black grotesk regular; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "black",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.6,
+      "measure": "estimate",
+      "box": [
+        10,
+        43,
+        91,
+        51
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 9.12,
+      "disappear": 12.92,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word reveal",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 10.520000s codex\\measurements\\s34\\key_93bfcb6edce8\\04_10.520000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t9",
+      "text": "qiziqadigan bo‘lsangiz",
+      "role": "caption",
+      "font_guess": "black italic serif; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": true,
+      "color": null,
+      "color_name": "black",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 4.1,
+      "measure": "estimate",
+      "box": [
+        36,
+        53,
+        63,
+        62
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 11.0,
+      "disappear": 12.92,
+      "timing_uncertainty_sec": 0.04,
+      "anim_in": {
+        "type": "letter reveal inside drawnoval",
+        "frames": 11,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "native decoded-PTS strips"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 PTS11.0..11.44 m_strip_06310a01b77142_01.jpg",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t10",
+      "text": "Bu universitet",
+      "role": "caption",
+      "font_guess": "black grotesk regular + italic serif; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": true,
+      "color": null,
+      "color_name": "black",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 6,
+      "measure": "estimate",
+      "box": [
+        9,
+        44,
+        88,
+        51
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 12.94,
+      "disappear": 14.44,
+      "timing_uncertainty_sec": 0.04,
+      "anim_in": {
+        "type": "two-word reveal",
+        "frames": 7,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "native decoded-PTS strips"
+      },
+      "anim_out": {
+        "type": "upslide/blur",
+        "frames": 8
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 strips02 row3 + PTS14.12..14.44 m_strip_73e396848445c7",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t11",
+      "text": "120MLN$",
+      "role": "number",
+      "font_guess": "black italic serif; family unidentified",
+      "case": "upper",
+      "weight": "regular",
+      "italic": true,
+      "color": null,
+      "color_name": "black",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 10,
+      "measure": "estimate",
+      "box": [
+        12,
+        54,
+        84,
+        64
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 14.44,
+      "disappear": 16.4,
+      "timing_uncertainty_sec": 0.04,
+      "anim_in": {
+        "type": "letter scramble/blur upward reveal",
+        "frames": 9,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "native decoded-PTS strips"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 PTS14.44..14.80 m_strip_73e396848445c7_01.jpg",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t12",
+      "text": "o‘zining laboratoriyasiga investitsiya qilgan",
+      "role": "caption",
+      "font_guess": "black italic serif; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": true,
+      "color": null,
+      "color_name": "black",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.1,
+      "measure": "estimate",
+      "box": [
+        15,
+        48,
+        85,
+        56
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 16.5,
+      "disappear": 18,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word/letter reveal",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 17.600000s codex\\measurements\\s34\\key_93bfcb6edce8\\08_17.600000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t13",
+      "text": "ABET",
+      "role": "title",
+      "font_guess": "ultra condensed tall sans; family unidentified",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#F7F7F7",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 25,
+      "measure": "estimate",
+      "box": [
+        19,
+        20,
+        82,
+        47
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 18.84,
+      "disappear": 20.7,
+      "timing_uncertainty_sec": 0.04,
+      "anim_in": {
+        "type": "blur + opacity rise behind-person",
+        "frames": 11,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "native decoded-PTS strips"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 PTS18.84..19.28 m_strip_6a19c1d9298d32_01.jpg",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t14",
+      "text": "akreditatsiyasi bor.",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#D6E6E6",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 2.3,
+      "measure": "estimate",
+      "box": [
+        26,
+        16,
+        76,
+        20
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 19.4,
+      "disappear": 20.7,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 19.800000s codex\\measurements\\s34\\key_93bfcb6edce8\\09_19.800000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t15",
+      "text": "Amazon",
+      "role": "label",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "white",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 1.5,
+      "measure": "estimate",
+      "box": [
+        30,
+        57,
+        43,
+        60
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 21.0,
+      "disappear": 23.6,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "orange activepill moves between 3tabs",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 22.120000s codex\\measurements\\s34\\key_93bfcb6edce8\\10_22.120000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t16",
+      "text": "Google",
+      "role": "label",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "white",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 1.5,
+      "measure": "estimate",
+      "box": [
+        48,
+        57,
+        60,
+        60
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 21.0,
+      "disappear": 23.6,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "activepill moves onword",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 22.120000s codex\\measurements\\s34\\key_93bfcb6edce8\\10_22.120000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t17",
+      "text": "Apple",
+      "role": "label",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "white",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 1.5,
+      "measure": "estimate",
+      "box": [
+        65,
+        57,
+        77,
+        60
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 21.0,
+      "disappear": 23.6,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "activepill moves onword",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 22.120000s codex\\measurements\\s34\\key_93bfcb6edce8\\10_22.120000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t18",
+      "text": "aynan kompyuter yo‘nalishi bo‘yicha",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#E4EFE8",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 2.6,
+      "measure": "estimate",
+      "box": [
+        29,
+        57,
+        74,
+        63
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 23.8,
+      "disappear": 25.5,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 24.800000s codex\\measurements\\s34\\key_93bfcb6edce8\\11_24.800000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t19",
+      "text": "SHUNAQA",
+      "role": "title",
+      "font_guess": "ultra condensed tall sans; family unidentified",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#F7F7F7",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 24,
+      "measure": "estimate",
+      "box": [
+        7,
+        29,
+        87,
+        54
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 25.8,
+      "disappear": 27.6,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "blur + opacity behind-person",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 26.720000s codex\\measurements\\s34\\key_93bfcb6edce8\\12_26.720000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t20",
+      "text": "katta kompaniyalar",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#F7F7F7",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 2.6,
+      "measure": "estimate",
+      "box": [
+        25,
+        26,
+        74,
+        29
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 26.3,
+      "disappear": 27.6,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 26.720000s codex\\measurements\\s34\\key_93bfcb6edce8\\12_26.720000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t21",
+      "text": "anchagina baland bo‘ladi.",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#F2F0DA",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        55,
+        48,
+        81,
+        62
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 29.4,
+      "disappear": 30.6,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "right-side word stack",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 30.200000s codex\\measurements\\s34\\key_93bfcb6edce8\\13_30.200000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t22",
+      "text": "bunaqa imkoniyatni",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#D7E1EA",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        31,
+        60,
+        72,
+        69
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 30.9,
+      "disappear": 31.7,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 31.520000s codex\\measurements\\s34\\key_93bfcb6edce8\\14_31.520000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t23",
+      "text": "qo‘ldan boy berishingiz",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "white",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        53,
+        51,
+        85,
+        62
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 31.8,
+      "disappear": 32.35,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word stack",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 32.120000s codex\\measurements\\s34\\key_93bfcb6edce8\\15_32.120000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t24",
+      "text": "kerak emas.",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#EAECE1",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        26,
+        55,
+        75,
+        60
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 32.4,
+      "disappear": 33,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 32.720000s codex\\measurements\\s34\\key_93bfcb6edce8\\16_32.720000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t25",
+      "text": "juda ham ko‘p vatandoshlarimiz",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#EBF4EF",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        32,
+        51,
+        72,
+        64
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 33.4,
+      "disappear": 34.9,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word stack; final line smaller",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 34.400000s codex\\measurements\\s34\\key_93bfcb6edce8\\17_34.400000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t26",
+      "text": "universitetning lokatsiyasi",
+      "role": "caption",
+      "font_guess": "italic serif + grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": true,
+      "color": "#DDEBE9",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        25,
+        54,
+        72,
+        64
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 35.8,
+      "disappear": 36.9,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 36.520000s codex\\measurements\\s34\\key_93bfcb6edce8\\18_36.520000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t27",
+      "text": "juda ham zo‘r joyda joylashgan.",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#EAF2EC",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        30,
+        54,
+        70,
+        67
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 37.0,
+      "disappear": 38.4,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word stack; last line smaller",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 38.000000s codex\\measurements\\s34\\key_93bfcb6edce8\\19_38.000000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t28",
+      "text": "BU QAYSI",
+      "role": "title",
+      "font_guess": "ultra condensed tall sans; family unidentified",
+      "case": "upper",
+      "weight": "bold",
+      "italic": false,
+      "color": "#F5F6F5",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 24,
+      "measure": "estimate",
+      "box": [
+        10,
+        29,
+        85,
+        55
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 41.6,
+      "disappear": 42.9,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "blur + opacity behind-person",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 42.400000s codex\\measurements\\s34\\key_93bfcb6edce8\\20_42.400000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t29",
+      "text": "universitet?",
+      "role": "caption",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#F4F6F6",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 2.5,
+      "measure": "estimate",
+      "box": [
+        35,
+        25,
+        66,
+        29
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 42.0,
+      "disappear": 42.9,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 42.400000s codex\\measurements\\s34\\key_93bfcb6edce8\\20_42.400000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t30",
+      "text": "University of Southern Mississippi.",
+      "role": "title",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": "#EBF2EC",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        30,
+        59,
+        75,
+        72
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 43,
+      "disappear": 44.6,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word hierarchy; Universityofsmall",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 44.400000s codex\\measurements\\s34\\key_93bfcb6edce8\\21_44.400000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t31",
+      "text": "qanday qilib grant olish,",
+      "role": "cta",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#C5DDDE",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 3.8,
+      "measure": "estimate",
+      "box": [
+        30,
+        55,
+        70,
+        66
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 46.0,
+      "disappear": 47.2,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word stack",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 46.520000s codex\\measurements\\s34\\key_93bfcb6edce8\\22_46.520000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t32",
+      "text": "“Aziz”",
+      "role": "cta",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "white",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 4.3,
+      "measure": "estimate",
+      "box": [
+        36,
+        61,
+        64,
+        66
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 50.2,
+      "disappear": 51.3,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "word fade",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue; words visibly accumulate",
+      "evidence": "s34 51.000000s codex\\measurements\\s34\\key_93bfcb6edce8\\23_51.000000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t33",
+      "text": "SONY",
+      "role": "other",
+      "font_guess": "black grotesk regular; family unidentified",
+      "case": "upper",
+      "weight": "regular",
+      "italic": false,
+      "color": null,
+      "color_name": "black",
+      "colour_method": "not isolated; visual dark letters only",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 0.7,
+      "measure": "estimate",
+      "box": [
+        71,
+        70,
+        80,
+        74
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 9,
+      "disappear": 12.92,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "controller prop printed microtext",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 11.720000s codex\\measurements\\s34\\key_93bfcb6edce8\\05_11.720000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    },
+    {
+      "id": "t34",
+      "text": "Dasqua",
+      "role": "other",
+      "font_guess": "grotesk regular; family unidentified",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": "#DEDED5",
+      "color_name": "white",
+      "colour_method": "median selected bright low-saturation pixels in manually bounded reference ROI; may contain other bright pixels",
+      "accent_color": null,
+      "stroke_or_shadow": "thin soft shadow where visible; not separately measured",
+      "size_pct_h": 1,
+      "measure": "estimate",
+      "box": [
+        17,
+        63,
+        39,
+        74
+      ],
+      "box_method": "manual10percent grid, about ±2pct; size excludes descenders approximately, not font point size",
+      "appear": 12.92,
+      "disappear": 18,
+      "timing_uncertainty_sec": 0.2,
+      "anim_in": {
+        "type": "diagonal ruler printed brand; no asset reuse",
+        "frames": null,
+        "easing_guess": null,
+        "overshoot": null,
+        "stagger_frames": null,
+        "from": null,
+        "to": "legible final cue",
+        "measurement": "5fps overview, precise duration unknown"
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s34 17.600000s codex\\measurements\\s34\\key_93bfcb6edce8\\08_17.600000.png + cached overview/strips",
+      "confidence": "medium",
+      "alternative": "font/animation family may differ; literal wording kept independent of transcript"
+    }
+  ],
+  "animations": [
+    {
+      "target": "t4 TEKINGA",
+      "type": "blur/opacity rising behind-person title",
+      "start": 3.16,
+      "frames": 8,
+      "easing_guess": null,
+      "overshoot": null,
+      "values": {
+        "from": "faint blurred above head",
+        "to": "sharp upper21..43pct title partly occludedbyhead"
+      },
+      "method": "native PTS strip; no analytic ease fit",
+      "evidence": "s34 m_strip_8689a9ebcb67d8_01.jpg cells6..14"
+    },
+    {
+      "target": "t4 exit",
+      "type": "blur/fade",
+      "start": 4.76,
+      "frames": 5,
+      "evidence": "s34 m_strip_b96d7e5a1ac2e8_01.jpg cells4..9"
+    },
+    {
+      "target": "redoval",
+      "type": "path draw",
+      "start": 10.72,
+      "frames": 8,
+      "values": {
+        "from": "short red lowerstroke",
+        "to": "open oval enclosing emerging italictext"
+      },
+      "method": "nativePTSmanualpixelprogress, existingstroke10.72 onsetunseen",
+      "evidence": "s34 m_strip_06310a01b77142_01.jpg cells0..8"
+    },
+    {
+      "target": "t11 120MLN$",
+      "type": "letter fragments + blur + upwardmove",
+      "start": 14.44,
+      "frames": 9,
+      "easing_guess": null,
+      "overshoot": null,
+      "values": {
+        "from": "thin clipped letterfragments near62%height",
+        "to": "complete italicnumber near58%"
+      },
+      "method": "nativePTSmanual reading",
+      "evidence": "s34 m_strip_73e396848445c7_01.jpg cells11..20"
+    },
+    {
+      "target": "frame background18.04..20.68",
+      "type": "near-static transform under animated text",
+      "start": 18.04,
+      "frames": 67,
+      "values": {
+        "scale_from": 1,
+        "scale_to": 0.999864,
+        "scale_min": 0.982692,
+        "scale_max": 1.013451,
+        "last_valid_at": 20.68,
+        "valid_frames": 67,
+        "total_frames": 67
+      },
+      "method": "forward ORB/RANSAC top ROI; overlay lowers inliercount; only localrange, notwholevideo; codex_pts_2 unique destinations and singular-fit rejection",
+      "evidence": "s34 m_motion_d4ccbf71e1e5ee.json"
+    },
+    {
+      "target": "collage top props",
+      "type": "local similarity transform; partial valid window",
+      "start": 9.24,
+      "frames": 89,
+      "easing_guess": null,
+      "overshoot": null,
+      "values": {
+        "scale_from": 1,
+        "scale_to_last_valid": 1.150478,
+        "last_valid_at": 10.28,
+        "centre_dx_pct_at_last_valid": 13.66191,
+        "centre_dy_pct_at_last_valid": 3.01422,
+        "valid_frames": 10,
+        "total_frames": 89
+      },
+      "method": "forward ORB/RANSAC unique destinations; only valid rows usable; changing collage objects or perspective may explain transform",
+      "evidence": "s34 codex/measurements/s34/m_motion_f9fc7cf6fd9add.json",
+      "confidence": "low",
+      "alternative": "source/camera or layered object motion; whole-shot final scale/easing not established"
+    },
+    {
+      "target": "collage top props",
+      "type": "local similarity transform; partial valid window",
+      "start": 13.2,
+      "frames": 115,
+      "easing_guess": null,
+      "overshoot": null,
+      "values": {
+        "scale_from": 1,
+        "scale_to_last_valid": 1.006007,
+        "last_valid_at": 14.4,
+        "centre_dx_pct_at_last_valid": -9.4141,
+        "centre_dy_pct_at_last_valid": -14.54091,
+        "valid_frames": 31,
+        "total_frames": 115
+      },
+      "method": "forward ORB/RANSAC unique destinations; only valid rows usable; changing collage objects or perspective may explain transform",
+      "evidence": "s34 codex/measurements/s34/m_motion_16c583a531d65e.json",
+      "confidence": "low",
+      "alternative": "source/camera or layered object motion; whole-shot final scale/easing not established"
+    }
+  ],
+  "colour": {
+    "scenes": [
+      {
+        "start": 0,
+        "end": 1.36,
+        "palette": [
+          "#F9F9F9",
+          "#C6C6C6",
+          "#737373",
+          "#9C9C9C",
+          "#393939"
+        ],
+        "background": "B&W paper/certificate collage",
+        "evidence": "s34 0.8 codex\\measurements\\s34\\key_93bfcb6edce8\\00_0.800000.png",
+        "method": "kmeans5 RGB centroids of90x160 resized whole frame including overlays; descriptive scene colours, not exact text RGB",
+        "sample_at": 0.8
+      },
+      {
+        "start": 1.36,
+        "end": 9.0,
+        "palette": [
+          "#BFD0CA",
+          "#0D2617",
+          "#B2B45E",
+          "#79A2A9",
+          "#6D684D"
+        ],
+        "background": "colour campus presenter",
+        "evidence": "s34 6.8 codex\\measurements\\s34\\key_93bfcb6edce8\\02_6.800000.png",
+        "method": "kmeans5 RGB centroids of90x160 resized whole frame including overlays; descriptive scene colours, not exact text RGB",
+        "sample_at": 6.8
+      },
+      {
+        "start": 9.0,
+        "end": 12.92,
+        "palette": [
+          "#816959",
+          "#120A07",
+          "#514133",
+          "#9D9A97",
+          "#E6E3DD"
+        ],
+        "background": "wooddesk device collage",
+        "evidence": "s34 10.52 codex\\measurements\\s34\\key_93bfcb6edce8\\04_10.520000.png",
+        "method": "kmeans5 RGB centroids of90x160 resized whole frame including overlays; descriptive scene colours, not exact text RGB",
+        "sample_at": 10.52
+      },
+      {
+        "start": 12.92,
+        "end": 18.0,
+        "palette": [
+          "#C1C5BE",
+          "#E6E7DF",
+          "#979C97",
+          "#62645F",
+          "#22242C"
+        ],
+        "background": "graphpaper tool collage",
+        "evidence": "s34 15.6 codex\\measurements\\s34\\key_93bfcb6edce8\\07_15.600000.png",
+        "method": "kmeans5 RGB centroids of90x160 resized whole frame including overlays; descriptive scene colours, not exact text RGB",
+        "sample_at": 15.6
+      },
+      {
+        "start": 18.0,
+        "end": 52.2,
+        "palette": [
+          "#0B2614",
+          "#B9CDC9",
+          "#B0B35A",
+          "#7BA5B0",
+          "#696547"
+        ],
+        "background": "colour campus presenter",
+        "evidence": "s34 34.4 codex\\measurements\\s34\\key_93bfcb6edce8\\17_34.400000.png",
+        "method": "kmeans5 RGB centroids of90x160 resized whole frame including overlays; descriptive scene colours, not exact text RGB",
+        "sample_at": 34.4
+      },
+      {
+        "start": 52.2,
+        "end": 52.312,
+        "palette": [],
+        "background": "terminal black pad",
+        "evidence": "s34 strips_04.jpg row2; unsampled palette",
+        "method": "kmeans5 RGB centroids of90x160 resized whole frame including overlays; descriptive scene colours, not exact text RGB",
+        "sample_at": null
+      }
+    ],
+    "text_colours": [
+      "#C5DDDE",
+      "#D6E6E6",
+      "#D7E1EA",
+      "#DDEBE9",
+      "#DEDED5",
+      "#E4EFE8",
+      "#E7DEC8",
+      "#EAECE1",
+      "#EAF2EC",
+      "#EBEFEF",
+      "#EBF2EC",
+      "#EBF4EF",
+      "#F2F0DA",
+      "#F4F5F5",
+      "#F4F6F6",
+      "#F5F6F5",
+      "#F7F7F7",
+      "#FAFAFA"
+    ],
+    "treatment": "B&Wpaper hook; full-colour green campus/cyansky/lightblueshirt; wooddeskgrey vignette then palegreen graphpaper; whitecaps behindperson, blackserif onpaper. Palettecentroids are composite, not LUT values.",
+    "palette_samples": [
+      {
+        "t": 0.8,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\00_0.800000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#F9F9F9",
+            "pixel_share": 0.4242
+          },
+          {
+            "rgb": "#C6C6C6",
+            "pixel_share": 0.1745
+          },
+          {
+            "rgb": "#737373",
+            "pixel_share": 0.1736
+          },
+          {
+            "rgb": "#9C9C9C",
+            "pixel_share": 0.1676
+          },
+          {
+            "rgb": "#393939",
+            "pixel_share": 0.0601
+          }
+        ],
+        "median_saturation_0_255": 0.0,
+        "median_value_0_255": 201.0
+      },
+      {
+        "t": 3.52,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\01_3.520000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0D2816",
+            "pixel_share": 0.3848
+          },
+          {
+            "rgb": "#AEC7C5",
+            "pixel_share": 0.2828
+          },
+          {
+            "rgb": "#A1A255",
+            "pixel_share": 0.1476
+          },
+          {
+            "rgb": "#EEF0ED",
+            "pixel_share": 0.1031
+          },
+          {
+            "rgb": "#77A4B1",
+            "pixel_share": 0.0816
+          }
+        ],
+        "median_saturation_0_255": 103.0,
+        "median_value_0_255": 178.0
+      },
+      {
+        "t": 6.8,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\02_6.800000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#BFD0CA",
+            "pixel_share": 0.3686
+          },
+          {
+            "rgb": "#0D2617",
+            "pixel_share": 0.3512
+          },
+          {
+            "rgb": "#B2B45E",
+            "pixel_share": 0.1363
+          },
+          {
+            "rgb": "#79A2A9",
+            "pixel_share": 0.0724
+          },
+          {
+            "rgb": "#6D684D",
+            "pixel_share": 0.0715
+          }
+        ],
+        "median_saturation_0_255": 96.0,
+        "median_value_0_255": 176.0
+      },
+      {
+        "t": 8.4,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\03_8.400000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0D2816",
+            "pixel_share": 0.377
+          },
+          {
+            "rgb": "#A1BFC2",
+            "pixel_share": 0.2995
+          },
+          {
+            "rgb": "#E0E6E2",
+            "pixel_share": 0.1499
+          },
+          {
+            "rgb": "#B0B35C",
+            "pixel_share": 0.1176
+          },
+          {
+            "rgb": "#6B6C53",
+            "pixel_share": 0.056
+          }
+        ],
+        "median_saturation_0_255": 100.0,
+        "median_value_0_255": 178.0
+      },
+      {
+        "t": 10.52,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\04_10.520000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#816959",
+            "pixel_share": 0.2742
+          },
+          {
+            "rgb": "#120A07",
+            "pixel_share": 0.2469
+          },
+          {
+            "rgb": "#514133",
+            "pixel_share": 0.184
+          },
+          {
+            "rgb": "#9D9A97",
+            "pixel_share": 0.1615
+          },
+          {
+            "rgb": "#E6E3DD",
+            "pixel_share": 0.1333
+          }
+        ],
+        "median_saturation_0_255": 15.0,
+        "median_value_0_255": 109.0
+      },
+      {
+        "t": 11.72,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\05_11.720000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#6D5D55",
+            "pixel_share": 0.2687
+          },
+          {
+            "rgb": "#9B9593",
+            "pixel_share": 0.2114
+          },
+          {
+            "rgb": "#0D0805",
+            "pixel_share": 0.1863
+          },
+          {
+            "rgb": "#E2DDD7",
+            "pixel_share": 0.1804
+          },
+          {
+            "rgb": "#402920",
+            "pixel_share": 0.1532
+          }
+        ],
+        "median_saturation_0_255": 11.0,
+        "median_value_0_255": 115.0
+      },
+      {
+        "t": 13.52,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\06_13.520000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#2A3545",
+            "pixel_share": 0.2327
+          },
+          {
+            "rgb": "#BBBFB7",
+            "pixel_share": 0.2197
+          },
+          {
+            "rgb": "#E6E7DF",
+            "pixel_share": 0.1942
+          },
+          {
+            "rgb": "#919690",
+            "pixel_share": 0.1894
+          },
+          {
+            "rgb": "#676967",
+            "pixel_share": 0.164
+          }
+        ],
+        "median_saturation_0_255": 12.0,
+        "median_value_0_255": 153.0
+      },
+      {
+        "t": 15.6,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\07_15.600000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#C1C5BE",
+            "pixel_share": 0.2858
+          },
+          {
+            "rgb": "#E6E7DF",
+            "pixel_share": 0.241
+          },
+          {
+            "rgb": "#979C97",
+            "pixel_share": 0.226
+          },
+          {
+            "rgb": "#62645F",
+            "pixel_share": 0.1258
+          },
+          {
+            "rgb": "#22242C",
+            "pixel_share": 0.1215
+          }
+        ],
+        "median_saturation_0_255": 10.0,
+        "median_value_0_255": 181.0
+      },
+      {
+        "t": 17.6,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\08_17.600000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#E1E2DA",
+            "pixel_share": 0.2825
+          },
+          {
+            "rgb": "#B8BDB6",
+            "pixel_share": 0.2645
+          },
+          {
+            "rgb": "#8D918C",
+            "pixel_share": 0.1978
+          },
+          {
+            "rgb": "#222731",
+            "pixel_share": 0.1354
+          },
+          {
+            "rgb": "#5B5B57",
+            "pixel_share": 0.1197
+          }
+        ],
+        "median_saturation_0_255": 10.0,
+        "median_value_0_255": 176.0
+      },
+      {
+        "t": 19.8,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\09_19.800000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0C2815",
+            "pixel_share": 0.3787
+          },
+          {
+            "rgb": "#A6C2C4",
+            "pixel_share": 0.3309
+          },
+          {
+            "rgb": "#AFB35A",
+            "pixel_share": 0.1151
+          },
+          {
+            "rgb": "#E9ECE8",
+            "pixel_share": 0.1077
+          },
+          {
+            "rgb": "#676F5A",
+            "pixel_share": 0.0676
+          }
+        ],
+        "median_saturation_0_255": 106.0,
+        "median_value_0_255": 177.0
+      },
+      {
+        "t": 22.12,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\10_22.120000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0D2816",
+            "pixel_share": 0.3868
+          },
+          {
+            "rgb": "#C1D1C9",
+            "pixel_share": 0.2483
+          },
+          {
+            "rgb": "#94B9C0",
+            "pixel_share": 0.1799
+          },
+          {
+            "rgb": "#B0B05B",
+            "pixel_share": 0.1109
+          },
+          {
+            "rgb": "#646249",
+            "pixel_share": 0.074
+          }
+        ],
+        "median_saturation_0_255": 96.0,
+        "median_value_0_255": 172.0
+      },
+      {
+        "t": 24.8,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\11_24.800000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#BBCDC8",
+            "pixel_share": 0.3804
+          },
+          {
+            "rgb": "#061B12",
+            "pixel_share": 0.1988
+          },
+          {
+            "rgb": "#19381D",
+            "pixel_share": 0.1883
+          },
+          {
+            "rgb": "#B4B75D",
+            "pixel_share": 0.1281
+          },
+          {
+            "rgb": "#768173",
+            "pixel_share": 0.1043
+          }
+        ],
+        "median_saturation_0_255": 109.0,
+        "median_value_0_255": 173.0
+      },
+      {
+        "t": 26.72,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\12_26.720000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0E2916",
+            "pixel_share": 0.3826
+          },
+          {
+            "rgb": "#B1C8C6",
+            "pixel_share": 0.2624
+          },
+          {
+            "rgb": "#A5A656",
+            "pixel_share": 0.1387
+          },
+          {
+            "rgb": "#F3F4F3",
+            "pixel_share": 0.1177
+          },
+          {
+            "rgb": "#83ACB9",
+            "pixel_share": 0.0985
+          }
+        ],
+        "median_saturation_0_255": 95.0,
+        "median_value_0_255": 182.0
+      },
+      {
+        "t": 30.2,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\13_30.200000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0D2917",
+            "pixel_share": 0.3887
+          },
+          {
+            "rgb": "#BCCEC9",
+            "pixel_share": 0.3707
+          },
+          {
+            "rgb": "#B3B65C",
+            "pixel_share": 0.1108
+          },
+          {
+            "rgb": "#7BA2AB",
+            "pixel_share": 0.0694
+          },
+          {
+            "rgb": "#6B664E",
+            "pixel_share": 0.0604
+          }
+        ],
+        "median_saturation_0_255": 105.0,
+        "median_value_0_255": 174.0
+      },
+      {
+        "t": 31.52,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\14_31.520000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#B5CAC8",
+            "pixel_share": 0.4122
+          },
+          {
+            "rgb": "#061D12",
+            "pixel_share": 0.2241
+          },
+          {
+            "rgb": "#17371D",
+            "pixel_share": 0.1778
+          },
+          {
+            "rgb": "#B2B55D",
+            "pixel_share": 0.1117
+          },
+          {
+            "rgb": "#70735F",
+            "pixel_share": 0.0742
+          }
+        ],
+        "median_saturation_0_255": 111.0,
+        "median_value_0_255": 173.0
+      },
+      {
+        "t": 32.12,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\15_32.120000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0B2715",
+            "pixel_share": 0.3946
+          },
+          {
+            "rgb": "#BFD0C9",
+            "pixel_share": 0.3001
+          },
+          {
+            "rgb": "#8DB3BB",
+            "pixel_share": 0.1245
+          },
+          {
+            "rgb": "#B1B45C",
+            "pixel_share": 0.1183
+          },
+          {
+            "rgb": "#68674C",
+            "pixel_share": 0.0626
+          }
+        ],
+        "median_saturation_0_255": 115.0,
+        "median_value_0_255": 172.0
+      },
+      {
+        "t": 32.72,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\16_32.720000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0B2614",
+            "pixel_share": 0.3959
+          },
+          {
+            "rgb": "#B8CDC8",
+            "pixel_share": 0.3702
+          },
+          {
+            "rgb": "#B0B35B",
+            "pixel_share": 0.1163
+          },
+          {
+            "rgb": "#696548",
+            "pixel_share": 0.0622
+          },
+          {
+            "rgb": "#74A1AD",
+            "pixel_share": 0.0553
+          }
+        ],
+        "median_saturation_0_255": 115.0,
+        "median_value_0_255": 171.0
+      },
+      {
+        "t": 34.4,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\17_34.400000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0B2614",
+            "pixel_share": 0.3951
+          },
+          {
+            "rgb": "#B9CDC9",
+            "pixel_share": 0.3664
+          },
+          {
+            "rgb": "#B0B35A",
+            "pixel_share": 0.1152
+          },
+          {
+            "rgb": "#7BA5B0",
+            "pixel_share": 0.0634
+          },
+          {
+            "rgb": "#696547",
+            "pixel_share": 0.0599
+          }
+        ],
+        "median_saturation_0_255": 115.0,
+        "median_value_0_255": 173.0
+      },
+      {
+        "t": 36.52,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\18_36.520000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0D2716",
+            "pixel_share": 0.4097
+          },
+          {
+            "rgb": "#C9D4C9",
+            "pixel_share": 0.2002
+          },
+          {
+            "rgb": "#A5C3C6",
+            "pixel_share": 0.1914
+          },
+          {
+            "rgb": "#9F9F56",
+            "pixel_share": 0.1532
+          },
+          {
+            "rgb": "#6C9AA4",
+            "pixel_share": 0.0456
+          }
+        ],
+        "median_saturation_0_255": 113.0,
+        "median_value_0_255": 173.0
+      },
+      {
+        "t": 38.0,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\19_38.000000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#B5CBC8",
+            "pixel_share": 0.4035
+          },
+          {
+            "rgb": "#051C11",
+            "pixel_share": 0.2285
+          },
+          {
+            "rgb": "#15361B",
+            "pixel_share": 0.1721
+          },
+          {
+            "rgb": "#B0B45A",
+            "pixel_share": 0.115
+          },
+          {
+            "rgb": "#6C7666",
+            "pixel_share": 0.0808
+          }
+        ],
+        "median_saturation_0_255": 114.0,
+        "median_value_0_255": 173.0
+      },
+      {
+        "t": 42.4,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\20_42.400000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0B2715",
+            "pixel_share": 0.3692
+          },
+          {
+            "rgb": "#A4C1C3",
+            "pixel_share": 0.3332
+          },
+          {
+            "rgb": "#ECEFEC",
+            "pixel_share": 0.1331
+          },
+          {
+            "rgb": "#B2B559",
+            "pixel_share": 0.1081
+          },
+          {
+            "rgb": "#67735E",
+            "pixel_share": 0.0565
+          }
+        ],
+        "median_saturation_0_255": 99.0,
+        "median_value_0_255": 182.0
+      },
+      {
+        "t": 44.4,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\21_44.400000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0B2614",
+            "pixel_share": 0.3656
+          },
+          {
+            "rgb": "#C0D1CA",
+            "pixel_share": 0.2806
+          },
+          {
+            "rgb": "#8FB6BF",
+            "pixel_share": 0.1823
+          },
+          {
+            "rgb": "#B0B25B",
+            "pixel_share": 0.1105
+          },
+          {
+            "rgb": "#68674B",
+            "pixel_share": 0.061
+          }
+        ],
+        "median_saturation_0_255": 96.0,
+        "median_value_0_255": 179.0
+      },
+      {
+        "t": 46.52,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\22_46.520000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#AEC7C6",
+            "pixel_share": 0.449
+          },
+          {
+            "rgb": "#123319",
+            "pixel_share": 0.1986
+          },
+          {
+            "rgb": "#041910",
+            "pixel_share": 0.1743
+          },
+          {
+            "rgb": "#AFB35A",
+            "pixel_share": 0.1125
+          },
+          {
+            "rgb": "#6B6E57",
+            "pixel_share": 0.0656
+          }
+        ],
+        "median_saturation_0_255": 96.0,
+        "median_value_0_255": 179.0
+      },
+      {
+        "t": 51.0,
+        "file": "codex\\measurements\\s34\\key_93bfcb6edce8\\23_51.000000.png",
+        "palette_centroids": [
+          {
+            "rgb": "#0C2815",
+            "pixel_share": 0.3698
+          },
+          {
+            "rgb": "#BFD0C9",
+            "pixel_share": 0.2651
+          },
+          {
+            "rgb": "#92B7C0",
+            "pixel_share": 0.1895
+          },
+          {
+            "rgb": "#B0B25A",
+            "pixel_share": 0.116
+          },
+          {
+            "rgb": "#6A6749",
+            "pixel_share": 0.0596
+          }
+        ],
+        "median_saturation_0_255": 97.0,
+        "median_value_0_255": 179.0
+      }
+    ]
+  },
+  "graphics": [
+    {
+      "id": "g1",
+      "type": "photo",
+      "start": 0,
+      "end": 1.36,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "B&W liberty statue cutout holdingIELTSpaper, palegrid andlowergradient; redoval6; othercertificateprintillegible",
+      "anim_in": {
+        "type": "partial atcliphead",
+        "frames": null
+      },
+      "anim_out": {
+        "type": "cut/replace unless separately noted",
+        "frames": null
+      },
+      "evidence": "s34 key93bfcb6edce8 row0",
+      "confidence": "high",
+      "alternative": "layer construction/source provenance unknown"
+    },
+    {
+      "id": "g2",
+      "type": "other",
+      "start": 3.16,
+      "end": 4.96,
+      "box": [
+        15,
+        21,
+        91,
+        43
+      ],
+      "content": "title behind presenter silhouette (alsoKUCHLIKI7.8,ABET18.84,SHUNAQA25.8,BUQAYSI41.6); segmentationmethodunknown",
+      "anim_in": {
+        "type": "blur/fade/rise",
+        "frames": 8
+      },
+      "anim_out": {
+        "type": "cut/replace unless separately noted",
+        "frames": null
+      },
+      "evidence": "s34 nativeTEKINGA/ABET + keyrows3,12,20",
+      "confidence": "medium",
+      "alternative": "layer construction/source provenance unknown"
+    },
+    {
+      "id": "g3",
+      "type": "mockup",
+      "start": 9,
+      "end": 12.92,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "wooddesk, whitepaper, Amazon bagarrow, Applephone logo, GameBoy andSONYcontroller aroundedges; no copiedlogos",
+      "anim_in": {
+        "type": "composite zoom/parallax visuallypossible; true3D unproven",
+        "frames": null
+      },
+      "anim_out": {
+        "type": "cut/replace unless separately noted",
+        "frames": null
+      },
+      "evidence": "s34 keyrows4..5 + m_strip_06310a01b77142",
+      "confidence": "medium",
+      "alternative": "layer construction/source provenance unknown"
+    },
+    {
+      "id": "g4",
+      "type": "other",
+      "start": 10.72,
+      "end": 12.92,
+      "box": [
+        25,
+        53,
+        82,
+        61
+      ],
+      "content": "red openovaldraw around italic phrase",
+      "anim_in": {
+        "type": "pathdraw",
+        "frames": 8
+      },
+      "anim_out": {
+        "type": "cut/replace unless separately noted",
+        "frames": null
+      },
+      "evidence": "s34 native10.72..11.04 m_strip_06310a01b77142",
+      "confidence": "medium",
+      "alternative": "layer construction/source provenance unknown"
+    },
+    {
+      "id": "g5",
+      "type": "mockup",
+      "start": 12.92,
+      "end": 18,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "green graphpaper, blueprint, wrench,ruler,triangle aroundedges with vignette; no true3D claim",
+      "anim_in": {
+        "type": "continuous composite enlargement",
+        "frames": null
+      },
+      "anim_out": {
+        "type": "cut/replace unless separately noted",
+        "frames": null
+      },
+      "evidence": "s34 keyrows6..8",
+      "confidence": "medium",
+      "alternative": "layer construction/source provenance unknown"
+    },
+    {
+      "id": "g6",
+      "type": "card",
+      "start": 21,
+      "end": 23.6,
+      "box": [
+        25,
+        55,
+        81,
+        60
+      ],
+      "content": "three joined darktabs Amazon/Google/Apple; orange activeindicator steps with words",
+      "anim_in": {
+        "type": "activepill slide",
+        "frames": null
+      },
+      "anim_out": {
+        "type": "cut/replace unless separately noted",
+        "frames": null
+      },
+      "evidence": "s34 keyrow10 + overview03",
+      "confidence": "medium",
+      "alternative": "layer construction/source provenance unknown"
+    }
+  ],
+  "audio": {
+    "music": "unknown",
+    "speech_lufs_est": null,
+    "music_under_speech_db": null,
+    "ducking": null,
+    "rms_in_transcribed_word_spans_dbfs": -15.97,
+    "rms_outside_transcribed_word_spans_dbfs": -23.541,
+    "onsets_near_visual_events": [
+      {
+        "visual_candidate_t": 1.36,
+        "onset_t": 1.323537,
+        "delta_ms": -36.463
+      },
+      {
+        "visual_candidate_t": 9.0,
+        "onset_t": 9.079002,
+        "delta_ms": 79.002
+      },
+      {
+        "visual_candidate_t": 12.92,
+        "onset_t": 12.585215,
+        "delta_ms": -334.785
+      },
+      {
+        "visual_candidate_t": 18.0,
+        "onset_t": 18.041905,
+        "delta_ms": 41.905
+      },
+      {
+        "visual_candidate_t": 52.2,
+        "onset_t": 50.782041,
+        "delta_ms": -1417.959
+      }
+    ],
+    "cuts_on_beat": {
+      "tested": false,
+      "ratio": null,
+      "reason": "mixed-track onsets may be syllables; not isolated music/beat"
+    },
+    "sfx_candidates": [],
+    "short_term_file": "codex\\measurements\\s34\\m_mixed_audio.json",
+    "method": "mixed mono RMS, 2048-sample Hann spectral-flux windows / 512-hop at 22050Hz; timestamp window centre; EBU stereo original verbose log",
+    "caveats": [
+      "Word spans may miss syllables; outside spans is NOT isolated music.",
+      "RMS is not LUFS.",
+      "Onset candidates are not confirmed SFX.",
+      "Early short-term meter values need full3s window."
+    ],
+    "onset_time_uncertainty_sec": 0.046439909297052155
+  },
+  "open_questions": [
+    "Mixed audio does not reveal isolated music/SFX or whether a specific whoosh is pleasant.",
+    "Exact font family unidentified; no sample font copied.",
+    "Tiny prop/background print recorded as unreadable; not invented.",
+    "Backgroundprop microprint: IELTS certificate andGameBoy/blueprint labels unresolvable at recorded frames.",
+    "Uncaptioned spans documented in notes; speech transcript not used to fabricate screen cues.",
+    "Sample says120MLN$: monetary claim not verified; style study only, never transferclaim todoctorcontent."
+  ],
+  "coverage": {
+    "literal_cues": 34,
+    "overview_fps": 5,
+    "exact_animation_checks": "native PTS key ranges only; unknown duration outside those ranges",
+    "microprint": "unreadable prop/background text flagged; not fabricated",
+    "camera_motion": "measured selected background/prop ranges, rejected invalid/singular matches retained inrawfiles",
+    "sound": "mixed-track only, listening/separation unavailable"
+  },
+  "continued_by": "codex solo; peer historical files preserved; pilot_review_codex.md contains verified caveats"
+}

@@ -137,3 +137,7 @@ bir xil doktor_1 0..12s va 14..38s. 12s full va draft, 24s draft; paired mixlar 
 Original job SHA256 tekshiriladi. Motion/audio didini test yoki agent tasdiqlamaydi.
 Tanlov kutilayotganda `after-existing` faqat avvalgi tasdiqlangan elementlar bilan energiya
 farqini ko'rsatadi; yangi B-roll qo'shilmaydi va bu cheklov review/HOLAT'da yoziladi.
+
+## Tadqiqotdan yangi motion
+
+`docs/MOTION_DESIGN.md`: ixtiyoriy trajectory/pivot, broll/stage layout_morph, material card va camera canvas, active pills, outline/flat relief. Existing word animation va speech margin saqlanadi. Guruh DNA `docs/style_dna/`; native frame intervals output FPSga vaqt orqali o‘tkaziladi.

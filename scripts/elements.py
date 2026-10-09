@@ -416,7 +416,8 @@ class RichBlock:
                     shadow = dict(shadow_cfg, blur=shadow_cfg.get("blur", 16) * ctx.k, dy=shadow_cfg.get("dy", 4) * ctx.k)
                 stroke = None
                 if cfg.get("stroke"):
-                    stroke = dict(cfg["stroke"], width=cfg["stroke"].get("width", 4) * ctx.k)
+                    stroke = dict(cfg["stroke"], width=cfg["stroke"].get("width", 4) * ctx.k,
+                                  depth=cfg["stroke"].get("depth", 0) * ctx.k)
                 word = {"x": x, "y": baseline, "w": t["w"], "size": size, "opacity": t["opacity"], "emph": t["emph"],
                         "text": t["text"], "line": li, "li": wi, "ln": len(line), "anim": t["anim"],
                         "color": t["color"], "letters": None, "pre": None, "group": None}
@@ -857,6 +858,9 @@ class CaptionLayer(Layer):
 
     def _cue_cfg(self, name, opts: dict, cue: dict) -> dict:
         if name is None and not opts:
+            if self.ctx.style.get('motion_design',{}).get('caption_recipes'):
+                from motion_design import caption_recipe
+                return caption_recipe(self.ctx.style,self.cfg,cue,opts)
             return self.cfg
         over = {}
         if name and name not in ("default", str(self.cfg.get("preset", "clean"))):
@@ -892,6 +896,9 @@ class CaptionLayer(Layer):
                     if key=='anim':
                         cfg.update(anim_main=val,anim_sub=val)
                         if 'exit' not in opts: cfg['exit']=cfg['_motion']['pairs'].get(val,cfg['exit'])
+        if self.ctx.style.get('motion_design',{}).get('caption_recipes'):
+            from motion_design import caption_recipe
+            cfg=caption_recipe(self.ctx.style,cfg,cue,opts)
         return cfg
 
     def _prepare(self, item: dict) -> None:
@@ -960,7 +967,7 @@ class TextLayer(Layer):
                     "strip_punct": False, "auto_numbers": False}
         if 'anim' in el: override['animation'] = el['anim']
         elif not ML.config(ctx.style)['enabled']: override['animation'] = 'blur'
-        for key in ("preset", "font", "color", "accent", "align", "max_width", "italic", "box", "glow", "tracking"):
+        for key in ("preset", "font", "color", "accent", "align", "max_width", "italic", "box", "glow", "tracking", "stroke"):
             if key in el:
                 override[key] = el[key]
         if "weight" in el:
@@ -2392,10 +2399,18 @@ class FlashLayer(Layer):
         super().__init__(el["start"], el["end"])
         self.color = np.array(M.rgb(el.get("color", "#FFFFFF")), np.float32)
         self.amount = M.clamp01(float(el.get("amount", 0.9)))
+        self.mode = el.get('mode', 'color')
+        if self.mode not in ('color', 'invert'):
+            raise C.MontajError('flash.mode: color/invert kerak.')
 
     def draw(self, frame, t: float) -> None:
         p = (t - self.start) / max(0.001, self.end - self.start)
         if not 0 <= p < 1:
+            return
+        if self.mode == 'invert':
+            # Inversion is a source-dependent composite; hold it for the chosen frames.
+            frame[..., :3] = (frame[..., :3].astype(np.float32)*(1-self.amount)
+                              + (255-frame[..., :3])*self.amount).astype(np.uint8)
             return
         op = self.amount * (M.ease_out(p / 0.3) if p < 0.3 else (1 - (p - 0.3) / 0.7) ** 2)
         if op > 0.003:
@@ -2687,13 +2702,19 @@ class AsideLayer(Layer):
                 part.draw(frame, t)
 
 
+def _motion_factory(ctx, el):
+    import motion_design
+    return motion_design.build(ctx, el, el['end'])
+
+
 ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "broll": BrollLayer,
                  "list": ListLayer, "choice": ChoiceLayer, "stat": StatLayer, "voice": VoiceLayer,
                  "callout": CalloutLayer, "lower_third": LowerThirdLayer, "emoji": EmojiLayer,
                  "icon": IconLayer, "stage": StageLayer, "burst": BurstLayer, "confetti": ConfettiLayer,
                  "follow": FollowLayer, "scene": SceneLayer, "grade": GradeLayer, "flash": FlashLayer,
                  "handnote": HandnoteLayer, "arrow": ArrowLayer, "phone": PhoneLayer, "profile": PhoneLayer,
-                 "label": LabelLayer, "aside": AsideLayer}
+                 "label": LabelLayer, "aside": AsideLayer,
+                 "card": _motion_factory, "canvas": _motion_factory}
 # "at" bilan beriladigan qisqa hodisalar: boshlanishi "at", uzunligi "duration"
 TIMED_TYPES = {"burst": 2.0, "confetti": 2.6, "flash": 0.3}
 NON_LAYER_TYPES = {"sfx", "zoom"}
@@ -2723,7 +2744,11 @@ def build_elements(ctx: Ctx, elements: list, total: float) -> list:
             if kind == "title":
                 el.setdefault("size", 1.25)
                 el.setdefault("y", 0.24)
-            layer=ELEMENT_TYPES[kind](ctx, el)
+            if kind in ('card','canvas') or 'trajectory' in el or el.get('transition') == 'layout_morph':
+                import motion_design
+                layer=motion_design.build(ctx, el, total)
+            else:
+                layer=ELEMENT_TYPES[kind](ctx, el)
             layer.ctx=ctx
             layer.motion_kind={'follow':'follow','label':'label','title':'title','text':'title'}.get(kind,'sticker')
             layers.append(layer)

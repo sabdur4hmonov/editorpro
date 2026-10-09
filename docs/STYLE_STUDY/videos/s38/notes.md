@@ -1,0 +1,91 @@
+# s38 observation notes
+
+All eleven overview pages read, including deliberately uncaptioned answer sections. Fine newspaper and testimonial microprint unresolved; envelopes ±0.2s, no exact font claim.
+
+Source hash: 70ecadc3cc6ab8605302cfdd396b397fd854fd02
+
+- 0.000–1.800: `ENG QIMMAT / shtatda`; white small bold, word replacement; s38 0.900s videos/s38/overview_01.jpg (5fps discovery, ±0.2s).
+- 2.000–5.800: `Seattle University / birinchi o‘zbek talabasi bilan tanishamiz`; white small bold, word replacement; s38 3.900s videos/s38/overview_01.jpg (5fps discovery, ±0.2s).
+- 6.600–7.600: `Vauv`; white small bold, word replacement; s38 7.100s videos/s38/overview_01.jpg (5fps discovery, ±0.2s).
+- 7.600–8.400: `pasportingizni`; white small bold, word replacement; s38 8.000s videos/s38/overview_01.jpg (5fps discovery, ±0.2s).
+- 8.400–8.800: `auksionga`; white small bold, word replacement; s38 8.600s videos/s38/overview_01.jpg (5fps discovery, ±0.2s).
+- 8.800–9.200: `qo‘ysek`; white small bold, word replacement; s38 9.000s videos/s38/overview_01.jpg (5fps discovery, ±0.2s).
+- 9.200–9.600: `bo‘larekan`; white small bold, word replacement; s38 9.400s videos/s38/overview_01.jpg (5fps discovery, ±0.2s).
+- 9.600–9.800: `6ta`; white small bold, word replacement; s38 9.700s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 9.800–10.400: `vizingiz`; white small bold, word replacement; s38 10.100s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 10.400–10.800: `shunda?`; white small bold, word replacement; s38 10.600s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 10.800–11.000: `ha`; white small bold, word replacement; s38 10.900s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 11.000–11.800: `6ta`; white small bold, word replacement; s38 11.400s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 11.800–12.200: `shunda`; white small bold, word replacement; s38 12.000s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 12.200–12.600: `1-matta`; white small bold, word replacement; s38 12.400s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 12.600–13.400: `borganizda ham`; white small bold, word replacement; s38 13.000s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 13.400–13.800: `student`; white small bold, word replacement; s38 13.600s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 13.800–14.200: `sifatida`; white small bold, word replacement; s38 14.000s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 14.200–14.600: `borganmisiz`; white small bold, word replacement; s38 14.400s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 14.600–15.200: `Amerikaga`; white small bold, word replacement; s38 14.900s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 18.400–18.900: `qachondan`; white small bold, word replacement; s38 18.650s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 18.900–19.400: `boshlab`; white small bold, word replacement; s38 19.150s videos/s38/overview_02.jpg (5fps discovery, ±0.2s).
+- 19.400–19.800: `siz`; white small bold, word replacement; s38 19.600s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 19.800–20.300: `student`; white small bold, word replacement; s38 20.050s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 20.300–20.600: `sifatida`; white small bold, word replacement; s38 20.450s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 20.600–20.900: `boshladiz`; white small bold, word replacement; s38 20.750s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 20.900–21.300: `Amerikaga`; white small bold, word replacement; s38 21.100s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 21.300–21.700: `qachon`; white small bold, word replacement; s38 21.500s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 21.700–22.200: `o‘zingizni`; white small bold, word replacement; s38 21.950s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 22.200–22.500: `birinchi`; white small bold, word replacement; s38 22.350s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 22.500–23.200: `F-1 vizingizni`; white small bold, word replacement; s38 22.850s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 23.200–23.600: `olgansiz?`; white small bold, word replacement; s38 23.400s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 28.600–28.900: `nega`; white small bold, word replacement; s38 28.750s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 28.900–29.300: `aynan`; white small bold, word replacement; s38 29.100s videos/s38/overview_04.jpg (5fps discovery, ±0.2s).
+- 29.300–30.100: `Amerikani`; white small bold, word replacement; s38 29.700s videos/s38/overview_04.jpg (5fps discovery, ±0.2s).
+- 30.100–30.400: `tanladiz`; white small bold, word replacement; s38 30.250s videos/s38/overview_04.jpg (5fps discovery, ±0.2s).
+- 30.400–30.900: `magistratura`; white small bold, word replacement; s38 30.650s videos/s38/overview_04.jpg (5fps discovery, ±0.2s).
+- 30.900–31.200: `o‘qish`; white small bold, word replacement; s38 31.050s videos/s38/overview_04.jpg (5fps discovery, ±0.2s).
+- 31.200–31.600: `uchun`; white small bold, word replacement; s38 31.400s videos/s38/overview_04.jpg (5fps discovery, ±0.2s).
+- 43.000–43.400: `shunda`; white small bold, word replacement; s38 43.200s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 43.400–44.000: `Amerikada`; white small bold, word replacement; s38 43.700s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 44.000–44.600: `magistratura`; white small bold, word replacement; s38 44.300s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 44.600–44.900: `yoki`; white small bold, word replacement; s38 44.750s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 44.900–45.300: `bakalavr`; white small bold, word replacement; s38 45.100s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 45.300–45.700: `o‘qishni`; white small bold, word replacement; s38 45.500s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 45.700–46.400: `O‘zbekistondagi`; white small bold, word replacement; s38 46.050s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 46.400–47.200: `qizlarga ham`; white small bold, word replacement; s38 46.800s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 47.200–47.600: `maslahat`; white small bold, word replacement; s38 47.400s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 47.600–47.800: `bergan`; white small bold, word replacement; s38 47.700s videos/s38/overview_05.jpg (5fps discovery, ±0.2s).
+- 47.800–48.400: `bo‘larmidingiz!`; white small bold, word replacement; s38 48.100s videos/s38/overview_06.jpg (5fps discovery, ±0.2s).
+- 59.000–59.800: `4prepda`; white small bold, word replacement; s38 59.400s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 59.800–60.400: `tajribali`; white small bold, word replacement; s38 60.100s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 60.400–60.600: `6ta`; white small bold, word replacement; s38 60.500s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 60.600–60.900: `vizaga`; white small bold, word replacement; s38 60.750s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 60.900–61.400: `ega bo‘lgan`; white small bold, word replacement; s38 61.150s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 61.400–61.800: `mentor`; white small bold, word replacement; s38 61.600s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 61.800–62.200: `sifatida`; white small bold, word replacement; s38 62.000s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 62.200–62.800: `ishlab ko‘rdingiz`; white small bold, word replacement; s38 62.500s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 62.800–63.200: `nima`; white small bold, word replacement; s38 63.000s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 63.200–63.500: `deb`; white small bold, word replacement; s38 63.350s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 63.500–64.000: `o‘ylaysiz`; white small bold, word replacement; s38 63.750s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 64.400–65.200: `4prep`; white small bold, word replacement; s38 64.800s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 65.200–65.600: `F1`; white small bold, word replacement; s38 65.400s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 65.600–66.600: `studentlariga`; white small bold, word replacement; s38 66.100s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 66.600–66.900: `nimalar`; white small bold, word replacement; s38 66.750s videos/s38/overview_07.jpg (5fps discovery, ±0.2s).
+- 66.900–67.600: `bera oladi!`; white small bold, word replacement; s38 67.250s videos/s38/overview_08.jpg (5fps discovery, ±0.2s).
+- 23.600–26.600: `2024 / yili birinchi F1 vizamni oldim!`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 25.100s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 26.600–28.400: `DAILY NEWS / Undan keyin renew qilishni boshla... [?microprint]`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 27.500s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 50.600–52.600: `Ikki yil davomida / campusda yashadim`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 51.600s videos/s38/overview_06.jpg (5fps discovery, ±0.2s).
+- 52.600–54.400: `juda ham xavfsiz`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 53.500s videos/s38/overview_06.jpg (5fps discovery, ±0.2s).
+- 82.800–83.400: `85% grant yutib`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 83.100s videos/s38/overview_09.jpg (5fps discovery, ±0.2s).
+- 84.000–84.800: `Natijaga kelish uchun`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 84.400s videos/s38/overview_09.jpg (5fps discovery, ±0.2s).
+- 84.800–86.600: `2 yil davomida 4Prepda / ingliz tilini o‘rgandim`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 85.700s videos/s38/overview_09.jpg (5fps discovery, ±0.2s).
+- 87.200–89.000: `IELTS topshirdik va`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 88.100s videos/s38/overview_10.jpg (5fps discovery, ±0.2s).
+- 89.000–90.600: `85% grant yutib`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 89.800s videos/s38/overview_10.jpg (5fps discovery, ±0.2s).
+- 90.600–91.000: `viza`; white/gray type; xavfsiz red rectangle; testimonial microprint not fully legible; s38 90.800s videos/s38/overview_10.jpg (5fps discovery, ±0.2s).
+- 0.000–1.800: money: foreground rotating banknotes, some blurred; no asset copied; s38 0.900s videos/s38/overview_01.jpg (5fps discovery, ±0.2s).
+- 23.600–26.600: paper_portrait: left portrait on brown paper, right year typed 2→20→202→2024; s38 25.100s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 26.600–28.400: newspaper: rotated newspaper on desk, headline typed; s38 27.500s videos/s38/overview_03.jpg (5fps discovery, ±0.2s).
+- 31.600–42.800: clean_answer: long uncaptained student answer; s38 37.200s videos/s38/overview_04.jpg (5fps discovery, ±0.2s).
+- 50.200–54.400: campus: two campus photos and red safety caption; s38 52.300s videos/s38/overview_06.jpg (5fps discovery, ±0.2s).
+- 67.600–82.800: clean_answer: 15s answer with several crops, no added captions; s38 75.200s videos/s38/overview_08.jpg (5fps discovery, ±0.2s).
+- 82.800–98.400: testimonial: B&W inserted student testimonial, corridor and passport scenes; s38 90.600s videos/s38/overview_10.jpg (5fps discovery, ±0.2s).
+- 98.400–100.888: logo: mint 4prep mark on studio student; s38 99.644s videos/s38/overview_11.jpg (5fps discovery, ±0.2s).
+
+Native event: {"start": 23.68, "end": 24.08, "observed_intervals": 10, "inclusive_frame_count": 11, "fps": 25.0, "description": "2024 digit typewriter", "easing_guess": "not identified from bounded frames", "overshoot": null, "stagger": null, "source_method": "decoded PTS; counted elapsed intervals, not inclusive images", "evidence": "codex\\measurements\\s38\\native_60c77ef80de0.json", "confidence": "medium", "alternative": "Pre-rendered composite; original keyframes unknown. Some windows explicitly censored."}

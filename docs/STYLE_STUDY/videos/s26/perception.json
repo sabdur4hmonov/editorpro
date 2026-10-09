@@ -1,0 +1,2077 @@
+{
+  "video": "s26",
+  "agent": "codex",
+  "schema": 2,
+  "sha1": "2cdfa7a7a678bf666a1a6e7875589c80c7e29d50",
+  "type": "B2_kinetic_creator",
+  "status": "analysis with explicit coverage limits",
+  "coverage": "All four 5fps pages read. Source Russian transcript remains separate from screen literals. Native timing and lower fan labels need targeted check. One selected native event measured, not every animation; unknown fields stay null.",
+  "historical_owner": "See groups.md; continued solo under codex/takeover.md",
+  "technical": {
+    "file": "samples/sample 26.mp4",
+    "slug": "s26",
+    "sha1": "2cdfa7a7a678bf666a1a6e7875589c80c7e29d50",
+    "duration": 31.251,
+    "width": 720,
+    "height": 1280,
+    "fps": 25.0,
+    "vcodec": "h264",
+    "size_bytes": 5014796,
+    "has_audio": true,
+    "acodec": "aac",
+    "sample_rate": 44100,
+    "channels": 2,
+    "integrated_lufs": -14.1,
+    "true_peak_dbtp": -3.9,
+    "lra_lu": 1.6,
+    "cuts_content27": 7,
+    "cuts_adaptive": 6,
+    "events": 12,
+    "speech": true,
+    "language": "ru",
+    "words": 111,
+    "model": "small",
+    "seconds": 20.1
+  },
+  "rhythm": {
+    "cut_source": "candidate detector; not all verified",
+    "cut_candidates": [
+      3.24,
+      7.96,
+      12.12,
+      14.0,
+      15.76,
+      21.28,
+      25.64
+    ],
+    "cuts": null,
+    "first_cut": null,
+    "candidate_statistics": {
+      "cuts": [
+        3.24,
+        7.96,
+        12.12,
+        14.0,
+        15.76,
+        21.28,
+        25.64
+      ],
+      "first_cut": 3.24,
+      "shot_lengths_including_source_edges": {
+        "n": 8,
+        "mean": 3.906375,
+        "median": 4.26,
+        "p10": 1.844,
+        "p90": 5.5473,
+        "min": 1.76,
+        "max": 5.611
+      },
+      "between_cut_intervals_only": {
+        "n": 6,
+        "mean": 3.733333,
+        "median": 4.26,
+        "p10": 1.82,
+        "p90": 5.12,
+        "min": 1.76,
+        "max": 5.52
+      },
+      "method": "Candidate detector timestamps, not yet visually verified; start/end edges stated."
+    },
+    "hook": {
+      "start": 0,
+      "end": 3.1,
+      "evidence": "s26 1.550s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Narrative boundary is editorial judgement, not objective detector."
+    },
+    "cta": {
+      "start": 28,
+      "end": 31.251,
+      "evidence": "s26 29.626s videos/s26/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Narrative boundary is editorial judgement, not objective detector."
+    },
+    "outro": null
+  },
+  "speech": {
+    "transcribed_words": 110,
+    "invalid_words": [
+      {
+        "index": 105,
+        "reason": "invalid/zero/overrun timing",
+        "word": "то"
+      }
+    ],
+    "wpm_full_runtime": 211.193,
+    "union_transcribed_word_span_seconds": 28.8,
+    "word_span_wpm": 229.167,
+    "word_gaps": [
+      {
+        "start": 4.5,
+        "end": 4.76,
+        "duration": 0.26
+      }
+    ],
+    "word_gap_statistics": {
+      "n": 1,
+      "mean": 0.26,
+      "median": 0.26,
+      "p10": 0.26,
+      "p90": 0.26,
+      "min": 0.26,
+      "max": 0.26
+    },
+    "method": "Whisper word spans only; word gaps are not verified acoustic silence; WPM not on-screen text."
+  },
+  "texts": [
+    {
+      "id": "t1",
+      "text": "Главная / ОШИБКА / предпринимателей",
+      "role": "caption_or_graphic_label",
+      "appear": 0.2,
+      "disappear": 3.1,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        8,
+        3,
+        91,
+        31
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white script + lime caps behind person + white sub",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white script + lime caps behind person + white sub",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 1.650s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t2",
+      "text": "ДЕЛАТЬ КОНТЕНТ / самостоятельно",
+      "role": "caption_or_graphic_label",
+      "appear": 1.4,
+      "disappear": 3.1,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        25,
+        43,
+        80,
+        52
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white condensed and lime pill",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white condensed and lime pill",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 2.250s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t3",
+      "text": "ОПЕРАТОР / ЛОКАЦИЯ / РЕЖИССЕР / СЦЕНАРИЙ / МОНТАЖ",
+      "role": "caption_or_graphic_label",
+      "appear": 3.4,
+      "disappear": 7.0,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        30,
+        4,
+        90,
+        34
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "five lime pills fan; first two may differ",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "five lime pills fan; first two may differ",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 5.200s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t4",
+      "text": "НА ЭТО / НЕТ ВРЕМЕНИ",
+      "role": "caption_or_graphic_label",
+      "appear": 6.8,
+      "disappear": 8.0,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        47,
+        46,
+        81,
+        56
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white condensed with curved arrow",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white condensed with curved arrow",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 7.400s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t5",
+      "text": "ИМЕННО / ПОЭТОМУ",
+      "role": "caption_or_graphic_label",
+      "appear": 8.0,
+      "disappear": 8.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        36,
+        8,
+        68,
+        17
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "small white caps",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "small white caps",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 8.300s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t6",
+      "text": "мы берём / БИЗНЕСЫ / под ключ",
+      "role": "caption_or_graphic_label",
+      "appear": 8.6,
+      "disappear": 10.2,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        32,
+        6,
+        77,
+        17
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white hero + lime pill",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white hero + lime pill",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 9.400s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t7",
+      "text": "и превращаем / REELS",
+      "role": "caption_or_graphic_label",
+      "appear": 10.2,
+      "disappear": 11,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        26,
+        5,
+        77,
+        15
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white lockup",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white lockup",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 10.600s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t8",
+      "text": "в прогнозируемый / ИСТОЧНИК / трафика",
+      "role": "caption_or_graphic_label",
+      "appear": 11,
+      "disappear": 12.2,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        19,
+        6,
+        81,
+        18
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white hero + lime pill",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white hero + lime pill",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 11.600s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t9",
+      "text": "МОЙ / УРОВЕНЬ / работы",
+      "role": "caption_or_graphic_label",
+      "appear": 12.2,
+      "disappear": 13.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        44,
+        6,
+        81,
+        16
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white + lime pill",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white + lime pill",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 12.800s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t10",
+      "text": "не / СЛУЧАЙНОСТЬ",
+      "role": "caption_or_graphic_label",
+      "appear": 13.2,
+      "disappear": 13.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        2,
+        14,
+        43,
+        23
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white left text",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white left text",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 13.400s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t11",
+      "text": "за / ГОД / я / ПОМЕНЯЛ",
+      "role": "caption_or_graphic_label",
+      "appear": 13.6,
+      "disappear": 14.2,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        65,
+        7,
+        95,
+        28
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "separate white words right",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "separate white words right",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 13.900s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t12",
+      "text": "свою / ЖИЗНЬ",
+      "role": "caption_or_graphic_label",
+      "appear": 14.2,
+      "disappear": 14.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        61,
+        8,
+        89,
+        19
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white lockup",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white lockup",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 14.400s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t13",
+      "text": "и / ЖИЗНЬ / клиентов",
+      "role": "caption_or_graphic_label",
+      "appear": 14.6,
+      "disappear": 15.8,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        46,
+        8,
+        87,
+        20
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white + lime pill",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white + lime pill",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 15.200s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t14",
+      "text": "РЕЗУЛЬТАТОМ / этой работы",
+      "role": "caption_or_graphic_label",
+      "appear": 15.8,
+      "disappear": 21.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        9,
+        2,
+        98,
+        16
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "lime condensed glow behind person",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "lime condensed glow behind person",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 18.600s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t15",
+      "text": "ЯВЛЯЕТСЯ / система / структура",
+      "role": "caption_or_graphic_label",
+      "appear": 16.8,
+      "disappear": 21.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        24,
+        44,
+        66,
+        60
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white and two lime pills; curved arrow",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white and two lime pills; curved arrow",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 19.100s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t16",
+      "text": "1,9M / 4,3M / 2,6M",
+      "role": "caption_or_graphic_label",
+      "appear": 19.4,
+      "disappear": 21.4,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        9,
+        2,
+        94,
+        15
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "purple floating eye/count badges",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "purple floating eye/count badges",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 20.400s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t17",
+      "text": "я прошёл / ОБУЧЕНИЕ",
+      "role": "caption_or_graphic_label",
+      "appear": 21.4,
+      "disappear": 22.2,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        28,
+        40,
+        80,
+        50
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white lockup",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white lockup",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 21.800s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t18",
+      "text": "у / РИЛС-ПРОДЮСЕРА / лучшего / страны",
+      "role": "caption_or_graphic_label",
+      "appear": 22.2,
+      "disappear": 24.0,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        15,
+        40,
+        89,
+        53
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "condensed white + two lime tags",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "condensed white + two lime tags",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 23.100s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t19",
+      "text": "и являюсь / ЛИДЕРОМ",
+      "role": "caption_or_graphic_label",
+      "appear": 24,
+      "disappear": 24.8,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        32,
+        40,
+        76,
+        50
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white lockup",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white lockup",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 24.400s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t20",
+      "text": "в его / КЛУБЕ / креаторов",
+      "role": "caption_or_graphic_label",
+      "appear": 24.8,
+      "disappear": 25.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        34,
+        40,
+        78,
+        56
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white/lime",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white/lime",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 25.200s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t21",
+      "text": "ЧТО Я ДЕЛАЮ",
+      "role": "caption_or_graphic_label",
+      "appear": 25.8,
+      "disappear": 26.0,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        33,
+        10,
+        76,
+        18
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 25.900s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t22",
+      "text": "я люблю / ТО ЧТО Я ДЕЛАЮ",
+      "role": "caption_or_graphic_label",
+      "appear": 26.0,
+      "disappear": 26.8,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        18,
+        7,
+        90,
+        17
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white lockup",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white lockup",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 26.400s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t23",
+      "text": "и отвечаю / ЗА КАЧЕСТВО",
+      "role": "caption_or_graphic_label",
+      "appear": 26.8,
+      "disappear": 28.0,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        27,
+        6,
+        82,
+        17
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white lockup",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white lockup",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 27.400s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t24",
+      "text": "если хотите",
+      "role": "caption_or_graphic_label",
+      "appear": 28.0,
+      "disappear": 28.8,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        35,
+        7,
+        76,
+        11
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "single cue",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "single cue",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 28.400s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t25",
+      "text": "чтобы",
+      "role": "caption_or_graphic_label",
+      "appear": 28.8,
+      "disappear": 29.0,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        38,
+        7,
+        65,
+        11
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "single cue",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "single cue",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 28.900s videos/s26/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t26",
+      "text": "с вами",
+      "role": "caption_or_graphic_label",
+      "appear": 29.0,
+      "disappear": 29.2,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        36,
+        7,
+        70,
+        11
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "single cue",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "single cue",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 29.100s videos/s26/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t27",
+      "text": "работали",
+      "role": "caption_or_graphic_label",
+      "appear": 29.2,
+      "disappear": 29.6,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        34,
+        7,
+        74,
+        11
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "single cue",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "single cue",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 29.400s videos/s26/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t28",
+      "text": "профи",
+      "role": "caption_or_graphic_label",
+      "appear": 29.6,
+      "disappear": 29.8,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        38,
+        7,
+        68,
+        11
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "single cue",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "single cue",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 29.700s videos/s26/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    },
+    {
+      "id": "t29",
+      "text": "то мой direct / ДЛЯ ВАС ОТКРЫТ",
+      "role": "caption_or_graphic_label",
+      "appear": 29.8,
+      "disappear": 31.2,
+      "timing_uncertainty_s": 0.2,
+      "box": [
+        15,
+        5,
+        91,
+        17
+      ],
+      "measure": "manual envelope estimate ±2 percentage points",
+      "size_pct_h": null,
+      "font_guess": "white condensed lockup",
+      "font_exact": null,
+      "color": null,
+      "visual_description": "white condensed lockup",
+      "anim_in": {
+        "type": null,
+        "frames": null,
+        "easing_guess": null
+      },
+      "anim_out": {
+        "type": null,
+        "frames": null
+      },
+      "per_word_sync": "not assumed from Whisper",
+      "evidence": "s26 30.500s videos/s26/overview_04.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Literal microprint may differ; this is not automatic OCR or approved subtitle text."
+    }
+  ],
+  "graphics": [
+    {
+      "id": "g1",
+      "start": 0,
+      "end": 3.1,
+      "type": "behind_person",
+      "content": "lime hook behind seated outdoor person",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s26 1.550s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g2",
+      "start": 3.4,
+      "end": 7.0,
+      "type": "list",
+      "content": "lime rounded tags fan around pivot, one per raised finger",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s26 5.200s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g3",
+      "start": 6.8,
+      "end": 7.8,
+      "type": "arrow_draw",
+      "content": "white curly arrow to caption",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s26 7.300s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g4",
+      "start": 8.6,
+      "end": 12.2,
+      "type": "label",
+      "content": "lime pill under white top lockup",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s26 10.400s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g5",
+      "start": 15.8,
+      "end": 21.4,
+      "type": "behind_person",
+      "content": "large lime result title above seated person at brick wall",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s26 18.600s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g6",
+      "start": 19.4,
+      "end": 21.4,
+      "type": "stat",
+      "content": "purple metrics badges, not an independently verified result",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s26 20.400s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    },
+    {
+      "id": "g7",
+      "start": 21.4,
+      "end": 25.6,
+      "type": "footage",
+      "content": "walking speaker with captions",
+      "box": null,
+      "anim_in": {
+        "frames": null
+      },
+      "anim_out": {
+        "frames": null
+      },
+      "evidence": "s26 23.500s videos/s26/overview_03.jpg (5fps discovery, ±0.2s)",
+      "confidence": "medium",
+      "alternative": "Frame strips identify visible result, not original production technique."
+    }
+  ],
+  "animations": [
+    {
+      "start": 3.4,
+      "end": 4.64,
+      "observed_intervals": 31,
+      "inclusive_frame_count": 32,
+      "fps": 25.0,
+      "description": "lime pill fan; start left-censored",
+      "easing_guess": "not identified from bounded frames",
+      "overshoot": null,
+      "stagger": null,
+      "source_method": "decoded PTS; counted elapsed intervals, not inclusive images",
+      "evidence": "codex\\measurements\\s26\\native_502181f3bf9a.json",
+      "confidence": "medium",
+      "alternative": "Pre-rendered composite; original keyframes unknown. Some windows explicitly censored."
+    }
+  ],
+  "colour": {
+    "scenes": [
+      {
+        "start": 0,
+        "end": 3.1,
+        "palette": [
+          "#393D1F",
+          "#9A9673",
+          "#10130E",
+          "#797250",
+          "#D5D4AE"
+        ],
+        "sample_at": 1.6,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s26 1.550s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)"
+      },
+      {
+        "start": 3.4,
+        "end": 7.0,
+        "palette": [
+          "#0B0A05",
+          "#3C2D17",
+          "#78583C",
+          "#A4997E",
+          "#D3D961"
+        ],
+        "sample_at": 5.2,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s26 5.200s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)"
+      },
+      {
+        "start": 6.8,
+        "end": 7.8,
+        "palette": [
+          "#0B0A05",
+          "#3A2C16",
+          "#A0977B",
+          "#D6DA72",
+          "#725A42"
+        ],
+        "sample_at": 7.2,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s26 7.300s videos/s26/overview_01.jpg (5fps discovery, ±0.2s)"
+      },
+      {
+        "start": 8.6,
+        "end": 12.2,
+        "palette": [
+          "#070504",
+          "#341C15",
+          "#C1B7A4",
+          "#AA886A",
+          "#77513B"
+        ],
+        "sample_at": 10.4,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s26 10.400s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)"
+      },
+      {
+        "start": 15.8,
+        "end": 21.4,
+        "palette": [
+          "#8E6D3E",
+          "#16110C",
+          "#4C412A",
+          "#C8D8B9",
+          "#C2C068"
+        ],
+        "sample_at": 18.6,
+        "method": "single discovery tile kmeans, 4px borders and timecode excluded; includes footage/overlays; not whole-scene palette, median text colour or LUT",
+        "evidence": "s26 18.600s videos/s26/overview_02.jpg (5fps discovery, ±0.2s)"
+      }
+    ],
+    "text_colours": [],
+    "treatment": null
+  },
+  "audio": {
+    "version": "mixed_audio_pts_1",
+    "sha1": "2cdfa7a7a678bf666a1a6e7875589c80c7e29d50",
+    "source": "samples/sample 26.mp4",
+    "method": "mixed mono RMS, 2048-sample Hann spectral-flux windows / 512-hop at 22050Hz; timestamp window centre; EBU stereo original verbose log",
+    "rms_in_transcribed_word_spans_dbfs": -13.772,
+    "rms_outside_transcribed_word_spans_dbfs": -20.898,
+    "speech_lufs": null,
+    "music_under_speech_db": null,
+    "ducking": null,
+    "onsets": [
+      {
+        "t": 0.487619,
+        "z": 3.2622
+      },
+      {
+        "t": 0.905578,
+        "z": 2.0205
+      },
+      {
+        "t": 1.811156,
+        "z": 2.2913
+      },
+      {
+        "t": 1.950476,
+        "z": 2.3027
+      },
+      {
+        "t": 2.182676,
+        "z": 2.169
+      },
+      {
+        "t": 2.414875,
+        "z": 3.1383
+      },
+      {
+        "t": 2.763175,
+        "z": 2.9559
+      },
+      {
+        "t": 3.459773,
+        "z": 4.7143
+      },
+      {
+        "t": 3.691973,
+        "z": 4.2051
+      },
+      {
+        "t": 4.94585,
+        "z": 2.5518
+      },
+      {
+        "t": 5.27093,
+        "z": 3.7466
+      },
+      {
+        "t": 5.549569,
+        "z": 2.3366
+      },
+      {
+        "t": 6.362268,
+        "z": 2.4054
+      },
+      {
+        "t": 6.826667,
+        "z": 2.2736
+      },
+      {
+        "t": 7.198186,
+        "z": 3.3465
+      },
+      {
+        "t": 8.010884,
+        "z": 2.7312
+      },
+      {
+        "t": 9.079002,
+        "z": 2.0621
+      },
+      {
+        "t": 9.195102,
+        "z": 3.0158
+      },
+      {
+        "t": 9.566621,
+        "z": 3.8133
+      },
+      {
+        "t": 10.0078,
+        "z": 3.2358
+      },
+      {
+        "t": 10.33288,
+        "z": 3.4772
+      },
+      {
+        "t": 10.681179,
+        "z": 4.1738
+      },
+      {
+        "t": 11.029478,
+        "z": 2.5399
+      },
+      {
+        "t": 11.377778,
+        "z": 3.5339
+      },
+      {
+        "t": 11.540317,
+        "z": 3.6554
+      },
+      {
+        "t": 11.726077,
+        "z": 2.6906
+      },
+      {
+        "t": 12.817415,
+        "z": 2.332
+      },
+      {
+        "t": 13.165714,
+        "z": 3.3637
+      },
+      {
+        "t": 13.328254,
+        "z": 3.4608
+      },
+      {
+        "t": 13.583673,
+        "z": 2.4845
+      },
+      {
+        "t": 14.187392,
+        "z": 3.4013
+      },
+      {
+        "t": 14.396372,
+        "z": 2.0805
+      },
+      {
+        "t": 14.512472,
+        "z": 2.7238
+      },
+      {
+        "t": 14.744671,
+        "z": 2.4948
+      },
+      {
+        "t": 15.789569,
+        "z": 2.6276
+      },
+      {
+        "t": 15.952109,
+        "z": 3.9857
+      },
+      {
+        "t": 17.066667,
+        "z": 2.4941
+      },
+      {
+        "t": 17.577506,
+        "z": 2.5922
+      },
+      {
+        "t": 18.065125,
+        "z": 4.3811
+      },
+      {
+        "t": 19.342222,
+        "z": 2.0863
+      },
+      {
+        "t": 19.829841,
+        "z": 2.1776
+      },
+      {
+        "t": 20.085261,
+        "z": 2.8191
+      },
+      {
+        "t": 20.52644,
+        "z": 2.8864
+      },
+      {
+        "t": 21.385578,
+        "z": 2.0273
+      },
+      {
+        "t": 21.617778,
+        "z": 3.8847
+      },
+      {
+        "t": 21.966077,
+        "z": 3.3196
+      },
+      {
+        "t": 22.500136,
+        "z": 3.3173
+      },
+      {
+        "t": 22.778776,
+        "z": 3.7426
+      },
+      {
+        "t": 23.057415,
+        "z": 3.2357
+      },
+      {
+        "t": 23.150295,
+        "z": 3.7805
+      },
+      {
+        "t": 23.359274,
+        "z": 4.1624
+      },
+      {
+        "t": 24.079093,
+        "z": 3.8457
+      },
+      {
+        "t": 25.75093,
+        "z": 2.0625
+      },
+      {
+        "t": 26.122449,
+        "z": 2.0283
+      },
+      {
+        "t": 26.238549,
+        "z": 2.0531
+      },
+      {
+        "t": 26.377868,
+        "z": 2.3279
+      },
+      {
+        "t": 26.702948,
+        "z": 2.859
+      },
+      {
+        "t": 26.819048,
+        "z": 4.2267
+      },
+      {
+        "t": 26.958367,
+        "z": 2.4606
+      },
+      {
+        "t": 27.237007,
+        "z": 3.3067
+      },
+      {
+        "t": 27.585306,
+        "z": 2.2677
+      },
+      {
+        "t": 28.235465,
+        "z": 2.1971
+      },
+      {
+        "t": 28.583764,
+        "z": 3.1683
+      },
+      {
+        "t": 28.839184,
+        "z": 3.0813
+      },
+      {
+        "t": 30.093061,
+        "z": 2.296
+      },
+      {
+        "t": 30.418141,
+        "z": 3.4322
+      }
+    ],
+    "cut_onset_alignment": [
+      {
+        "visual_candidate_t": 3.24,
+        "onset_t": 3.459773,
+        "delta_ms": 219.773
+      },
+      {
+        "visual_candidate_t": 7.96,
+        "onset_t": 8.010884,
+        "delta_ms": 50.884
+      },
+      {
+        "visual_candidate_t": 12.12,
+        "onset_t": 11.726077,
+        "delta_ms": -393.923
+      },
+      {
+        "visual_candidate_t": 14.0,
+        "onset_t": 14.187392,
+        "delta_ms": 187.392
+      },
+      {
+        "visual_candidate_t": 15.76,
+        "onset_t": 15.789569,
+        "delta_ms": 29.569
+      },
+      {
+        "visual_candidate_t": 21.28,
+        "onset_t": 21.385578,
+        "delta_ms": 105.578
+      },
+      {
+        "visual_candidate_t": 25.64,
+        "onset_t": 25.75093,
+        "delta_ms": 110.93
+      }
+    ],
+    "short_term": [
+      {
+        "t": 0.0999773,
+        "momentary_lufs": -120.7,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -70.0,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 0.599977,
+        "momentary_lufs": -12.7,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -13.4,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 1.099977,
+        "momentary_lufs": -14.5,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 1.599977,
+        "momentary_lufs": -15.5,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 2.099977,
+        "momentary_lufs": -14.9,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -14.5,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 2.599977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -14.7,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 3.099977,
+        "momentary_lufs": -13.5,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 3.599977,
+        "momentary_lufs": -14.4,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -14.5,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 4.099977,
+        "momentary_lufs": -15.4,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.6,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 4.599977,
+        "momentary_lufs": -16.5,
+        "short_term_lufs": -14.9,
+        "integrated_so_far_lufs": -14.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 5.099977,
+        "momentary_lufs": -13.0,
+        "short_term_lufs": -14.7,
+        "integrated_so_far_lufs": -14.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 5.599977,
+        "momentary_lufs": -13.8,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -14.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 6.099977,
+        "momentary_lufs": -14.7,
+        "short_term_lufs": -15.0,
+        "integrated_so_far_lufs": -14.6,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 6.599977,
+        "momentary_lufs": -19.0,
+        "short_term_lufs": -15.2,
+        "integrated_so_far_lufs": -14.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 7.099977,
+        "momentary_lufs": -14.3,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.7,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 7.599977,
+        "momentary_lufs": -12.9,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -14.6,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 8.099977,
+        "momentary_lufs": -15.1,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -14.5,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 8.599977,
+        "momentary_lufs": -14.0,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -14.5,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 9.099977,
+        "momentary_lufs": -12.2,
+        "short_term_lufs": -13.6,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 9.599977,
+        "momentary_lufs": -13.2,
+        "short_term_lufs": -13.2,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 10.099977,
+        "momentary_lufs": -14.2,
+        "short_term_lufs": -13.3,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 10.599977,
+        "momentary_lufs": -14.1,
+        "short_term_lufs": -13.6,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 11.099977,
+        "momentary_lufs": -14.3,
+        "short_term_lufs": -13.5,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 11.599977,
+        "momentary_lufs": -13.9,
+        "short_term_lufs": -13.4,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 12.099977,
+        "momentary_lufs": -19.2,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 12.599977,
+        "momentary_lufs": -12.7,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 13.099977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 13.599977,
+        "momentary_lufs": -14.0,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 14.099977,
+        "momentary_lufs": -13.9,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 14.599977,
+        "momentary_lufs": -12.9,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 15.099977,
+        "momentary_lufs": -12.3,
+        "short_term_lufs": -13.6,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 15.599977,
+        "momentary_lufs": -13.7,
+        "short_term_lufs": -13.5,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 16.099977,
+        "momentary_lufs": -13.2,
+        "short_term_lufs": -13.5,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 16.599977,
+        "momentary_lufs": -15.3,
+        "short_term_lufs": -13.7,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 17.099977,
+        "momentary_lufs": -13.5,
+        "short_term_lufs": -13.6,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 17.599977,
+        "momentary_lufs": -13.1,
+        "short_term_lufs": -13.7,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 18.099977,
+        "momentary_lufs": -14.1,
+        "short_term_lufs": -14.0,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 18.599977,
+        "momentary_lufs": -14.0,
+        "short_term_lufs": -14.1,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 19.099977,
+        "momentary_lufs": -15.1,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 19.599977,
+        "momentary_lufs": -13.0,
+        "short_term_lufs": -13.8,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 20.099977,
+        "momentary_lufs": -15.1,
+        "short_term_lufs": -14.1,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 20.599977,
+        "momentary_lufs": -16.4,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 21.099977,
+        "momentary_lufs": -14.1,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 21.599977,
+        "momentary_lufs": -16.6,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 22.099977,
+        "momentary_lufs": -13.0,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 22.599977,
+        "momentary_lufs": -11.9,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 23.099977,
+        "momentary_lufs": -14.4,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 23.599977,
+        "momentary_lufs": -14.9,
+        "short_term_lufs": -13.9,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 24.099977,
+        "momentary_lufs": -12.7,
+        "short_term_lufs": -13.6,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 24.599977,
+        "momentary_lufs": -12.7,
+        "short_term_lufs": -13.1,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 25.099977,
+        "momentary_lufs": -12.7,
+        "short_term_lufs": -13.0,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 25.599977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -13.4,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 26.099977,
+        "momentary_lufs": -12.6,
+        "short_term_lufs": -13.3,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 26.599977,
+        "momentary_lufs": -12.4,
+        "short_term_lufs": -13.1,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 27.099977,
+        "momentary_lufs": -14.2,
+        "short_term_lufs": -13.3,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 27.599977,
+        "momentary_lufs": -15.0,
+        "short_term_lufs": -13.6,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 28.099977,
+        "momentary_lufs": -14.7,
+        "short_term_lufs": -14.0,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 28.599977,
+        "momentary_lufs": -14.1,
+        "short_term_lufs": -13.8,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 29.099977,
+        "momentary_lufs": -14.3,
+        "short_term_lufs": -14.0,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 29.599977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 30.099977,
+        "momentary_lufs": -16.0,
+        "short_term_lufs": -14.7,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 30.599977,
+        "momentary_lufs": -15.2,
+        "short_term_lufs": -14.7,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 31.099977,
+        "momentary_lufs": -27.1,
+        "short_term_lufs": -15.2,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      }
+    ],
+    "cuts_on_beat": {
+      "tested": false,
+      "ratio": null,
+      "reason": "mixed-track onsets may be syllables; not isolated music/beat"
+    },
+    "caveats": [
+      "Word spans may miss syllables; outside spans is NOT isolated music.",
+      "RMS is not LUFS.",
+      "Onset candidates are not confirmed SFX.",
+      "Early short-term meter values need full3s window."
+    ]
+  },
+  "open_questions": [
+    "Exact font/isolated audio unavailable.",
+    "Unresolved microprint flagged in literal cues."
+  ],
+  "measurement_files": [
+    "codex\\measurements\\s26\\m_mixed_audio.json",
+    "codex\\measurements\\s26\\m_preliminary_stats.json",
+    "codex\\measurements\\s26\\native_502181f3bf9a.json"
+  ],
+  "opencv_motion": []
+}

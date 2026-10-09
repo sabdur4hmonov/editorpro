@@ -1,0 +1,309 @@
+{
+  "schema": 1,
+  "id": "B1_editorial_paper",
+  "description": "Paper/document narrative; actual evidence and numbers, restrained serif contrast.",
+  "members": [
+    "s29",
+    "s34",
+    "s35",
+    "s36",
+    "s39",
+    "s40",
+    "s41"
+  ],
+  "source_hashes": {
+    "s29": "04db62a946c81fd9cb0b4f50c5a62078b2d12937",
+    "s34": "23c1d286eb7baa78393ead848c3d5d1ab40de4c5",
+    "s35": "33d384fb579ef4078561587640f9daba19bd6d02",
+    "s36": "d83eecd5372d952ad6e95dd9e96d345c03063e2e",
+    "s39": "087af0c6d650e6ab627568a464d5a864e33f7a2c",
+    "s40": "889a3c5f30d2903b6081351f722dcf1e852a9b2c",
+    "s41": "3cd815b96852b0bf0d556f6a2bb1fde3f54c014f"
+  },
+  "evidence_policy": ">=3 distinct source hashes = recurring pattern; 1–2 = observation; timing/rhythm not universal rule",
+  "techniques": [
+    {
+      "id": "trajectory",
+      "witnesses": [
+        "s35",
+        "s39",
+        "s40",
+        "s41"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s35/perception.json",
+        "codex/analysis/s39/perception.json",
+        "codex/analysis/s40/perception.json",
+        "codex/analysis/s41/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "material_cards",
+      "witnesses": [
+        "s29",
+        "s34",
+        "s35",
+        "s36",
+        "s39",
+        "s40",
+        "s41"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s29/perception.json",
+        "codex/analysis/s34/perception.json",
+        "codex/analysis/s35/perception.json",
+        "codex/analysis/s36/perception.json",
+        "codex/analysis/s39/perception.json",
+        "codex/analysis/s40/perception.json",
+        "codex/analysis/s41/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "relief_type",
+      "witnesses": [
+        "s39",
+        "s40",
+        "s41"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s39/perception.json",
+        "codex/analysis/s40/perception.json",
+        "codex/analysis/s41/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "panel_wipes",
+      "witnesses": [
+        "s41"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s41/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "active_pills",
+      "witnesses": [
+        "s34",
+        "s35",
+        "s39"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s34/perception.json",
+        "codex/analysis/s35/perception.json",
+        "codex/analysis/s39/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "caption_entrances",
+      "witnesses": [
+        "s34",
+        "s35",
+        "s36",
+        "s39",
+        "s40",
+        "s41"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s34/perception.json",
+        "codex/analysis/s35/perception.json",
+        "codex/analysis/s36/perception.json",
+        "codex/analysis/s39/perception.json",
+        "codex/analysis/s40/perception.json",
+        "codex/analysis/s41/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "behind_person",
+      "witnesses": [
+        "s29",
+        "s35",
+        "s40",
+        "s41"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s29/perception.json",
+        "codex/analysis/s35/perception.json",
+        "codex/analysis/s40/perception.json",
+        "codex/analysis/s41/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "handwriting_stroke",
+      "witnesses": [
+        "s34",
+        "s36"
+      ],
+      "classification": "observation",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s34/perception.json",
+        "codex/analysis/s36/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "true_3d_fold",
+      "witnesses": [
+        "s35",
+        "s39",
+        "s41"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "codex/analysis/s35/perception.json",
+        "codex/analysis/s39/perception.json",
+        "codex/analysis/s41/perception.json"
+      ],
+      "alternative": "Repeated client template; content may call for different rhythm."
+    }
+  ],
+  "cut_rhythm": {
+    "statistics": "per-source perception.rhythm; candidate cuts not pooled as verified cuts",
+    "rule": "semantic cuts, allow calm intervals; D requires subtype",
+    "candidate_group_medians": {
+      "cuts_per_min": 12.1,
+      "median_shot_s": 2.52,
+      "wpm": 141,
+      "source": "docs/STYLE_STUDY/peer_global_stats.md",
+      "use": "detector reference only; not auto-cut rule"
+    }
+  },
+  "animation_presets": {
+    "unit": "source fps + elapsed intervals, convert seconds to output fps",
+    "native_examples": [
+      {
+        "video": "s35",
+        "range": [
+          8.4,
+          8.92
+        ],
+        "intervals": 13,
+        "evidence": "codex/analysis/s35/perception.json"
+      },
+      {
+        "video": "s36",
+        "range": [
+          35.6,
+          36.08
+        ],
+        "intervals": 12,
+        "evidence": "codex/analysis/s36/perception.json"
+      },
+      {
+        "video": "s39",
+        "range": [
+          42.52,
+          42.84
+        ],
+        "intervals": 8,
+        "evidence": "codex/analysis/s39/perception.json"
+      },
+      {
+        "video": "s40",
+        "range": [
+          1,
+          1.5667
+        ],
+        "intervals": 17,
+        "evidence": "codex/analysis/s40/perception.json"
+      },
+      {
+        "video": "s41",
+        "range": [
+          0.0333,
+          0.5
+        ],
+        "intervals": 14,
+        "evidence": "codex/analysis/s41/perception.json"
+      }
+    ]
+  },
+  "style_patch": {
+    "captions": {
+      "preset": "serif"
+    },
+    "motion": {
+      "enabled": true,
+      "durations_ms": {
+        "title": 320,
+        "label": 520,
+        "sticker": 520,
+        "transition": 520
+      },
+      "choice": {
+        "enter": "mask_up",
+        "sub": "typewriter",
+        "emphasis": "underline_draw"
+      }
+    },
+    "motion_design": {
+      "fast_blur_px": 2,
+      "material_seed": 41
+    }
+  },
+  "suggested_accent": "#EFA575",
+  "brand_override": "Existing brand/approved per-video color and font win; do not impose sampled brand colors",
+  "zoom": "content-driven energy + optional canvas keyframes; no constant zoom",
+  "graphics": [
+    "trajectory",
+    "material_cards",
+    "relief_type",
+    "panel_wipes",
+    "active_pills",
+    "caption_entrances",
+    "behind_person",
+    "handwriting_stroke",
+    "true_3d_fold"
+  ],
+  "sound": {
+    "measured_mix_lufs": [
+      -14.5,
+      -14.2,
+      -14.3,
+      -14.2,
+      -14.1,
+      -14.2,
+      -14.3
+    ],
+    "sfx_level_relative_to_speech": null,
+    "stem_separation_available": false,
+    "cuts_on_beat_verified": false,
+    "apply": "existing stronger/subtle paired mixes + voice margin; source sound taste awaiting user"
+  },
+  "hook": "derive from actual speech, group hierarchy only; no invented promises",
+  "outro": "use only actual spoken CTA; no forced subscription card on narrative excerpt",
+  "timing_application": {
+    "status": "editor-chosen initial default from selected native example, not universal preset fit",
+    "evidence": "s35 ticket window13 intervals@25, not true fold emulation"
+  },
+  "application_scope": "Caption/motion defaults; material/card/canvas/trajectory geometry and semantic cuts require agent plan. No auto template generator.",
+  "hook_text_candidate": {
+    "max_first_on_screen_s": 0.3,
+    "source": "Claude hook sheet22/24 checked",
+    "automatic_preflight": false,
+    "confidence": "medium",
+    "alternative": "reused template openings"
+  }
+}

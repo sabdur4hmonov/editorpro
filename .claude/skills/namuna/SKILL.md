@@ -164,3 +164,20 @@ Stronger is the general default, not approval of an unheard new mix.
 For hand finishing export native FCP7 XML, editable SRT, ProRes alpha graphics and three
 audio stems; parse back, disclose rasterised base motion and unverified GUI imports.
 Never infer paid-plugin/OTIO/FCPXML support. No new downloads or installs for beat detection.
+
+## Sample study family selection (41 references)
+
+Read `docs/STYLE_STUDY/README.md`, then only the closest `docs/style_dna/<group>/playbook.md`.
+Observe footage and transcript: seated explainer -> A; document/campus narrative -> B1;
+creator/tutorial -> B2; interview/testimonial -> C; promo/showcase/vlog -> D (state subtype).
+Use `scripts/sample_groups.py select --features temp/<job>/sample_features.json -o temp/<job>/sample_selection.json`
+with observed boolean features (see --help/code). This is an explainable heuristic, not automated visual understanding.
+If ambiguous, use editorial judgement and record an evidence-based reason; do not add another approval round.
+Apply: `scripts/sample_groups.py apply GROUP --style temp/<job>/style.json --reason "footage/content evidence"`
+(D: `--subtype promo|showcase|vlog`; named brand: `--brand NAME` so brand style overrides DNA).
+Say the group, subtype if needed, and why in the ONE approval message. Keep brand fonts/colours and user feedback.
+Use measured source frame intervals as examples, converting seconds to output fps; they are not universal tempos.
+Use `card`, `canvas`, `trajectory`, `layout_morph`, optional stroke relief per `docs/MOTION_DESIGN.md`.
+These are 2D/2.5D tools; exact 3D/folds/custom pen strokes remain external work, not a claimed match.
+Never reuse sample logos, footage, music or fonts in output. Check actual approved words, faces and safe zones;
+preserve calm answers instead of forcing new graphics every3s. Show native filmstrips and paired audio cues.

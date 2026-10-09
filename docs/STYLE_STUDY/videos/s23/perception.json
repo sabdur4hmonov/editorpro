@@ -1,0 +1,823 @@
+{
+  "video": "s23",
+  "agent": "claude",
+  "schema": 1,
+  "sha1": "b0c88276a17e9ad8175d93a3183b9295f9f6c3fa",
+  "type": "B2_kinetic_creator",
+  "technical": {
+    "duration": 33.271,
+    "width": 720,
+    "height": 1280,
+    "fps": 29.97,
+    "integrated_lufs": -14.5,
+    "true_peak_dbtp": -0.6,
+    "lra_lu": 3.4,
+    "speech": true,
+    "language": "uz",
+    "wpm": 161.2
+  },
+  "rhythm": {
+    "cut_source": "content27, all 15 verified as shot changes on overview/strips; plus an undetected zoom reset ~1.6 s",
+    "cuts": [
+      3.203,
+      4.438,
+      5.772,
+      7.574,
+      8.942,
+      11.745,
+      13.013,
+      13.981,
+      14.982,
+      16.35,
+      17.718,
+      18.986,
+      20.22,
+      22.089,
+      28.195
+    ],
+    "first_cut": 3.203,
+    "cut_interval": {
+      "n": 14,
+      "mean": 1.785,
+      "median": 1.334,
+      "p10": 1.001,
+      "p90": 2.803,
+      "min": 0.968,
+      "max": 6.106
+    },
+    "hook": {
+      "start": 0.0,
+      "end": 3.2,
+      "evidence": "s23 0.0-3.2 overview_01 rows 1-2: slide-in hero + Post sticker + zoom in/out; first cut + pixel transition 3.20"
+    },
+    "cta": {
+      "start": 28.2,
+      "end": 33.27,
+      "text": "facebook instagram reklamalarini professional darajada o'rganmoqchi bo'lsangiz ... izohlarga TARGET so'zini yozib qoldiring + obuna bo'ling pill",
+      "evidence": "s23 28.2-33.2 overview_04"
+    },
+    "outro": {
+      "start": 31.5,
+      "kind": "comment-keyword CTA card + subscribe pill (no endcard)",
+      "evidence": "s23 31.6-33.0 overview_04 rows 2-3"
+    }
+  },
+  "speech": {
+    "words": 89,
+    "wpm": 161.2,
+    "pauses": [],
+    "pause_stats": {
+      "n": 0
+    },
+    "cut_position": {
+      "pause": 0,
+      "word_gap": 7,
+      "mid_word": 8
+    },
+    "note": "no Whisper inter-word gap >= 0.3 s in 33 s (does NOT prove pauses were edited out: fast speech / Whisper boundary filling possible). 8/15 cuts fall inside a Whisper word span; edit type (J/L) not established."
+  },
+  "texts": [
+    {
+      "id": "t1",
+      "text": "Instagramdagi / ko'k tugmani bosib",
+      "role": "hook_title",
+      "font_guess": "grotesk black italic (Inter-like) + regular sub",
+      "case": "mixed",
+      "weight": "black",
+      "italic": true,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": "soft shadow",
+      "size_pct_h": 4.0,
+      "measure": "estimate (m_grid)",
+      "box": [
+        22,
+        53,
+        89,
+        63
+      ],
+      "appear": 0.17,
+      "disappear": 1.72,
+      "anim_in": {
+        "type": "slide from right edge (clipped by frame edge)",
+        "frames": 12,
+        "easing_guess": "ease_out",
+        "overshoot": false,
+        "stagger_frames": null,
+        "from": "x0 39.4%, right edge 99.3%",
+        "to": "x0 24.7% at 0.54 s, still settling"
+      },
+      "anim_out": {
+        "type": "flicker off (single-frame on/off)",
+        "frames": 4
+      },
+      "per_word_sync": "cue",
+      "evidence": "s23 0.17-0.54 m_text_0.17-0.70.json; 1.45-1.72 m_frames_1.45-1.95.jpg"
+    },
+    {
+      "id": "t2",
+      "text": "Post (button sticker)",
+      "role": "other",
+      "font_guess": "grotesk bold",
+      "case": "mixed",
+      "weight": "bold",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": "#157EEF",
+      "stroke_or_shadow": null,
+      "size_pct_h": 3.0,
+      "measure": "estimate (m_grid)",
+      "box": [
+        54,
+        56,
+        83,
+        65
+      ],
+      "appear": 0.43,
+      "disappear": 1.72,
+      "anim_in": {
+        "type": "pop from small, rotated ~-12 deg",
+        "frames": 5,
+        "easing_guess": "ease_out/back",
+        "overshoot": null,
+        "from": "small",
+        "to": "rest"
+      },
+      "anim_out": {
+        "type": "flicker off with t1",
+        "frames": 4
+      },
+      "per_word_sync": "word (tugmani)",
+      "evidence": "s23 0.43-0.57 strips_01 row 1; kmeans 22.3 #157EEF"
+    },
+    {
+      "id": "t3",
+      "text": "siz unga pul tashlaganingiz bilan",
+      "role": "caption",
+      "font_guess": "grotesk regular",
+      "case": "lower",
+      "weight": "medium",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 2.2,
+      "measure": "estimate (m_grid)",
+      "box": [
+        28,
+        60,
+        72,
+        66
+      ],
+      "appear": 1.8,
+      "disappear": 3.2,
+      "anim_in": {
+        "type": "word-by-word fade grey->white",
+        "frames": 3,
+        "easing_guess": "linear",
+        "overshoot": false,
+        "from": "opacity ~0.4",
+        "to": "1"
+      },
+      "anim_out": {
+        "type": "cut into transition",
+        "frames": 0
+      },
+      "per_word_sync": "word",
+      "evidence": "s23 1.80-2.17 strips_01 row 2"
+    },
+    {
+      "id": "t4",
+      "text": "TARGETOLOG / bo'lib qola olmaysiz",
+      "role": "title",
+      "font_guess": "neon: script T + thin caps",
+      "case": "upper",
+      "weight": "regular",
+      "italic": false,
+      "color": "#D20406",
+      "accent_color": null,
+      "stroke_or_shadow": "red neon glow",
+      "size_pct_h": 5.5,
+      "measure": "estimate (m_grid)",
+      "box": [
+        12,
+        54,
+        94,
+        61
+      ],
+      "appear": 3.27,
+      "disappear": 4.44,
+      "anim_in": {
+        "type": "appears on white flash frame of the pixel transition",
+        "frames": 1
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s23 3.20-3.47 strips_01 row 3; kmeans 3.6 #D20406"
+    },
+    {
+      "id": "t5",
+      "text": "bu xuddiki / taksiga o'tirib",
+      "role": "caption",
+      "font_guess": "grotesk black italic",
+      "case": "lower",
+      "weight": "black",
+      "italic": true,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 3.2,
+      "measure": "estimate (m_grid)",
+      "box": [
+        14,
+        57,
+        60,
+        64
+      ],
+      "appear": 4.44,
+      "disappear": 5.77,
+      "anim_in": {
+        "type": "present on first frame of the cut",
+        "frames": 0
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s23 4.44 strips_01 row 4"
+    },
+    {
+      "id": "t6",
+      "text": "chat bubble: ulov yoqga olib boring",
+      "role": "other",
+      "font_guess": "system UI",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": "#1E88E5",
+      "stroke_or_shadow": null,
+      "size_pct_h": 1.2,
+      "measure": "estimate (m_grid)",
+      "box": [
+        14,
+        30,
+        52,
+        36
+      ],
+      "appear": 5.8,
+      "disappear": 7.57,
+      "anim_in": {
+        "type": "fade/slide",
+        "frames": 2
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s23 5.77-5.84 strips_01 row 6"
+    },
+    {
+      "id": "t7",
+      "text": "professionalniy / target faqatgina",
+      "role": "caption",
+      "font_guess": "grotesk regular, LEFT aligned upper third",
+      "case": "lower",
+      "weight": "regular",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 1.8,
+      "measure": "estimate (m_grid)",
+      "box": [
+        10,
+        34,
+        40,
+        40
+      ],
+      "appear": 7.7,
+      "disappear": 8.94,
+      "anim_in": {
+        "type": "fade, starts 4 frames after the cut",
+        "frames": 3
+      },
+      "anim_out": {
+        "type": "cut",
+        "frames": 0
+      },
+      "per_word_sync": "word",
+      "evidence": "s23 7.57-7.77 strips_02 row 1"
+    },
+    {
+      "id": "t8",
+      "text": "Meta Ads / menejer orqali boshqariladi",
+      "role": "title",
+      "font_guess": "high-contrast serif (Didone-like)",
+      "case": "mixed",
+      "weight": "regular",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": "#1877F2",
+      "stroke_or_shadow": null,
+      "size_pct_h": 4.5,
+      "measure": "estimate (m_grid)",
+      "box": [
+        20,
+        40,
+        80,
+        50
+      ],
+      "appear": 8.94,
+      "disappear": 11.0,
+      "anim_in": {
+        "type": "present on cut; sub words appear one by one",
+        "frames": 0
+      },
+      "anim_out": {
+        "type": "cross-dissolve into next serif title",
+        "frames": 4
+      },
+      "per_word_sync": "word (sub)",
+      "evidence": "s23 8.94-11.10 strips_02 rows 2-4"
+    },
+    {
+      "id": "t9",
+      "text": "REKLAMANI ANIQ / MAQSADINI / tanlaysiz (+ AUDITORIYANI, MABLAG'NI, BIR NECHA TARGETLARNI, QAYSI REKLAMA)",
+      "role": "title",
+      "font_guess": "grotesk black caps + small regular sub",
+      "case": "upper",
+      "weight": "black",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 3.5,
+      "measure": "estimate (m_grid)",
+      "box": [
+        13,
+        46,
+        87,
+        54
+      ],
+      "appear": 11.77,
+      "disappear": 22.09,
+      "anim_in": {
+        "type": "letter scramble: letters pop in at their final positions in random order",
+        "frames": 8,
+        "easing_guess": "stepwise",
+        "overshoot": false,
+        "stagger_frames": "random, ~0.3 letters/frame",
+        "from": "empty",
+        "to": "full word"
+      },
+      "anim_out": {
+        "type": "letters disappear in random order",
+        "frames": 6
+      },
+      "per_word_sync": "cue per b-roll shot (~1.3 s)",
+      "evidence": "s23 11.74-12.01 strips_02 row 5; mask px 0->20985 in 9 frames m_text_11.74-12.10.json; exit 13.6 overview_02"
+    },
+    {
+      "id": "t10",
+      "text": "postingizni / reklama / qilish / sizga ... (one word)",
+      "role": "caption",
+      "font_guess": "grotesk medium in rounded blue pill",
+      "case": "lower",
+      "weight": "medium",
+      "italic": false,
+      "color": "#FFFFFF",
+      "accent_color": "#157EEF",
+      "stroke_or_shadow": null,
+      "size_pct_h": 3.0,
+      "measure": "estimate (pill height 6%)",
+      "box": [
+        31,
+        53,
+        70,
+        59
+      ],
+      "appear": 22.09,
+      "disappear": 24.6,
+      "anim_in": {
+        "type": "one word at a time, pill swap, slow upward drift",
+        "frames": 0
+      },
+      "anim_out": {
+        "type": "replace",
+        "frames": 0
+      },
+      "per_word_sync": "word",
+      "evidence": "s23 22.09-22.36 strips_04 row 1; overview_03 rows 2-3"
+    },
+    {
+      "id": "t11",
+      "text": "NATIJA / HARAKAT (3D extruded)",
+      "role": "title",
+      "font_guess": "ultra-bold italic caps, white face, blue extrusion, motion blur",
+      "case": "upper",
+      "weight": "black",
+      "italic": true,
+      "color": "#FFFFFF",
+      "accent_color": "#3B3FD8",
+      "stroke_or_shadow": null,
+      "size_pct_h": 12.0,
+      "measure": "estimate (m_grid)",
+      "box": [
+        11,
+        47,
+        89,
+        60
+      ],
+      "appear": 26.2,
+      "disappear": 28.1,
+      "anim_in": {
+        "type": "slam in large with motion blur",
+        "frames": 4,
+        "easing_guess": "ease_out"
+      },
+      "anim_out": {
+        "type": "fall down-right rotating ~10 deg with motion blur",
+        "frames": 12
+      },
+      "per_word_sync": "word",
+      "evidence": "s23 27.00-27.37 strips_04 row 2"
+    },
+    {
+      "id": "t12",
+      "text": "facebook / Instagram (logos) / reklamalarini professional darajada o'rganmoqchi bo'lsangiz / @kasbmarkazi",
+      "role": "cta",
+      "font_guess": "grotesk black italic + regular italic",
+      "case": "mixed",
+      "weight": "black",
+      "italic": true,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 6.0,
+      "measure": "estimate (m_grid)",
+      "box": [
+        20,
+        40,
+        87,
+        73
+      ],
+      "appear": 28.25,
+      "disappear": 31.4,
+      "anim_in": {
+        "type": "slide from right with motion blur, then scale from oversized to rest",
+        "frames": 8,
+        "easing_guess": "ease_out"
+      },
+      "anim_out": {
+        "type": "blur dissolve into next card",
+        "frames": 6
+      },
+      "per_word_sync": "line",
+      "evidence": "s23 28.20-28.47 strips_04 row 3; 28.8-30.2 overview_04 row 1"
+    },
+    {
+      "id": "t13",
+      "text": "izohlarga TARGET so'zini yozib qoldiring + obuna bo'ling pill",
+      "role": "cta",
+      "font_guess": "grotesk black italic caps in quotes",
+      "case": "mixed",
+      "weight": "black",
+      "italic": true,
+      "color": "#FFFFFF",
+      "accent_color": null,
+      "stroke_or_shadow": null,
+      "size_pct_h": 4.0,
+      "measure": "estimate (m_grid)",
+      "box": [
+        25,
+        45,
+        75,
+        60
+      ],
+      "appear": 31.6,
+      "disappear": 33.27,
+      "anim_in": {
+        "type": "blur-in",
+        "frames": 6
+      },
+      "anim_out": {
+        "type": "end",
+        "frames": 0
+      },
+      "per_word_sync": "cue",
+      "evidence": "s23 31.6-32.0 overview_04 rows 2-3"
+    }
+  ],
+  "animations": [
+    {
+      "target": "frame",
+      "type": "pull-out then push back in (hook starts magnified)",
+      "start": 0.0,
+      "frames": 22,
+      "easing_guess": "ease_out",
+      "overshoot": false,
+      "values": {
+        "scale_from": 1.0,
+        "scale_to": 0.81,
+        "then": "0.81 -> 1.04 between 1.6 and 2.6 s"
+      },
+      "method": "opencv ECC affine (cc 0.97-0.999); direction verified with YuNet face height 261 px (0.05 s) -> 220 px (0.8 s) -> 287 px (2.4 s)",
+      "evidence": "s23 m_zoom_0.00-3.15.json"
+    },
+    {
+      "target": "frame (Meta Ads still)",
+      "type": "pull-out reveal (starts ~1.36x, eases to rest)",
+      "start": 8.95,
+      "frames": 27,
+      "easing_guess": "ease_out",
+      "overshoot": false,
+      "values": {
+        "scale_from": 1.0,
+        "scale_to": 0.737,
+        "dx_pct": "pan"
+      },
+      "method": "opencv ECC affine (cc 0.999); matches strips_02 (Meta sign shrinks)",
+      "evidence": "s23 m_zoom_8.95-10.85.json"
+    },
+    {
+      "target": "transition",
+      "type": "pixelate (2f) -> white flash (1f) -> defocus to sharp (5f), B&W",
+      "start": 3.2,
+      "frames": 9,
+      "evidence": "s23 3.20-3.47 strips_01 row 3"
+    }
+  ],
+  "colour": {
+    "scenes": [
+      {
+        "start": 0,
+        "end": 3.2,
+        "palette": [
+          "warm beige brick",
+          "navy polo"
+        ],
+        "background": "footage"
+      },
+      {
+        "start": 3.2,
+        "end": 4.44,
+        "palette": [
+          "#0C0404",
+          "#170607",
+          "#D20406"
+        ],
+        "background": "footage B&W, darkened, red neon"
+      },
+      {
+        "start": 4.44,
+        "end": 8.94,
+        "palette": [
+          "grey car",
+          "navy"
+        ],
+        "background": "footage, darker (val 80-83); car shot sat 64, 8.3 s speaker sat 89 (not desaturated)"
+      },
+      {
+        "start": 8.94,
+        "end": 11.74,
+        "palette": [
+          "B&W",
+          "#1877F2 logo"
+        ],
+        "background": "B&W still with cut-out person"
+      },
+      {
+        "start": 11.74,
+        "end": 22.09,
+        "palette": [
+          "dim office",
+          "white text"
+        ],
+        "background": "b-roll darkened"
+      },
+      {
+        "start": 22.09,
+        "end": 33.27,
+        "palette": [
+          "warm beige",
+          "navy",
+          "#157EEF"
+        ],
+        "background": "footage"
+      }
+    ],
+    "text_colours": [
+      "#FFFFFF",
+      "#D20406",
+      "#157EEF",
+      "#3B3FD8"
+    ],
+    "treatment": "speaker shots warm natural; b-roll desaturated/darkened; one B&W + red neon emphasis beat"
+  },
+  "graphics": [
+    {
+      "id": "g1",
+      "type": "sticker",
+      "start": 0.43,
+      "end": 1.72,
+      "box": [
+        54,
+        56,
+        83,
+        65
+      ],
+      "content": "Instagram-blue Post button",
+      "evidence": "strips_01 row 1"
+    },
+    {
+      "id": "g2",
+      "type": "broll",
+      "start": 4.44,
+      "end": 7.57,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "speaker at a taxi (metaphor), staged",
+      "evidence": "overview_01"
+    },
+    {
+      "id": "g3",
+      "type": "other",
+      "start": 5.8,
+      "end": 7.57,
+      "box": [
+        14,
+        30,
+        52,
+        36
+      ],
+      "content": "iMessage-style chat bubble",
+      "evidence": "strips_01 row 6"
+    },
+    {
+      "id": "g4",
+      "type": "photo",
+      "start": 8.94,
+      "end": 11.74,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "B&W Meta HQ photo + cut-out man in suit + Meta logo",
+      "evidence": "strips_02 rows 2-4"
+    },
+    {
+      "id": "g5",
+      "type": "broll",
+      "start": 11.74,
+      "end": 22.09,
+      "box": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "content": "classroom b-roll, darkened, one shot per phrase (~1.3 s)",
+      "evidence": "overview_02"
+    },
+    {
+      "id": "g6",
+      "type": "icon",
+      "start": 28.25,
+      "end": 31.4,
+      "box": [
+        20,
+        40,
+        90,
+        56
+      ],
+      "content": "facebook + instagram logos inline with the words",
+      "evidence": "overview_04"
+    },
+    {
+      "id": "g7",
+      "type": "follow",
+      "start": 28.8,
+      "end": 33.27,
+      "box": [
+        20,
+        66,
+        80,
+        74
+      ],
+      "content": "round brand logo + @handle pill -> orange obuna bo'ling pill with check",
+      "evidence": "overview_04"
+    }
+  ],
+  "audio": {
+    "music": "unknown (non-speech RMS median -26 dB vs speech -15.5 dB; no real pauses to test)",
+    "speech_lufs_est": null,
+    "music_under_speech_db": null,
+    "ducking": null,
+    "onsets_near_visual_events": [
+      {
+        "t": 3.203,
+        "event": "cut",
+        "delta_ms": 25
+      },
+      {
+        "t": 4.438,
+        "event": "cut",
+        "delta_ms": 322
+      },
+      {
+        "t": 5.772,
+        "event": "cut",
+        "delta_ms": -246
+      },
+      {
+        "t": 7.574,
+        "event": "cut",
+        "delta_ms": 158
+      },
+      {
+        "t": 8.942,
+        "event": "cut",
+        "delta_ms": 44
+      },
+      {
+        "t": 11.745,
+        "event": "cut",
+        "delta_ms": 28
+      },
+      {
+        "t": 13.013,
+        "event": "cut",
+        "delta_ms": -10
+      },
+      {
+        "t": 13.981,
+        "event": "cut",
+        "delta_ms": -95
+      },
+      {
+        "t": 14.982,
+        "event": "cut",
+        "delta_ms": -28
+      },
+      {
+        "t": 16.35,
+        "event": "cut",
+        "delta_ms": -3
+      },
+      {
+        "t": 17.718,
+        "event": "cut",
+        "delta_ms": 417
+      },
+      {
+        "t": 18.986,
+        "event": "cut",
+        "delta_ms": -224
+      },
+      {
+        "t": 20.22,
+        "event": "cut",
+        "delta_ms": -181
+      },
+      {
+        "t": 22.089,
+        "event": "cut",
+        "delta_ms": 202
+      },
+      {
+        "t": 28.195,
+        "event": "cut",
+        "delta_ms": -29
+      }
+    ],
+    "cut_onset_alignment": {
+      "ratio": "7/15",
+      "chance": 0.258
+    },
+    "cuts_on_beat": {
+      "tested": false,
+      "ratio": null,
+      "chance": null,
+      "method": "spectral-flux onsets (z>2, 80 ms min gap); RMS dB per 23 ms; speech = transcript word spans; onsets include speech syllables: NOT a beat test"
+    },
+    "sfx_candidates": [],
+    "method": "measured only; no claim about how it sounds"
+  },
+  "open_questions": [
+    "music bed present? (listening)",
+    "whooshes on the slam-in words (26.2, 27.1) and the slide-in CTA (28.2)?"
+  ],
+  "continued_by": "codex solo; peer historical files preserved; pilot_review_codex.md contains verified caveats"
+}

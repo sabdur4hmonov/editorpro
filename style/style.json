@@ -376,6 +376,14 @@
     }
   },
 
+  "motion_design": {
+    "_izoh": "Ixtiyoriy sample-study motion. trajectory/card/canvas per-element; recipes mavjud entrance/emphasisni qayta ishlatadi. docs/MOTION_DESIGN.md.",
+    "fast_blur_px": 0,
+    "material_seed": 41,
+    "paper_color": "#F4EEDF",
+    "caption_recipes": {}
+  },
+
   "analysis": {
     "frame_every_sec": 2,
     "scene_threshold": 27,

@@ -569,3 +569,16 @@ ffprobe -v error -show_entries format=duration:stream=codec_type,width,height,r_
 - Remotion bu loyihada yo'q. Maxsus sahna kerak bo'lsa `docs/REMOTION_PROMPT.md` bo'yicha
   qo'shiladi va natijasi shaffof video sifatida ustiga qo'yiladi.
 - Tashqi skill o'rnatishdan oldin `docs/SKILLS_AUDIT.md` ni o'qi va foydalanuvchidan so'ra.
+
+## 41 namuna va motion design (solo style study)
+
+- Montaj boshida eng yaqin family `docs/style_dna/` dan: A explainer, B1 paper/document,
+  B2 creator, C interview, D commercial (promo/showcase/vlog subtype). Guruh va dalilli sabab ONE approvalda.
+- `sample_groups.py select/apply` faqat per-video style; brand va user feedback ustun.
+- `docs/MOTION_DESIGN.md` maydonlarni tekshir: trajectory/pivot, card/canvas, active state,
+  single-source layout_morph, outline/flat relief. Native filmstrips bilan timing/geometryni tekshir.
+- Sokin intervyu uchun majburiy har3s grafika yo‘q. Ovoz va motion didi foydalanuvchi ko‘rigi.
+- Tadqiqot manbalari/chegaralari `docs/STYLE_STUDY/`. ≥3 distinct hashes pattern, kamrog‘i observation;
+  easing/font/isolated SFX/true3D noma’lum bo‘lsa null va honest limitation.
+- Claude limit holatida bu sessiyada foydalanuvchi Codex solo shared build/tests/commitni aniq ruxsat berdi;
+  bu kelajakdagi parallel ish cheklovini bekor qilmaydi. Oldingi video notes saqlandi.

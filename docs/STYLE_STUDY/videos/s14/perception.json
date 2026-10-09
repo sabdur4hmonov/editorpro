@@ -1,0 +1,668 @@
+{
+  "video": "s14",
+  "schema": 2,
+  "agent": "codex",
+  "sha1": "22e613dfc4f805b09fcf1095d66b4a7949a64dd9",
+  "type": "B2_kinetic_creator",
+  "technical": {
+    "file": "samples/sample14.mp4",
+    "slug": "s14",
+    "sha1": "22e613dfc4f805b09fcf1095d66b4a7949a64dd9",
+    "duration": 25.632,
+    "width": 720,
+    "height": 1280,
+    "fps": 29.97,
+    "vcodec": "h264",
+    "size_bytes": 6897752,
+    "has_audio": true,
+    "acodec": "aac",
+    "sample_rate": 44100,
+    "channels": 2,
+    "integrated_lufs": -14.3,
+    "true_peak_dbtp": -0.7,
+    "lra_lu": 1.7,
+    "cuts_content27": 8,
+    "cuts_adaptive": 6,
+    "events": 7,
+    "speech": true,
+    "language": "uz",
+    "words": 66,
+    "model": "yuldashev222/whisper-small-uz-v1-ct2",
+    "seconds": 66.2
+  },
+  "coverage": "Brief reuse of prior NAMUNA/PROMO study + re-opened codex/brief sheets; NOT a new exhaustive literal/native animation inventory.",
+  "observation": "Outdoor man, floral collage and handnote.",
+  "texts": [],
+  "animations": [],
+  "speech": {
+    "transcribed_words": 65,
+    "invalid_words": [
+      {
+        "index": 65,
+        "reason": "invalid/zero/overrun timing",
+        "word": "o‘tmoqda."
+      }
+    ],
+    "wpm_full_runtime": 152.154,
+    "union_transcribed_word_span_seconds": 23.82,
+    "word_span_wpm": 163.728,
+    "word_gaps": [
+      {
+        "start": 4.04,
+        "end": 4.5,
+        "duration": 0.46
+      },
+      {
+        "start": 7.78,
+        "end": 8.06,
+        "duration": 0.28
+      }
+    ],
+    "word_gap_statistics": {
+      "n": 2,
+      "mean": 0.37,
+      "median": 0.37,
+      "p10": 0.298,
+      "p90": 0.442,
+      "min": 0.28,
+      "max": 0.46
+    },
+    "method": "Whisper word spans only; word gaps are not verified acoustic silence; WPM not on-screen text."
+  },
+  "audio": {
+    "version": "mixed_audio_pts_1",
+    "sha1": "22e613dfc4f805b09fcf1095d66b4a7949a64dd9",
+    "source": "samples/sample14.mp4",
+    "method": "mixed mono RMS, 2048-sample Hann spectral-flux windows / 512-hop at 22050Hz; timestamp window centre; EBU stereo original verbose log",
+    "rms_in_transcribed_word_spans_dbfs": -14.942,
+    "rms_outside_transcribed_word_spans_dbfs": -26.31,
+    "speech_lufs": null,
+    "music_under_speech_db": null,
+    "ducking": null,
+    "onsets": [
+      {
+        "t": 0.09288,
+        "z": 5.0441
+      },
+      {
+        "t": 0.534059,
+        "z": 3.0618
+      },
+      {
+        "t": 0.812698,
+        "z": 2.4216
+      },
+      {
+        "t": 1.137778,
+        "z": 2.3204
+      },
+      {
+        "t": 1.253878,
+        "z": 3.3155
+      },
+      {
+        "t": 1.671837,
+        "z": 2.3715
+      },
+      {
+        "t": 2.043356,
+        "z": 3.0711
+      },
+      {
+        "t": 2.182676,
+        "z": 4.3769
+      },
+      {
+        "t": 3.018594,
+        "z": 2.801
+      },
+      {
+        "t": 3.529433,
+        "z": 2.4789
+      },
+      {
+        "t": 4.435011,
+        "z": 2.8176
+      },
+      {
+        "t": 4.620771,
+        "z": 5.4447
+      },
+      {
+        "t": 4.806531,
+        "z": 2.0926
+      },
+      {
+        "t": 4.94585,
+        "z": 3.7075
+      },
+      {
+        "t": 5.34059,
+        "z": 3.5519
+      },
+      {
+        "t": 5.549569,
+        "z": 2.4909
+      },
+      {
+        "t": 5.735329,
+        "z": 2.1827
+      },
+      {
+        "t": 5.897868,
+        "z": 2.5577
+      },
+      {
+        "t": 6.408707,
+        "z": 2.9961
+      },
+      {
+        "t": 6.826667,
+        "z": 2.8413
+      },
+      {
+        "t": 8.498503,
+        "z": 2.1492
+      },
+      {
+        "t": 8.800363,
+        "z": 2.1402
+      },
+      {
+        "t": 8.939683,
+        "z": 2.0708
+      },
+      {
+        "t": 10.37932,
+        "z": 2.6335
+      },
+      {
+        "t": 13.212154,
+        "z": 2.0666
+      },
+      {
+        "t": 13.583673,
+        "z": 3.1659
+      },
+      {
+        "t": 13.722993,
+        "z": 2.3182
+      },
+      {
+        "t": 13.978413,
+        "z": 3.2063
+      },
+      {
+        "t": 14.257052,
+        "z": 2.9913
+      },
+      {
+        "t": 14.396372,
+        "z": 2.1854
+      },
+      {
+        "t": 15.13941,
+        "z": 2.1151
+      },
+      {
+        "t": 15.27873,
+        "z": 2.6908
+      },
+      {
+        "t": 16.671927,
+        "z": 2.4973
+      },
+      {
+        "t": 19.667302,
+        "z": 2.4033
+      },
+      {
+        "t": 20.2478,
+        "z": 2.2443
+      },
+      {
+        "t": 21.385578,
+        "z": 2.7066
+      },
+      {
+        "t": 21.849977,
+        "z": 2.9919
+      },
+      {
+        "t": 22.337596,
+        "z": 3.9781
+      },
+      {
+        "t": 22.732336,
+        "z": 2.0975
+      },
+      {
+        "t": 22.987755,
+        "z": 2.0033
+      },
+      {
+        "t": 23.754014,
+        "z": 2.281
+      },
+      {
+        "t": 24.264853,
+        "z": 2.3404
+      }
+    ],
+    "cut_onset_alignment": [
+      {
+        "visual_candidate_t": 4.171,
+        "onset_t": 4.435011,
+        "delta_ms": 264.011
+      },
+      {
+        "visual_candidate_t": 5.706,
+        "onset_t": 5.735329,
+        "delta_ms": 29.329
+      },
+      {
+        "visual_candidate_t": 7.908,
+        "onset_t": 8.498503,
+        "delta_ms": 590.503
+      },
+      {
+        "visual_candidate_t": 10.21,
+        "onset_t": 10.37932,
+        "delta_ms": 169.32
+      },
+      {
+        "visual_candidate_t": 13.68,
+        "onset_t": 13.722993,
+        "delta_ms": 42.993
+      },
+      {
+        "visual_candidate_t": 19.019,
+        "onset_t": 19.667302,
+        "delta_ms": 648.302
+      },
+      {
+        "visual_candidate_t": 22.155,
+        "onset_t": 22.337596,
+        "delta_ms": 182.596
+      },
+      {
+        "visual_candidate_t": 23.156,
+        "onset_t": 22.987755,
+        "delta_ms": -168.245
+      }
+    ],
+    "short_term": [
+      {
+        "t": 0.0999773,
+        "momentary_lufs": -120.7,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -70.0,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 0.599977,
+        "momentary_lufs": -10.6,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -10.1,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 1.099977,
+        "momentary_lufs": -14.3,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -12.2,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 1.599977,
+        "momentary_lufs": -13.2,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -12.2,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 2.099977,
+        "momentary_lufs": -14.5,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -12.7,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 2.599977,
+        "momentary_lufs": -15.8,
+        "short_term_lufs": -120.7,
+        "integrated_so_far_lufs": -13.1,
+        "short_term_window_complete": false
+      },
+      {
+        "t": 3.099977,
+        "momentary_lufs": -15.7,
+        "short_term_lufs": -13.3,
+        "integrated_so_far_lufs": -13.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 3.599977,
+        "momentary_lufs": -15.4,
+        "short_term_lufs": -14.5,
+        "integrated_so_far_lufs": -13.8,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 4.099977,
+        "momentary_lufs": -22.7,
+        "short_term_lufs": -15.2,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 4.599977,
+        "momentary_lufs": -12.6,
+        "short_term_lufs": -15.5,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 5.099977,
+        "momentary_lufs": -14.7,
+        "short_term_lufs": -15.1,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 5.599977,
+        "momentary_lufs": -15.1,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.0,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 6.099977,
+        "momentary_lufs": -15.0,
+        "short_term_lufs": -14.7,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 6.599977,
+        "momentary_lufs": -12.7,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 7.099977,
+        "momentary_lufs": -14.9,
+        "short_term_lufs": -13.8,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 7.599977,
+        "momentary_lufs": -17.2,
+        "short_term_lufs": -14.3,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 8.099977,
+        "momentary_lufs": -24.3,
+        "short_term_lufs": -15.2,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 8.599977,
+        "momentary_lufs": -12.4,
+        "short_term_lufs": -15.0,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 9.099977,
+        "momentary_lufs": -14.5,
+        "short_term_lufs": -15.0,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 9.599977,
+        "momentary_lufs": -12.1,
+        "short_term_lufs": -14.7,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 10.099977,
+        "momentary_lufs": -22.0,
+        "short_term_lufs": -15.0,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 10.599977,
+        "momentary_lufs": -13.4,
+        "short_term_lufs": -14.7,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 11.099977,
+        "momentary_lufs": -13.1,
+        "short_term_lufs": -13.7,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 11.599977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -14.0,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 12.099977,
+        "momentary_lufs": -18.2,
+        "short_term_lufs": -14.5,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 12.599977,
+        "momentary_lufs": -16.6,
+        "short_term_lufs": -15.4,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 13.099977,
+        "momentary_lufs": -14.4,
+        "short_term_lufs": -14.9,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 13.599977,
+        "momentary_lufs": -18.9,
+        "short_term_lufs": -15.5,
+        "integrated_so_far_lufs": -14.4,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 14.099977,
+        "momentary_lufs": -13.7,
+        "short_term_lufs": -16.1,
+        "integrated_so_far_lufs": -14.5,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 14.599977,
+        "momentary_lufs": -11.3,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 15.099977,
+        "momentary_lufs": -19.8,
+        "short_term_lufs": -14.5,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 15.599977,
+        "momentary_lufs": -13.0,
+        "short_term_lufs": -13.8,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 16.099977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -13.6,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 16.599977,
+        "momentary_lufs": -15.4,
+        "short_term_lufs": -13.4,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 17.099977,
+        "momentary_lufs": -17.0,
+        "short_term_lufs": -13.5,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 17.599977,
+        "momentary_lufs": -13.0,
+        "short_term_lufs": -14.0,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 18.099977,
+        "momentary_lufs": -15.9,
+        "short_term_lufs": -14.1,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 18.599977,
+        "momentary_lufs": -15.1,
+        "short_term_lufs": -14.6,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 19.099977,
+        "momentary_lufs": -16.6,
+        "short_term_lufs": -14.9,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 19.599977,
+        "momentary_lufs": -13.9,
+        "short_term_lufs": -14.8,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 20.099977,
+        "momentary_lufs": -11.2,
+        "short_term_lufs": -13.9,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 20.599977,
+        "momentary_lufs": -13.4,
+        "short_term_lufs": -14.0,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 21.099977,
+        "momentary_lufs": -14.6,
+        "short_term_lufs": -13.9,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 21.599977,
+        "momentary_lufs": -15.8,
+        "short_term_lufs": -14.0,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 22.099977,
+        "momentary_lufs": -15.9,
+        "short_term_lufs": -14.1,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 22.599977,
+        "momentary_lufs": -10.9,
+        "short_term_lufs": -13.5,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 23.099977,
+        "momentary_lufs": -12.4,
+        "short_term_lufs": -13.7,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 23.599977,
+        "momentary_lufs": -15.3,
+        "short_term_lufs": -14.1,
+        "integrated_so_far_lufs": -14.1,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 24.099977,
+        "momentary_lufs": -17.0,
+        "short_term_lufs": -14.4,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 24.599977,
+        "momentary_lufs": -14.4,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -14.2,
+        "short_term_window_complete": true
+      },
+      {
+        "t": 25.099977,
+        "momentary_lufs": -15.4,
+        "short_term_lufs": -14.2,
+        "integrated_so_far_lufs": -14.3,
+        "short_term_window_complete": true
+      }
+    ],
+    "cuts_on_beat": {
+      "tested": false,
+      "ratio": null,
+      "reason": "mixed-track onsets may be syllables; not isolated music/beat"
+    },
+    "caveats": [
+      "Word spans may miss syllables; outside spans is NOT isolated music.",
+      "RMS is not LUFS.",
+      "Onset candidates are not confirmed SFX.",
+      "Early short-term meter values need full3s window."
+    ]
+  },
+  "evidence": "codex/brief_11.jpg + videos/s14/contact.jpg",
+  "confidence": "medium",
+  "alternative": "Some style may be brand habit rather than content-driven."
+}

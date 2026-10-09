@@ -1,0 +1,12 @@
+{
+  "sources": 41,
+  "brief_reuse": 20,
+  "new_deep_overview": 21,
+  "native_selected_events": 21,
+  "all_animations_frame_exact": false,
+  "all_microprint_readable": false,
+  "independent_peer_review": true,
+  "source_policy": "no samples assets in outputs",
+  "historical_files_unchanged": true,
+  "review_scope": "Claude independent analysis/merge/diff + two iteration-1 recreations; final iteration-3 + committed test review remains unavailable at usage limit"
+}
