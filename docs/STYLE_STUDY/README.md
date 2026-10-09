@@ -1,4 +1,4 @@
-# 42 namuna va 8 format bo‘yicha uslub tadqiqoti
+# 47 namuna va 8 format bo‘yicha uslub tadqiqoti
 
 Metadata/audio/kesh va batafsil hisobotlar: `temp/style_study/codex/analysis/s01..s41/`.
 21–41: barcha overview kadrlar qo‘lda ko‘rildi, asosiy matn/grafika inventari va tanlangan native PTS voqealar o‘lchandi.
@@ -20,3 +20,6 @@ avtomatik to‘g‘ri tanlash isboti emas. Noaniq obrazli/rakursli tanlovda agen
 So‘nggi solo tizim/sinov holati: `solo_finish.md`, raqamlar `solo_proof_summary.json`.
 Gallery `temp/style_study/finish/gallery.html`; original-vs-new filmstrips faqat tahlil uchun.
 Texnik pass professional tenglik emas; missing footage va haqiqiy ovoz didi alohida qayd etilgan.
+
+
+43–47 interyer/Nilem namunalari: [tahlil](nilem_43_47.md), [beshta distinct manba/hash va metadata](nilem_43_47_sources.json). 116 sampled reference kadr ko‘rildi; aniq font/easing va audio didi tasdiqlanmagan. Bu qo‘shimcha commercial misollar; barcha videolarga bir shablon majburiy emas. Birinchi 42 namunadagi tarixiy sinov raqamlari o‘zgarmadi.

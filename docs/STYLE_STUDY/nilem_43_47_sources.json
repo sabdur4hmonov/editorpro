@@ -1,0 +1,122 @@
+[
+  {
+    "file": "samples\\sample 43.mp4",
+    "sha256": "19d856ad8f9cd33977b72b084df64fab3041b3138157417b85218605703e1e98",
+    "meta": {
+      "path": "D:\\Coding projects\\editor pro\\samples\\sample 43.mp4",
+      "duration": 36.127,
+      "size_bytes": 2908514,
+      "has_video": true,
+      "has_audio": true,
+      "width": 720,
+      "height": 1280,
+      "fps": 24.0,
+      "rotation": 0,
+      "vcodec": "h264",
+      "acodec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "pix_fmt": "yuv420p",
+      "color_space": "bt709",
+      "color_transfer": "bt709",
+      "color_range": "tv",
+      "alpha": false
+    }
+  },
+  {
+    "file": "samples\\sample 44.mp4",
+    "sha256": "6dca6e253d11e3c4a1cb01fb7af8a4d1ff50d2b6100af38172036a26617d6ee5",
+    "meta": {
+      "path": "D:\\Coding projects\\editor pro\\samples\\sample 44.mp4",
+      "duration": 65.942,
+      "size_bytes": 5248069,
+      "has_video": true,
+      "has_audio": true,
+      "width": 720,
+      "height": 1280,
+      "fps": 23.976,
+      "rotation": 0,
+      "vcodec": "h264",
+      "acodec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "pix_fmt": "yuv420p",
+      "color_space": "bt709",
+      "color_transfer": "bt709",
+      "color_range": "tv",
+      "alpha": false
+    }
+  },
+  {
+    "file": "samples\\sample 45.mp4",
+    "sha256": "931fb4112fd504af4001d562f72c472ad12aaeec15e9e20a8545671eda8b5c52",
+    "meta": {
+      "path": "D:\\Coding projects\\editor pro\\samples\\sample 45.mp4",
+      "duration": 16.669,
+      "size_bytes": 1572456,
+      "has_video": true,
+      "has_audio": true,
+      "width": 720,
+      "height": 1280,
+      "fps": 23.976,
+      "rotation": 0,
+      "vcodec": "h264",
+      "acodec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "pix_fmt": "yuv420p",
+      "color_space": "bt709",
+      "color_transfer": "bt709",
+      "color_range": "tv",
+      "alpha": false
+    }
+  },
+  {
+    "file": "samples\\sample 46.mp4",
+    "sha256": "00d11822500248b85b68cb571030f589e859a2789e04703120fba7c1f59db004",
+    "meta": {
+      "path": "D:\\Coding projects\\editor pro\\samples\\sample 46.mp4",
+      "duration": 140.687,
+      "size_bytes": 7897870,
+      "has_video": true,
+      "has_audio": true,
+      "width": 720,
+      "height": 1280,
+      "fps": 25.0,
+      "rotation": 0,
+      "vcodec": "h264",
+      "acodec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "pix_fmt": "yuv420p",
+      "color_space": "bt709",
+      "color_transfer": "bt709",
+      "color_range": "tv",
+      "alpha": false
+    }
+  },
+  {
+    "file": "samples\\sample 47.mp4",
+    "sha256": "fb7fb8b7c7be6dfc28434002a5d14a85cddc514acf71a94cbbbebe91898e3d49",
+    "meta": {
+      "path": "D:\\Coding projects\\editor pro\\samples\\sample 47.mp4",
+      "duration": 39.03,
+      "size_bytes": 4688950,
+      "has_video": true,
+      "has_audio": true,
+      "width": 720,
+      "height": 1280,
+      "fps": 25.0,
+      "rotation": 0,
+      "vcodec": "h264",
+      "acodec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "pix_fmt": "yuv420p",
+      "color_space": "bt709",
+      "color_transfer": "bt709",
+      "color_range": "tv",
+      "alpha": false
+    }
+  }
+]
