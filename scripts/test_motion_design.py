@@ -289,4 +289,3 @@ if __name__=='__main__':
     result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(MotionProTests))
     print(f'MOTION DESIGN NATIJA: {result.testsRun-len(result.failures)-len(result.errors)}/{result.testsRun}')
     raise SystemExit(not result.wasSuccessful())
-

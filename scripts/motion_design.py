@@ -432,4 +432,3 @@ def caption_recipe(style,cfg,cue,opts):
     mc=C.deep_merge(cfg['_motion'],{'choice':recipe})
     return dict(cfg,animation=recipe['enter'],anim_main=recipe['enter'],anim_sub=recipe['sub'],
                 emphasis=recipe['emphasis'],exit=mc['pairs'][recipe['enter']],_motion=mc)
-

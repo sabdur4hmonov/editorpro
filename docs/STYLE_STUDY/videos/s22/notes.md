@@ -98,4 +98,3 @@ Text entrances at4.23/8.48/etc are separate from those camera cuts.
  Isolated music LUFS, SFX categories, ducking and musical beat alignment remain unknown.
 - Frame grid bounds/size mostly manual estimates±2percent; original font names unknown.
  All creative conclusions are observations from one video, not production rules.
-

@@ -102,4 +102,3 @@ must be checked before marking this pilot complete.
  Amazonarrow recorded, not copied. Claims/statistics are sample speech, not verified facts.
 - Mixed audio −14.2LUFS/−.5dBTP/LRA5.9;105short-term EBUrows in own audio file.
  Mixed in/out wordspan RMS −15.970/−23.541dBFS is NOT isolated music/speech margin.
-

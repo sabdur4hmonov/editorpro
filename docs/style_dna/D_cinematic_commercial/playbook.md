@@ -16,7 +16,7 @@ Per-source notes are the evidence; these are hypotheses (medium), not testimony 
 Keep the brand palette/fonts, approved words and timings. Apply the motion/caption patch only to the per-video style. Recreate material graphics with our own assets. Preserve full-frame returns between graphic scenes; doctor-only guidance remains in notes.
 
 ## Limits
-Unknown fonts, isolated sound levels, tiny microprint, unmeasured exits and exact easing remain unknown. Never turn candidate cut counts into rhythmic rules. 
+Unknown fonts, isolated sound levels, tiny microprint, unmeasured exits and exact easing remain unknown. Never turn candidate cut counts into rhythmic rules.
 
 ## Guruhga xos amaliy qaror
 Bitta uslub emas: promo narx/mahsulot, showcase minimal single-caption, vlog clean-caption. Kamera canvas faqat mazmun yordam berganda; aralash group medianini cut rate sifatida ishlatma.
