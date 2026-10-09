@@ -28,3 +28,8 @@ Creator/tutorial: kuchli qisqa urg‘u. Fan faqat nutqda haqiqiy ro‘yxat bo‘
 Detector median: 22.2 cuts/min, shot 1.92s, speech 155wpm (peer_global_stats.md). Bu majburiy cut rejasi emas. Motion label/sticker default 430ms: s24 diagonal panel13 intervals@30; per-pill pop .12s distinct. Boshqa turdagi harakatga aynan shu durationni majburlama.
 
 DNA patch caption/motion defaultlarni beradi; card/canvas geometriyasi va semantik vaqtlarni agent elements.json ga yozadi. Brand rang/shrift ustun. Bitta accent, asosiy caps so‘z kamdan-kam; har yangi element matndan dalillansin. Hook matni ≤.3s source candidate, hozir automatic preflight emas.
+
+## O‘lchangan nishonlar (quality gate)
+Kesish/min [12, 38] (median 22.2), grafika/min [8, 24], grafikalar orasida ≥ 0.6 s, sokin bo‘lak ≥ 2.0 s, subtitr [2.5, 14.0] % H, kirish animatsiyasi [3, 13] kadr (30 fps), birinchi yozuv ≤ 0.3 s, yuz yopilishi ≤ 5%, LUFS [-15.5, -13.5].
+Dalil: global_stats B2: 12.3-38.1 cuts/min (median 22.2); s24 diagonal panel 13 f; s26 pill 6-8 f@25; s28 word 3 f.
+Tekshiruv: `scripts/quality_gate.py` (docs/QUALITY_GATE.md).

@@ -1,0 +1,584 @@
+{
+ "video": "s42",
+ "agent": "claude",
+ "schema": 1,
+ "sha1": "86b55dc146fe7566fe7d10658de340cdde83ced5",
+ "type": "A_studio_explainer (format: talking head + game/bracket)",
+ "technical": {
+  "duration": 56.05,
+  "width": 720,
+  "height": 1280,
+  "fps": 30.0,
+  "integrated_lufs": -15.0,
+  "true_peak_dbtp": -0.6,
+  "lra_lu": 3.8,
+  "speech": true,
+  "language": "en",
+  "wpm": 109.5
+ },
+ "rhythm": {
+  "cut_source": "content27/adaptive: 0 cuts; one continuous shot verified on contact + face width",
+  "cuts": [],
+  "first_cut": null,
+  "cut_interval": {
+   "n": 1,
+   "mean": 56.05,
+   "median": 56.05,
+   "p10": 56.05,
+   "p90": 56.05,
+   "min": 56.05,
+   "max": 56.05
+  },
+  "hook": {
+   "start": 0,
+   "end": 1.84,
+   "evidence": "first question 'Bluey or Peppa Pig?' with both posters on screen from frame 1-3; the bracket is visible from frame 0"
+  },
+  "cta": {
+   "start": null,
+   "end": null,
+   "text": null,
+   "evidence": "no spoken or on-screen CTA; payoff = champion pill 54.87"
+  },
+  "outro": {
+   "start": 54.87,
+   "kind": "champion reveal (crimson pill), video ends 1.2 s later",
+   "evidence": "s42_C"
+  },
+  "segment_seconds_median": 3.45,
+  "check_to_next_pair_median_s": 0.87
+ },
+ "speech": {
+  "words": 95,
+  "wpm": 109.5,
+  "pauses": [
+   {
+    "start": 1.84,
+    "end": 2.26,
+    "dur": 0.42
+   },
+   {
+    "start": 3.72,
+    "end": 4.16,
+    "dur": 0.44
+   },
+   {
+    "start": 4.7,
+    "end": 5.12,
+    "dur": 0.42
+   },
+   {
+    "start": 6.52,
+    "end": 6.86,
+    "dur": 0.34
+   },
+   {
+    "start": 7.34,
+    "end": 7.82,
+    "dur": 0.48
+   },
+   {
+    "start": 10.92,
+    "end": 11.48,
+    "dur": 0.56
+   },
+   {
+    "start": 13.92,
+    "end": 14.46,
+    "dur": 0.54
+   },
+   {
+    "start": 15.26,
+    "end": 15.68,
+    "dur": 0.42
+   },
+   {
+    "start": 16.98,
+    "end": 17.42,
+    "dur": 0.44
+   },
+   {
+    "start": 17.58,
+    "end": 18.0,
+    "dur": 0.42
+   },
+   {
+    "start": 18.3,
+    "end": 18.62,
+    "dur": 0.32
+   },
+   {
+    "start": 20.92,
+    "end": 21.32,
+    "dur": 0.4
+   },
+   {
+    "start": 22.04,
+    "end": 22.76,
+    "dur": 0.72
+   },
+   {
+    "start": 24.74,
+    "end": 25.26,
+    "dur": 0.52
+   },
+   {
+    "start": 25.86,
+    "end": 26.16,
+    "dur": 0.3
+   },
+   {
+    "start": 31.86,
+    "end": 32.48,
+    "dur": 0.62
+   },
+   {
+    "start": 33.74,
+    "end": 34.1,
+    "dur": 0.36
+   },
+   {
+    "start": 36.1,
+    "end": 36.44,
+    "dur": 0.34
+   },
+   {
+    "start": 36.9,
+    "end": 37.38,
+    "dur": 0.48
+   },
+   {
+    "start": 39.26,
+    "end": 40.14,
+    "dur": 0.88
+   },
+   {
+    "start": 40.54,
+    "end": 41.47,
+    "dur": 0.93
+   },
+   {
+    "start": 42.37,
+    "end": 42.91,
+    "dur": 0.54
+   },
+   {
+    "start": 44.57,
+    "end": 45.13,
+    "dur": 0.56
+   },
+   {
+    "start": 45.49,
+    "end": 45.93,
+    "dur": 0.44
+   },
+   {
+    "start": 47.73,
+    "end": 48.39,
+    "dur": 0.66
+   },
+   {
+    "start": 48.91,
+    "end": 49.51,
+    "dur": 0.6
+   }
+  ],
+  "pause_stats": {
+   "n": 26,
+   "mean": 0.506,
+   "median": 0.44,
+   "p10": 0.34,
+   "p90": 0.66,
+   "min": 0.3,
+   "max": 0.93
+  },
+  "cut_position": {
+   "pause": 0,
+   "word_gap": 0,
+   "mid_word": 0
+  },
+  "note": "English, 95 words, 15 'A or B? -> A.' exchanges; question->answer gap median 0.44 s (Whisper). No subtitles at all: posters + bracket labels carry the text.",
+  "transcript_model": "small",
+  "transcript_mean_prob": 0.883
+ },
+ "texts": [
+  {
+   "id": "t1",
+   "text": "bracket labels: 16 show names (round 1), winners copied into next slots",
+   "role": "label",
+   "font_guess": "small bold sans in white rounded pills, black text",
+   "case": "mixed",
+   "weight": "bold",
+   "italic": false,
+   "color": "#111111",
+   "accent_color": "#EEBB91 (semifinal), #DEA3AB (final), #B62842 (champion)",
+   "stroke_or_shadow": null,
+   "size_pct_h": 1.75,
+   "measure": "measured px",
+   "box": [
+    6,
+    47,
+    94,
+    79
+   ],
+   "appear": 0.0,
+   "disappear": 56.05,
+   "anim_in": {
+    "type": "present from frame 0 (empty slots); winner label pops in 1 frame ~6 frames after the check",
+    "frames": 1
+   },
+   "anim_out": {
+    "type": "stays to the end",
+    "frames": 0
+   },
+   "per_word_sync": "cue",
+   "evidence": "s42_B row 3 (1.37-1.63): label 'Bluey' appears at 1.60; label height 22-23 px of 1280"
+  },
+  {
+   "id": "t2",
+   "text": "champion pill 'Bluey'",
+   "role": "title",
+   "font_guess": "bold sans in a big crimson rounded pill",
+   "case": "mixed",
+   "weight": "bold",
+   "italic": false,
+   "color": "#FFFFFF",
+   "accent_color": "#B62842",
+   "stroke_or_shadow": null,
+   "size_pct_h": 4.0,
+   "measure": "measured px colour",
+   "box": [
+    30,
+    60,
+    70,
+    66
+   ],
+   "appear": 54.87,
+   "disappear": 56.05,
+   "anim_in": {
+    "type": "pops in ~5 frames (54.87-55.00), small settle 55.40-55.57",
+    "frames": 5
+   },
+   "anim_out": {
+    "type": "end",
+    "frames": 0
+   },
+   "per_word_sync": "cue",
+   "evidence": "s42_C (55.5/55.83); m_activity brkC 54.87-55.00"
+  }
+ ],
+ "animations": [
+  {
+   "target": "graphic",
+   "type": "poster pair entrance: opacity 0->1 with a short rise, right poster 2 frames after the left",
+   "start": 0.033,
+   "frames": 7,
+   "easing_guess": "ease_out",
+   "overshoot": null,
+   "values": {
+    "stagger_frames": 2,
+    "rise_pct_h": "~1.5"
+   },
+   "method": "visual (native frames)",
+   "evidence": "s42_A1 rows 1-2 (0.033-0.267)"
+  },
+  {
+   "target": "transition",
+   "type": "pair change: old pair dissolves while the new pair fades/rises in (overlap), total 16-18 frames",
+   "start": 2.2,
+   "frames": 17,
+   "easing_guess": "ease_in_out",
+   "overshoot": null,
+   "values": {
+    "pair_changes": 14,
+    "frames_median": 17
+   },
+   "method": "visual (native frames)",
+   "evidence": "m_activity posterL/R: 14 pair changes of 16-19 frames (2.20-2.77, 5.17-5.77, 7.73-8.37 ...); s42_B row 1"
+  },
+  {
+   "target": "graphic",
+   "type": "selection check mark under the chosen poster: white hand-drawn tick, draws in ~4 frames",
+   "start": 1.47,
+   "frames": 4,
+   "easing_guess": null,
+   "overshoot": null,
+   "values": {
+    "lag_after_choice_word_frames": [
+     2,
+     2,
+     1,
+     1,
+     2,
+     0,
+     10,
+     4,
+     1,
+     0,
+     6,
+     11,
+     5,
+     6,
+     0
+    ],
+    "median_lag_frames": 2
+   },
+   "method": "visual (native frames)",
+   "evidence": "s42_A1 rows 3-4; m_activity checkL 1.47-1.57"
+  },
+  {
+   "target": "graphic",
+   "type": "winner label appears in the next bracket slot (1-frame pop) ~6 frames after the check",
+   "start": 1.6,
+   "frames": 1,
+   "easing_guess": null,
+   "overshoot": null,
+   "values": {},
+   "method": "visual (native frames)",
+   "evidence": "s42_B row 3 (1.57 empty -> 1.60 label)"
+  },
+  {
+   "target": "graphic",
+   "type": "round colour coding: round 2 white, semifinal labels peach #EEBB91, final pink #DEA3AB, champion crimson #B62842",
+   "start": 29.2,
+   "frames": 1,
+   "easing_guess": null,
+   "overshoot": null,
+   "values": {},
+   "method": "visual (native frames)",
+   "evidence": "pixel medians at 52.0 / 55.8; s42_B rows 4-5"
+  },
+  {
+   "target": "camera",
+   "type": "NO zoom: locked-off static shot. ECC reported 1.00->1.40 'push' but YuNet face width stays 92-100 px (0.5 s: 97.3, 30 s: 99.5, 54.5 s: 92.2) -> ECC was fooled by poster overlays",
+   "start": 0.0,
+   "frames": 0,
+   "easing_guess": null,
+   "overshoot": null,
+   "values": {},
+   "method": "measured (ECC rejected, face width)",
+   "evidence": "m_zoom_0.50-55.00.json vs YuNet"
+  }
+ ],
+ "colour": {
+  "scenes": [
+   {
+    "start": 0,
+    "end": 56.05,
+    "palette": [
+     "warm beige room",
+     "green plants",
+     "navy shirt"
+    ],
+    "background": "single static medium-wide shot, seated speaker centred"
+   }
+  ],
+  "text_colours": [
+   "#111111 on white pills",
+   "#EEBB91",
+   "#DEA3AB",
+   "#B62842"
+  ],
+  "treatment": "neutral; graphics are the only colour accents; colours encode tournament round"
+ },
+ "graphics": [
+  {
+   "id": "g1",
+   "type": "image",
+   "start": 0.03,
+   "end": 56.05,
+   "box": [
+    15,
+    10,
+    39,
+    30
+   ],
+   "content": "left candidate poster (2:3, ~0.23 W)",
+   "evidence": "contact 1.75 s; s42_A1",
+   "anim_in": null,
+   "anim_out": null
+  },
+  {
+   "id": "g2",
+   "type": "image",
+   "start": 0.1,
+   "end": 56.05,
+   "box": [
+    64,
+    10,
+    88,
+    30
+   ],
+   "content": "right candidate poster",
+   "evidence": "contact; s42_A1",
+   "anim_in": null,
+   "anim_out": null
+  },
+  {
+   "id": "g3",
+   "type": "other",
+   "start": 0.0,
+   "end": 56.05,
+   "box": [
+    6,
+    47,
+    94,
+    79
+   ],
+   "content": "16-slot tournament bracket over the lower body; never over the face (face box ~43-57 % x, 31-41 % y)",
+   "evidence": "contact; YuNet face 309-407 px x of 720, 398-528 px y of 1280",
+   "anim_in": null,
+   "anim_out": null
+  },
+  {
+   "id": "g4",
+   "type": "other",
+   "start": 1.47,
+   "end": 56.05,
+   "box": [
+    15,
+    28,
+    39,
+    37
+   ],
+   "content": "hand-drawn white check under the chosen poster",
+   "evidence": "s42_A1",
+   "anim_in": null,
+   "anim_out": null
+  }
+ ],
+ "audio": {
+  "music": "unknown (agent cannot listen)",
+  "speech_lufs_est": null,
+  "music_under_speech_db": null,
+  "ducking": null,
+  "onsets_near_visual_events": [],
+  "cut_onset_alignment": {
+   "ratio": "0/0",
+   "chance": 0.231,
+   "method": "spectral-flux onsets (z>2, 80 ms min gap); RMS dB per 23 ms; speech = transcript word spans; mixed-audio onsets incl. speech"
+  },
+  "cuts_on_beat": {
+   "tested": false,
+   "ratio": null,
+   "method": "not tested (no isolated music)"
+  },
+  "level_db": {
+   "speech_median": -17.7,
+   "non_speech_median": -34.6,
+   "non_speech_p90": -18.6
+  },
+  "sfx_candidates": [],
+  "method": "measured only; no claim about how it sounds"
+ },
+ "open_questions": [
+  "music bed under speech: non-speech median -34.6 dB vs speech -17.7 dB (mixed track); agent cannot listen"
+ ],
+ "matches": [
+  {
+   "question_onset": 0.0,
+   "pair_change_start": 0.03,
+   "choice_word_onset": 1.4,
+   "check_visible": 1.47,
+   "side": "L"
+  },
+  {
+   "question_onset": 2.26,
+   "pair_change_start": 2.2,
+   "choice_word_onset": 4.16,
+   "check_visible": 4.23,
+   "side": "R"
+  },
+  {
+   "question_onset": 5.12,
+   "pair_change_start": 5.17,
+   "choice_word_onset": 6.86,
+   "check_visible": 6.9,
+   "side": "L"
+  },
+  {
+   "question_onset": 7.82,
+   "pair_change_start": 7.73,
+   "choice_word_onset": 10.26,
+   "check_visible": 10.3,
+   "side": "L"
+  },
+  {
+   "question_onset": 11.48,
+   "pair_change_start": 11.37,
+   "choice_word_onset": 14.46,
+   "check_visible": 14.53,
+   "side": "R"
+  },
+  {
+   "question_onset": 15.68,
+   "pair_change_start": 15.6,
+   "choice_word_onset": 18.0,
+   "check_visible": 18.0,
+   "side": "L"
+  },
+  {
+   "question_onset": 18.62,
+   "pair_change_start": 18.43,
+   "choice_word_onset": 21.32,
+   "check_visible": 21.67,
+   "side": "L"
+  },
+  {
+   "question_onset": 22.76,
+   "pair_change_start": 22.6,
+   "choice_word_onset": 25.26,
+   "check_visible": 25.4,
+   "side": "R"
+  },
+  {
+   "question_onset": 26.16,
+   "pair_change_start": 26.17,
+   "choice_word_onset": 28.26,
+   "check_visible": 28.3,
+   "side": "L"
+  },
+  {
+   "question_onset": 29.02,
+   "pair_change_start": 29.2,
+   "choice_word_onset": 33.36,
+   "check_visible": 33.37,
+   "side": "R"
+  },
+  {
+   "question_onset": 34.1,
+   "pair_change_start": 34.03,
+   "choice_word_onset": 36.44,
+   "check_visible": 36.63,
+   "side": "R"
+  },
+  {
+   "question_onset": 37.38,
+   "pair_change_start": 37.37,
+   "choice_word_onset": 41.47,
+   "check_visible": 41.83,
+   "side": "R"
+  },
+  {
+   "question_onset": 42.91,
+   "pair_change_start": 42.97,
+   "choice_word_onset": 45.13,
+   "check_visible": 45.3,
+   "side": "L"
+  },
+  {
+   "question_onset": 45.93,
+   "pair_change_start": 45.97,
+   "choice_word_onset": 48.39,
+   "check_visible": 48.6,
+   "side": "R"
+  },
+  {
+   "question_onset": 49.51,
+   "pair_change_start": 49.63,
+   "choice_word_onset": 54.8,
+   "check_visible": 54.8,
+   "side": "L"
+  }
+ ]
+}

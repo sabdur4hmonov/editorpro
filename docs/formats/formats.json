@@ -1,0 +1,1188 @@
+{
+ "schema": 1,
+ "_izoh": "8 reference formats (samples/<Format>.mp4) + matching samples 1-42. Evidence: temp/style_study/videos/f_*/ (overview_*.jpg, m_grid_*.jpg, transcript.json), temp/style_study/format_features.json (measured with scripts/formats.py). >=3 videos = pattern, fewer = observation. detect.rules are scored by scripts/formats.py; agent extras (costume, props, question_given, mic_or_headphones, interviewer_voice) come from looking at frames. Guide: docs/FORMATS.md.",
+ "formats": {
+  "talking_head": {
+   "name": "Talking head",
+   "summary": "One speaker to camera in one (studio) setup; graphics explain the points around the body, not on the face.",
+   "evidence_class": "pattern",
+   "labelled_example": {
+    "file": "samples/Talking head.mp4",
+    "evidence": [
+     "0.6-4.8 glowing serif digits 1/2/3 orbit the seated speaker, '1' scales up to ~45% H (overview_01)",
+     "5.6-9.4 phone screen recordings fly in as tilted 2.5D cards and fill the frame (overview_01)",
+     "12.8 keyword pair 'reelsda / probnyy' on glass bars, glow, ~5% H at 50-65% y (m_grid_12.8)",
+     "measured: face 0.80, gaze_off 0.0, 3 setups (= inserted phone screens), 3.2 cuts/min, no full subtitles"
+    ]
+   },
+   "matching_samples": [
+    {
+     "video": "s02",
+     "confidence": "high",
+     "evidence": "seated, numbered list with thumbnails, 0 cuts (mosaic)"
+    },
+    {
+     "video": "s05",
+     "confidence": "high",
+     "evidence": "seated on bench, list + big number 18, 8.8 cuts/min"
+    },
+    {
+     "video": "s06",
+     "confidence": "high",
+     "evidence": "standing, glass right/wrong cards, 0 cuts in 95 s"
+    },
+    {
+     "video": "s09",
+     "confidence": "medium",
+     "evidence": "seated + drawn graphic scenes"
+    },
+    {
+     "video": "s16",
+     "confidence": "medium",
+     "evidence": "seated, phone UI cards"
+    },
+    {
+     "video": "s33",
+     "confidence": "high",
+     "evidence": "seated at desk, grid statistics, prop entrance"
+    },
+    {
+     "video": "s34",
+     "confidence": "medium",
+     "evidence": "standing on campus, one setup + paper cards"
+    },
+    {
+     "video": "s40",
+     "confidence": "medium",
+     "evidence": "standing, one location, 8.5 cuts/min"
+    },
+    {
+     "video": "s42",
+     "confidence": "high",
+     "evidence": "seated, locked camera, persistent bracket graphic, 0 cuts"
+    }
+   ],
+   "recognise": "one person, eyes to the lens (gaze_off <= 0.2), face in most frames, 1-3 backgrounds, little voice-over.",
+   "detect": {
+    "rules": [
+     {
+      "feature": "face_ratio",
+      "when": [
+       0.7,
+       null
+      ],
+      "points": 2
+     },
+     {
+      "feature": "gaze_off",
+      "when": [
+       null,
+       0.2
+      ],
+      "points": 2
+     },
+     {
+      "feature": "setups",
+      "when": [
+       null,
+       3
+      ],
+      "points": 2
+     },
+     {
+      "feature": "two_face_ratio",
+      "when": [
+       null,
+       0.25
+      ],
+      "points": 1
+     },
+     {
+      "feature": "vo_ratio",
+      "when": [
+       null,
+       0.25
+      ],
+      "points": 1
+     },
+     {
+      "feature": "face_height_median",
+      "when": [
+       0.06,
+       0.34
+      ],
+      "points": 1
+     },
+     {
+      "feature": "cuts_per_min",
+      "when": [
+       null,
+       12
+      ],
+      "points": 1
+     },
+     {
+      "feature": "gaze_off",
+      "when": [
+       0.4,
+       null
+      ],
+      "points": -4
+     },
+     {
+      "feature": "face_height_median",
+      "when": [
+       0.4,
+       null
+      ],
+      "points": -3
+     },
+     {
+      "feature": "top_card",
+      "when": true,
+      "points": -4
+     },
+     {
+      "feature": "setups",
+      "when": [
+       5,
+       null
+      ],
+      "points": -2
+     },
+     {
+      "feature": "vo_ratio",
+      "when": [
+       0.4,
+       null
+      ],
+      "points": -2
+     },
+     {
+      "feature": "split_line",
+      "when": [
+       0.9,
+       null
+      ],
+      "points": -6
+     }
+    ]
+   },
+   "structure": "hook claim or number (<=1.5 s) -> numbered points, each with one visual -> short summary -> CTA (spoken or follow card).",
+   "edit": {
+    "cut_pattern": "cuts only to remove silences/repeats; visual change comes from graphics and zoom punch every 2-4 s; calm 3-5 s stretches allowed.",
+    "captions": {
+     "mode": "full subtitles or keywords-only",
+     "preset": "clean",
+     "size_pct_h": [
+      3.0,
+      5.5
+     ],
+     "position_y": [
+      0.55,
+      0.72
+     ],
+     "note": "example uses keyword-only glass bars; samples A use lowercase lockups"
+    },
+    "graphic_types": [
+     "count",
+     "list",
+     "object",
+     "comparison",
+     "stat",
+     "screen"
+    ],
+    "graphics_per_min": [
+     6,
+     16
+    ],
+    "broll": "rare; screen recordings / product shots as 2.5D cards rather than full cutaways",
+    "sound": "speech first; light SFX on graphic entrances (stronger + subtle rendered)",
+    "mistakes": [
+     "graphics over the face",
+     "a label repeating the subtitle",
+     "constant zoom pulsing",
+     "no calm stretch for a long explanation"
+    ]
+   },
+   "quality_targets": {
+    "cuts_per_min": [
+     0,
+     18
+    ],
+    "graphics_per_min": [
+     4,
+     16
+    ],
+    "min_gap_s": 0.8,
+    "calm_stretch_s": 3.0,
+    "caption_size_pct_h": [
+     2.5,
+     6.0
+    ],
+    "hook_text_s": 0.3,
+    "max_face_cover": 0.03
+   },
+   "graphics": [
+    "count",
+    "list",
+    "object",
+    "comparison",
+    "stat",
+    "process"
+   ],
+   "style_groups": [
+    "A_studio_explainer",
+    "B2_kinetic_creator",
+    "B1_editorial_paper"
+   ],
+   "group_reason": "seated/static speaker with explainer graphics (A members s02 s05 s06 s09 s16 s25 s33 s42)"
+  },
+  "interview": {
+   "name": "Interview",
+   "summary": "Guest answers an off-camera host (podcast or street mic); the person looks past the lens; small sentence subtitles.",
+   "evidence_class": "pattern",
+   "labelled_example": {
+    "file": "samples/Interview.mp4",
+    "evidence": [
+     "one locked shot, headphones + mic, 0 cuts in 54.9 s (contact)",
+     "one-line sentence subtitles, white ~2.4% H at 48-50% y, no word animation (m_grid_8.6)",
+     "brand watermark at ~75% y",
+     "measured: gaze_off 0.97, face 1.0, 2 setups"
+    ]
+   },
+   "matching_samples": [
+    {
+     "video": "s13",
+     "confidence": "high",
+     "evidence": "seated guest looking off-camera, B&W intro, office b-roll; gaze_off 0.43"
+    },
+    {
+     "video": "s30",
+     "confidence": "high",
+     "evidence": "street mic interview, question title at top; gaze_off 0.54"
+    },
+    {
+     "video": "s31",
+     "confidence": "medium",
+     "evidence": "two people standing (two_face 0.89) but both face the lens (gaze_off 0.13): duo-to-camera interview; detector ranks talking_head first"
+    },
+    {
+     "video": "s32",
+     "confidence": "high",
+     "evidence": "graduate testimonials seated; two_face 0.43, gaze_off 0.49"
+    },
+    {
+     "video": "s36",
+     "confidence": "high",
+     "evidence": "seated guest in profile; gaze_off 1.0"
+    },
+    {
+     "video": "s38",
+     "confidence": "high",
+     "evidence": "two women seated conversation; two_face 0.41, gaze_off 0.65"
+    },
+    {
+     "video": "s15",
+     "confidence": "low",
+     "evidence": "dark studio, speaker looks off-camera (gaze_off 0.62) but kinetic edit (B2)"
+    }
+   ],
+   "recognise": "person turned away from the lens (gaze_off >= 0.4) and/or two people in frame; mic/headphones; long answers.",
+   "detect": {
+    "rules": [
+     {
+      "feature": "gaze_off",
+      "when": [
+       0.4,
+       null
+      ],
+      "points": 4
+     },
+     {
+      "feature": "gaze_off",
+      "when": [
+       0.8,
+       null
+      ],
+      "points": 2
+     },
+     {
+      "feature": "two_face_ratio",
+      "when": [
+       0.3,
+       null
+      ],
+      "points": 3
+     },
+     {
+      "feature": "vo_ratio",
+      "when": [
+       null,
+       0.3
+      ],
+      "points": 1
+     },
+     {
+      "feature": "face_ratio",
+      "when": [
+       0.65,
+       null
+      ],
+      "points": 1
+     },
+     {
+      "feature": "split_line",
+      "when": [
+       0.9,
+       null
+      ],
+      "points": -4
+     },
+     {
+      "feature": "mic_or_headphones",
+      "when": true,
+      "points": 2
+     },
+     {
+      "feature": "interviewer_voice",
+      "when": true,
+      "points": 3
+     }
+    ]
+   },
+   "structure": "strongest answer first (cold open) -> question as title -> answer -> second answer / proof -> name + CTA.",
+   "edit": {
+    "cut_pattern": "keep long calm answers (C median shot 8 s); cut repeats and the host's filler; b-roll only where the guest names something concrete.",
+    "captions": {
+     "mode": "sentence subtitles, one line",
+     "preset": "clean",
+     "size_pct_h": [
+      2.2,
+      3.5
+     ],
+     "position_y": [
+      0.48,
+      0.7
+     ],
+     "note": "no word-by-word animation in the example"
+    },
+    "graphic_types": [
+     "name_tag",
+     "question_title",
+     "stat",
+     "object"
+    ],
+    "graphics_per_min": [
+     1,
+     6
+    ],
+    "broll": "sparse, concrete nouns only; never during an emotional answer",
+    "sound": "room tone kept; music very low or none; SFX minimal (sfx off or subtle)",
+    "mistakes": [
+     "kinetic word animation over a calm answer",
+     "graphics every 3 s",
+     "cutting the guest's pauses that carry emotion",
+     "covering the mic/face with a name tag"
+    ]
+   },
+   "quality_targets": {
+    "cuts_per_min": [
+     0,
+     20
+    ],
+    "graphics_per_min": [
+     0,
+     6
+    ],
+    "min_gap_s": 2.0,
+    "calm_stretch_s": 6.0,
+    "caption_size_pct_h": [
+     2.0,
+     4.0
+    ],
+    "hook_text_s": 1.5,
+    "max_face_cover": 0.02
+   },
+   "graphics": [
+    "name_tag",
+    "question_title",
+    "stat",
+    "object"
+   ],
+   "style_groups": [
+    "C_interview_testimonial",
+    "A_studio_explainer"
+   ],
+   "group_reason": "small captions, long calm answers, name tags (C members s04 s08 s10 s13 s30 s31 s32 s38)"
+  },
+  "kadr_rakursli": {
+   "name": "Kadr rakursli",
+   "summary": "Cinematic multi-angle: the same person in many shots/places (wide, back, aerial, close), often voice-over; giant condensed word + scattered small words.",
+   "evidence_class": "pattern",
+   "labelled_example": {
+    "file": "samples/Kadr rakursli.mp4",
+    "evidence": [
+     "0.2-2.4 giant red condensed 'DARAXT' ~22% H (10-34% y) behind a wind turbine, small words spread across the width at 40% y appear one by one (m_grid_1.6)",
+     "3.8 'SAHRO' fades in on a new desert shot",
+     "4.6-6.0 motion-blurred running shot, words 'ko'kat u joyda / 2yil tursa' spread with big gaps ~4% H (m_grid_5.8)",
+     "6.2-8.0 same face ages (grey beard) in a static close-up",
+     "measured: 10 setups, 19.4 cuts/min (median shot 2.1 s), voice-over 58%, face height median 0.07 (wide shots)"
+    ]
+   },
+   "matching_samples": [
+    {
+     "video": "s14",
+     "confidence": "high",
+     "evidence": "same speaker in 7 park setups, 18.7 cuts/min"
+    },
+    {
+     "video": "s22",
+     "confidence": "high",
+     "evidence": "13 setups, walking shots, 22.7 cuts/min"
+    },
+    {
+     "video": "s12",
+     "confidence": "medium",
+     "evidence": "13 setups, 22.2 cuts/min, film b-roll"
+    },
+    {
+     "video": "s23",
+     "confidence": "medium",
+     "evidence": "11 setups, 27 cuts/min"
+    },
+    {
+     "video": "s27",
+     "confidence": "high",
+     "evidence": "13 setups, voice-over 62%, wide shots (face 0.05), 38 cuts/min"
+    },
+    {
+     "video": "s26",
+     "confidence": "medium",
+     "evidence": "12 setups, on-camera speech (vo 0.0)"
+    },
+    {
+     "video": "s28",
+     "confidence": "medium",
+     "evidence": "11 setups, 30 cuts/min (also syudjetli/obrazli traits)"
+    }
+   ],
+   "recognise": "many different backgrounds (setups >= 5), frequent cuts, wide/back shots with small faces, often voice-over.",
+   "detect": {
+    "rules": [
+     {
+      "feature": "setups",
+      "when": [
+       5,
+       null
+      ],
+      "points": 2
+     },
+     {
+      "feature": "cuts_per_min",
+      "when": [
+       10,
+       null
+      ],
+      "points": 2
+     },
+     {
+      "feature": "face_height_median",
+      "when": [
+       null,
+       0.12
+      ],
+      "points": 2
+     },
+     {
+      "feature": "vo_ratio",
+      "when": [
+       0.5,
+       null
+      ],
+      "points": 2
+     },
+     {
+      "feature": "dark",
+      "when": true,
+      "points": -2
+     },
+     {
+      "feature": "face_ratio",
+      "when": [
+       null,
+       0.5
+      ],
+      "points": 1
+     }
+    ]
+   },
+   "structure": "image-led: one strong word per shot; metaphor carried by locations; the speaker appears in a few anchor close-ups.",
+   "edit": {
+    "cut_pattern": "cut on phrases, shot median ~2 s (1.2-3.2), each sentence a new angle; hold the emotional close-up longer.",
+    "captions": {
+     "mode": "keyword titles + scattered small words, no full subtitle block",
+     "preset": "caps",
+     "size_pct_h": [
+      2.0,
+      22.0
+     ],
+     "position_y": [
+      0.1,
+      0.55
+     ],
+     "note": "giant word can sit behind the person/object (behind_person)"
+    },
+    "graphic_types": [
+     "keyword_title",
+     "object"
+    ],
+    "graphics_per_min": [
+     6,
+     20
+    ],
+    "broll": "the footage IS the b-roll: many angles of the same subject; stock only for metaphors",
+    "sound": "music bed under voice-over is typical (agent cannot judge); whoosh on hard location changes",
+    "mistakes": [
+     "full subtitles covering the cinematic image",
+     "graphics cards that fight the scenery",
+     "same angle twice in a row"
+    ]
+   },
+   "quality_targets": {
+    "cuts_per_min": [
+     10,
+     40
+    ],
+    "graphics_per_min": [
+     4,
+     20
+    ],
+    "min_gap_s": 0.6,
+    "calm_stretch_s": 2.0,
+    "caption_size_pct_h": [
+     2.0,
+     24.0
+    ],
+    "hook_text_s": 0.3,
+    "max_face_cover": 0.05
+   },
+   "graphics": [
+    "keyword_title",
+    "object",
+    "stat"
+   ],
+   "style_groups": [
+    "B2_kinetic_creator",
+    "D_cinematic_commercial",
+    "B1_editorial_paper"
+   ],
+   "group_reason": "kinetic creator edits with many walking/location shots (B2 s12 s14 s22 s23 s26 s27 s28)"
+  },
+  "syudjetli": {
+   "name": "Syudjetli",
+   "summary": "Story / plot: staged scenes act out what is said (car, notebook, sticky notes, screenshots), the speaker is a character in his own story.",
+   "evidence_class": "pattern",
+   "labelled_example": {
+    "file": "samples/Syudjetli.mp4",
+    "evidence": [
+     "0.2-2.6 'MEN ISHDAN' red condensed caps (~10% H) + white 'bo'shadim' stacked at the top while he walks to a car (overview_01)",
+     "2.8-5.0 'VA onlayn maktab' lockup builds word by word (m_grid_4.6)",
+     "6.8 '7K$' red number + 'pul topish kerak' on a brick-wall close-up",
+     "10.0 '\"MAC\" BILAN' over a Dutch-angle laptop shot (m_grid_10.4)",
+     "15.0-16.0 profile-activity cards stack up one per word; 16.4 grid of view-count screenshots",
+     "17.6-19.0 notebook page turns: 'KONTENT MARKETING' -> 'AUDITORIYA YIG'ISH + SOTUV' written by hand",
+     "measured: 16 setups, 24.8 cuts/min, voice-over 38%"
+    ]
+   },
+   "matching_samples": [
+    {
+     "video": "s29",
+     "confidence": "high",
+     "evidence": "staged visa story with an actress, B&W for setbacks, 20.9 cuts/min"
+    },
+    {
+     "video": "s19",
+     "confidence": "high",
+     "evidence": "brand story ad with actors and chat UI, 13.9 cuts/min"
+    },
+    {
+     "video": "s11",
+     "confidence": "medium",
+     "evidence": "staged family/subway scenes + speaker, 15.2 cuts/min"
+    },
+    {
+     "video": "s28",
+     "confidence": "medium",
+     "evidence": "skit: same actor as human (warm) and AI (blue)"
+    }
+   ],
+   "recognise": "many setups (>= 8), staged inserts with props or other actors, speaker sometimes absent while talking (voice-over 20-50%).",
+   "detect": {
+    "rules": [
+     {
+      "feature": "setups",
+      "when": [
+       8,
+       null
+      ],
+      "points": 2
+     },
+     {
+      "feature": "cuts_per_min",
+      "when": [
+       15,
+       null
+      ],
+      "points": 1
+     },
+     {
+      "feature": "face_ratio",
+      "when": [
+       0.4,
+       0.85
+      ],
+      "points": 1
+     },
+     {
+      "feature": "vo_ratio",
+      "when": [
+       0.2,
+       0.55
+      ],
+      "points": 2
+     },
+     {
+      "feature": "staged_scenes",
+      "when": true,
+      "points": 4
+     },
+     {
+      "feature": "props",
+      "when": true,
+      "points": 2
+     }
+    ]
+   },
+   "structure": "setup (status quo) -> turning point -> problem with a number -> plan -> proof (screens, numbers) -> offer -> CTA.",
+   "edit": {
+    "cut_pattern": "one shot per sentence (median 2.3 s); match the action to the words (car on 'ishdan', laptop on 'MAC').",
+    "captions": {
+     "mode": "lockup titles carry the speech: red hero word + white small words, word by word; no extra subtitle block",
+     "preset": "caps",
+     "size_pct_h": [
+      4.0,
+      11.0
+     ],
+     "position_y": [
+      0.08,
+      0.32
+     ]
+    },
+    "graphic_types": [
+     "keyword_title",
+     "object",
+     "stat",
+     "stack",
+     "screen"
+    ],
+    "graphics_per_min": [
+     8,
+     24
+    ],
+    "broll": "staged own footage first; screenshots/proof as stacked cards",
+    "sound": "music + SFX on scene changes are typical (agent cannot judge)",
+    "mistakes": [
+     "subtitles AND lockup titles at the same time (double text)",
+     "props that do not match the word",
+     "slow first scene"
+    ]
+   },
+   "quality_targets": {
+    "cuts_per_min": [
+     12,
+     40
+    ],
+    "graphics_per_min": [
+     6,
+     24
+    ],
+    "min_gap_s": 0.6,
+    "calm_stretch_s": 2.0,
+    "caption_size_pct_h": [
+     3.0,
+     12.0
+    ],
+    "hook_text_s": 0.3,
+    "max_face_cover": 0.05
+   },
+   "graphics": [
+    "keyword_title",
+    "object",
+    "stat",
+    "list",
+    "comparison"
+   ],
+   "style_groups": [
+    "B2_kinetic_creator",
+    "B1_editorial_paper",
+    "D_cinematic_commercial"
+   ],
+   "group_reason": "story edits with staged scenes and kinetic lockups (s29 B1, s19/s11 D, s28 B2)"
+  },
+  "obrazli": {
+   "name": "Obrazli",
+   "summary": "Character / persona: the speaker plays a role (costume, theatre light), a metaphor carries the message; slow, dark, minimal text.",
+   "evidence_class": "observation",
+   "labelled_example": {
+    "file": "samples/Obrazli.mp4",
+    "evidence": [
+     "magician / joker character on a dark stage, spotlights, black frames between beats (contact 2.96-14.8)",
+     "28.8-31.8 card trick close-up; tiny light captions 'Nozik / harakatlar / natijasi' stepped, ~2.5% H at 70-78% y (m_grid_31.0)",
+     "32.0-35.0 single word per beat 'BU', 'HARAKATLAR', 'SHUNCHALIK' ~1.5% H at the top",
+     "62.1 'ko'rishga qiluvchi' top-left in negative space",
+     "measured: dark, voice-over 58%, 6 setups, 15.9 cuts/min but long holds (max 17.8 s)"
+    ]
+   },
+   "matching_samples": [
+    {
+     "video": "s28",
+     "confidence": "medium",
+     "evidence": "the same actor plays an AI double, colour-coded blue vs warm"
+    },
+    {
+     "video": "s24",
+     "confidence": "low",
+     "evidence": "dark theatrical look, small captions (dark=true)"
+    }
+   ],
+   "recognise": "costume / character or theatrical lighting (agent), dark frames, long voice-over passages.",
+   "detect": {
+    "rules": [
+     {
+      "feature": "dark",
+      "when": true,
+      "points": 2
+     },
+     {
+      "feature": "vo_ratio",
+      "when": [
+       0.4,
+       null
+      ],
+      "points": 2
+     },
+     {
+      "feature": "face_ratio",
+      "when": [
+       null,
+       0.6
+      ],
+      "points": 1
+     },
+     {
+      "feature": "costume",
+      "when": true,
+      "points": 5
+     },
+     {
+      "feature": "theatre_light",
+      "when": true,
+      "points": 2
+     }
+    ]
+   },
+   "structure": "mysterious opening -> reveal of the metaphor -> transfer to the real topic -> offer -> calm ending.",
+   "edit": {
+    "cut_pattern": "slow; long holds and black beats; cut on gestures, not on words.",
+    "captions": {
+     "mode": "tiny single words / short phrases in negative space, stepped",
+     "preset": "single",
+     "size_pct_h": [
+      1.2,
+      3.0
+     ],
+     "position_y": [
+      0.1,
+      0.8
+     ]
+    },
+    "graphic_types": [
+     "keyword_small"
+    ],
+    "graphics_per_min": [
+     0,
+     4
+    ],
+    "broll": "none; the performance is the picture",
+    "sound": "mood music and room tone (agent cannot judge)",
+    "mistakes": [
+     "big kinetic captions",
+     "stickers/emoji",
+     "filling every pause"
+    ]
+   },
+   "quality_targets": {
+    "cuts_per_min": [
+     4,
+     20
+    ],
+    "graphics_per_min": [
+     0,
+     4
+    ],
+    "min_gap_s": 3.0,
+    "calm_stretch_s": 6.0,
+    "caption_size_pct_h": [
+     1.0,
+     3.5
+    ],
+    "hook_text_s": 2.0,
+    "max_face_cover": 0.02
+   },
+   "graphics": [
+    "keyword_small"
+   ],
+   "style_groups": [
+    "D_cinematic_commercial",
+    "B2_kinetic_creator"
+   ],
+   "group_reason": "cinematic, image-first edit (D)"
+  },
+  "savol_javob": {
+   "name": "Savol javob",
+   "summary": "Answer to a follower question: the question card stays on screen, one selfie take, no other graphics.",
+   "evidence_class": "observation",
+   "labelled_example": {
+    "file": "samples/Savol javob.mp4",
+    "evidence": [
+     "Instagram question sticker 'Qanaqa savollar bor? / Aka kursizni tekinga padarka qilaszmi?' at 5-10% y for the whole video (overview_01)",
+     "phone selfie, one take, 1.7 cuts/min, no subtitles",
+     "measured: top_card true, face height 0.36, gaze_off 0.0"
+    ]
+   },
+   "matching_samples": [
+    {
+     "video": "s30",
+     "confidence": "low",
+     "evidence": "question title at the top 'O'ZINGIZNI QANDAY HIS QILYAPSIZ?' (interviewer question, not a follower question)"
+    }
+   ],
+   "recognise": "persistent question card at the top (top_card) or the user gives the question; selfie framing; single take.",
+   "detect": {
+    "rules": [
+     {
+      "feature": "top_card",
+      "when": true,
+      "points": 5
+     },
+     {
+      "feature": "setups",
+      "when": [
+       null,
+       2
+      ],
+      "points": 1
+     },
+     {
+      "feature": "cuts_per_min",
+      "when": [
+       null,
+       3
+      ],
+      "points": 1
+     },
+     {
+      "feature": "gaze_off",
+      "when": [
+       null,
+       0.1
+      ],
+      "points": 1
+     },
+     {
+      "feature": "question_given",
+      "when": true,
+      "points": 4
+     }
+    ]
+   },
+   "structure": "question card from frame 0 -> direct answer in the first sentence -> reason / example -> advice -> CTA (ask more questions).",
+   "edit": {
+    "cut_pattern": "remove silences and repeats only; keep it one continuous take feeling.",
+    "captions": {
+     "mode": "optional small subtitles below the face; the question card is the main text",
+     "preset": "clean",
+     "size_pct_h": [
+      2.5,
+      4.0
+     ],
+     "position_y": [
+      0.6,
+      0.75
+     ]
+    },
+    "graphic_types": [
+     "question_card"
+    ],
+    "graphics_per_min": [
+     0,
+     3
+    ],
+    "broll": "none",
+    "sound": "voice only",
+    "mistakes": [
+     "hiding the question after the first seconds",
+     "heavy graphics that make it look less personal"
+    ]
+   },
+   "quality_targets": {
+    "cuts_per_min": [
+     0,
+     8
+    ],
+    "graphics_per_min": [
+     0,
+     3
+    ],
+    "min_gap_s": 3.0,
+    "calm_stretch_s": 8.0,
+    "caption_size_pct_h": [
+     2.0,
+     4.5
+    ],
+    "hook_text_s": 0.3,
+    "max_face_cover": 0.02
+   },
+   "graphics": [
+    "question_card",
+    "list"
+   ],
+   "style_groups": [
+    "A_studio_explainer",
+    "C_interview_testimonial"
+   ],
+   "group_reason": "single speaker, calm, text-light (A defaults with fewer graphics)"
+  },
+  "tepa_past": {
+   "name": "Tepa-past",
+   "summary": "Split screen: speakers on top, matching b-roll at the bottom, word-by-word captions in a black band between.",
+   "evidence_class": "observation",
+   "labelled_example": {
+    "file": "samples/Tepa-past.mp4",
+    "evidence": [
+     "top 0-40%: two people at a desk with a laptop (m_grid_2.0)",
+     "40-46%: black band with word-by-word captions, active word white, others grey ~3% H",
+     "46-100%: b-roll that shows exactly what is said (burning car, cup, TikTok clips), cut every ~3 s while the top stays",
+     "measured: split_line 1.0, two_face 1.0, 15.7 cuts/min (bottom)"
+    ]
+   },
+   "matching_samples": [],
+   "recognise": "persistent horizontal seam in the middle (split_line >= 0.9) in finished videos; for raw footage: a conversation/talking head plus enough topic b-roll.",
+   "detect": {
+    "rules": [
+     {
+      "feature": "split_line",
+      "when": [
+       0.9,
+       null
+      ],
+      "points": 8
+     },
+     {
+      "feature": "two_face_ratio",
+      "when": [
+       0.3,
+       null
+      ],
+      "points": 1
+     },
+     {
+      "feature": "broll_available",
+      "when": true,
+      "points": 3
+     }
+    ]
+   },
+   "structure": "story told by the speakers; every concrete noun gets a bottom clip; top never cuts away.",
+   "edit": {
+    "cut_pattern": "top: continuous; bottom: one clip per idea, 2-4 s.",
+    "captions": {
+     "mode": "karaoke band between the halves (active word white, rest grey)",
+     "preset": "karaoke",
+     "size_pct_h": [
+      2.5,
+      3.5
+     ],
+     "position_y": [
+      0.42,
+      0.46
+     ]
+    },
+    "graphic_types": [
+     "broll_bottom"
+    ],
+    "graphics_per_min": [
+     10,
+     24
+    ],
+    "broll": "mandatory and continuous (broll mode split, layout_morph in/out)",
+    "sound": "speech only from the top; b-roll muted",
+    "mistakes": [
+     "b-roll that does not match the words",
+     "captions over the faces",
+     "empty bottom half"
+    ]
+   },
+   "quality_targets": {
+    "cuts_per_min": [
+     8,
+     30
+    ],
+    "graphics_per_min": [
+     8,
+     24
+    ],
+    "min_gap_s": 1.5,
+    "calm_stretch_s": 0,
+    "caption_size_pct_h": [
+     2.0,
+     4.0
+    ],
+    "hook_text_s": 0.3,
+    "max_face_cover": 0.02
+   },
+   "graphics": [
+    "broll_bottom"
+   ],
+   "style_groups": [
+    "C_interview_testimonial",
+    "B2_kinetic_creator"
+   ],
+   "group_reason": "conversation on top (C), continuous b-roll below"
+  },
+  "birinchi_yuzdan": {
+   "name": "Birinchi yuzdan",
+   "summary": "First person, extreme close-up into the lens; one take; a title + checklist builds next to the face as items are said.",
+   "evidence_class": "observation",
+   "labelled_example": {
+    "file": "samples/Birinchi yuzdan.mp4",
+    "evidence": [
+     "face fills the right half (face height 0.65 of frame), eyes to the lens (contact)",
+     "title 'Kontent yaratish / formulasi :' white + yellow bold at 18-30% y on the left, from frame 0 (m_grid_6.7)",
+     "checklist adds one line per spoken item (0.29 -> 7.83), ~4.5% H, 35-72% y left, never over the face",
+     "measured: 1 setup, 0 cuts, gaze_off 0.0, landscape 4:3 source"
+    ]
+   },
+   "matching_samples": [
+    {
+     "video": "s04",
+     "confidence": "low",
+     "evidence": "selfie round-video testimonials inside the edit"
+    },
+    {
+     "video": "s10",
+     "confidence": "low",
+     "evidence": "selfie round-video testimonials inside the edit"
+    }
+   ],
+   "recognise": "very large face (face_height >= 0.4) looking into the lens, single take, no cuts.",
+   "detect": {
+    "rules": [
+     {
+      "feature": "face_height_median",
+      "when": [
+       0.4,
+       null
+      ],
+      "points": 4
+     },
+     {
+      "feature": "gaze_off",
+      "when": [
+       null,
+       0.1
+      ],
+      "points": 1
+     },
+     {
+      "feature": "setups",
+      "when": [
+       null,
+       1
+      ],
+      "points": 1
+     },
+     {
+      "feature": "cuts_per_min",
+      "when": [
+       null,
+       3
+      ],
+      "points": 1
+     },
+     {
+      "feature": "top_card",
+      "when": true,
+      "points": -2
+     }
+    ]
+   },
+   "structure": "title states the topic -> each spoken step appears as a checklist line -> last line = action.",
+   "edit": {
+    "cut_pattern": "single take; remove only silences.",
+    "captions": {
+     "mode": "checklist lines instead of subtitles (or tiny subtitles)",
+     "preset": "clean",
+     "size_pct_h": [
+      3.5,
+      5.5
+     ],
+     "position_y": [
+      0.15,
+      0.75
+     ]
+    },
+    "graphic_types": [
+     "list"
+    ],
+    "graphics_per_min": [
+     4,
+     40
+    ],
+    "broll": "none",
+    "sound": "voice only",
+    "mistakes": [
+     "list over the face",
+     "all items shown before they are said"
+    ]
+   },
+   "quality_targets": {
+    "cuts_per_min": [
+     0,
+     6
+    ],
+    "graphics_per_min": [
+     2,
+     50
+    ],
+    "min_gap_s": 0.4,
+    "calm_stretch_s": 0,
+    "caption_size_pct_h": [
+     3.0,
+     6.0
+    ],
+    "hook_text_s": 0.3,
+    "max_face_cover": 0.02
+   },
+   "graphics": [
+    "list"
+   ],
+   "style_groups": [
+    "A_studio_explainer",
+    "B1_editorial_paper"
+   ],
+   "group_reason": "single take explainer with a list (A list technique s02 s05)"
+  }
+ }
+}

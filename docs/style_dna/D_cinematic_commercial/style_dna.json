@@ -213,5 +213,33 @@
         "preset": "clean"
       }
     }
+  },
+  "quality_targets": {
+    "cuts_per_min": [
+      0,
+      46
+    ],
+    "median_cuts_per_min": 13.9,
+    "graphics_per_min": [
+      2,
+      20
+    ],
+    "min_gap_s": 0.6,
+    "calm_stretch_s": 2.0,
+    "caption_size_pct_h": [
+      1.5,
+      12.0
+    ],
+    "entrance_frames_30fps": [
+      4,
+      14
+    ],
+    "hook_text_s": 0.5,
+    "max_face_cover": 0.05,
+    "lufs": [
+      -17.5,
+      -13.5
+    ],
+    "evidence": "global_stats D: 0-46 cuts/min (median 13.9), subtype decides; s20 promo -17 LUFS"
   }
 }

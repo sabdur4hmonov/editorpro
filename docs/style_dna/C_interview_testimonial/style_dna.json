@@ -261,5 +261,33 @@
     "automatic_preflight": false,
     "confidence": "medium",
     "alternative": "reused template openings"
+  },
+  "quality_targets": {
+    "cuts_per_min": [
+      0,
+      23
+    ],
+    "median_cuts_per_min": 6.2,
+    "graphics_per_min": [
+      0,
+      6
+    ],
+    "min_gap_s": 2.0,
+    "calm_stretch_s": 6.0,
+    "caption_size_pct_h": [
+      2.0,
+      4.0
+    ],
+    "entrance_frames_30fps": [
+      6,
+      14
+    ],
+    "hook_text_s": 1.5,
+    "max_face_cover": 0.02,
+    "lufs": [
+      -15.5,
+      -13.5
+    ],
+    "evidence": "global_stats C: 1.8-23.3 cuts/min (median 6.2), median shot 8 s; Interview example sentence subtitles 2.4% H"
   }
 }

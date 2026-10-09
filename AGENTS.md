@@ -37,6 +37,7 @@ Asosiy til o'zbek, rus va ingliz ham bo'ladi. Kompyuter: Windows, 4 yadro, 16 GB
 | `.env` | Maxfiy kalitlar (stok va AI rasm xizmatlari). Gitga kirmaydi, o'qib ko'rsatilmaydi. |
 | `docs/claude_skills/` | Claude Code uchun `/montaj`, `/namuna`, `/brend`, `/transcribe-uz` buyruqlari (manba; `.claude/skills/` ga ko'chiriladi). |
 | `docs/PLAYBOOK.md` | Montajor qo'llanmasi: qaror qabul qilish tartibi. **Har montajda o'qiladi.** |
+| `docs/FORMATS.md`, `docs/formats/formats.json` | 8 video formati (Talking head, Interview, Kadr rakursli, Syudjetli, Obrazli, Savol javob, Tepa-past, Birinchi yuzdan): tanib olish, tuzilma, kesish, subtitr, grafika, b-roll, ovoz, xatolar, sifat nishonlari; mos namunalar 1-42. |
 | `docs/SFX.md` | Ovoz effektlari: numpy sintez v2, sotib olinadigan to'plam tavsiyasi, `_inbox` dan import, litsenziya, git qoidasi. |
 | `docs/TAKES.md` | Klip papkasi: yomon/takroriy dubllarni topish, eng yaxshisini so'z chegarasida kesish, tartib, `report.html`. |
 | `docs/PROMO.md` | Restoran/mahsulot promo retsepti (namuna 20): ko'p klip, yorliq, narx, ovoz subtitri. `/promo` skilli. |
@@ -123,6 +124,7 @@ Har doim `.venv` dagi Python bilan, loyiha papkasidan. Har birida `--help` bor.
 | `compose.py VIDEO` | Motion render: zoom, subtitr animatsiyasi, elementlar, brend, ovoz. |
 | `subtitles.py`, `render.py` | Eski oddiy dvigatel (`captions.engine: ass`): ASS subtitr va render. |
 | `audio_mix.py`, `make_sfx.py` | Ovozni yig'ish; eski (v1) effekt generatori. |
+| `formats.py` | Xom videoni o'lchab formatni aniqlaydi (`detect`), uslub guruhi bilan bitta reja (`plan` → `temp/<nom>/edit_plan.json`, tasdiq xabari uchun 2 qator sabab), foydalanuvchi tuzatishini yozadi (`record` → `style/choice_history.json`), `guide` → docs/FORMATS.md. |
 | `sfx_synth.py` | SFX sintez v2 (numpy): 10 kategoriya × 4 variant, bir xil balandlik, `_preview/`. |
 | `sfx_import.py` | Sotib olingan to'plam: `assets/sfx/_inbox/` → konvert, jimlik kesish, normalizatsiya, kategoriya, litsenziya eslatmasi, indeks (`--shop`, `--license`). |
 | `face.py VIDEO` | Yuz joylashuvini topadi. |

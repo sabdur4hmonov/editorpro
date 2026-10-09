@@ -297,5 +297,33 @@
     "automatic_preflight": false,
     "confidence": "medium",
     "alternative": "reused template openings"
+  },
+  "quality_targets": {
+    "cuts_per_min": [
+      12,
+      38
+    ],
+    "median_cuts_per_min": 22.2,
+    "graphics_per_min": [
+      8,
+      24
+    ],
+    "min_gap_s": 0.6,
+    "calm_stretch_s": 2.0,
+    "caption_size_pct_h": [
+      2.5,
+      14.0
+    ],
+    "entrance_frames_30fps": [
+      3,
+      13
+    ],
+    "hook_text_s": 0.3,
+    "max_face_cover": 0.05,
+    "lufs": [
+      -15.5,
+      -13.5
+    ],
+    "evidence": "global_stats B2: 12.3-38.1 cuts/min (median 22.2); s24 diagonal panel 13 f; s26 pill 6-8 f@25; s28 word 3 f"
   }
 }

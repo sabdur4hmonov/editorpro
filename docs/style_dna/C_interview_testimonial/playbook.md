@@ -27,3 +27,8 @@ Intervyu/testimonial: sokin javoblarni kesish uchun majburiy target yo‘q. Phot
 Detector median: 6.2 cuts/min, shot 7.97s, speech 134.5wpm (peer_global_stats.md). Bu majburiy cut rejasi emas. Motion label/sticker default 320ms: s30 selected glass entrance8 intervals@25; calmer source shot cadence. Boshqa turdagi harakatga aynan shu durationni majburlama.
 
 DNA patch caption/motion defaultlarni beradi; card/canvas geometriyasi va semantik vaqtlarni agent elements.json ga yozadi. Brand rang/shrift ustun. Bitta accent, asosiy caps so‘z kamdan-kam; har yangi element matndan dalillansin. Hook matni ≤.3s source candidate, hozir automatic preflight emas.
+
+## O‘lchangan nishonlar (quality gate)
+Kesish/min [0, 23] (median 6.2), grafika/min [0, 6], grafikalar orasida ≥ 2.0 s, sokin bo‘lak ≥ 6.0 s, subtitr [2.0, 4.0] % H, kirish animatsiyasi [6, 14] kadr (30 fps), birinchi yozuv ≤ 1.5 s, yuz yopilishi ≤ 2%, LUFS [-15.5, -13.5].
+Dalil: global_stats C: 1.8-23.3 cuts/min (median 6.2), median shot 8 s; Interview example sentence subtitles 2.4% H.
+Tekshiruv: `scripts/quality_gate.py` (docs/QUALITY_GATE.md).

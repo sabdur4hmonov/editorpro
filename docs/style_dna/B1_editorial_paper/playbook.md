@@ -27,3 +27,8 @@ Hujjat/statistika/ta’lim: qog‘oz va bitta dalil kartochkasi, qoramtir matn. 
 Detector median: 12.1 cuts/min, shot 2.52s, speech 141wpm (peer_global_stats.md). Bu majburiy cut rejasi emas. Motion label/sticker default 520ms: s35 ticket window13 intervals@25, not true fold emulation. Boshqa turdagi harakatga aynan shu durationni majburlama.
 
 DNA patch caption/motion defaultlarni beradi; card/canvas geometriyasi va semantik vaqtlarni agent elements.json ga yozadi. Brand rang/shrift ustun. Bitta accent, asosiy caps so‘z kamdan-kam; har yangi element matndan dalillansin. Hook matni ≤.3s source candidate, hozir automatic preflight emas.
+
+## O‘lchangan nishonlar (quality gate)
+Kesish/min [5, 21] (median 12.1), grafika/min [6, 18], grafikalar orasida ≥ 0.8 s, sokin bo‘lak ≥ 3.0 s, subtitr [2.0, 8.0] % H, kirish animatsiyasi [8, 16] kadr (30 fps), birinchi yozuv ≤ 0.3 s, yuz yopilishi ≤ 3%, LUFS [-15.5, -13.5].
+Dalil: global_stats B1: 5.7-20.9 cuts/min (median 12.1); s29 giant word fade 8-10 f, invert 2-4 f; s40 grid pull-out 13 f.
+Tekshiruv: `scripts/quality_gate.py` (docs/QUALITY_GATE.md).

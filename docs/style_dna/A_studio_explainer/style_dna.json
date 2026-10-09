@@ -10,7 +10,8 @@
     "s09",
     "s16",
     "s25",
-    "s33"
+    "s33",
+    "s42"
   ],
   "source_hashes": {
     "s02": "5f5c9b0ec7273650148389afd1bf98b260c2041a",
@@ -20,7 +21,8 @@
     "s09": "746fd3ff4f83766ae907ee325d08706d683e3adf",
     "s16": "7427bde914c30bd6dabcb6ef0647ba7a2d62b8cd",
     "s25": "8087d8d6b175ac0a1b83815260ab636901ebe7c4",
-    "s33": "92eff39f360c44df13d63f747f503843d237cb73"
+    "s33": "92eff39f360c44df13d63f747f503843d237cb73",
+    "s42": "86b55dc146fe7566fe7d10658de340cdde83ced5"
   },
   "evidence_policy": ">=3 distinct source hashes = recurring pattern; 1–2 = observation; timing/rhythm not universal rule",
   "techniques": [
@@ -121,6 +123,54 @@
         "codex/analysis/s33/perception.json"
       ],
       "alternative": "Repeated client template; content may call for different rhythm."
+    },
+    {
+      "id": "persistent_state_graphic",
+      "witnesses": [
+        "s42"
+      ],
+      "classification": "observation",
+      "confidence": "high",
+      "evidence": [
+        "temp/style_study/videos/s42/notes.md",
+        "review_claude/s42_B.jpg"
+      ],
+      "alternative": "'bracket' trend template rather than the editor's invention",
+      "note": "16-slot bracket from frame 0 over the legs; each decision becomes visible state; champion pill at the end"
+    },
+    {
+      "id": "speech_locked_marker",
+      "witnesses": [
+        "s42",
+        "s26",
+        "s29"
+      ],
+      "classification": "pattern",
+      "confidence": "high",
+      "evidence": [
+        "s42 m_activity: check median +2 frames after the choice word",
+        "s26 pill per spoken item",
+        "s29 giant word on the word"
+      ],
+      "alternative": "manual keyframing habit",
+      "note": "graphic appears 0-6 frames after the word that names it, never before"
+    },
+    {
+      "id": "image_not_text",
+      "witnesses": [
+        "s42",
+        "s33",
+        "s26"
+      ],
+      "classification": "pattern",
+      "confidence": "medium",
+      "evidence": [
+        "s42 posters = the named thing",
+        "s33 calculator prop",
+        "s26 pills carry items the caption does not show"
+      ],
+      "alternative": "budget for illustrations",
+      "note": "a graphic must show what the subtitle does not say (no-repeat rule)"
     }
   ],
   "cut_rhythm": {
@@ -222,5 +272,33 @@
     "automatic_preflight": false,
     "confidence": "medium",
     "alternative": "reused template openings"
+  },
+  "quality_targets": {
+    "cuts_per_min": [
+      0,
+      18.5
+    ],
+    "median_cuts_per_min": 9.55,
+    "graphics_per_min": [
+      4,
+      16
+    ],
+    "min_gap_s": 0.8,
+    "calm_stretch_s": 3.0,
+    "caption_size_pct_h": [
+      2.5,
+      6.0
+    ],
+    "entrance_frames_30fps": [
+      6,
+      12
+    ],
+    "hook_text_s": 0.3,
+    "max_face_cover": 0.03,
+    "lufs": [
+      -15.5,
+      -13.5
+    ],
+    "evidence": "global_stats A: cuts/min 0-18.5 (median 9.55); s42 poster entrance 7 f, check 4 f; s25 phone rise ~10 f@25; s33 prop 9 f@25"
   }
 }

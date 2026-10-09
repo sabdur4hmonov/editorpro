@@ -24,3 +24,8 @@ Bitta uslub emas: promo narx/mahsulot, showcase minimal single-caption, vlog cle
 Detector median: 13.9 cuts/min, shot 1.66s, speech 140.5wpm (peer_global_stats.md). Bu majburiy cut rejasi emas. Motion label/sticker default 667ms: s37 canvas pan20 intervals@30; heterogeneous, subtype required. Boshqa turdagi harakatga aynan shu durationni majburlama.
 
 DNA patch caption/motion defaultlarni beradi; card/canvas geometriyasi va semantik vaqtlarni agent elements.json ga yozadi. Brand rang/shrift ustun. Bitta accent, asosiy caps so‘z kamdan-kam; har yangi element matndan dalillansin. Hook matni ≤.3s source candidate, hozir automatic preflight emas.
+
+## O‘lchangan nishonlar (quality gate)
+Kesish/min [0, 46] (median 13.9), grafika/min [2, 20], grafikalar orasida ≥ 0.6 s, sokin bo‘lak ≥ 2.0 s, subtitr [1.5, 12.0] % H, kirish animatsiyasi [4, 14] kadr (30 fps), birinchi yozuv ≤ 0.5 s, yuz yopilishi ≤ 5%, LUFS [-17.5, -13.5].
+Dalil: global_stats D: 0-46 cuts/min (median 13.9), subtype decides; s20 promo -17 LUFS.
+Tekshiruv: `scripts/quality_gate.py` (docs/QUALITY_GATE.md).
