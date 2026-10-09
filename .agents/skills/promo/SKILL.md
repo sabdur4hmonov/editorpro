@@ -5,6 +5,13 @@ description: Edit a restaurant or product promo from a folder of separate clips 
 
 # /promo — autonomous multi-clip promo
 
+Use docs/FORMATS.md for format and the existing promo system for D subtype/look; report both
+reasons in the ONE approval. Read docs/QUALITY.md: semantic object/count/process graphics,
+group/hero per docs/MOTION_DESIGN.md, per-video no_repeat/enforce_final, every overlay-frame
+face safety and measured quality fix lists. Unknown is not pass. Use only spoken products/prices.
+Stronger primary, subtle second; taste remains user review. Record real user verdicts through
+existing histories (local during parallel work). Reuse cached transcripts/features to save tokens.
+
 Read `docs/MOTION.md`: shared motion, per-video `motion_override`, recorded choice, glyph
 warnings, timecoded filmstrips for labels/price/follow and aligned before/after sheets.
 After subtitle approval, show compose's subtle/stronger mixes and cue sheets/waveforms.
@@ -91,7 +98,7 @@ For hand finishing export native FCP7 XML, editable SRT, ProRes alpha graphics a
 audio stems; parse back, disclose rasterised base motion and unverified GUI imports.
 Never infer paid-plugin/OTIO/FCPXML support. No new downloads or installs for beat detection.
 
-## Sample study family selection (41 references)
+## Sample study family selection (42 references + 8 formats)
 
 Read `docs/STYLE_STUDY/README.md`, then only the closest `docs/style_dna/<group>/playbook.md`.
 Observe footage and transcript: seated explainer -> A; document/campus narrative -> B1;

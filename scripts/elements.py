@@ -947,6 +947,8 @@ class CaptionLayer(Layer):
     def draw(self, frame, t: float) -> None:
         for item in self.items:
             if item["start"] <= t < item["end"] + item["tail"]:
+                if any(a <= t < b for a, b in getattr(self, 'hidden_spans', [])):
+                    continue
                 if item["block"] is None:
                     self._prepare(item)
                     if t >= item["end"] + item["tail"]:
@@ -2714,7 +2716,8 @@ ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "br
                  "follow": FollowLayer, "scene": SceneLayer, "grade": GradeLayer, "flash": FlashLayer,
                  "handnote": HandnoteLayer, "arrow": ArrowLayer, "phone": PhoneLayer, "profile": PhoneLayer,
                  "label": LabelLayer, "aside": AsideLayer,
-                 "card": _motion_factory, "canvas": _motion_factory}
+                 "card": _motion_factory, "canvas": _motion_factory,
+                 "group": _motion_factory, "hero": _motion_factory}
 # "at" bilan beriladigan qisqa hodisalar: boshlanishi "at", uzunligi "duration"
 TIMED_TYPES = {"burst": 2.0, "confetti": 2.6, "flash": 0.3}
 NON_LAYER_TYPES = {"sfx", "zoom"}
@@ -2744,13 +2747,14 @@ def build_elements(ctx: Ctx, elements: list, total: float) -> list:
             if kind == "title":
                 el.setdefault("size", 1.25)
                 el.setdefault("y", 0.24)
-            if kind in ('card','canvas') or 'trajectory' in el or el.get('transition') == 'layout_morph':
+            if kind in ('card','canvas','group','hero') or 'trajectory' in el or el.get('transition') == 'layout_morph':
                 import motion_design
                 layer=motion_design.build(ctx, el, total)
             else:
                 layer=ELEMENT_TYPES[kind](ctx, el)
             layer.ctx=ctx
-            layer.motion_kind={'follow':'follow','label':'label','title':'title','text':'title'}.get(kind,'sticker')
+            layer.el_ref, layer.el_type = f"{n}:{kind}", kind
+            layer.motion_kind={'follow':'follow','label':'label','title':'title','text':'title','group':'label','hero':'hero'}.get(kind,'sticker')
             layers.append(layer)
         except C.MontajError as exc:
             raise C.MontajError(f"elements.json: {n}-element ({kind}): {exc}") from None

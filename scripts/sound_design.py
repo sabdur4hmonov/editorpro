@@ -49,7 +49,11 @@ def gather(style,elements,cues,words,brand_dir=None):
         captions._prepare(item)
         for i,word in enumerate(item['block'].words):
             if word['emph']:
-                events.append((E.word_reveal_time(item['cfg'],item['start'],i,item['times']),'hero')); break
+                import graphics_ideas
+                reveal = E.word_reveal_time(item['cfg'],item['start'],i,item['times'])
+                if not any(a <= reveal < b for a, b in graphics_ideas.hidden_spans(elements)):
+                    events.append((reveal,'hero'))
+                break
     visual_elements=[]
     for el in elements:
         visual_elements.append(el)
@@ -57,10 +61,10 @@ def gather(style,elements,cues,words,brand_dir=None):
             visual_elements.extend(dict(i,start=i.get('at',el.get('start',0))) for i in el.get('items',[]))
     for el in visual_elements:
         kind=el.get('type'); start=float(el.get('start',0))
-        event={'image':'sticker','emoji':'sticker','icon':'sticker','broll':'broll_in','title':'title','stat':'number','card':'label'}.get(kind)
+        event={'image':'sticker','emoji':'sticker','icon':'sticker','hero':'sticker','broll':'broll_in','title':'title','stat':'number','card':'label'}.get(kind)
         if event: events.append((start,event))
         if kind=='card' and el.get('active_at') is not None:events.append((float(el['active_at']),'label'))
-        if kind=='label': events.extend((float(i.get('at',start)),'label') for i in el.get('items',[]))
+        if kind in ('label','group'): events.extend((float(i.get('at',start)),'label') for i in el.get('items',[]))
         if kind=='follow': events.append((start+float(el.get('tap',1.3)),'follow_tap'))
     fps=float(style['video']['fps']); lead=int(cfg.get('lead_frames',3))
     if not 2<=lead<=3: raise C.MontajError('sfx.lead_frames must be 2 or 3.')

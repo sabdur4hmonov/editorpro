@@ -20,9 +20,16 @@ IDENTITY = dict(dx=0., dy=0., scale=1., rotate=0., opacity=1.)
 EASINGS = ('linear', 'soft', 'snappy', 'spring', 'overshoot')
 
 
+def catmull(p0, p1, p2, p3, u):
+    """Catmull-Rom point between p1 and p2 (u 0..1): a smooth curve through every key position."""
+    u2, u3 = u*u, u*u*u
+    return 0.5*((2*p1)+(-p0+p2)*u+(2*p0-5*p1+4*p2-p3)*u2+(-p0+3*p1-3*p2+p3)*u3)
+
+
 class Track:
-    def __init__(self, frames, duration, cfg):
+    def __init__(self, frames, duration, cfg, smooth=False):
         self.cfg = cfg
+        self.smooth = bool(smooth)
         if not isinstance(frames, list) or len(frames) < 2:
             raise C.MontajError('trajectory: kamida ikki keyframe kerak.')
         previous, state, self.frames = -1., dict(IDENTITY), []
@@ -49,14 +56,22 @@ class Track:
     def at(self, seconds):
         if seconds <= self.frames[0][0]:
             return dict(self.frames[0][1])
-        for (a, av, _), (b, bv, ease) in zip(self.frames, self.frames[1:]):
+        for i, ((a, av, _), (b, bv, ease)) in enumerate(zip(self.frames, self.frames[1:])):
             if seconds < b:
                 p = (seconds-a)/(b-a)
                 cfg = C.deep_merge(self.cfg, {'easing': {'enter': ease}})
                 u = p if ease == 'linear' else ML.curve(p, cfg)
                 # Spring/overshoot remains expressive, but alpha/scale cannot become invalid.
-                return {key: min(LIMITS[key][1], max(LIMITS[key][0], av[key]+(bv[key]-av[key])*u))
-                        for key in IDENTITY}
+                out = {key: min(LIMITS[key][1], max(LIMITS[key][0], av[key]+(bv[key]-av[key])*u))
+                       for key in IDENTITY}
+                if self.smooth:
+                    # Curved motion path through all key positions (same timing/easing per segment).
+                    pts = [f[1] for f in self.frames]
+                    q0, q3 = pts[max(0, i-1)], pts[min(len(pts)-1, i+2)]
+                    for key in ('dx', 'dy'):
+                        v = catmull(q0[key], av[key], bv[key], q3[key], u)
+                        out[key] = min(LIMITS[key][1], max(LIMITS[key][0], v))
+                return out
         return dict(self.frames[-1][1])
 
 
@@ -122,7 +137,7 @@ class MotionBroll(E.BrollLayer):
 class MotionImage(E.ImageLayer):
     def __init__(self, ctx, el):
         super().__init__(ctx, el)
-        self.track = Track(el['trajectory'], self.end-self.start, ML.config(ctx.style)) if 'trajectory' in el else None
+        self.track = Track(el['trajectory'], self.end-self.start, ML.config(ctx.style), el.get('path') == 'smooth') if 'trajectory' in el else None
         self.transform_cache = OrderedDict()
         self.cache_limit = 24*1024*1024
         self.blur_max = float(ctx.style.get('motion_design', {}).get('fast_blur_px', 0))
@@ -249,7 +264,7 @@ class TrackedText(E.Layer):
         plain=dict(el);plain.pop('trajectory',None)
         self.child=E.TextLayer(ctx,plain);self.z=self.child.z
         self.behind_person=self.child.behind_person
-        self.track=Track(el['trajectory'],self.end-self.start,ML.config(ctx.style))
+        self.track=Track(el['trajectory'],self.end-self.start,ML.config(ctx.style),el.get('path')=='smooth')
         p=el.get('pivot',[el.get('x',.5),el.get('y',.3)])
         if not isinstance(p,list) or len(p)!=2:raise C.MontajError('pivot: [x,y] kerak.')
         self.pivot=tuple(number(v,'pivot',0,1)*d for v,d in zip(p,(ctx.W,ctx.H)))
@@ -280,7 +295,7 @@ class CardLayer(E.Layer):
         w=max(8,round(number(el.get('width',.76),'card.width',.03,1.5)*ctx.W))
         h=max(8,round(number(el.get('height',.18),'card.height',.02,1.5)*ctx.H))
         radius=round(min(w,h)*number(el.get('radius',.05),'card.radius',0,.5))
-        self.track=Track(el['trajectory'],self.end-self.start,ML.config(ctx.style)) if 'trajectory' in el else None
+        self.track=Track(el['trajectory'],self.end-self.start,ML.config(ctx.style),el.get('path')=='smooth') if 'trajectory' in el else None
         p=el.get('pivot',[.5,.5])
         if not isinstance(p,list) or len(p)!=2:raise C.MontajError('card.pivot: [x,y] kerak.')
         self.pivot=((number(p[0],'card.pivot',0,1)-.5)*w,(number(p[1],'card.pivot',0,1)-.5)*h)
@@ -373,15 +388,15 @@ class CanvasLayer(E.Layer):
     z=20
     def __init__(self,ctx,el):
         super().__init__(el['start'],el['end']);self.ctx=ctx
-        self.track=Track(el['trajectory'],self.end-self.start,ML.config(ctx.style)) if 'trajectory' in el else None
+        self.track=Track(el['trajectory'],self.end-self.start,ML.config(ctx.style),el.get('path')=='smooth') if 'trajectory' in el else None
         self.background=el.get('background')
         if self.background is not None:M.rgb(self.background)
         children=[]
         for item in el.get('items',[]):
             if item.get('behind_person'):
                 raise C.MontajError('canvas.items behind_person qo‘llanmaydi; uni alohida top-level element qiling.')
-            if item.get('type') not in ('text','title','image','card'):
-                raise C.MontajError('canvas.items: faqat text/title/image/card kerak.')
+            if item.get('type') not in ('text','title','image','card','group','hero'):
+                raise C.MontajError('canvas.items: faqat text/title/image/card/group/hero kerak.')
             child=dict(item,start=item.get('at',self.start),end=item.get('end',self.end));child.pop('at',None)
             if not self.start<=float(child['start'])<float(child['end'])<=self.end:
                 raise C.MontajError('canvas.items vaqtlar canvas ichida bo‘lsin (absolute seconds).')
@@ -404,9 +419,293 @@ class CanvasLayer(E.Layer):
         for child in self.children:child.close()
 
 
+
+# ---------------------------------------------------------------- 2.5D helpers
+def tilt(sprite, rx=0., ry=0., persp=1.8):
+    """Perspective tilt (2.5D, not a 3D mesh): rotate the sprite plane rx (about x) and ry (about y) degrees and
+    project with focal length persp*max(w,h). Premultiplied RGBA, transparent border."""
+    if abs(rx) < .05 and abs(ry) < .05:
+        return sprite
+    if not (-75 <= rx <= 75 and -75 <= ry <= 75):
+        raise C.MontajError('tilt: -75..75 gradus.')
+    h, w = sprite.pix.shape[:2]
+    f = persp*max(w, h)
+    ax, ay = math.radians(rx), math.radians(ry)
+    src, dst = [], []
+    for x, y in ((0, 0), (w, 0), (w, h), (0, h)):
+        X, Y, Z = x-w/2, y-h/2, 0.
+        X, Z = X*math.cos(ay)+Z*math.sin(ay), -X*math.sin(ay)+Z*math.cos(ay)
+        Y, Z = Y*math.cos(ax)-Z*math.sin(ax), Y*math.sin(ax)+Z*math.cos(ax)
+        k = f/(f+Z)
+        src.append((x, y)); dst.append((X*k+w/2, Y*k+h/2))
+    dst = np.array(dst, np.float32)
+    x0, y0 = np.floor(dst.min(axis=0)); x1, y1 = np.ceil(dst.max(axis=0))
+    dst -= [x0, y0]
+    m = cv2.getPerspectiveTransform(np.array(src, np.float32), dst)
+    pix = cv2.warpPerspective(sprite.pix, m, (max(1, int(x1-x0)), max(1, int(y1-y0))), flags=cv2.INTER_LINEAR,
+                              borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0, 0))
+    return M.Sprite(pix, sprite.ox+float(x0), sprite.oy+float(y0))
+
+
+def drop_shadow(sprite, k, depth):
+    """Soft shadow sprite for a floating object: offset and blur grow with depth (0..1)."""
+    a = sprite.pix[..., 3].astype(np.float32)
+    blur = max(1, int(round((6+18*depth)*k)))
+    a = cv2.GaussianBlur(a, (0, 0), blur)*(0.22+0.2*depth)
+    pix = np.zeros_like(sprite.pix)
+    pix[..., 3] = np.clip(a, 0, 255).astype(np.uint8)
+    return M.Sprite(pix, sprite.ox+(10+30*depth)*k, sprite.oy+(14+44*depth)*k)
+
+
+def _ease(cfg, p, mode):
+    return ML.curve(min(1., max(0., p)), C.deep_merge(cfg, {'easing': {'enter': mode}}))
+
+
+def _item_sprite(ctx, el, item, w, h, color, text_color):
+    default = 'pill' if el.get('layout', 'fan') == 'fan' else 'paper'
+    spec = dict(material=el.get('material', default), text=item.get('text', ''), font=el.get('font', 'Inter'),
+                font_size=item.get('font_size', el.get('font_size', 54)), weight=el.get('weight', 700),
+                photo_fraction=el.get('photo_fraction', .62))
+    if item.get('image'):
+        spec['file'] = item['image']
+    return CardLayer.make(ctx, spec, spec['material'], w, h, round(min(w, h)*.18), color, text_color)
+
+
+class GroupLayer(E.Layer):
+    """Several labelled objects arranged as one figure; each is revealed at its spoken moment (items[].at).
+
+    layout fan    : pills rotate out of ONE shared pivot like a colour-swatch fan (s26 4.3-7.9: one pill per spoken
+                    item, 6-8 frames each). pivot [x,y], angle_from, spread (degrees), length, thickness.
+    layout stack  : cards land on top of each other with a small seeded rotation (paper stack).
+    layout spread : cards in a row/grid, each rises and fades in (s42 posters: ~7 frames, 2-frame stagger).
+    active: newest item in the accent colour. exit: fade (default), collapse (fan folds back), none.
+    Durations come from the motion language ('label' in, 'exit' out).
+    """
+    z = 36
+
+    def __init__(self, ctx, el):
+        super().__init__(el['start'], el['end']); self.ctx = ctx
+        self.layout = el.get('layout', 'fan')
+        if self.layout not in ('fan', 'stack', 'spread'):
+            raise C.MontajError('group.layout: fan/stack/spread kerak.')
+        items = el.get('items') or []
+        if not 1 <= len(items) <= 12:
+            raise C.MontajError('group.items: 1..12 ta band kerak.')
+        self.mc = ML.config(ctx.style)
+        self.tin = ML.duration(self.mc, 'label')
+        self.tout = ML.duration(self.mc, 'exit')
+        self.exit = el.get('exit', 'fade')
+        if self.exit not in ('fade', 'collapse', 'none'):
+            raise C.MontajError('group.exit: fade/collapse/none kerak.')
+        W, H = ctx.W, ctx.H
+        base = el.get('color', ctx.style.get('motion_design', {}).get('paper_color', '#F4EEDF'))
+        accent = el.get('active_color', ctx.style.get('captions', {}).get('accent', '#F4BE4F'))
+        text_color = el.get('text_color', '#172126')
+        self.highlight = bool(el.get('active', False))
+        self.items = []
+        n = len(items)
+        times = []
+        for i, it in enumerate(items):
+            times.append(number(it.get('at', self.start + i*.4), 'group.items.at', self.start, self.end))
+            if times[-1] >= self.end:
+                raise C.MontajError('group.items.at end dan kichik bo‘lsin.')
+            if not str(it.get('text', '')).strip() and not it.get('image'):
+                raise C.MontajError('group.items: har bandda text yoki image bo‘lsin.')
+        if times != sorted(times):
+            raise C.MontajError('group.items.at o‘suvchi tartibda bo‘lsin.')
+        if self.layout == 'fan':
+            L = round(number(el.get('length', .42), 'group.length', .1, .9)*W)
+            T = round(number(el.get('thickness', .07), 'group.thickness', .02, .2)*H)
+            pv = el.get('pivot', [.18, .36])
+            self.pivot = (number(pv[0], 'group.pivot', 0, 1)*W, number(pv[1], 'group.pivot', 0, 1)*H)
+            a0 = number(el.get('angle_from', -70), 'group.angle_from', -180, 180)
+            spread = number(el.get('spread', 70), 'group.spread', -180, 180)
+            for i, it in enumerate(items):
+                target = a0 + (spread*i/(n-1) if n > 1 else 0)
+                spr = [_item_sprite(ctx, el, it, L, T, base, text_color)]
+                if self.highlight:
+                    spr.append(_item_sprite(ctx, el, it, L, T, accent, text_color))
+                self.items.append(dict(at=times[i], target=target, sprites=spr, w=L, h=T))
+            self.bbox = self._fan_bbox(L, T)
+        else:
+            w = round(number(el.get('width', .34 if self.layout == 'stack' else .26), 'group.width', .05, .9)*W)
+            h = round(number(el.get('height', .2 if self.layout == 'stack' else .18), 'group.height', .03, .6)*H)
+            cx, cy = number(el.get('x', .5), 'group.x', 0, 1)*W, number(el.get('y', .3), 'group.y', 0, 1)*H
+            rng = np.random.default_rng(int(ctx.style.get('motion_design', {}).get('material_seed', 41))+n)
+            cols = max(1, int(el.get('columns', min(n, 3))))
+            gap = number(el.get('gap', .03), 'group.gap', 0, .3)*W
+            xs, ys = [], []
+            for i, it in enumerate(items):
+                if self.layout == 'stack':
+                    pos = (cx+(i-(n-1)/2)*number(el.get('step_x', .015), 'group.step_x', -.2, .2)*W,
+                           cy+(i-(n-1)/2)*number(el.get('step_y', .012), 'group.step_y', -.2, .2)*H)
+                    rot = float(rng.uniform(-7, 7))
+                else:
+                    r, c = divmod(i, cols)
+                    rows_n = math.ceil(n/cols)
+                    pos = (cx+(c-(min(cols, n)-1)/2)*(w+gap), cy+(r-(rows_n-1)/2)*(h+gap))
+                    rot = 0.
+                spr = [_item_sprite(ctx, el, it, w, h, base, text_color)]
+                if self.highlight:
+                    spr.append(_item_sprite(ctx, el, it, w, h, accent, text_color))
+                self.items.append(dict(at=times[i], pos=pos, rot=rot, sprites=spr, w=w, h=h))
+                xs += [pos[0]-w/2, pos[0]+w/2]; ys += [pos[1]-h/2, pos[1]+h/2]
+            self.bbox = (min(xs), min(ys), max(xs), max(ys))
+        ctx.check_safe('Guruh (group)', *self.bbox)
+
+    def _fan_bbox(self, L, T):
+        xs, ys = [], []
+        for it in self.items:
+            for ang in (it['target'], it['target']-25):
+                a = math.radians(ang)
+                for d in (0, L):
+                    for off in (-T/2, T/2):
+                        xs.append(self.pivot[0]+d*math.cos(a)-off*math.sin(a))
+                        ys.append(self.pivot[1]+d*math.sin(a)+off*math.cos(a))
+        return min(xs), min(ys), max(xs), max(ys)
+
+    def _exit_progress(self, t):
+        if self.exit == 'none':
+            return 0.
+        return min(1., max(0., (t-(self.end-self.tout))/self.tout))
+
+    def draw(self, frame, t):
+        q = self._exit_progress(t)
+        newest = max((i for i, it in enumerate(self.items) if t >= it['at']), default=-1)
+        for i, it in enumerate(self.items):
+            if t < it['at']:
+                continue
+            p = (t-it['at'])/self.tin
+            spr = it['sprites'][1 if self.highlight and i == newest else 0]
+            op = min(1., p*3)*(1-q if self.exit == 'fade' else 1)
+            if self.layout == 'fan':
+                prev = self.items[i-1]['target'] if i else it['target']-25
+                ang = prev+(it['target']-prev)*_ease(self.mc, p, 'overshoot')
+                if self.exit == 'collapse' and q > 0:
+                    ang = ang+(self.items[0]['target']-25-ang)*_ease(self.mc, q, 'soft')
+                    op = 1-min(1., q*1.3)
+                rot = warp(spr, {'rotate': ang, 'scale': 1.}, (-it['w']/2, 0.))
+                M.blit(frame, rot, self.pivot[0]+it['w']/2, self.pivot[1], op)
+            else:
+                e = _ease(self.mc, p, 'overshoot' if self.layout == 'stack' else 'snappy')
+                dy = (1-e)*(.06 if self.layout == 'stack' else .015)*self.ctx.H
+                sc = (.8+.2*e) if self.layout == 'stack' else 1.
+                if self.exit == 'fade' and q:
+                    sc *= 1-.04*q
+                spr2 = warp(spr, {'rotate': it['rot']*(1+(1-e)*1.5), 'scale': sc})
+                M.blit(frame, spr2, it['pos'][0], it['pos'][1]+dy, op)
+
+
+class HeroLayer(E.Layer):
+    """Big hero object enters along a (curved) path with rotation, motion trail and blur, then settles with overshoot
+    (s33 1.62-1.98: calculator prop, ~9 frames to rest, motion-blurred). Optional 2.5D tilt and floating shadow.
+
+    file (own/licensed image, best a cut-out PNG) or icon (Phosphor name); x/y; size (width fraction); from [x,y];
+    path [[x,y],...] extra points; rotate_from/rotate; tilt_from/tilt {x,y}; trail 0..1; blur px; depth 0..1 (shadow);
+    float (slow bob); exit fly/fade/none. Entrance length = motion language key 'hero' (360 ms) or `duration`.
+    """
+    z = 38
+
+    def __init__(self, ctx, el):
+        super().__init__(el['start'], el['end']); self.ctx = ctx
+        k, W, H = ctx.k, ctx.W, ctx.H
+        size = round(number(el.get('size', .5), 'hero.size', .05, 1.2)*W)
+        if el.get('file'):
+            img = Image.open(ctx.asset(el['file'], 'hero.file')).convert('RGBA')
+            img = img.resize((size, max(1, round(img.height*size/img.width))), Image.Resampling.LANCZOS)
+            base = M.pil_sprite(img)
+        elif el.get('icon'):
+            import icons as IC
+            col = M.rgb(el.get('color', ctx.style.get('captions', {}).get('accent', '#F4BE4F')))
+            base = M.pil_sprite(IC.render(str(el['icon']), size, col+(255,), str(el.get('style', 'fill'))))
+        else:
+            raise C.MontajError('hero: file yoki icon kerak.')
+        self.base = base
+        self.mc = ML.config(ctx.style)
+        self.tin = number(el.get('duration', ML.duration(self.mc, 'hero')), 'hero.duration', .05, 3)
+        self.tout = ML.duration(self.mc, 'exit')*1.4
+        self.x, self.y = number(el.get('x', .5), 'hero.x', -1, 2)*W, number(el.get('y', .35), 'hero.y', -1, 2)*H
+        fr = el.get('from', [1.25, float(el.get('y', .35))-.06])
+        pts = [(number(fr[0], 'hero.from', -2, 3)*W, number(fr[1], 'hero.from', -2, 3)*H)]
+        for q in el.get('path', []):
+            pts.append((number(q[0], 'hero.path', -2, 3)*W, number(q[1], 'hero.path', -2, 3)*H))
+        pts.append((self.x, self.y))
+        self.pts = np.array(pts, np.float64)
+        self.r0 = number(el.get('rotate_from', 38), 'hero.rotate_from', -720, 720)
+        self.r1 = number(el.get('rotate', -4), 'hero.rotate', -180, 180)
+        t0, t1 = el.get('tilt_from', {'x': 0, 'y': -35}), el.get('tilt', {'x': 0, 'y': 0})
+        self.tilt0 = (float(t0.get('x', 0)), float(t0.get('y', 0)))
+        self.tilt1 = (float(t1.get('x', 0)), float(t1.get('y', 0)))
+        self.trail = number(el.get('trail', .6), 'hero.trail', 0, 1)
+        self.depth = number(el.get('depth', .4), 'hero.depth', 0, 1)
+        self.blur_max = number(el.get('blur', 6), 'hero.blur', 0, 16)*k
+        self.float = bool(el.get('float', True))
+        self.exit = el.get('exit', 'fly')
+        if self.exit not in ('fly', 'fade', 'none'):
+            raise C.MontajError('hero.exit: fly/fade/none kerak.')
+        self.bbox = (self.x-base.w/2, self.y-base.h/2, self.x+base.w/2, self.y+base.h/2)
+        ctx.check_safe('Hero obyekt', *self.bbox)
+
+    def _path(self, u):
+        pts, n = self.pts, len(self.pts)-1
+        u = min(1., max(0., u))*n
+        i = min(n-1, int(u)); f = u-i
+        return catmull(pts[max(0, i-1)], pts[i], pts[i+1], pts[min(n, i+2)], f)
+
+    def state(self, t):
+        """(x, y, rotate, tilt_x, tilt_y, opacity, scale) at time t."""
+        p = (t-self.start)/self.tin
+        e = _ease(self.mc, p, 'overshoot')
+        x, y = self._path(_ease(self.mc, p, 'snappy'))
+        rot = self.r0+(self.r1-self.r0)*e
+        ee = min(1., e)
+        tx = self.tilt0[0]+(self.tilt1[0]-self.tilt0[0])*ee
+        ty = self.tilt0[1]+(self.tilt1[1]-self.tilt0[1])*ee
+        sc, op = .86+.14*ee, min(1., p*4)
+        if self.float and p > 1:
+            y += math.sin((t-self.start-self.tin)*2*math.pi/2.4)*.004*self.ctx.H
+        q = min(1., max(0., (t-(self.end-self.tout))/self.tout)) if self.exit != 'none' else 0.
+        if q > 0:
+            if self.exit == 'fly':
+                d = self.pts[-1]-self.pts[-2]
+                d = d/(np.linalg.norm(d)+1e-9)
+                eq = _ease(self.mc, q, 'soft')
+                x, y = x+d[0]*eq*self.ctx.W*1.1, y+d[1]*eq*self.ctx.W*1.1
+                rot += 20*eq
+                op *= 1-max(0., q-.6)/.4
+            else:
+                op *= 1-q
+        return x, y, rot, tx, ty, op, sc
+
+    def _render(self, st, extra_op=1., blur=0.):
+        x, y, rot, tx, ty, op, sc = st
+        spr = warp(tilt(self.base, tx, ty), {'rotate': rot, 'scale': sc})
+        if blur >= .6:
+            spr = spr.blurred(blur)
+        return spr, x, y, op*extra_op
+
+    def draw(self, frame, t):
+        fps = self.ctx.fps
+        cur = self.state(t)
+        prev = self.state(max(self.start, t-1/fps))
+        speed = math.hypot(cur[0]-prev[0], cur[1]-prev[1])*fps/max(1., self.ctx.H)
+        if self.depth > 0:
+            spr, x, y, op = self._render(cur)
+            M.blit(frame, drop_shadow(spr, self.ctx.k, self.depth), x, y, op*.9)
+        if self.trail > 0 and speed > .15:
+            # Motion trail: ghost copies at the previous frames' positions, fading out.
+            for g in (4, 3, 2, 1):
+                spr, x, y, op = self._render(self.state(max(self.start, t-g/fps)), self.trail*(1-g/5)**2*.8, self.blur_max*.6)
+                M.blit(frame, spr, x, y, op)
+        spr, x, y, op = self._render(cur, 1., self.blur_max*min(1., speed/2.5))
+        M.blit(frame, spr, x, y, op)
+
+
 def build(ctx,el,total):
     kind=el['type']
     if kind=='card':return CardLayer(ctx,el)
+    if kind=='group':return GroupLayer(ctx,el)
+    if kind=='hero':return HeroLayer(ctx,el)
     if kind=='canvas':return CanvasLayer(ctx,el)
     if el.get('transition')=='layout_morph':
         if kind=='broll':return MotionBroll(ctx,el)

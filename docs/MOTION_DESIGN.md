@@ -91,3 +91,19 @@ CPU proof va manba gaplari `docs/STYLE_STUDY/`; motion/ovoz didini foydalanuvchi
 Mode color legacy default; invert kadr rangini tanlangan vaqt davomida teskari qiladi. Originaldan SFX olinmaydi.
 Bu source-dependent effect: editor export uni raster base ichiga oladi, mustaqil transparent grafika emas.
 Canvas/TrackedText full-frame RGBA allocation/warp qiladi; CPUda qisqa sahnalarga cheklang.
+
+## Ma’noli obyekt animatsiyalari
+
+`group`: `layout: fan|stack|spread`, `items[{at,text,image}]` (1–12, o‘suvchi vaqt, enddan kichik),
+`active`, `active_color`, `color`, `text_color`, `material`, `font_size`, `exit: fade|collapse|none`.
+Fan: **bitta pivot**, `pivot:[x,y]`, `angle_from`, `spread` (-180..180), `length` (W ulushi), `thickness` (H ulushi).
+Stack/spread: `x,y,width,height,columns,gap,step_x,step_y`. Timing motion.label va motion.exit;
+aytilmagan band yoki ma’nosiz 1..5 yorliqlarni o‘ylab topma.
+
+`hero`: `file` (o‘z/litsenziyali cutout) yoki MIT `icon`; `x,y,size`, `from:[x,y]`, `path:[[x,y],...]`,
+`rotate_from`, `rotate`, `tilt_from:{x,y}`, `tilt:{x,y}`, `trail:0..1`, `blur:0..16`, `depth:0..1`,
+`float`, `exit:fly|fade|none`. `duration` optional, standart motion.durations_ms.hero × speed scale.
+Catmull path, oldingi 4 kadrning alpha izlari, tezlikka mos blur va floating shadow — CPU 2.5D; haqiqiy 3D emas.
+Hero va group itemlari SFX eventlariga ulanadi; mavjud lead/density/nutq margin cheklovi saqlanadi.
+
+Yuzni barcha kadrda tekshirish, hide_captions, repeat check va sifat gate: `docs/QUALITY.md`.

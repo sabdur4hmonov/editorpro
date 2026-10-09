@@ -161,6 +161,11 @@ def preflight(style: dict, cues: list, elements: list, duration: float, validate
             errors.append("behind_person uchun tasdiqlangan PPHumanSeg modeli kerak; o'zi yuklanmaydi.")
         if any(isinstance(el, dict) and el.get("type") in ("stage", "scene", "broll", "grade") for el in elements):
             errors.append("behind_person stage/scene/broll/grade bilan birga qo'llanmaydi.")
+    if cfg.get('no_repeat', False):
+        import graphics_ideas
+        for row in graphics_ideas.repeat_violations(elements, cues):
+            if not row['allowed']:
+                errors.append(f"{row['element']}-element subtitrni takrorlaydi: {row['text']}. {row['fix']}")
     return {"errors": errors, "warnings": warnings, "accent_cue_ratio": round(ratio, 3),
             "human_review_required": ["subtitr tasdiqi HOLAT.md da", "yuz va grafika", "mazmun", "harakat", "ovoz"],
             "structural_ok": not errors}

@@ -14,7 +14,7 @@ Migration and untested GPU paths: `docs/NEW_LAPTOP.md`; no unapproved installs/d
 
 Arguments: `<arguments supplied in the user prompt>` (video path, optional brand, optional script file).
 Talk to the user in **Uzbek**, short numbered steps. The user is a beginner programmer and a
-professional video editor; the reference for "good" is the 14 reels in `samples/`.
+professional video editor; use the 42 studied reels and 8 labelled formats in `samples/`.
 
 Read first, fully: `docs/NAMUNA_USLUBI.md` (what the samples do and how each thing is reproduced),
 then `AGENTS.md` and `docs/PLAYBOOK.md`. Do not guess a flag, preset or element field: check
@@ -24,6 +24,13 @@ Python is always `.venv/Scripts/python.exe` from the project root. Never read or
 Never write into `input/` or `samples/`.
 
 ## What "like the samples" means (check every item before rendering)
+
+First choose the format and family using the section below. These seven rules describe the older
+talking-head lockup recipe only; they are NOT universal. The selected format plan takes precedence:
+calm interviews can have sentence captions, image-led edits can use only keywords, and sample 42
+has no subtitles. Graphic cadence, accent colour and ending come from that plan and actual speech.
+Do not force yellow, a follow card, or graphics every 3 seconds onto other formats. Keep existing
+approved transcript content even when choosing a different visual presentation.
 
 1. **Captions are lockups, not karaoke lines.** In each sentence mark ONE hero phrase
    (`*white big*`, `**yellow big**`, `!!huge!!`); the rest of the sentence becomes the small line
@@ -164,7 +171,19 @@ For hand finishing export native FCP7 XML, editable SRT, ProRes alpha graphics a
 audio stems; parse back, disclose rasterised base motion and unverified GUI imports.
 Never infer paid-plugin/OTIO/FCPXML support. No new downloads or installs for beat detection.
 
-## Sample study family selection (41 references)
+## Sample study family selection (42 references + 8 formats)
+
+Before the family choice, use `docs/FORMATS.md` / `formats.py plan VIDEO --words WORDS`.
+Check ambiguous format ranks against footage; show FORMAT and USLUB with reasons in the ONE approval.
+Read `docs/QUALITY.md`: lexical graphics_ideas proposals require sentence-level review; show an object,
+count, comparison or process instead of another caption label. New per-video style opts into
+quality.no_repeat and quality.enforce_final. Use group (shared-pivot fan/stack/spread) and hero
+(original/licensed object path/trail/blur) per docs/MOTION_DESIGN.md. Never invent list items.
+Compose measures every active overlay frame including exits/split, and writes face_safety + quality_gate.
+Unknown is not pass; fix/measure the report before final. A score does not approve sound/motion taste.
+Stronger first, subtle second. Record actual user choices using existing graphics/format/b-roll/takes
+history; parallel learning stays local. Reuse cached words/features/reference evidence; load only
+the chosen format/family instructions to keep context and token costs small.
 
 Read `docs/STYLE_STUDY/README.md`, then only the closest `docs/style_dna/<group>/playbook.md`.
 Observe footage and transcript: seated explainer -> A; document/campus narrative -> B1;

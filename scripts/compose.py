@@ -300,6 +300,9 @@ def build_layers(ctx: E.Ctx, style: dict, cues: list, words: list | None, elemen
     layers = E.build_elements(ctx, elements, base_dur)
     if cues and str(style.get("captions", {}).get("engine", "motion")) != "off":
         layers.append(E.CaptionLayer(ctx, cues, words, base_dur))
+        import graphics_ideas
+        layers[-1].hidden_spans = graphics_ideas.hidden_spans(elements)
+        layers[-1].el_ref, layers[-1].el_type = "captions", "captions"
     logo = style.get("logo", {})
     if logo.get("file"):
         layers.append(E.LogoLayer(ctx, logo, base_dur))
@@ -413,10 +416,16 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     ffmpeg = C.need_tool("ffmpeg")
     size = W * H * 3
 
-    def render_frame(frame: np.ndarray, t: float) -> np.ndarray:
+    monitor = None
+    if style.get("quality", {}).get("face_safety", True) and not stills:
+        import face_safety
+        monitor = face_safety.FaceMonitor(ctx, layers, style)
+
+    def render_frame(frame: np.ndarray, t: float, index: int | None = None) -> np.ndarray:
         if t < base_dur and (plan or manual_zoom):
             z, cx, cy = zoom_at(plan, manual_zoom, t, ctx.anchor)
             frame = zoom_frame(frame, z, cx, cy)
+        measuring = False
         if behind:
             original = frame.copy()
             active_behind = [layer for layer in behind if layer.active(t)]
@@ -430,7 +439,17 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             if layer in behind:
                 continue
             if layer.active(t):
+                if monitor is not None and index is not None:
+                    kind = getattr(layer, 'el_type', '')
+                    if kind == 'flash' and measuring:
+                        monitor.after(frame, t, index)
+                        measuring = False
+                    elif kind not in ('stage', 'scene', 'broll', 'grade', 'flash') and not measuring:
+                        monitor.before(frame, t)
+                        measuring = True
                 layer.draw(frame, t)
+        if monitor is not None and index is not None and measuring:
+            monitor.after(frame, t, index)
         if style.get("_draft"):
             cv2.putText(frame, "QORALAMA", (10, max(18, int(H * 0.04))), cv2.FONT_HERSHEY_SIMPLEX,
                         max(0.4, H / 1920), (255, 255, 255), 1, cv2.LINE_AA)
@@ -524,7 +543,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
                         if not got_any:
                             raise C.MontajError("Videodan kadr o'qib bo'lmadi:\n" + _tail(dec_log))
                         cur = last.copy()   # video tugadi (oxirgi kadr): shu kadr ushlab turiladi
-                    cur = render_frame(cur, t)
+                    cur = render_frame(cur, t, i)
                     try:
                         enc.stdin.write(cur.tobytes() if cur is not frame else buf)
                     except (BrokenPipeError, OSError):
@@ -557,6 +576,14 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         out_meta["draft"] = bool(style.get("_draft"))
         out_meta["notes"] = list(ctx.notes)
         out_meta["checks"] = check_export(out_path, style, out_meta)
+        if monitor is not None:
+            import face_safety
+            safety = monitor.report()
+            C.write_json(dict(safety, video=str(out_path)), work / "face_safety.json")
+            out_meta["face_safety"] = {k: safety[k] for k in ("ok", "max_cover", "frames_checked", "frames_with_face", "limit", "verification")}
+            safety_state = 'ogoh' if safety['verification']=='unverified_no_face' and safety['detector_available'] else ('ok' if safety['ok'] else 'xato')
+            out_meta["checks"].append(("Yuz xavfsizligi", safety_state,
+                                       face_safety.summary(safety).split(": ", 1)[1]))
         rep = audio_mix.LAST_REPORT
         if rep.get("additions") and rep.get("margin_db") is not None:
             # musiqa/effektlar nutqni bosib ketmaganini ko'rsatadigan o'lchov
@@ -568,6 +595,19 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             out_meta['mixes']=sound_design.alternate_mixes(video,out_path,work,style,total,elements,cues,words,music,
                                                           brand_dir,dict(rep))
         out_meta['audio']=dict(rep)
+        if (work/'edit_plan.json').is_file():
+            import quality_gate
+            rendered_cuts = quality_gate.editorial_cut_times(cuts)
+            loudness_row = next((r for r in out_meta['checks'] if r[0]=='Balandlik'), None)
+            if loudness_row:
+                out_meta['integrated_lufs'] = float(loudness_row[2].split()[0])
+            quality = quality_gate.evaluate(style, cues, elements, base_dur, C.read_json(work/'edit_plan.json'), out_meta, rendered_cuts)
+            C.write_json(quality, work/'quality_gate.json')
+            (work/'quality_gate.md').write_text(quality_gate.markdown(quality), encoding='utf-8')
+            out_meta['quality_gate'] = dict(status=quality['status'], score=quality['score'], measured=quality['known'], total=quality['total'])
+            C.info(f"QUALITY: {quality['status']}; {quality['score']}; {quality['known']}/{quality['total']} measured")
+            if style.get('quality', {}).get('enforce_final') and not style.get('_draft') and quality['fix_list']:
+                raise C.MontajError('QUALITY: final tasdiqlanmaydi; tuzatish/o‘lchash: '+', '.join(r['key'] for r in quality['fix_list']))
         return out_meta
     finally:
         for layer in layers:

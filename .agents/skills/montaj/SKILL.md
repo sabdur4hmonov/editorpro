@@ -5,6 +5,13 @@ description: Edit a raw talking-head video into a finished vertical Reel for a b
 
 # /montaj — full edit of one video
 
+Use docs/FORMATS.md and formats.py plan to choose the format separately from the style family.
+Put both reasons in the ONE approval. Read docs/QUALITY.md for sentence-reviewed graphics_ideas,
+shared-pivot group/hero objects, per-video quality.no_repeat and quality.enforce_final, temporal
+face_safety and quality_gate fix lists. Unknown is not pass; technical scores cannot approve taste.
+Stronger is primary, subtle second. User verdicts update existing histories; parallel entries
+stay in the own job. Reuse cached words/features and load only the selected format/family guide.
+
 Read `docs/MOTION.md` for shared motion settings, per-video `motion_override`, persisted
 `motion_choice.json`, Uzbek glyph warnings, timecoded filmstrips and aligned A/B sheets.
 After subtitle approval, show compose's subtle/stronger mixes with each cue sheet/waveform;
@@ -174,7 +181,10 @@ For hand finishing export native FCP7 XML, editable SRT, ProRes alpha graphics a
 audio stems; parse back, disclose rasterised base motion and unverified GUI imports.
 Never infer paid-plugin/OTIO/FCPXML support. No new downloads or installs for beat detection.
 
-## Sample study family selection (41 references)
+## Sample study family selection (42 references + 8 formats)
+
+The selected format plan takes precedence over generic caption, graphic cadence and follow-card
+recipes above. Preserve calm answers and natural endings; never invent a CTA or clinical statement.
 
 Read `docs/STYLE_STUDY/README.md`, then only the closest `docs/style_dna/<group>/playbook.md`.
 Observe footage and transcript: seated explainer -> A; document/campus narrative -> B1;

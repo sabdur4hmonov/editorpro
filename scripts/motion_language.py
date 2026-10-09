@@ -7,7 +7,7 @@ import common as C
 ENTRANCES=('spring_pop','slide_overshoot','scale_blur','typewriter','mask_up','letter_cascade')
 EMPHASIS=('scale_punch','colour_sweep','underline_draw','box_wipe')
 DEFAULTS={'enabled':False,'speed':'medium','scales':{'fast':.75,'medium':1.,'slow':1.3},
- 'durations_ms':{'caption':260,'exit':160,'sticker':360,'title':300,'label':300,'follow':420,'transition':240,'punch':300},
+ 'durations_ms':{'caption':260,'exit':160,'sticker':360,'title':300,'label':300,'follow':420,'transition':240,'punch':300,'hero':360},
  'easing':{'enter':'snappy','exit':'soft'},'spring':{'omega':12.,'zeta':.62},'overshoot':1.1,
  'stagger':{'word_ms':35,'letter_ms':24,'max_total_ms':180},
  'pairs':{'spring_pop':'scale_down','slide_overshoot':'slide_out','scale_blur':'blur','typewriter':'fade','mask_up':'mask_down','letter_cascade':'fade'},

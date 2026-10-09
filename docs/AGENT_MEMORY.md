@@ -294,3 +294,33 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
 - Source count threshold≥3 distinct hashes; source invert candidates2–4frames, source cut detectors remain candidates, not universal cut rate. Onset != beat, RMS != LUFS, reference mixed track != isolated SFX margin. Agent cannot judge sound taste.
 - Main selftest refuses preserved unfinished Claude video note; no guard weakened. Run unchanged source copy with isolated temp/notes and --no-whisper --offline; production precondition remains. Final tests in docs/STYLE_STUDY/tests.md.
 - 4-core CPU full RGBA canvas/TrackedText is costly; use short scenes; static child/bbox cache still future work. True3D/fold, exact handwriting, video diagonal wipes and exhaustive timing/font identity remain gaps. No install/upload/new library.
+
+## 2026-10-10 — Codex — Claude solo continuation, Part 2
+
+- User explicitly confirmed "Ha, Claude to‘xtagan; hammasini yakunla". Parts1 c395c33 and3 fce6560
+  reused, not rebuilt. Source docs/claude_skills remain authoritative; restored .claude/skills and
+  .agents/skills synchronized. Old untracked .codex/.claude duplicate preserved, not committed/deleted.
+- Semantic graphics_ideas proposals are lexical, not comprehension: agent verifies the full sentence.
+  count/object/list/process/comparison suggestions never establish a clinical cause or invented item.
+  No-repeat checks visible caption intervals (including partial hidden spans), apostrophe variants,
+  simple suffixes and nested canvas text. Masking does not change approved words or original timings.
+- Group fan has ONE pivot, active last item, per-item spoken at; stack/spread supported. Signed spread
+  accepted, unreachable/reversed item times rejected. Hero uses original/licensed image or MIT icon,
+  motion language duration/easing, path/rotation, bounded trail/blur and 2.5D tilt/shadow. True3D deferred.
+- YuNet checks every detected face on every active overlay frame, including exits after split/stage;
+  missing/no-face remains unverified. Pixel-change>40 proxy can miss low-contrast or undetected faces.
+  It caught real caption-face overlap when A captions were moved to y=.49; moving to .59 fixed it.
+- Quality gate uses DNA+format plan, actual fitted font size, configured entrance intervals, density,
+  calm stretch, face/export/speech/LUFS. Native auto_cut keep/speed becomes output cut boundaries.
+  Unknown remains unknown; no-graphic entrance is N/A. Intra-group stagger is not a new scene.
+  Strict no_repeat/enforce_final is per-video; legacy approved jobs are not silently redesigned.
+- User history now changes compatible style-group ranking as well as format; graphics rank reads
+  local+global same-format choices. Actual approvals only; local history deferred during parallel work.
+  Skills explicitly prioritize selected format over old universal lockup/yellow/follow/every3s recipe.
+- New test_quality 20/20 covers these regressions. Existing 12 suites total 168/168 (transcribe --no-whisper).
+  Sandbox parallel suite initially failed with WinError5 on atomic rename in sandbox Temp; unchanged
+  tests passed outside sandbox. No test assertion or lock timeout weakened. Final isolated selftest
+  result is recorded separately in STYLE_STUDY/tests.md; production Doctor1/3 notes remain open.
+- Earlier memory line "final committed version not Claude-reviewed" was stale: original review in
+  temp/style_study/build_review.md includes acceptance/tests of 925672a/1926d6e. Tracked verbatim as
+  STYLE_STUDY/build_review_claude_committed.md; newest solo changes have no independent Claude review.

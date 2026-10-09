@@ -263,7 +263,8 @@ def plan(video: Path, fmt_key: str, group: str | None, det: dict, reason: str | 
         raise C.MontajError("Noma'lum format: " + fmt_key + ". Mavjud: " + ", ".join(fm))
     f = fm[fmt_key]
     import sample_groups as SG
-    group = group or f["style_groups"][0]
+    group_bonus = history_bonus(det['features'], 'group')
+    group = group or max(f['style_groups'], key=lambda g: group_bonus.get(g, 0))
     if group not in SG.FAMILIES:
         raise C.MontajError("Noma'lum uslub guruhi: " + group)
     if group == "D_cinematic_commercial" and subtype not in ("promo", "showcase", "vlog"):
@@ -271,7 +272,7 @@ def plan(video: Path, fmt_key: str, group: str | None, det: dict, reason: str | 
     out = {"video": str(video), "format": fmt_key, "format_name": f["name"],
            "format_reason": reason or reason_line(fmt_key, det),
            "style_group": group, "style_reason": f"{group}: {f['group_reason']}" if group == f["style_groups"][0]
-           else f"{group}: agent choice", "subtype": subtype,
+           else f"{group}: similar-footage user history or agent choice", "subtype": subtype,
            "edit": f["edit"], "quality_targets": f["quality_targets"], "graphics": f["graphics"],
            "detection": {k: det[k] for k in ("selected", "ranked", "needs_editor_judgement", "confidence")},
            "features": det["features"]}

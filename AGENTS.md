@@ -359,6 +359,20 @@ Sahna chiqishi, intervyu, konsert kabi "tayyor ovozli" videolarda effektni kam i
 
 ## Montaj sifati qoidalari
 
+### Format va ma’noli motion (solo finish)
+
+- `docs/FORMATS.md` + eng yaqin family playbook, keyin `docs/QUALITY.md`: format va uslubni alohida tanla,
+  ikkala sababni BITTA tasdiq xabariga yoz. Xom videoda aniqlagichni taxmin sifatida tekshir.
+- `graphics_ideas.py ideas/apply/check`: taklifni to‘liq gapdan tekshir. Obyekt/miqdor/jarayon/dalil ma’no qo‘shsin;
+  subtitrni takrorlovchi kartochka qo‘yma. Yangi jobda `quality.no_repeat: true` va full finalda `quality.enforce_final: true`.
+- `group` bir pivotli fan/stack/spread va `hero` obyekt yo‘li/trail/blur mavjud (`docs/MOTION_DESIGN.md`).
+  Sample asset/aytilmagan ro‘yxat/uydirma raqam bilan demo tuzma; raw footage bo‘lmagan rakurs/rolni tayyor deb da’vo qilma.
+- Compose `face_safety.json`ni barcha faol overlay kadrlarda (exit/split ham) va `edit_plan.json` bo‘lsa
+  `quality_gate.json/.md`ni yozadi. Unknown o‘lchov pass emas; fix_listni tuzat/o‘lcha. Native filmstrip va odam ko‘rigi shart.
+- Stronger asosiy, subtle ikkinchi. Grafik/B-roll/format/takes user qarorlari mavjud history/feedback yo‘liga;
+  parallel umumiy tarixga yozma. Token tejash: cached transcript/features/reportlarni qayta ishlat,
+  faqat tanlangan family/format hujjatini o‘qi, kod o‘zgarsa tegishli sinovni ishlat; natijani taxmin qilma.
+
 ### Motion va ovoz dalili (Sprint 1)
 
 - `docs/MOTION.md` ni o'qi: umumiy `motion`, brend `style.motion`, per-video `motion_override`.

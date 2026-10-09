@@ -1,5 +1,10 @@
 # Restoran / mahsulot promo: mustaqil ish tartibi
 
+Motion rejalash: formatni `docs/FORMATS.md` bilan, D subtype/lookni mavjud promo tizimi bilan tanla.
+Narxni ikki marta subtitr va kartochkada qaytarma: mahsulot/taqqoslash/jarayonni ko‘rsat.
+`group`/`hero`, no-repeat/yuz va sifat dalili: `docs/QUALITY.md`, `docs/MOTION_DESIGN.md`.
+Grafik bandlari faqat aytilgan mahsulot/variant; semantic taxminni BITTA tasdiqda belgilab ko‘rsat.
+
 Foydalanuvchi faqat kliplarni beradi. Taom nomlari, set raqamlari, narx, taklif va chaqiriqni agent
 **nutqdan va kadrlardan** topadi. Namuna 20 bitta misol, qolip emas: har promo o'z uslub yo'nalishida.
 Skill: `/promo` (Claude Code), `$promo` (Codex) — manba `docs/claude_skills/promo/SKILL.md`.

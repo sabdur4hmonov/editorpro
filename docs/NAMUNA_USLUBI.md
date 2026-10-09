@@ -1,5 +1,10 @@
 # Namuna uslubi: `samples/` dagi videolar qanday qilingan va tizimda qanday takrorlanadi
 
+Yangi 42-sonli namuna va 8 format: `docs/STYLE_STUDY/videos/s42/`, `docs/FORMATS.md`.
+Eski 14 misol quyida saqlanadi, lekin endi hamma videoga bir xil retsept qo‘yilmaydi.
+Format + family tanlovi, ma’noli fan/hero obyektlari, barcha kadrda yuz tekshiruvi va pro-quality gate:
+`docs/QUALITY.md`, `docs/MOTION_DESIGN.md`. Stronger default, subtle ikkinchi; foydalanuvchi ko‘rigi alohida.
+
 Bu fayl 14 ta namuna videoni kadrma-kadr o'rganish natijasi. Maqsad: tizim chiqargan video
 namunalardagi bilan bir xil ko'rinsin. O'lchamlar namunalardan o'lchab olingan va tizim chizgan
 yozuv namuna yozuvining yoniga qo'yib solishtirilgan (namuna 7, 8, 10, 11, 13, 14).
