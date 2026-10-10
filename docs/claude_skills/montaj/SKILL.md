@@ -15,6 +15,8 @@ stay in the own job. Reuse cached words/features and load only the selected form
 
 Read `docs/MOTION.md` for shared motion settings, per-video `motion_override`, persisted
 `motion_choice.json`, Uzbek glyph warnings, timecoded filmstrips and aligned A/B sheets.
+Before showing motion, run `review_tools.py lint` (flags, curve PNGs) and `slowmo` strips; fix flags,
+never edit an approved per-video style (doktor 1-5) to opt into the new motion switches.
 After subtitle approval, show compose's subtle/stronger mixes with each cue sheet/waveform;
 the user judges motion and sound, technical meters are not listening approval. During parallel
 editing keep choices/learning in your own job; shared history is deferred until idle.

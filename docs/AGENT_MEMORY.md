@@ -344,3 +344,9 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
   job. Doctor1/3 notes remain open. User now asks to save promptly and trial a NEW video from scratch.
   Read new input path/job and use normal ONE approval message before burn-in; keep creative/raw-format
   trial and user sound judgment outstanding. Reuse cache and selected format/family docs to save tokens.
+
+## 2026-10-11 — Claude — motion wishlist: lint, sub-pixel, kesish, scrim, blur, shablonlar
+- Yangi switchlar `style.motion` da default o'chiq (subpixel, cuts, scrim, motion_blur, preset, durations_frames); per-video doktor 1-5 kadr farqi 0. style/style.json (yangi videolar) subpixel+cuts+scrim yoqildi: A/B gate 66.7→76.9, drift jitter 1.33→0.12 px.
+- `review_tools.py lint/slowmo`: blit trace'dan bayroqlar va curve PNG. Edge-anchored wipe markazi harakat emas; 1 px zinapoya `pixel_steps`, short emas. Cue onset kesishda, so'z reveal emas.
+- Motion blur render narxi 12 s qismda shovqindan kichik; default o'chiq (punchy preset yoqadi). Emphasis extra (pop_overshoot/colour_flash/shake) faqat aniq tanlanganda: variety fingerprint o'zgarmaydi.
+- Yangi elementlar: calendar, panel, logo_sting, mask_reveal, image `push`. pil_sprite origin = markaz (calendar xatosi shundan edi).

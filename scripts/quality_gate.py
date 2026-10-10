@@ -14,7 +14,7 @@ import elements as E
 import graphics_ideas as GI
 import motion_language as ML
 
-VISUAL = {'hero', 'group', 'image', 'icon', 'card', 'canvas', 'title', 'text', 'stat',
+VISUAL = {'calendar', 'panel', 'logo_sting', 'mask_reveal', 'hero', 'group', 'image', 'icon', 'card', 'canvas', 'title', 'text', 'stat',
           'list', 'choice', 'broll', 'label', 'aside', 'callout', 'follow', 'phone', 'handnote'}
 
 
@@ -118,6 +118,20 @@ def evaluate(style, cues, elements, duration, plan, result=None, cut_times=None)
         hard=True, method='measured additions relative to speech; never change the voice to boost SFX')
     # Integrated loudness is a separate measurement: never use RMS in its place.
     add('lufs', result.get('integrated_lufs'), targets.get('lufs'), method='ffmpeg ebur128, supplied measured integrated LUFS')
+    lint = result.get('motion_lint')
+    if lint:  # only when the render traced its blits; legacy reports keep their rows unchanged
+        add('motion_lint_flags_per_min', round(lint['flags']*60/duration, 2), targets.get('motion_lint_flags_per_min', 6),
+            method='review_tools.lint_rows: short/linear/velocity-jump/at-once/caption-on-cut/jump/direction flags')
+        if lint.get('drift_jitter_px') is None:
+            rows.append(dict(key='drift_jitter_px', value=None, target=None, status='not_applicable', hard=False,
+                             method='no slow drift (<1.5 px/frame for 8+ frames) in this render'))
+        else:
+            add('drift_jitter_px', lint['drift_jitter_px'], targets.get('drift_jitter_px', .15),
+                method='mean |2nd difference| of slow drifts as placed; integer placement shows 1 px stair steps')
+    contrast = result.get('caption_contrast')
+    if contrast:
+        add('caption_contrast_min', min(c[2] for c in contrast) >= targets.get('caption_contrast', 4.5),
+            method=f'WCAG ratio text vs measured background after adaptive scrim, {len(contrast)} cue/shot samples')
     known = [r for r in rows if r['status'] in ('pass','fail')]
     score = round(100*sum(r['status']=='pass' for r in known)/len(known), 1) if known else None
     fixes = [dict(key=r['key'], status=r['status'], value=r['value'], target=r['target'], method=r['method'])

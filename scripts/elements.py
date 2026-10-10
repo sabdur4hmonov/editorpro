@@ -158,6 +158,7 @@ class Ctx:
         safe.update(style.get("platform", {}).get("safe", {}) or {})
         self.safe = safe                             # ilova tugmalari yopadigan chetlar (kadrga nisbatan)
         self.notes: list = []
+        self.cut_times: list = []                    # chiqishdagi kesish vaqtlari (compose to'ldiradi)
 
     def note(self, text: str) -> None:
         """Render to'xtamaydigan ogohlantirish (oxirida ko'rsatiladi), takrorlanmaydi."""
@@ -296,6 +297,8 @@ class RichBlock:
       none    - animatsiyasiz
     Butun blok: track_in (so'zlar orasi boshida keng, keyin zichlashadi), intro_scale, drift, exit.
     """
+
+    tag = ''   # CaptionLayer sets a per-cue prefix so trace/motion blur follow each sprite
 
     def __init__(self, ctx: Ctx, text: str, cfg: dict, size_scale: float = 1.0):
         self.ctx, self.cfg = ctx, cfg
@@ -446,6 +449,9 @@ class RichBlock:
                         word["spr"], _ = M.word_sprite(t["text"], t["font"], t["color"], t["track"], shadow, glow, stroke)
                     if word["anim"] in ("letters", "ltrack", "letter_cascade", "typewriter") and all(kind == "text" for kind, _ in M.Emoji.split(t["text"])):
                         word["letters"] = self._letters(t, shadow, glow, stroke)
+                    if t["emph"] and cfg.get("emphasis") == "colour_flash":
+                        flash_col = accent if M.rgb(t["color"]) != M.rgb(accent) else cfg.get("flash_color", "#FFFFFF")
+                        word["flash"], _ = M.word_sprite(t["text"], t["font"], flash_col, t["track"], shadow, glow, stroke)
                     if t["emph"] and cfg.get("emphasis") == "colour_sweep":
                         word["sweep"], _ = M.word_sprite(t["text"], t["font"], accent, t["track"], shadow, glow, stroke)
                         word["spr"], _ = M.word_sprite(t["text"], t["font"], cfg['color'], t["track"], shadow, None, stroke)
@@ -577,14 +583,15 @@ class RichBlock:
         scale = intro_from + (1 - intro_from) * M.ease_out((t - start) / max(0.001, float(cfg.get("intro_ms", 450)) / 1000.0))
         scale *= 1.0 + float(cfg.get("drift", 0.0)) * M.clamp01((t - start) / life)
         exit_mode, exit_dur = str(cfg.get("exit", "fade")), max(0.001, float(cfg.get("exit_ms", 100)) / 1000.0)
-        out_blur, sink = 0.0, 0.0
+        out_blur, sink, exit_dx = 0.0, 0.0, 0.0
         mc = cfg.get("_motion")
         if mc:
             exit_dur = min(exit_dur, life * .3)
             q = ML.curve((t - (end - exit_dur)) / exit_dur, mc, 'exit')
             out = 1.0 - M.clamp01(q)
+            vx, vy = cfg.get('exit_vec') or (0.0, 1.0)
             if exit_mode == 'blur': out_blur = q * blur_px
-            elif exit_mode == 'slide_out': sink = q * 22 * k
+            elif exit_mode == 'slide_out': sink, exit_dx = q * 22 * k * vy, q * 22 * k * vx
             elif exit_mode == 'scale_down': scale *= 1 - q * .12
             elif exit_mode == 'mask_down': sink = q * self.height * .15
         elif exit_mode == "blur":                       # tugagach xiralashib yo'qoladi (keyingi bo'lak ustidan chiqadi)
@@ -609,10 +616,16 @@ class RichBlock:
         half_w, half_h = self.width / 2, self.height / 2
 
         def put(spr, xr: float, yr: float, ax: float = 0.0, ay: float = 0.0, extra: float = 1.0,
-                opacity: float = 1.0, blur: float = 0.0, dx: float = 0.0, dy: float = 0.0) -> None:
+                opacity: float = 1.0, blur: float = 0.0, dx: float = 0.0, dy: float = 0.0, tag=None) -> None:
             # (xr, yr) - blok ichidagi nuqta; (ax, ay) - sprite ichida joyida qoladigan nuqta
-            fx = cx + (xr + ax - half_w) * scale + dx
+            fx = cx + (xr + ax - half_w) * scale + dx + exit_dx
             fy = cy + (yr + ay - half_h) * scale + dy + sink
+            effect = cfg.get('emphasis') if mc and punch_word else None
+            ep = M.clamp01((t - punch_start) / ML.duration(mc, 'punch')) if effect else 1.0
+            if effect == 'shake' and ep < 1:      # +-2 px, three cycles, decaying
+                fx += 2 * k * math.sin(ep * 6 * math.pi) * (1 - ep)
+            if effect == 'pop_overshoot' and ep < 1:  # 1 -> ~1.17 -> ~0.97 -> 1
+                extra *= 1 + .18 * intensity * math.exp(-3.5 * ep) * math.sin(2.4 * math.pi * ep)
             if current_word and spr is current_word['spr'] and 'sweep' in current_word:
                 ep=M.ease_out((t-punch_start)/ML.duration(mc,'punch')) if mc else 1
                 sw=current_word['sweep']; cut=max(1,int(sw.w*ep))
@@ -626,7 +639,11 @@ class RichBlock:
             if mc and cfg.get('emphasis') == 'scale_punch' and punch_word:
                 extra *= 1 + .07 * intensity * math.sin(M.clamp01((t-punch_start)/ML.duration(mc,'punch'))*math.pi)
             M.blit(frame, spr, fx - ax, fy - ay, opacity=opacity * out, scale=scale * extra,
-                   blur=blur + out_blur, anchor=(ax, ay))
+                   blur=blur + out_blur, anchor=(ax, ay), tag=None if tag is None else f'{self.tag}{tag}')
+            if effect == 'colour_flash' and current_word and spr is current_word['spr'] and 'flash' in current_word and ep < 1:
+                flash = M.clamp01(ep * 5) * (1 - M.clamp01((ep - .4) / .6))
+                M.blit(frame, current_word['flash'], fx - ax, fy - ay, opacity=opacity * out * flash,
+                       scale=scale * extra, anchor=(ax, ay), tag=None if tag is None else f'{self.tag}{tag}f')
 
         def shift(w: dict) -> float:
             return (w["li"] - (w["ln"] - 1) / 2) * spread * w["size"] if spread else 0.0
@@ -640,7 +657,7 @@ class RichBlock:
             if t >= t0:
                 spr = b["spr"]
                 put(spr, b["x"], b["y"], spr.w / 2, spr.h / 2, 0.7 + 0.3 * M.spring((t - t0) / (anim * 1.6)),
-                    M.clamp01((t - t0) / (anim * 0.6)))
+                    M.clamp01((t - t0) / (anim * 0.6)), tag=f'box{b["first"]}')
         # ---- marker qutilari: guruhdagi oxirgi so'z chiqqach chapdan o'ngga surtiladi
         wiped = {}
         for gi, g in enumerate(self.marks):
@@ -650,7 +667,7 @@ class RichBlock:
             if p > 0.004:
                 spr = g["spr"]
                 part = M.Sprite(np.ascontiguousarray(spr.pix[:, :max(1, int(round(spr.w * p)))]), spr.ox, spr.oy)
-                put(part, g["bx"] + shift(self.words[g["words"][0]]), g["by"])
+                put(part, g["bx"] + shift(self.words[g["words"][0]]), g["by"], tag=f'mark{gi}')
         fps = 25.0
         for i, w in enumerate(self.words):
             t0 = t_of(i)
@@ -661,7 +678,7 @@ class RichBlock:
             sx = shift(w)
             if p < 0:
                 if reveal == "dim":
-                    put(w["spr"], w["x"] + sx, w["y"], opacity=base_op * float(cfg.get("dim", 0.35)))
+                    put(w["spr"], w["x"] + sx, w["y"], opacity=base_op * float(cfg.get("dim", 0.35)), tag=f'w{i}')
                 continue
             spr = w["spr"]
             if w["group"] is not None:
@@ -677,10 +694,10 @@ class RichBlock:
                 effect = cfg.get('emphasis')
                 if effect == 'underline_draw':
                     underline=M.rounded_rect_sprite(max(1,int(w['w']*ep)),max(2,int(4*k)),2*k,M.rgb(cfg['accent'])+(255,))
-                    put(underline,w['x']+sx,w['y']+8*k)
+                    put(underline,w['x']+sx,w['y']+8*k,tag=f'u{i}')
                 elif effect == 'box_wipe' and w['group'] is None:
                     box=M.rounded_rect_sprite(max(1,int((w['w']+12*k)*ep)),int(w['size']),4*k,M.rgb(cfg['accent'])+(65,))
-                    put(box,w['x']+sx-6*k,w['y']-w['size']*.78)
+                    put(box,w['x']+sx-6*k,w['y']-w['size']*.78,tag=f'b{i}')
             if mode in ("letters", "ltrack", "letter_cascade", "typewriter") and w["letters"]:
                 step = float(cfg.get("letter_ms", 45)) / 1000.0
                 if mc:
@@ -688,7 +705,7 @@ class RichBlock:
                 ldur = anim if mc else max(anim, 0.26)
                 last = t0 + step * (len(w["letters"]) - 1) + ldur
                 if t >= last and mode in ("letters", "letter_cascade", "typewriter"):
-                    put(spr, w["x"] + sx, w["y"], opacity=base_op, dx=dx)
+                    put(spr, w["x"] + sx, w["y"], opacity=base_op, dx=dx, tag=f'w{i}')
                     continue
                 from_above = str(cfg.get("letter_from", "below")) == "above"
                 wide = float(cfg.get("letter_track", 0.22)) * w["size"]
@@ -706,59 +723,59 @@ class RichBlock:
                             part=M.Sprite(np.ascontiguousarray(colour.pix[:,:cut]),colour.ox,colour.oy)
                             lspr=M.merge_sprites([(lspr,0,0),(part,0,0)])
                     if mode == 'typewriter':
-                        put(lspr,w['x']+sx+lx,w['y'],opacity=base_op)
+                        put(lspr,w['x']+sx+lx,w['y'],opacity=base_op,tag=f'w{i}l{j}')
                         continue
                     le = ML.curve(lp,mc) if mc else M.ease_out(lp)
                     if mode == "ltrack":
                         put(lspr, w["x"] + sx + lx + (j - (n - 1) / 2) * wide * tighten, w["y"],
-                            opacity=base_op * le, blur=(1 - le) * blur_px * 0.6)
+                            opacity=base_op * le, blur=(1 - le) * blur_px * 0.6, tag=f'w{i}l{j}')
                     else:
                         dy = (1 - le) * w["size"] * 0.28 * intensity * (-1 if from_above else 1)
                         spring=M.spring(lp,float(mc['spring']['omega']),float(mc['spring']['zeta'])) if mc else M.spring(lp)
                         put(lspr, w["x"] + sx + lx, w["y"], lw / 2, -w["size"] * 0.30, 1-.65*intensity*(1-spring),
-                            base_op * M.clamp01(lp * 3.0), dy=dy * scale)
+                            base_op * M.clamp01(lp * 3.0), dy=dy * scale, tag=f'w{i}l{j}')
                 continue
             if mode == "none" or p >= 1:
-                put(spr, w["x"] + sx, w["y"], opacity=base_op, dx=dx)
+                put(spr, w["x"] + sx, w["y"], opacity=base_op, dx=dx, tag=f'w{i}')
             elif mode in ML.ENTRANCES:
                 opacity=base_op*M.clamp01(p*3)
                 mb = float(mc['blur']['max_px'])*k*(1-M.clamp01(p)) if mc and mc['blur']['enabled'] else 0
                 if mode=='spring_pop':
                     spring=M.spring(p,float(mc['spring']['omega']),float(mc['spring']['zeta'])) if mc else M.spring(p)
-                    put(spr,w['x']+sx,w['y'],w['w']/2,-w['size']*.35,1-.28*intensity*(1-spring),opacity,blur=mb)
+                    put(spr,w['x']+sx,w['y'],w['w']/2,-w['size']*.35,1-.28*intensity*(1-spring),opacity,blur=mb,tag=f'w{i}')
                 elif mode=='slide_overshoot':
-                    put(spr,w['x']+sx,w['y'],opacity=opacity,dx=(1-M.ease_back(p,mc['overshoot'] if mc else 1.1))*w['size']*.45*intensity,blur=mb)
+                    put(spr,w['x']+sx,w['y'],opacity=opacity,dx=(1-M.ease_back(p,mc['overshoot'] if mc else 1.1))*w['size']*.45*intensity,blur=mb,tag=f'w{i}')
                 elif mode=='scale_blur':
-                    put(spr,w['x']+sx,w['y'],w['w']/2,-w['size']*.35,1-.15*intensity*(1-e),opacity,blur=(1-M.clamp01(e))*blur_px)
+                    put(spr,w['x']+sx,w['y'],w['w']/2,-w['size']*.35,1-.15*intensity*(1-e),opacity,blur=(1-M.clamp01(e))*blur_px,tag=f'w{i}')
                 elif mode=='mask_up':
                     part=spr.pix.copy(); part[:max(0,int(spr.h*(1-M.clamp01(e))))]=0
-                    put(M.Sprite(part,spr.ox,spr.oy),w['x']+sx,w['y'],opacity=base_op,dy=(1-e)*8*k*intensity)
+                    put(M.Sprite(part,spr.ox,spr.oy),w['x']+sx,w['y'],opacity=base_op,dy=(1-e)*8*k*intensity,tag=f'w{i}')
                 else: # emoji inside typewriter/cascade: whole sprite, no broken glyph
-                    put(spr,w['x']+sx,w['y'],opacity=opacity)
+                    put(spr,w['x']+sx,w['y'],opacity=opacity,tag=f'w{i}')
             elif mode == "pop":
                 put(spr, w["x"] + sx, w["y"], w["w"] / 2, -w["size"] * 0.35, 0.6 + 0.4 * M.spring(p),
-                    base_op * M.clamp01(p * 2.5))
+                    base_op * M.clamp01(p * 2.5), tag=f'w{i}')
             elif mode == "fade":
-                put(spr, w["x"] + sx, w["y"], opacity=base_op * e, dx=dx)
+                put(spr, w["x"] + sx, w["y"], opacity=base_op * e, dx=dx, tag=f'w{i}')
             elif mode == "rise":
                 put(spr, w["x"] + sx, w["y"], opacity=base_op * M.clamp01(p * 2.2),
-                    dx=dx, dy=(1 - M.spring(p, 9.0, 0.62)) * w["size"] * 0.42 * scale)
+                    dx=dx, dy=(1 - M.spring(p, 9.0, 0.62)) * w["size"] * 0.42 * scale, tag=f'w{i}')
             elif mode == "flicker":
                 # 25 kadr/s ritmida: yonadi, ikki kadr xira, yana yonadi ... keyin barqaror
                 n = int((t - t0) * fps + 1e-6)
-                put(spr, w["x"] + sx, w["y"], opacity=base_op * (FLICKER[n] if n < len(FLICKER) else 1.0))
+                put(spr, w["x"] + sx, w["y"], opacity=base_op * (FLICKER[n] if n < len(FLICKER) else 1.0), tag=f'w{i}')
             elif mode == "bar":
                 if (t - t0) < float(cfg.get("bar_ms", 120)) / 1000.0:
                     key = (i, w["color"])
                     if key not in self._bars:
                         self._bars[key] = M.rounded_rect_sprite(max(2, int(w["w"])), max(2, int(w["size"] * 0.74)),
                                                                 0, M.rgb(w["color"]) + (255,))
-                    put(self._bars[key], w["x"] + sx, w["y"] - w["size"] * 0.70, opacity=base_op)
+                    put(self._bars[key], w["x"] + sx, w["y"] - w["size"] * 0.70, opacity=base_op, tag=f'bar{i}')
                 else:
-                    put(spr, w["x"] + sx, w["y"], opacity=base_op)
+                    put(spr, w["x"] + sx, w["y"], opacity=base_op, tag=f'w{i}')
             else:  # blur: xiralikdan ochiladi va biroz pastdan ko'tariladi
                 put(spr, w["x"] + sx, w["y"], opacity=base_op * e, blur=(1 - e) * blur_px,
-                    dx=dx, dy=(1 - e) * float(cfg.get("rise_px", 10)) * k)
+                    dx=dx, dy=(1 - e) * float(cfg.get("rise_px", 10)) * k, tag=f'w{i}')
 
     @staticmethod
     def tail(cfg: dict) -> float:
@@ -855,6 +872,85 @@ class CaptionLayer(Layer):
                                "sentence_start": sentence_start})
             self.items[-1]["tail"] = RichBlock.tail(self.items[-1]["cfg"])
         self.words, self._word_times = words, S.word_times
+        mc = ML.config(ctx.style)
+        self.scrim_cfg = mc["scrim"] if mc["scrim"]["enabled"] else None
+        self.contrast: list = []                    # (cue start, measured contrast, scrim alpha)
+        if mc["cuts"]["enabled"] and ctx.cut_times:
+            self._sync_cuts(mc["cuts"])
+
+    # entrance motion direction of each motion-language entrance (unit vector, screen axes)
+    ENTER_VEC = {"slide_overshoot": (-1.0, 0.0), "mask_up": (0.0, -1.0), "letter_cascade": (0.0, -1.0),
+                 "blur": (0.0, -1.0), "rise": (0.0, -1.0)}
+
+    def _sync_cuts(self, cc: dict) -> None:
+        """Caption onsets land offset_frames after a cut; an exit at a cut moves the way the next one enters."""
+        off = int(cc["offset_frames"]) / self.ctx.fps
+        one = 1.0 / self.ctx.fps
+        cuts = self.ctx.cut_times
+        for item in self.items:
+            near = [c for c in cuts if c - one <= item["start"] < c + off]
+            if near and item["end"] - (near[0] + off) > 0.2:
+                item["start"], item["synced"] = near[0] + off, True
+        if not cc.get("match_direction", True):
+            return
+        for a, b in zip(self.items, self.items[1:]):
+            at_cut = any(abs(b["start"] - off - c) < one / 2 for c in cuts) and b["start"] - a["end"] <= off + one
+            enter = self.ENTER_VEC.get(str(b["cfg"].get("anim_main", b["cfg"].get("animation"))))
+            if at_cut and enter and a["cfg"].get("_motion") and a["cfg"].get("exit") in ("slide_out", "mask_down"):
+                a["cfg"] = dict(a["cfg"], exit="slide_out", exit_vec=enter)
+
+    def _scrim(self, frame, item, cx: float, cy: float, t: float) -> None:
+        """Adaptive backdrop: strength from the measured luminance/texture behind this cue (per shot)."""
+        sc, block, k = self.scrim_cfg, item["block"], self.ctx.k
+        seg = sum(1 for c in self.ctx.cut_times if c <= t)
+        cache = item.setdefault("scrim", {})
+        if seg not in cache:
+            pad_x, pad_y = 28 * k, 18 * k
+            x0, y0 = max(0, int(cx - block.width / 2 - pad_x)), max(0, int(cy - block.height / 2 - pad_y))
+            x1, y1 = min(self.ctx.W, int(cx + block.width / 2 + pad_x)), min(self.ctx.H, int(cy + block.height / 2 + pad_y))
+            roi = frame[y0:y1, x0:x1].astype(np.float32) / 255.0
+            lin = np.where(roi <= .04045, roi / 12.92, ((roi + .055) / 1.055) ** 2.4)
+            lum = lin[..., 0] * .2126 + lin[..., 1] * .7152 + lin[..., 2] * .0722
+            bg, busy = float(lum.mean()) if lum.size else 0.0, float(lum.std()) if lum.size else 0.0
+            tc = np.array(M.rgb(item["cfg"].get("color", "#FFFFFF")), np.float32) / 255.0
+            tl = np.where(tc <= .04045, tc / 12.92, ((tc + .055) / 1.055) ** 2.4)
+            text_l = float(tl[0] * .2126 + tl[1] * .7152 + tl[2] * .0722)
+            light_text = text_l >= .5
+            ratio = lambda a, b: (max(a, b) + .05) / (min(a, b) + .05)
+            need = float(sc["min_contrast"])
+            alpha = 0.0
+            if ratio(text_l, bg) < need or busy > .12:
+                # target background luminance for the required contrast, reached by a black/white veil
+                target = (text_l + .05) / need - .05 if light_text else need * (text_l + .05) - .05
+                if light_text:
+                    alpha = 1 - max(0.0, target) / max(bg, 1e-4)
+                else:
+                    alpha = (min(1.0, target) - bg) / max(1e-4, 1 - bg)
+                alpha = min(float(sc["max_alpha"]), max(0.0, alpha) + (.12 if busy > .12 else 0.0))
+            after = bg * (1 - alpha) if light_text else bg + (1 - bg) * alpha
+            self.contrast.append((round(item["start"], 3), round(ratio(text_l, bg), 2), round(ratio(text_l, after), 2), round(alpha, 3)))
+            spr = None
+            if alpha > .02:
+                w, h = int(x1 - x0), int(y1 - y0)
+                col = (0, 0, 0) if light_text else (255, 255, 255)
+                if sc["style"] == "band":
+                    w, x0 = self.ctx.W, 0
+                mask = np.zeros((h + int(40 * k), w + (0 if sc["style"] == "band" else int(40 * k))), np.float32)
+                ox, oy = (mask.shape[1] - w) // 2, (mask.shape[0] - h) // 2
+                if sc["style"] == "box":
+                    cv2.rectangle(mask, (ox, oy), (ox + w, oy + h), 1.0, -1)
+                    mask = cv2.GaussianBlur(mask, (0, 0), 2 * k)
+                else:
+                    cv2.rectangle(mask, (ox, oy), (ox + w, oy + h), 1.0, -1)
+                    mask = cv2.GaussianBlur(mask, (0, 0), 16 * k)
+                a8 = (mask * 255 * alpha).clip(0, 255).astype(np.uint8)
+                pix = np.dstack([(a8.astype(np.uint16) * c // 255).astype(np.uint8) for c in col] + [a8])
+                spr = M.Sprite(pix, x0 - ox, y0 - oy)
+            cache[seg] = spr
+        spr = cache[seg]
+        if spr is not None:
+            op = M.clamp01((t - item["start"]) / 0.12) * clamp_exit(t, item["end"] + item["tail"], 0.14)
+            M.blit(frame, spr, 0, 0, opacity=op, tag="scrim")
 
     def _cue_cfg(self, name, opts: dict, cue: dict) -> dict:
         if name is None and not opts:
@@ -932,6 +1028,8 @@ class CaptionLayer(Layer):
                     times[i] = last
                 else:
                     times[i] = min(last + 0.06, item["end"])
+        if item.get("synced"):
+            times = [max(x, item["start"]) for x in times]   # cut-synced onset: words wait for it too
         item["times"] = times
 
     def _center(self, block, cfg: dict) -> tuple:
@@ -951,9 +1049,12 @@ class CaptionLayer(Layer):
                     continue
                 if item["block"] is None:
                     self._prepare(item)
+                    item["block"].tag = f"c{self.items.index(item)}:"
                     if t >= item["end"] + item["tail"]:
                         continue
                 cx, cy = self._center(item["block"], item["cfg"])
+                if self.scrim_cfg:
+                    self._scrim(frame, item, cx, cy, t)
                 item["block"].draw(frame, cx, cy, t, item["times"], item["cfg"], item["start"], item["end"])
             elif item["block"] is not None and t >= item["end"] + item["tail"]:
                 item["block"] = None  # xotirani bo'shatish
@@ -1190,6 +1291,7 @@ class ImageLayer(Layer):
         self.reader = None
         self.sprites = None                                       # wiggle: oldindan burilgan nusxalar
         self.wiggle = abs(float(el.get("wiggle", 0)))             # tebranish (gradus), emoji'dagidek
+        self.push = float(el.get("push", 0))                      # sekin yaqinlashish: umri davomida +push (0.06 = 6%)
         if self.path.suffix.lower() in C.VIDEO_EXTS:
             meta = C.ffprobe_info(self.path)
             self.vh = max(2, int(self.width * meta["height"] / max(1, meta["width"])) // 2 * 2)
@@ -1254,7 +1356,9 @@ class ImageLayer(Layer):
             if self.sprites:
                 pos = (math.sin((t - self.start) * 2 * math.pi / 1.5) + 1) / 2
                 spr = self.sprites[min(len(self.sprites) - 1, int(round(pos * (len(self.sprites) - 1))))]
-            if t - self.start > 1.0:
+            if self.push:
+                scale *= 1 + self.push * M.ease_in_out((t - self.start) / max(.001, self.end - self.start))
+            elif t - self.start > 1.0:
                 scale *= M.breathe(t - self.start)   # uzoq turgan rasm sekin "nafas oladi"
         M.blit(frame, spr, self.cx, self.cy, opacity=op * self.opacity, scale=scale, anchor=(0, 0))
 
@@ -2704,6 +2808,194 @@ class AsideLayer(Layer):
                 part.draw(frame, t)
 
 
+class CalendarLayer(Layer):
+    """Kalendar varag'i: oy sarlavhasi, katta kun raqami, kun atrofida halqa chiziladi (sana aytilganda)."""
+    z = 35
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx, k = ctx, ctx.k * float(el.get("size", 1.0))
+        cfg = ctx.caption_cfg({"preset": el.get("preset", "clean")})
+        self.accent = M.rgb(el.get("accent", cfg["accent"]))
+        if "day" not in el or "month" not in el:
+            raise C.MontajError("calendar: 'month' (oy nomi, matn) va 'day' kerak.")
+        self.w, self.h = int(float(el.get("width", 0.42)) * ctx.W), 0
+        self.w = max(int(160 * k), self.w)
+        head_h, self.h = int(self.w * .26), int(self.w * 1.02)
+        card = Image.new("RGBA", (self.w, self.h), (0, 0, 0, 0))
+        d = ImageDraw.Draw(card)
+        r = int(self.w * .08)
+        d.rounded_rectangle([0, 0, self.w - 1, self.h - 1], radius=r, fill=(250, 250, 248, 255))
+        d.rounded_rectangle([0, 0, self.w - 1, head_h + r], radius=r, fill=self.accent + (255,))
+        d.rectangle([0, head_h, self.w - 1, head_h + r], fill=(250, 250, 248, 255))
+        for ring_x in (.3, .7):                                   # spiral rings: calendar, not a plain card
+            cx = int(self.w * ring_x)
+            d.rounded_rectangle([cx - int(self.w * .02), -int(self.w * .03), cx + int(self.w * .02), int(self.w * .07)],
+                                radius=int(self.w * .02), fill=(60, 60, 66, 255))
+        self.card = M.pil_sprite(card, shadow={"blur": 22 * k, "dy": 10 * k, "opacity": .35})
+        font_h = ctx.fonts.get(cfg["font"], head_h * .46, 700)
+        self.month, adv = M.text_sprite(fix_apostrophes(str(el["month"])).upper(), font_h, "#FFFFFF", 2 * k)
+        self.month_x = -adv / 2
+        font_d = ctx.fonts.get(cfg["font"], self.h * .5, 800)
+        self.day, adv = M.text_sprite(str(el["day"]), font_d, "#16161A")
+        self.day_x, self.head_h = -adv / 2, head_h
+        self.label = None
+        if el.get("label"):
+            font_l = ctx.fonts.get(cfg["font"], 52 * k, 600)
+            self.label, adv = M.text_sprite(fix_apostrophes(str(el["label"])), font_l, cfg["color"], 0,
+                                            {"blur": 10 * k, "dy": 3 * k, "opacity": .5})
+            self.label_x = -adv / 2
+        self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.26)) * ctx.H
+        self.mark = float(el.get("mark_at", el["start"] + 0.45))
+        self.k = k
+        ctx.check_safe("Kalendar", self.cx - self.w / 2, self.cy - self.h / 2, self.cx + self.w / 2, self.cy + self.h / 2)
+
+    def draw(self, frame, t: float) -> None:
+        op, base = self.appear(t, self.start, self.end)
+        if op <= 0.003:
+            return
+        p = (t - self.start) / max(.001, self.duration("sticker", .42))
+        scale = base * (M.ease_back(p, 1.2) if p < 1 else 1.0) if p > 0 else .01
+        top = self.cy - self.h / 2
+        M.blit(frame, self.card, self.cx, self.cy, op, max(.05, scale), anchor=(0, 0), tag="card")  # pil_sprite: centre origin
+        inner = M.clamp01((t - self.start - .12) / .3)
+        M.blit(frame, self.month, self.cx + self.month_x, top + self.head_h * .68, op * inner, max(.05, scale),
+               anchor=(-self.month_x, self.h / 2 - self.head_h * .68), tag="month")
+        dy = (1 - M.ease_out(inner)) * 24 * self.k
+        M.blit(frame, self.day, self.cx + self.day_x, top + self.h * .82 + dy, op * inner, max(.05, scale),
+               anchor=(-self.day_x, self.h / 2 - self.h * .82), tag="day")
+        q = M.ease_in_out((t - self.mark) / .45)
+        if q > 0:                                             # hand-drawn ring around the day, drawn on
+            ring = np.zeros((int(self.w * .9), int(self.w * .9), 4), np.uint8)
+            c = ring.shape[0] // 2
+            cv2.ellipse(ring, (c, c), (int(c * .92), int(c * .78)), -8, -90, -90 + 360 * q,
+                        self.accent + (255,), max(2, int(9 * self.k)), cv2.LINE_AA)
+            ring[..., :3] = (ring[..., :3].astype(np.uint16) * ring[..., 3:4] // 255).astype(np.uint8)
+            M.blit(frame, M.Sprite(ring, -c, -c), self.cx, top + self.h * .62, op, tag="ring")
+        if self.label is not None:
+            M.blit(frame, self.label, self.cx + self.label_x, top + self.h + 70 * self.k, op * inner, tag="label")
+
+
+class PanelLayer(Layer):
+    """Shisha panel: orqasi xiralashgan yarim shaffof kartochka, sarlavha va 1-3 qator matn pastdan chiqadi."""
+    z = 34
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx, k = ctx, ctx.k
+        cfg = ctx.caption_cfg({"preset": el.get("preset", "clean")})
+        self.w = int(float(el.get("width", 0.78)) * ctx.W)
+        font_t = ctx.fonts.get(cfg["font"], 64 * k, 700)
+        font_b = ctx.fonts.get(cfg["font"], 46 * k, 500)
+        self.lines = []
+        y = 64 * k
+        if el.get("title"):
+            spr, _ = M.text_sprite(fix_apostrophes(str(el["title"])), font_t, el.get("color", cfg["color"]))
+            self.lines.append((spr, y + 40 * k))
+            y += 92 * k
+        body = [str(x) for x in (el.get("lines") or ([el["text"]] if el.get("text") else []))]
+        if not self.lines and not body:
+            raise C.MontajError("panel: 'title' yoki 'lines'/'text' kerak.")
+        for line in body[:4]:
+            spr, _ = M.text_sprite(fix_apostrophes(line), font_b, el.get("color", cfg["color"]))
+            self.lines.append((spr, y + 30 * k))
+            y += 66 * k
+        self.h = int(y + 36 * k)
+        self.tint = M.rgb(el.get("tint", "#FFFFFF"))
+        self.tint_alpha = float(el.get("tint_alpha", .16))
+        self.x0 = int(float(el.get("x", 0.5)) * ctx.W - self.w / 2)
+        self.y0 = int(float(el.get("y", 0.62)) * ctx.H - self.h / 2)
+        self.radius = int(36 * k)
+        self.edge = M.rounded_rect_sprite(self.w, self.h, self.radius, (255, 255, 255, 0), border=(255, 255, 255, 110))
+        ctx.check_safe("Panel", self.x0, self.y0, self.x0 + self.w, self.y0 + self.h)
+
+    def draw(self, frame, t: float) -> None:
+        op, _ = self.appear(t, self.start, self.end)
+        if op <= 0.003:
+            return
+        p = M.ease_out((t - self.start) / max(.001, self.duration("label", .42)))
+        dy = (1 - p) * 46 * self.ctx.k
+        y0 = int(round(self.y0 + dy))
+        M.glass(frame, self.x0, y0, self.w, self.h, self.radius, opacity=op, blur=18, tint=self.tint, tint_alpha=self.tint_alpha)
+        M.blit(frame, self.edge, self.x0, y0, op, tag="edge")
+        for i, (spr, ly) in enumerate(self.lines):
+            q = M.clamp01((t - self.start - .08 - .06 * i) / .25)   # lines stagger in after the glass
+            M.blit(frame, spr, self.x0 + 48 * self.ctx.k, self.y0 + ly + dy + (1 - M.ease_out(q)) * 18 * self.ctx.k,
+                   op * q, tag=f"line{i}")
+
+
+class LogoStingLayer(Layer):
+    """Logo sting: logo prujina bilan chiqadi, ustidan yorug'lik chizig'i o'tadi, keyin kichrayib ketadi."""
+    z = 72
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        file = el.get("file") or ctx.style.get("logo", {}).get("file")
+        if not file:
+            raise C.MontajError("logo_sting: 'file' yoki style.logo.file kerak.")
+        self.spr = M.image_sprite(ctx.asset(file, "Logotip"), width=int(float(el.get("width", 0.5)) * ctx.W))
+        self.cx, self.cy = float(el.get("x", 0.5)) * ctx.W, float(el.get("y", 0.45)) * ctx.H
+        h, w = self.spr.h, self.spr.w
+        self.alpha = self.spr.pix[..., 3].astype(np.float32) / 255.0
+        xx = np.arange(w, dtype=np.float32)[None, :] + np.arange(h, dtype=np.float32)[:, None] * .45
+        self.diag = xx / max(1.0, float(xx.max()))
+
+    def draw(self, frame, t: float) -> None:
+        life = self.end - self.start
+        p = (t - self.start) / .5
+        out = 1 - M.clamp01(M.ease_in_out((t - (self.end - .3)) / .3)) if life > .6 else 1.0
+        scale = (.6 + .4 * M.spring(p, 11.0, .45)) * (1 - .1 * (1 - out))
+        op = M.clamp01(p * 3) * out
+        M.blit(frame, self.spr, self.cx, self.cy, op, max(.05, scale), anchor=(0, 0), tag="logo")
+        q = (t - self.start - .35) / .55
+        if 0 < q < 1:                                    # shine band, clipped to the logo's own alpha
+            band = np.clip(1 - np.abs(self.diag - (q * 1.4 - .2)) / .07, 0, 1) * self.alpha * .75
+            a8 = (band * 255).astype(np.uint8)
+            shine = M.Sprite(np.dstack([a8, a8, a8, a8]), self.spr.ox, self.spr.oy)
+            M.blit(frame, shine, self.cx, self.cy, op, max(.05, scale), anchor=(0, 0), tag="shine")
+
+
+class MaskRevealLayer(Layer):
+    """Matn o'tish sifatida: rangli parda ustida katta matn "teshik" - ichidan video ko'rinadi;
+    matn harf ichidagi nuqta atrofida kattalashib, butun kadrni ochadi (mask reveal)."""
+    z = 90
+
+    def __init__(self, ctx: Ctx, el: dict):
+        super().__init__(el["start"], el["end"])
+        self.ctx = ctx
+        if not el.get("text"):
+            raise C.MontajError("mask_reveal: 'text' kerak.")
+        cfg = ctx.caption_cfg({"preset": el.get("preset", "clean")})
+        self.color = np.array(M.rgb(el.get("color", cfg["accent"])), np.float32)
+        size = float(el.get("size", 1.0)) * 300 * ctx.k
+        font = ctx.fonts.get(el.get("font", cfg["font"]), size, 900)
+        spr, adv = M.text_sprite(fix_apostrophes(str(el["text"])).upper(), font, "#FFFFFF")
+        room = ctx.W * .86
+        if adv > room:
+            font = ctx.fonts.get(el.get("font", cfg["font"]), size * room / adv, 900)
+            spr, adv = M.text_sprite(fix_apostrophes(str(el["text"])).upper(), font, "#FFFFFF")
+        a = spr.pix[..., 3]
+        self.mask = a.astype(np.float32) / 255.0
+        dist = cv2.distanceTransform((a > 127).astype(np.uint8), cv2.DIST_L2, 5)
+        py, px = np.unravel_index(int(np.argmax(dist)), dist.shape)   # deepest point inside a letter
+        self.left = ctx.W / 2 - adv / 2 + spr.ox
+        self.top = ctx.H * float(el.get("y", .5)) + spr.oy + size * .35
+        self.pivot = (self.left + px, self.top + py)
+        self.hold = float(el.get("hold", .35))
+
+    def draw(self, frame, t: float) -> None:
+        life = max(.2, self.end - self.start)
+        grow = M.clamp01((t - self.start - self.hold) / max(.05, life - self.hold))
+        s = 1 + 40 * grow ** 3                                  # ease-in: slow start, rushes through the letter
+        px, py = self.pivot
+        m = np.float32([[s, 0, px - s * (px - self.left)], [0, s, py - s * (py - self.top)]])
+        H, W = frame.shape[:2]
+        hole = cv2.warpAffine(self.mask, m, (W, H), flags=cv2.INTER_LINEAR, borderValue=0)
+        veil = (1 - hole) * (1 - M.clamp01((grow - .82) / .18))  # last frames: veil fades so nothing is left
+        frame[:] = (frame.astype(np.float32) * (1 - veil[..., None]) + self.color * veil[..., None]).astype(np.uint8)
+
+
 def _motion_factory(ctx, el):
     import motion_design
     return motion_design.build(ctx, el, el['end'])
@@ -2715,7 +3007,8 @@ ELEMENT_TYPES = {"text": TextLayer, "title": TextLayer, "image": ImageLayer, "br
                  "icon": IconLayer, "stage": StageLayer, "burst": BurstLayer, "confetti": ConfettiLayer,
                  "follow": FollowLayer, "scene": SceneLayer, "grade": GradeLayer, "flash": FlashLayer,
                  "handnote": HandnoteLayer, "arrow": ArrowLayer, "phone": PhoneLayer, "profile": PhoneLayer,
-                 "label": LabelLayer, "aside": AsideLayer,
+                 "label": LabelLayer, "aside": AsideLayer, "calendar": CalendarLayer, "panel": PanelLayer,
+                 "logo_sting": LogoStingLayer, "mask_reveal": MaskRevealLayer,
                  "card": _motion_factory, "canvas": _motion_factory,
                  "group": _motion_factory, "hero": _motion_factory}
 # "at" bilan beriladigan qisqa hodisalar: boshlanishi "at", uzunligi "duration"
@@ -2754,7 +3047,7 @@ def build_elements(ctx: Ctx, elements: list, total: float) -> list:
                 layer=ELEMENT_TYPES[kind](ctx, el)
             layer.ctx=ctx
             layer.el_ref, layer.el_type = f"{n}:{kind}", kind
-            layer.motion_kind={'follow':'follow','label':'label','title':'title','text':'title','group':'label','hero':'hero'}.get(kind,'sticker')
+            layer.motion_kind={'follow':'follow','label':'label','panel':'label','title':'title','text':'title','group':'label','hero':'hero'}.get(kind,'sticker')
             layers.append(layer)
         except C.MontajError as exc:
             raise C.MontajError(f"elements.json: {n}-element ({kind}): {exc}") from None

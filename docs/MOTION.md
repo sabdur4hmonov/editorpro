@@ -141,3 +141,34 @@ farqini ko'rsatadi; yangi B-roll qo'shilmaydi va bu cheklov review/HOLAT'da yozi
 ## Tadqiqotdan yangi motion
 
 `docs/MOTION_DESIGN.md`: ixtiyoriy trajectory/pivot, broll/stage layout_morph, material card va camera canvas, active pills, outline/flat relief. Existing word animation va speech margin saqlanadi. Guruh DNA `docs/style_dna/`; native frame intervals output FPSga vaqt orqali o‘tkaziladi.
+
+## Motion polish: lint, sub-pixel, kesish, scrim, blur, shablonlar
+
+Hammasi `style.motion` ichida, default **o'chiq**: tasdiqlangan per-video style (doktor 1-5) aynan
+avvalgidek chiziladi. `style/style.json` (yangi videolar) A/B'da gate yaxshi chiqqani uchun yoqilgan.
+
+| kalit | nima |
+|---|---|
+| `subpixel` | kasr piksel joylash/masshtab (bitta affine warp); tinch sprite piksel-o'tkir qoladi |
+| `cuts {enabled, offset_frames, match_direction, zoom_ease}` | subtitr kesishdan 2 kadr keyin; kesishdagi chiqish keyingi kirish yo'nalishida; zoom push ease-in-out |
+| `scrim {enabled, style: soft/band/box, max_alpha, min_contrast}` | matn ortidagi yorug'lik/teksturani o'lchab parda kuchini tanlaydi (WCAG nisbati `caption_contrast`) |
+| `motion_blur {enabled, samples, min_px, shutter}` | tez harakatda n ta siljigan nusxa o'rtachasi; sekin harakatga tegmaydi |
+| `preset: calm/clinical/punchy` | brend preseti: tezlik, easing, stagger, overshoot, emphasis, blur, scrim, `zoom_strength` |
+| `durations_frames {caption: 8}` | davomiylik kadrda (fps orqali ms ga) |
+
+Emphasis qo'shimcha (faqat aniq tanlanganda): `pop_overshoot`, `colour_flash`, `shake` (±2 px).
+Mavjudlari: `underline_draw`, `box_wipe`, `colour_sweep`, `scale_punch`. Variety eski 4 tadan tanlaydi.
+
+Tekshirish (render qilmasdan, kodlamasdan, har blit geometriyasi):
+
+```powershell
+.venv\Scripts\python.exe scripts\review_tools.py lint temp\video\cut.mp4 --subs temp\video\subs.srt --elements temp\video\elements.json --start 0 --end 12 -o temp\video\lint
+.venv\Scripts\python.exe scripts\review_tools.py slowmo output\video_final.mp4 --lint temp\video\lint\motion_lint.json -o temp\video\slowmo
+```
+
+Lint bayroqlari: `short` (<4 kadr), `linear`, `velocity_jump`, `all_at_once` (≥5 bir kadrda),
+`caption_on_cut`, `jump_at_cut`, `direction_mismatch`; `drift_jitter_px` (sekin drift 2-farqi) va
+`pixel_steps`. Egri chiziqlar `curves_*.png` (x, y, kenglik, opacity; qizil = bayroq). Slowmo: 25%
+tezlik (kadr 4x ushlanadi, interpolyatsiya yo'q) + animatsiya atrofida 12 kadr. Yoqilgan render
+`motion_lint.json` yozadi va gate'ga `motion_lint_flags_per_min`, `drift_jitter_px` qo'shadi.
+Lint o'lchov, did emas: chizish/wipe markazi harakat hisoblanmaydi; sound/motion tasdig'i foydalanuvchida.

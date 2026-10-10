@@ -220,25 +220,127 @@ def from_pil(img, ox: float = 0, oy: float = 0) -> Sprite:
     return Sprite(arr.astype(np.uint8), ox, oy)
 
 
+# Opt-in per render (compose sets them from style.motion; legacy styles keep integer placement).
+SUBPIXEL = False        # fractional position/scale through one affine warp: no 1 px stair in slow drifts
+TRACE = None            # Trace: every blit's drawn geometry per frame (motion lint, motion blur)
+
+
+class Trace:
+    """Records drawn geometry of every blit; previous frame gives each tagged sprite its velocity.
+
+    rows: (frame, layer, tag, cx, cy, w, h, scale, opacity) in output pixels, as actually placed.
+    blur: {'samples': n, 'min_px': speed, 'shutter': 0..1} enables directional multi-sample motion blur.
+    """
+
+    def __init__(self, blur: dict | None = None, record: bool = True):
+        self.blur, self.record = blur, record
+        self.frame, self.layer, self.calls = -10, '', 0
+        self.rows, self.prev, self.cur = [], {}, {}
+
+    def begin_frame(self, index: int) -> None:
+        self.prev = self.cur if index == self.frame + 1 else {}
+        self.cur, self.frame = {}, index
+
+    def begin_layer(self, ref: str) -> None:
+        self.layer, self.calls = ref, 0
+
+    def key(self, tag) -> tuple:
+        if tag is None:
+            tag = f'#{self.calls}'
+            self.calls += 1
+        return (self.layer, str(tag))
+
+    def add(self, key, cx, cy, w, h, scale, opacity, raw: tuple | None = None) -> tuple | None:
+        """(cx, cy) as placed; raw = requested centre (velocity and resting test use it)."""
+        raw = raw or (cx, cy)
+        self.cur[key] = raw
+        if self.record:
+            self.rows.append((self.frame, key[0], key[1], round(cx, 3), round(cy, 3), round(w, 3), round(h, 3),
+                              round(scale, 4), round(opacity, 4)))
+        old = self.prev.get(key)
+        return None if old is None else (raw[0] - old[0], raw[1] - old[1])
+
+
+def _place(pix: np.ndarray, scale: float, left: float, top: float, spr_w: int, spr_h: int):
+    """Sub-pixel placement: one warp holds fractional offset and scale (premultiplied => linear is exact)."""
+    if scale < 0.7:  # strong downscale: area filter first, warp only the small residual
+        nw, nh = max(1, int(round(spr_w * scale))), max(1, int(round(spr_h * scale)))
+        pix = cv2.resize(pix, (nw, nh), interpolation=cv2.INTER_AREA)
+        sx, sy = spr_w * scale / nw, spr_h * scale / nh
+    else:
+        sx = sy = scale
+    ix, iy = math.floor(left), math.floor(top)
+    fx, fy = left - ix, top - iy
+    ph, pw = pix.shape[:2]
+    if abs(sx - 1) < 1e-4 and abs(sy - 1) < 1e-4 and fx < 1e-3 and fy < 1e-3:
+        return pix, ix, iy
+    ow, oh = int(math.ceil(pw * sx + fx)) + 1, int(math.ceil(ph * sy + fy)) + 1
+    m = np.float32([[sx, 0, fx + 0.5 * sx - 0.5], [0, sy, fy + 0.5 * sy - 0.5]])
+    return cv2.warpAffine(pix, m, (ow, oh), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
+                          borderValue=(0, 0, 0, 0)), ix, iy
+
+
+def _motion_blur(pix: np.ndarray, vx: float, vy: float, cfg: dict):
+    """Average of n shifted copies along this frame's motion (shutter * velocity): real sample blur."""
+    n = max(2, int(cfg.get('samples', 5)))
+    sx, sy = vx * float(cfg.get('shutter', 0.5)), vy * float(cfg.get('shutter', 0.5))
+    pad = int(math.ceil(max(abs(sx), abs(sy)) / 2)) + 1
+    src = cv2.copyMakeBorder(pix, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=(0, 0, 0, 0))
+    acc = np.zeros(src.shape, np.float32)
+    h, w = src.shape[:2]
+    for i in range(n):
+        u = i / (n - 1) - 0.5                     # samples centred on the current position
+        m = np.float32([[1, 0, -sx * u], [0, 1, -sy * u]])
+        acc += cv2.warpAffine(src, m, (w, h), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+    return (acc / n + 0.5).astype(np.uint8), pad
+
+
 def blit(frame: np.ndarray, spr: Sprite, x: float, y: float, opacity: float = 1.0,
-         scale: float = 1.0, blur: float = 0.0, anchor: tuple | None = None) -> None:
+         scale: float = 1.0, blur: float = 0.0, anchor: tuple | None = None, tag=None) -> None:
     """Spriteni kadrga joylaydi. (x, y) - sprite boshlang'ich nuqtasi (ox/oy shunga nisbatan).
 
     scale != 1 bo'lsa (x + anchor[0], y + anchor[1]) nuqta joyida qoladi, qolgani kattalashadi/kichrayadi.
+    tag: stable name of this sprite across frames (trace/motion blur); None = call order inside the layer.
     """
     if opacity <= 0.003:
         return
     if blur >= 0.5:
         spr = spr.blurred(blur)
     pix, left, top = spr.pix, x + spr.ox, y + spr.oy
-    if abs(scale - 1.0) > 0.004:
-        nw, nh = max(1, int(round(spr.w * scale))), max(1, int(round(spr.h * scale)))
-        pix = cv2.resize(pix, (nw, nh), interpolation=cv2.INTER_AREA if scale < 1 else cv2.INTER_LINEAR)
+    # sub-pixel mode follows even tiny scale drifts (a 0.4% threshold would jump ~1 px when crossed)
+    scaled = abs(scale - 1.0) > (1e-4 if SUBPIXEL else 0.004)
+    if scaled:
         ax, ay = anchor if anchor is not None else (0.0, 0.0)
         cx, cy = x + ax, y + ay                       # kadrda qimirlamaydigan nuqta
         left = cx + (spr.ox - ax) * scale
         top = cy + (spr.oy - ay) * scale
-    left, top = int(round(left)), int(round(top))
+    trace = TRACE
+    velocity = None
+    if SUBPIXEL:
+        s1 = scale if scaled else 1.0
+        if trace is not None:
+            key = trace.key(tag)
+            raw = (left + spr.w * s1 / 2, top + spr.h * s1 / 2)
+            old = trace.prev.get(key)
+            # a resting sprite stays pixel-sharp; only moving/scaling ones get fractional placement
+            if not scaled and old is not None and abs(old[0] - raw[0]) < 1e-3 and abs(old[1] - raw[1]) < 1e-3:
+                left, top = round(left), round(top)
+            velocity = trace.add(key, left + spr.w * s1 / 2, top + spr.h * s1 / 2, spr.w * s1, spr.h * s1,
+                                 scale, opacity, raw)
+        pix, left, top = _place(pix, s1, left, top, spr.w, spr.h)
+    else:
+        if scaled:
+            nw, nh = max(1, int(round(spr.w * scale))), max(1, int(round(spr.h * scale)))
+            pix = cv2.resize(pix, (nw, nh), interpolation=cv2.INTER_AREA if scale < 1 else cv2.INTER_LINEAR)
+        raw = (left, top)
+        left, top = int(round(left)), int(round(top))
+        if trace is not None:
+            h0, w0 = pix.shape[:2]
+            velocity = trace.add(trace.key(tag), left + w0 / 2, top + h0 / 2, w0, h0, scale, opacity,
+                                 (raw[0] + w0 / 2, raw[1] + h0 / 2))
+    if trace is not None and trace.blur and velocity is not None and math.hypot(*velocity) >= float(trace.blur.get('min_px', 6)):
+        pix, pad = _motion_blur(pix, velocity[0], velocity[1], trace.blur)
+        left, top = left - pad, top - pad
     fh, fw = frame.shape[:2]
     h, w = pix.shape[:2]
     x0, y0, x1, y1 = max(0, left), max(0, top), min(fw, left + w), min(fh, top + h)

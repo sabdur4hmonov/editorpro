@@ -6,7 +6,8 @@ argument-hint: "<brand name> [@instagram]"
 
 # /brend — add a new client brand
 
-Motion configuration is `brand.json -> style.motion` (`docs/MOTION.md`); preview the selected
+Motion configuration is `brand.json -> style.motion` (`docs/MOTION.md`; `preset` calm/clinical/punchy
+sets timing, easing, emphasis, blur, scrim and zoom strength); preview the selected
 durations/easing and show a filmstrip, plus subtle/stronger sound mixes for the user's choice.
 Per-file SFX licences are required. A future laptop follows `docs/NEW_LAPTOP.md`; GPU capability
 is not a completed GPU test. Never install/download without the user's approval.

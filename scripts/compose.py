@@ -202,6 +202,10 @@ def zoom_plan(style: dict, cuts: dict | None, base_dur: float) -> list:
         return []
     punch = float(z.get("punch_in", 1.12))
     push = float(z.get("slow_push", 0.03))
+    import motion_language as ML
+    strength = ML.config(style)["zoom_strength"]
+    if strength is not None:                       # brand motion preset: zoom strength multiplier
+        punch, push = 1 + (punch - 1) * float(strength), push * float(strength)
     min_seg = float(z.get("min_segment", 0.8))
     bounds, pos = [], 0.0
     speed = float((cuts or {}).get("speed", 1.0)) or 1.0
@@ -221,11 +225,13 @@ def zoom_plan(style: dict, cuts: dict | None, base_dur: float) -> list:
     return plan
 
 
-def zoom_at(plan: list, manual: list, t: float, anchor: tuple) -> tuple:
+def zoom_at(plan: list, manual: list, t: float, anchor: tuple, ease: bool = False) -> tuple:
+    """ease: the push inside a cut segment eases in and out instead of a constant-speed crawl."""
     z, cx, cy = 1.0, anchor[0], anchor[1]
     for t0, t1, z0, z1 in plan:
         if t0 <= t < t1:
-            z = z0 + (z1 - z0) * (t - t0) / max(0.001, t1 - t0)
+            p = (t - t0) / max(0.001, t1 - t0)
+            z = z0 + (z1 - z0) * (M.ease_in_out(p) if ease else p)
             break
     for el in manual:
         s, e = float(el.get("start", 0)), float(el.get("end", 0))
@@ -365,11 +371,25 @@ def _tail(path: Path, lines: int = 12) -> str:
         return ""
 
 
+def visual_cut_times(cuts: dict | None, elements: list) -> list:
+    """Output-time cuts captions must respect: applied edit boundaries plus full/split b-roll in/out."""
+    import quality_gate
+    times = list(quality_gate.editorial_cut_times(cuts) or [])
+    for el in elements:
+        if el.get("type") == "broll" and str(el.get("mode", "full")) in ("full", "split") and "end" in el:
+            times += [float(el.get("start", 0)), float(el["end"])]
+    return sorted({round(t, 3) for t in times if t > 0})
+
+
 def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = None,
             words: list | None = None, cuts: dict | None = None, elements_file: Path | None = None,
             music: Path | None = None, nvenc: bool | None = None, stills: list | None = None,
-            stills_out: Path | None = None, draft: bool = False) -> dict:
-    """Asosiy funksiya. stills berilsa faqat shu vaqtlardagi kadrlarni rasm qilib chiqaradi."""
+            stills_out: Path | None = None, draft: bool = False, trace: tuple | None = None) -> dict:
+    """Asosiy funksiya. stills berilsa faqat shu vaqtlardagi kadrlarni rasm qilib chiqaradi.
+
+    trace=(t0, t1): faqat o'lchov - shu oraliq kadrlari chiziladi (kodlanmaydi), har blit geometriyasi
+    qaytariladi (review_tools lint). Render natijasiga ta'sir qilmaydi.
+    """
     video = C.need_file(video, "Video")
     if draft:
         style = draft_style(style)
@@ -383,6 +403,10 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     import motion_language as ML
     style = ML.choose(style,work)
     ctx = E.Ctx(style, brand_dir)
+    mc = ML.config(style)
+    M.SUBPIXEL = bool(mc["subpixel"])
+    blur_cfg = mc["motion_blur"] if mc["motion_blur"]["enabled"] else None
+    M.TRACE = M.Trace(blur_cfg) if (trace or M.SUBPIXEL or blur_cfg) else None
 
     base_dur = meta["duration"]
     end_cfg = style.get("endcard", {})
@@ -410,6 +434,8 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     graph, fit = fit_graph(meta, style, face, brand_dir)
     ctx.anchor = face_in_output(meta, W, H, face, fit)
     plan = zoom_plan(style, cuts, base_dur)
+    ctx.cut_times = visual_cut_times(cuts, elements)
+    zoom_ease = bool(mc["cuts"]["enabled"] and mc["cuts"]["zoom_ease"])
     manual_zoom = [el for el in elements if el.get("type") == "zoom"]
     layers = build_layers(ctx, style, cues, words, elements, base_dur, total)
     behind = [layer for layer in layers if getattr(layer, "behind_person", False)]
@@ -422,8 +448,11 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         monitor = face_safety.FaceMonitor(ctx, layers, style)
 
     def render_frame(frame: np.ndarray, t: float, index: int | None = None) -> np.ndarray:
+        tracer = M.TRACE
+        if tracer is not None:
+            tracer.begin_frame(index if index is not None else int(round(t * fps)))
         if t < base_dur and (plan or manual_zoom):
-            z, cx, cy = zoom_at(plan, manual_zoom, t, ctx.anchor)
+            z, cx, cy = zoom_at(plan, manual_zoom, t, ctx.anchor, zoom_ease)
             frame = zoom_frame(frame, z, cx, cy)
         measuring = False
         if behind:
@@ -439,6 +468,8 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             if layer in behind:
                 continue
             if layer.active(t):
+                if tracer is not None:
+                    tracer.begin_layer(getattr(layer, "el_ref", type(layer).__name__))
                 if monitor is not None and index is not None:
                     kind = getattr(layer, 'el_type', '')
                     if kind == 'flash' and measuring:
@@ -456,6 +487,28 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         return frame
 
     try:
+        # ---------------- faqat o'lchov (motion lint): kadrlar chiziladi, kodlanmaydi
+        if trace:
+            t0, t1 = max(0.0, float(trace[0])), min(total, float(trace[1]))
+            first, stop = int(round(t0 * fps)), int(round(t1 * fps))
+            dec = subprocess.Popen([ffmpeg, "-hide_banner", "-nostdin", "-loglevel", "error", "-ss", f"{first / fps:.4f}",
+                                    "-i", str(video), "-filter_complex", graph, "-map", "[fit]", "-f", "rawvideo",
+                                    "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                   stdin=subprocess.DEVNULL, bufsize=size, cwd=str(C.ROOT))
+            buf = bytearray(size)
+            view = memoryview(buf)
+            held = np.zeros((H, W, 3), np.uint8)
+            try:
+                for i in range(first, stop):
+                    if i / fps < base_dur and _read_exact(dec.stdout, view) == size:
+                        held[:] = np.frombuffer(buf, np.uint8).reshape(H, W, 3)
+                    render_frame(held.copy(), i / fps, i)
+            finally:
+                dec.stdout.close()
+                dec.kill() if dec.poll() is None else None
+                dec.wait()
+            return {"rows": M.TRACE.rows, "fps": fps, "W": W, "H": H, "k": ctx.k, "cuts": ctx.cut_times,
+                    "range": [first / fps, stop / fps], "notes": list(ctx.notes)}
         # ---------------- faqat rasmlar (tez ko'rish)
         if stills:
             shots = []
@@ -595,6 +648,14 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             out_meta['mixes']=sound_design.alternate_mixes(video,out_path,work,style,total,elements,cues,words,music,
                                                           brand_dir,dict(rep))
         out_meta['audio']=dict(rep)
+        if M.TRACE is not None and M.TRACE.rows:
+            import review_tools
+            lint = review_tools.lint_rows(M.TRACE.rows, fps, ctx.k, ctx.cut_times)
+            C.write_json(lint, work / "motion_lint.json")
+            out_meta['motion_lint'] = lint['summary']
+        cap = next((layer for layer in layers if getattr(layer, 'el_type', '') == 'captions'), None)
+        if cap is not None and cap.contrast:
+            out_meta['caption_contrast'] = cap.contrast
         if (work/'edit_plan.json').is_file():
             import quality_gate
             rendered_cuts = quality_gate.editorial_cut_times(cuts)
@@ -610,6 +671,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
                 raise C.MontajError('QUALITY: final tasdiqlanmaydi; tuzatish/o‘lchash: '+', '.join(r['key'] for r in quality['fix_list']))
         return out_meta
     finally:
+        M.SUBPIXEL, M.TRACE = False, None
         for layer in layers:
             layer.close()
 

@@ -243,7 +243,7 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `choice` | To'g'ri/noto'g'ri kartochkasi (✗ ✓ va matn) | `items[{at, text, ok}]`, `y`, `color` |
 | `stat` | Katta raqam sanab chiqadi, halqa to'ladi | `value`, `suffix`, `label`, `ring`, `x`, `y`, `size` |
 | `voice` | Ovozli xabar pleyeri | `y`, `width`, `length` |
-| `image` | Rasm yoki kichik video ustma-qatlam (shaffof PNG: `cutout.py` - hoshiyasiz stiker) | `file`, `x`, `y`, `width`, `radius`, `anim` (pop/fade/none), `border` (oq hoshiya, 0.012), `border_color`, `rotate` (gradus), `wiggle` (tebranish, gradus) |
+| `image` | Rasm yoki kichik video ustma-qatlam (shaffof PNG: `cutout.py` - hoshiyasiz stiker) | `file`, `x`, `y`, `width`, `radius`, `anim` (pop/fade/none), `border` (oq hoshiya, 0.012), `border_color`, `rotate` (gradus), `wiggle` (tebranish, gradus), `push` (umri davomida sekin yaqinlashish, 0.06 = 6%) |
 | `icon` | Vektor belgi (1500+), ostida ixtiyoriy yozuv | `name`, `x`, `y`, `size`, `bg` (none/circle/square/glass), `color`, `bg_color`, `style` (fill/bold), `text` |
 | `broll` | Qo'shimcha kadr: `mode` `full` (to'liq ekran) yoki `split` (tepada gapiruvchi); ovozi o'chiq | `file`, `mode`, `fade`, `offset`, `focus_x` (9:16 kesish joyi), `bw` (oq-qora), `dim` (qoraytirish 0..1) |
 | `zoom` | Qo'lda zoom | `scale`, `x`, `y`, `ease` |
@@ -254,6 +254,10 @@ Vaqtlar **kesilgan video** bo'yicha (soniya). `x`, `y`, `width` kadrga nisbatan 
 | `stage` | Videoni (yoki uning bir qismini) yumaloq kartochkaga oladi, orqasiga **yangi harakatli fon** chizadi | `crop [x0,y0,x1,y1]`, `width`, `y`, `radius`, `border`, `background`, `footer {text, from}`, `progress`, `punch [{at, scale}]`, `shake [{at, amp}]`, `flash [{at}]` |
 | `label` | Mahsulot yorlig'i: shisha panel, kesilgan rasm, kichik yozuv ("1-set") va nom; `items` bo'yicha almashadi | `items[{at, name, kicker, image}]`, `x`, `y`, `width`, `size`, `image_size`, `glass` |
 | `aside` | So'zlar odam yonida (yuzdan chap/o'ng), birin-ketin; qo'lyozma uchun `font: Caveat` | `items[{at, text, side, end, dy}]`, `spread`, `dy`, `size`, `font`, `color`, `stagger`, `margin` |
+| `calendar` | Kalendar varag'i: oy, katta kun, kun atrofida halqa chiziladi | `month`, `day`, `label`, `mark_at`, `x`, `y`, `width`, `accent` |
+| `panel` | Shisha panel: sarlavha + 1-4 qator pastdan chiqadi | `title`, `lines` yoki `text`, `x`, `y`, `width`, `tint`, `tint_alpha` |
+| `logo_sting` | Logo prujina bilan chiqadi, ustidan yorug'lik o'tadi | `file` (yo'q bo'lsa style.logo), `x`, `y`, `width` |
+| `mask_reveal` | Matn o'tish: rangli parda ustidagi matn ichidan video ochiladi | `text`, `color`, `size`, `y`, `hold` |
 | `follow` | Obuna kartochkasi: doira (logotip, nom yoki belgi), @manzil, tugma bosiladi | `handle` (ixtiyoriy), `logo`, `name` yoki `icon`, `button`, `done`, `tap`, `x`, `y`, `size`, `color` |
 | `scene` | To'liq ekranli chizilgan fon (ustiga matn, rasm, `voice` qo'yiladi) | `background {color1..4, pattern: dots/grid/none, rays, sparks}`, `fade` |
 | `grade` | Vaqtincha oq-qora (`mode: bw`) yoki qoraytirish (`dim`) | `mode`, `amount`, `fade` |
