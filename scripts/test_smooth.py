@@ -36,5 +36,40 @@ class FrameRateTests(unittest.TestCase):
         self.assertEqual(same, [(10, 20), (50, 25)])                                           # on-grid: exact
 
 
+def _audio(path):
+    raw = subprocess.run([C.need_tool('ffmpeg'), '-v', 'error', '-i', str(path), '-vn', '-ac', '1', '-ar', '48000', '-f', 's16le', '-'],
+                         capture_output=True).stdout
+    return np.frombuffer(raw, np.int16).astype(np.float32) / 32768
+
+
+def _db(x):
+    return 20 * math.log10(max(1e-7, float(np.sqrt(np.mean(x * x)))))
+
+
+class CutAudioTests(unittest.TestCase):
+    def test_crossfade_keeps_room_tone_and_sync(self):
+        with tempfile.TemporaryDirectory(dir=C.TEMP_DIR) as td:
+            src = Path(td) / 'src.mp4'
+            subprocess.run([C.need_tool('ffmpeg'), '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=160x284:rate=25',
+                            '-f', 'lavfi', '-i', 'anoisesrc=a=0.02:c=pink:r=48000', '-t', '4', '-c:v', 'libx264', '-c:a', 'pcm_s16le',
+                            '-pix_fmt', 'yuv420p', str(src.with_suffix('.mov'))], check=True)
+            plan = {'fps': 25.0, 'speed': 1.0, 'settings': {'fade_ms': 15}, 'keep': [{'start': .2, 'end': 1.2}, {'start': 2.0, 'end': 3.0}]}
+            dips = {}
+            for name, xf in (('legacy', None), ('crossfade', 20)):
+                st = C.load_style(); st['video']['fps'] = 25
+                st['cut'].pop('crossfade_ms', None)
+                if xf: st['cut']['crossfade_ms'] = xf
+                out = Path(td) / f'{name}.mp4'
+                auto_cut.apply_plan(src.with_suffix('.mov'), plan, out, st)
+                a = _audio(out); n = 48000
+                room = _db(a[int(.6 * n):int(.95 * n)])
+                dips[name] = min(_db(a[i:i + 240]) for i in range(n - 960, n + 960, 120)) - room
+                m = C.ffprobe_info(out)
+                self.assertAlmostEqual(len(a) / 48000, 2.0, delta=.03)
+                self.assertAlmostEqual(m['duration'], 2.0, delta=.05)
+            self.assertLess(dips['legacy'], -12)           # fade to zero: a hole
+            self.assertGreater(dips['crossfade'], -4)      # overlap: room tone continuous
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)

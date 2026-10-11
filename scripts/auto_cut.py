@@ -272,6 +272,8 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
     # video frames per segment by cumulative rounding: audio keeps the planned seconds, the picture never
     # drifts more than half an output frame and nothing accumulates (plan grid == output rate: exact frames)
     frames = segment_frames(keep, out_fps)
+    xf = max(0.0, float(style.get("cut", {}).get("crossfade_ms", 0) or 0)) / 1000.0   # absent: legacy fades
+    ext = []
     if meta["has_audio"]:
         parts.append(f"[0:a]aresample=48000,asplit={n}" + "".join(f"[as{i}]" for i in range(n)))
     for i, seg in enumerate(keep):
@@ -280,7 +282,13 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
         # fps filtridan keyin vaqt birligi 1 kadr, shuning uchun chegaralar aniq kadrga tushadi
         f0, nf = frames[i]
         parts.append(f"[vs{i}]trim=start_frame={f0}:end_frame={f0 + nf},setpts=PTS-STARTPTS[v{i}]")
-        if meta["has_audio"]:
+        if meta["has_audio"] and xf > 0:
+            # handles: interior edges borrow xf/2 of neighbouring audio, the crossfade eats exactly that
+            left = min(xf / 2, s) if i > 0 else 0.0
+            right = min(xf / 2, max(0.0, meta["duration"] - e)) if i < n - 1 else 0.0
+            ext.append((left, right))
+            parts.append(f"[as{i}]atrim=start={s - left:.6f}:end={e + right:.6f},asetpts=PTS-STARTPTS[a{i}]")
+        elif meta["has_audio"]:
             f = min(fade, d / 4)
             chain = f"[as{i}]atrim=start={s:.6f}:end={e:.6f},asetpts=PTS-STARTPTS"
             if f > 0:
@@ -289,7 +297,21 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
     speed = float(plan.get("speed", 1.0) or 1.0)
     fast = abs(speed - 1.0) > 0.001
     vlab, alab = ("[vc]", "[ac]") if fast else ("[vout]", "[aout]")
-    if meta["has_audio"]:
+    if meta["has_audio"] and xf > 0:
+        # equal-power (quarter-sine) overlap: room tone stays continuous, no level hole at the cut
+        parts.append("".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0{vlab}")
+        cur = "[a0]"
+        for i in range(1, n):
+            ns = int(round((ext[i - 1][1] + ext[i][0]) * 48000))
+            nxt = alab if i == n - 1 else f"[ax{i}]"
+            if ns >= 2:
+                parts.append(f"{cur}[a{i}]acrossfade=ns={ns}:c1=qsin:c2=qsin{nxt}")
+            else:
+                parts.append(f"{cur}[a{i}]concat=n=2:v=0:a=1{nxt}")
+            cur = nxt
+        if n == 1:
+            parts.append(f"[a0]anull{alab}")
+    elif meta["has_audio"]:
         parts.append("".join(f"[v{i}][a{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=1{vlab}{alab}")
     else:
         parts.append("".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0{vlab}")
