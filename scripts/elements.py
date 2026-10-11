@@ -943,7 +943,8 @@ class CaptionLayer(Layer):
         one = 1.0 / self.ctx.fps
         cuts = self.ctx.cut_times
         for item in self.items:
-            near = [c for c in cuts if c - one <= item["start"] < c + off]
+            # a cue appearing up to offset+1 frames BEFORE a cut would flash for 1-3 frames: move it after too
+            near = [c for c in cuts if c - off - one <= item["start"] < c + off]
             if near and item["end"] - (near[0] + off) > 0.2:
                 item["start"], item["synced"] = near[0] + off, True
         if not cc.get("match_direction", True):

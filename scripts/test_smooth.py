@@ -179,5 +179,16 @@ class ExitTests(unittest.TestCase):
         self.assertGreaterEqual(self.exit_frames(5), 4)
 
 
+class CutSyncTests(unittest.TestCase):
+    def test_cues_land_off_the_cut_on_both_sides(self):
+        import elements as E
+        st = _vstyle(); st.pop('_variety'); st['motion']['cuts'] = {'enabled': True, 'offset_frames': 3}
+        ctx = E.Ctx(st); ctx.cut_times = [2.0]
+        cues = [{'start': 1.92, 'end': 2.8, 'text': 'oldin'}, {'start': 4.0, 'end': 5.0, 'text': 'uzoq'}]
+        cap = E.CaptionLayer(ctx, cues, None, 6)
+        self.assertAlmostEqual(cap.items[0]['start'], 2.0 + 3 / 25)
+        self.assertAlmostEqual(cap.items[1]['start'], 4.0)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)
