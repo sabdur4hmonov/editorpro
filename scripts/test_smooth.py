@@ -270,5 +270,44 @@ class FlickerTests(unittest.TestCase):
         self.assertNotEqual(pattern(new), pattern(legacy))
 
 
+class SmoothCheckTests(unittest.TestCase):
+    def test_held_frames_cadence_and_static(self):
+        import quality_gate as QG
+        judder = []
+        for i in range(30):                      # 25 -> 30: every 6th output frame repeats the previous picture
+            judder.append(judder[-1] if i % 6 == 3 else i)
+        self.assertEqual(len(QG.held_frames(judder)), 5)
+        self.assertEqual(QG.held_frames([1] * 20 + list(range(20))), [])          # a still shot is not judder
+
+    def test_report_warns_with_timecodes(self):
+        import quality_gate as QG
+        hashes = [i if i % 6 != 3 else i - 1 for i in range(60)]
+        cues = [{'start': 1.0, 'end': 2.0, 'text': 'salom dunyo'}]
+        words = [{'word': 'salom', 'start': .8, 'end': 1.0}]
+        rep = QG.smoothness(30, 25, hashes, cues=cues, words=words, anims=['a'] * 6)
+        text = ' '.join(rep['warnings'])
+        self.assertIn('takror kadr', text)
+        self.assertIn('200 ms kech', text)
+        self.assertIn('ketma-ket 6', text)
+        clean = QG.smoothness(25, 25, list(range(60)), cues=cues, words=[dict(words[0], start=1.0)], anims=['a', 'b', 'a', 'c'])
+        self.assertEqual(clean['warnings'], [])
+
+
+class TraceIsPassiveTests(unittest.TestCase):
+    def test_record_only_trace_never_changes_pixels(self):
+        import motion as M
+        spr = M.rounded_rect_sprite(30, 20, 6, (255, 200, 0, 255))
+        outs = []
+        for tr in (None, M.Trace()):
+            M.SUBPIXEL, M.TRACE = False, tr
+            fr = np.zeros((80, 120, 3), np.uint8)
+            for f in range(5):
+                if tr: tr.begin_frame(f); tr.begin_layer('x')
+                M.blit(fr, spr, 20 + 3.3 * f, 30.6, opacity=.8, scale=1 + .05 * f, anchor=(15, 10))
+            outs.append(fr)
+        M.TRACE = None
+        self.assertTrue(np.array_equal(*outs))
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)

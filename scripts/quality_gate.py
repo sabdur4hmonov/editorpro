@@ -128,6 +128,13 @@ def evaluate(style, cues, elements, duration, plan, result=None, cut_times=None)
         else:
             add('drift_jitter_px', lint['drift_jitter_px'], targets.get('drift_jitter_px', .15),
                 method='mean |2nd difference| of slow drifts as placed; integer placement shows 1 px stair steps')
+    smooth = result.get('smoothness')
+    if smooth:  # permanent smoothness check (measured after the render)
+        add('held_frames', smooth['held_frames'], 0, method=f"isolated repeats of the decoded picture, {smooth['source_fps']:g} -> {smooth['fps']:g} fps")
+        bad = [r for r in smooth['cuts'] if r['dip_db'] < SMOOTH_LIMITS['cut_dip_db'] or r['click'] > SMOOTH_LIMITS['cut_click']]
+        add('cut_audio_holes', len(bad) if smooth['cuts'] else None, 0, method='5 ms min vs room tone (dip) and sample step (click) at editorial cuts')
+        late = [r for r in smooth['caption_lag'] if not SMOOTH_LIMITS['caption_early_ms'] <= r['lag_ms'] <= SMOOTH_LIMITS['caption_late_ms']]
+        add('caption_lag', len(late) if smooth['caption_lag'] else None, 0, method='cue onset vs its first spoken word, -150..+80 ms')
     variety = result.get('variety')
     if variety:  # mechanical repetition: run of identical animations <= 3, no type over 60 %
         for key in ('captions', 'motion'):
@@ -150,6 +157,91 @@ def evaluate(style, cues, elements, duration, plan, result=None, cut_times=None)
                 status='measured_pass' if not fixes else 'needs_fix_or_measurement',
                 creative_approval=False, sound_approval=False,
                 caption_centres={'x':xs, 'y':ys}, item_event_times=events, repeat_conflicts=duplicates)
+
+
+
+# ---------------------------------------------------------------- smoothness check (after every render)
+SMOOTH_LIMITS = {'held_frames': 0, 'cut_dip_db': -10.0, 'cut_click': 3.0, 'caption_late_ms': 80, 'caption_early_ms': -150,
+                 'drift_jitter_px': .15, 'max_run': 3, 'max_share': .6}
+
+
+def held_frames(hashes):
+    """Isolated exact repeats of the decoded source picture while it moves (25->30 style duplication)."""
+    out = []
+    for i in range(2, len(hashes)):
+        if hashes[i] == hashes[i - 1] and hashes[i - 1] != hashes[i - 2] and (i + 1 >= len(hashes) or hashes[i + 1] != hashes[i]):
+            out.append(i)
+    return out
+
+
+def cut_audio_rows(wav, cut_times, sr=48000):
+    """Per editorial cut: 5 ms minimum vs the room tone before it (dip) and the largest sample step (click)."""
+    import wave
+    import numpy as np
+    with wave.open(str(wav), 'rb') as w:
+        ch, sr = w.getnchannels(), w.getframerate()
+        x = np.frombuffer(w.readframes(w.getnframes()), np.int16).reshape(-1, ch).mean(1).astype(np.float32) / 32768
+    db = lambda v: 20 * math.log10(max(1e-7, float(np.sqrt(np.mean(v * v))) if len(v) else 1e-7))
+    rows = []
+    for t in cut_times:
+        n = int(t * sr)
+        if n < int(.15 * sr) or n > len(x) - int(.05 * sr):
+            continue
+        room = db(x[n - int(.12 * sr):n - int(.03 * sr)])
+        low = min(db(x[i:i + 240]) for i in range(n - int(.02 * sr), n + int(.02 * sr) - 240, 120))
+        step = np.abs(np.diff(x[n - int(.02 * sr):n + int(.02 * sr)]))
+        ref = np.percentile(np.abs(np.diff(x[max(0, n - sr // 2):n + sr // 2])), 99) + 1e-6
+        rows.append({'t': round(t, 3), 'dip_db': round(low - room, 1), 'click': round(float(step.max() / ref), 2)})
+    return rows
+
+
+def caption_lag_rows(cues, words):
+    """Cue onset minus the start of its first spoken word (text-matched within 1 s)."""
+    import re
+    norm = lambda s: re.sub(r'[^\w]', '', str(s).lower().replace('‘', '').replace('’', '').replace("'", ''))
+    rows = []
+    for c in cues:
+        toks = [norm(t) for t in re.sub(r'\{[^}]*\}|[*_=~!]', ' ', c['text']).split() if norm(t)]
+        cand = [w for w in words or [] if toks and norm(w.get('word', w.get('text', ''))) == toks[0] and abs(float(w['start']) - c['start']) < 1]
+        if cand:
+            w = min(cand, key=lambda w: abs(float(w['start']) - c['start']))
+            rows.append({'t': round(c['start'], 3), 'lag_ms': round((c['start'] - float(w['start'])) * 1000)})
+    return rows
+
+
+def smoothness(fps, source_fps, hashes, wav=None, cut_times=(), cues=(), words=None, lint=None, variety=None, anims=None):
+    """Permanent smoothness check: frame cadence, sub-pixel jitter, cut clicks/holes, caption lag, repetition.
+    Returns rows + warnings with time codes; never raises (a measurement, not a render blocker)."""
+    L, warn = SMOOTH_LIMITS, []
+    held = held_frames(hashes)
+    if len(held) > L['held_frames']:
+        gaps = sorted({b - a for a, b in zip(held, held[1:])})[:3]
+        warn.append(f"{len(held)} takror kadr (source {source_fps:g} -> {fps:g} fps), oraliq {gaps} kadr; birinchi "
+                    + ', '.join(C.fmt_time(i / fps) for i in held[:5]))
+    cuts = cut_audio_rows(wav, cut_times) if wav and cut_times else []
+    for r in cuts:
+        if r['dip_db'] < L['cut_dip_db'] or r['click'] > L['cut_click']:
+            warn.append(f"kesish {C.fmt_time(r['t'])}: ovoz teshigi {r['dip_db']} dB, klik {r['click']}")
+    lag = caption_lag_rows(list(cues), words)
+    for r in lag:
+        if r['lag_ms'] > L['caption_late_ms'] or r['lag_ms'] < L['caption_early_ms']:
+            warn.append(f"subtitr {C.fmt_time(r['t'])}: so'zdan {r['lag_ms']} ms {'kech' if r['lag_ms'] > 0 else 'erta'}")
+    jitter = (lint or {}).get('drift_jitter_px')
+    if jitter is not None and jitter > L['drift_jitter_px']:
+        warn.append(f"sekin driftda piksel titrashi {jitter} px (subpixel yoqilmagan bo'lishi mumkin)")
+    for f in (lint or {}).get('flag_rows', [])[:5]:
+        warn.append(f"animatsiya {C.fmt_time(f['frame'] / fps)}: {f['flag']} ({f.get('track', '')})")
+    rep = variety or {}
+    if not rep and anims:
+        import motion_language as ML
+        rep = {'captions': ML.variety_report(anims)}
+    for key, r in rep.items():
+        if r.get('n', 0) >= 4 and (r['longest_run'] > L['max_run'] or r['max_share'] > L['max_share']):
+            warn.append(f"{key}: bir xil animatsiya ketma-ket {r['longest_run']} marta, eng ko'p tur {round(r['max_share'] * 100)}% "
+                        f"({r['counts']})")
+    return {'fps': fps, 'source_fps': source_fps, 'held_frames': len(held), 'held_at': held[:50], 'cuts': cuts,
+            'caption_lag': lag, 'drift_jitter_px': jitter, 'lint_flags': (lint or {}).get('flags'),
+            'repetition': rep, 'warnings': warn, 'limits': L}
 
 
 def markdown(rep):

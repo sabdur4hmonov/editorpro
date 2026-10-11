@@ -470,7 +470,8 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     mc = ML.config(style)
     M.SUBPIXEL = bool(mc["subpixel"])
     blur_cfg = mc["motion_blur"] if mc["motion_blur"]["enabled"] else None
-    M.TRACE = M.Trace(blur_cfg) if (trace or M.SUBPIXEL or blur_cfg) else None
+    # a record-only trace never changes pixels; it feeds motion lint and the smoothness check of every render
+    M.TRACE = M.Trace(blur_cfg) if (trace or M.SUBPIXEL or blur_cfg or not stills) else None
 
     base_dur = meta["duration"]
     end_cfg = style.get("endcard", {})
@@ -654,6 +655,8 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             last = np.zeros((H, W, 3), np.uint8)
             began = shown = time.time()
             got_any = False
+            import zlib
+            hashes = []
             try:
                 for i in range(total_frames):
                     t = i / fps
@@ -661,7 +664,9 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
                         got_any = True
                         last[:] = frame
                         cur = frame
+                        hashes.append(zlib.crc32(frame[::24, ::24].tobytes()))
                     else:
+                        hashes.append(None)
                         if not got_any:
                             raise C.MontajError("Videodan kadr o'qib bo'lmadi:\n" + _tail(dec_log))
                         cur = last.copy()   # video tugadi (oxirgi kadr): shu kadr ushlab turiladi
@@ -727,6 +732,19 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             out_meta['caption_contrast'] = cap.contrast
         if style.get('_variety'):
             out_meta['variety'] = variety_summary(style, cap, element_moves, cuts, base_dur, work)
+        import quality_gate
+        lint_full = C.read_json(work / "motion_lint.json") if (work / "motion_lint.json").is_file() and M.TRACE is not None else {}
+        smooth = quality_gate.smoothness(
+            fps, C.source_fps(meta)[0], hashes, wav, quality_gate.editorial_cut_times(cuts) or [], cues, words,
+            dict(lint_full.get('summary', {}), flag_rows=lint_full.get('flags', [])) if lint_full else None,
+            out_meta.get('variety'), [it['cfg'].get('anim_main', it['cfg'].get('animation')) for it in cap.items] if cap else None)
+        C.write_json(dict(smooth, video=str(out_path)), work / "smoothness.json")
+        out_meta['smoothness'] = {k: smooth[k] for k in ('held_frames', 'drift_jitter_px', 'warnings')}
+        out_meta['smoothness'].update(cuts=smooth['cuts'], caption_lag=smooth['caption_lag'], fps=fps, source_fps=smooth['source_fps'])
+        for w in smooth['warnings']:
+            C.warn("SMOOTH: " + w)
+        out_meta["checks"].append(("Silliqlik", "ok" if not smooth['warnings'] else "ogoh",
+                                   f"{len(smooth['warnings'])} ogohlantirish, takror kadr {smooth['held_frames']} (temp/.../smoothness.json)"))
         if (work/'edit_plan.json').is_file():
             import quality_gate
             rendered_cuts = quality_gate.editorial_cut_times(cuts)
