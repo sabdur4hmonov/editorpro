@@ -131,6 +131,8 @@
 
   "subtitles": {
     "_izoh": "O'lchamlar 1920 balandlik uchun piksel. margin_v: pastdan masofa (Reels tugmalari yopib qo'ymasligi uchun katta). Ranglar #RRGGBB. Shrift tizimda bo'lishi yoki style/fonts/ ga .ttf qilib tashlangan bo'lishi kerak.",
+    "min_on_screen": 0.7,
+    "max_cps": 20,
     "enabled": true,
     "font": "Arial",
     "fonts_dir": "style/fonts",

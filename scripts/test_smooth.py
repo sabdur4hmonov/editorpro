@@ -190,5 +190,22 @@ class CutSyncTests(unittest.TestCase):
         self.assertAlmostEqual(cap.items[1]['start'], 4.0)
 
 
+class ReadingTests(unittest.TestCase):
+    def test_short_fast_cues_merge_without_moving_words(self):
+        words = []
+        t = 0.0
+        for i, wd in enumerate('bu juda tez gapirilgan gap. keyin yana bir gap keladi va tugaydi.'.split()):
+            words.append({'word': wd, 'start': round(t, 3), 'end': round(t + .16, 3)}); t += .2
+        base = {'max_words_per_line': 2, 'max_chars_per_line': 14, 'max_cue_duration': 2.5, 'gap_break': .6}
+        before = C.words_to_cues(words, base)
+        after = C.words_to_cues(words, dict(base, min_on_screen=.7, max_cps=20))
+        self.assertTrue(any(c['end'] - c['start'] < .7 for c in before))
+        self.assertTrue(all(c['end'] - c['start'] >= .7 - 1e-6 for c in after[:-1]))
+        self.assertEqual(' '.join(c['text'] for c in after).split(), [w['word'] for w in words])
+        self.assertEqual([c['start'] for c in after][0], 0.0)
+        tagged = [dict(words[0], word='{caps}bu')] + words[1:3]
+        self.assertTrue(C.words_to_cues(tagged, dict(base, min_on_screen=.7, max_cps=20))[0]['text'].startswith('{caps}'))
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)

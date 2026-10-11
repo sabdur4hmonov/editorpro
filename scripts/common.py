@@ -730,7 +730,7 @@ def cue_style(style: dict) -> dict:
     cap = style.get("captions", {})
     if str(cap.get("engine", "motion")).lower() == "motion":
         for key in ("max_words_per_line", "max_chars_per_line", "max_cue_duration", "min_cue_duration", "gap_break",
-                    "lockup_chars", "lockup_words", "lockup_duration", "mark2_big"):
+                    "lockup_chars", "lockup_words", "lockup_duration", "mark2_big", "min_on_screen", "max_cps"):
             if key in cap:
                 out[key] = cap[key]
     return out
@@ -788,6 +788,41 @@ def _split_phrase(seg: list, max_words: int, max_chars: int, max_dur: float) -> 
     return parts[::-1]
 
 
+def merge_for_reading(cues: list, min_on: float, max_cps: float, max_chars: int, max_dur: float, gap: float) -> list:
+    """Readability: a cue shorter than min_on or faster than max_cps joins a neighbour (words keep their times).
+
+    Never across a {style} tag or a long pause; a cue that still cannot reach min_on borrows the silent gap after it.
+    """
+    def chars(c):
+        return len(strip_markup(re.sub(r"\{[^{}]*\}", "", c["text"])))
+    def bad(c):
+        dur = c["end"] - c["start"]
+        return (min_on and dur < min_on - 1e-6) or (max_cps and chars(c) / max(dur, .01) > max_cps)
+    def can(a, b):
+        return (not re.match(r"\{[A-Za-z]", b["text"]) and b["start"] - a["end"] <= gap
+                and chars(a) + chars(b) + 1 <= max_chars and b["end"] - a["start"] <= max_dur)
+    out = [dict(c) for c in cues]
+    changed = True
+    while changed:
+        changed = False
+        for i, c in enumerate(out):
+            if not bad(c):
+                continue
+            j = i + 1 if i + 1 < len(out) and can(c, out[i + 1]) else (i - 1 if i > 0 and can(out[i - 1], c) else None)
+            if j is None:
+                continue
+            a, b = (c, out[j]) if j > i else (out[j], c)
+            merged = {"start": a["start"], "end": b["end"], "text": a["text"] + " " + b["text"]}
+            out[min(i, j):max(i, j) + 1] = [merged]
+            changed = True
+            break
+    for i, c in enumerate(out):                      # still short: hold into the silence that follows
+        nxt = out[i + 1]["start"] if i + 1 < len(out) else c["end"] + min_on
+        if min_on and c["end"] - c["start"] < min_on:
+            c["end"] = max(c["end"], min(c["start"] + min_on, nxt))
+    return out
+
+
 def words_to_cues(words: list, sub_style: dict) -> list:
     """So'zlar ro'yxatidan qisqa subtitr bo'laklari yasaydi (Reels uslubi).
 
@@ -833,6 +868,9 @@ def words_to_cues(words: list, sub_style: dict) -> list:
             # yonma-yon turgan bir xil belgilar birlashtiriladi: "**3** **ta**" -> "**3 ta**"
             text = re.sub(r"(?<![*!_=~])(!!|\*\*|\*|_|==|~~) \1(?![*!_=~])", " ", text)
             cues.append({"start": seg[a]["start"], "end": seg[b - 1]["end"], "text": text})
+    min_on, max_cps = float(sub_style.get("min_on_screen", 0) or 0), float(sub_style.get("max_cps", 0) or 0)
+    if min_on or max_cps:
+        cues = merge_for_reading(cues, min_on, max_cps, 2 * max_chars + 4, max_dur * 1.6, gap_break)
     # bo'laklar ustma-ust tushmasin va juda qisqa bo'lmasin
     min_dur = float(sub_style.get("min_cue_duration", 0.3))
     for i, cue in enumerate(cues):
