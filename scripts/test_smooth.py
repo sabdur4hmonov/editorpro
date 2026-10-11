@@ -58,7 +58,8 @@ class CutAudioTests(unittest.TestCase):
             for name, xf in (('legacy', None), ('crossfade', 20)):
                 st = C.load_style(); st['video']['fps'] = 25
                 st['cut'].pop('crossfade_ms', None)
-                if xf: st['cut']['crossfade_ms'] = xf
+                st['cut'].pop('intermediate_audio', None)
+                if xf: st['cut'].update(crossfade_ms=xf, intermediate_audio='alac')
                 out = Path(td) / f'{name}.mp4'
                 auto_cut.apply_plan(src.with_suffix('.mov'), plan, out, st)
                 a = _audio(out); n = 48000
@@ -67,6 +68,7 @@ class CutAudioTests(unittest.TestCase):
                 m = C.ffprobe_info(out)
                 self.assertAlmostEqual(len(a) / 48000, 2.0, delta=.03)
                 self.assertAlmostEqual(m['duration'], 2.0, delta=.05)
+                self.assertEqual(m['acodec'], 'alac' if xf else 'aac')   # F13: lossless intermediate audio
             self.assertLess(dips['legacy'], -12)           # fade to zero: a hole
             self.assertGreater(dips['crossfade'], -8)      # overlap: room tone continuous (5 ms noise varies ~3-5 dB)
 

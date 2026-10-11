@@ -324,7 +324,7 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
     crf = int(style["cut"].get("intermediate_crf", 16))
     post = ["-map", "[vout]"]
     if meta["has_audio"]:
-        post += ["-map", "[aout]", "-c:a", "aac", "-b:a", "256k"]
+        post += ["-map", "[aout]"] + C.intermediate_audio(style, "256k")
     post += ["-c:v", "libx264", "-preset", "veryfast", "-crf", str(crf), "-pix_fmt", "yuv420p",
              "-movflags", "+faststart", str(out_path)]
     C.run_ffmpeg_graph(["-i", str(video)], graph, post, out_path.parent, force_file=force_file_graph)

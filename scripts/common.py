@@ -396,6 +396,14 @@ def fps_expr(fps: float) -> str:
     return f"{fps:g}"
 
 
+def intermediate_audio(style: dict, aac_bitrate: str) -> list:
+    """Audio codec for intermediate files: cut.intermediate_audio "alac" keeps it lossless until the one final
+    AAC encode; absent (legacy) keeps the old AAC intermediate."""
+    if str(style.get("cut", {}).get("intermediate_audio", "aac")).lower() == "alac":
+        return ["-c:a", "alac"]
+    return ["-c:a", "aac", "-b:a", aac_bitrate]
+
+
 def style_get(style: dict, section: str, key: str):
     """style.json dan qiymat oladi, yo'q bo'lsa qaysi kalit yo'qligini aytadi."""
     try:

@@ -129,8 +129,8 @@ def _vf(style: dict, item: dict) -> str:
 
 def _encode_args(style: dict) -> list:
     crf = int(style["cut"].get("intermediate_crf", 16))
-    return ["-c:v", "libx264", "-crf", str(crf), "-preset", "fast", "-pix_fmt", "yuv420p",
-            "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2"]
+    return (["-c:v", "libx264", "-crf", str(crf), "-preset", "fast", "-pix_fmt", "yuv420p"]
+            + C.intermediate_audio(style, "192k") + ["-ar", "48000", "-ac", "2"])
 
 
 def _segment(item: dict, style: dict, out: Path, mute: bool) -> float:

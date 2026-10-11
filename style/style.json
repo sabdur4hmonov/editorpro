@@ -87,6 +87,7 @@
     "min_keep": 0.2,
     "fade_ms": 15,
     "crossfade_ms": 20,
+    "intermediate_audio": "alac",
     "speed": 1.0,
     "_speed_izoh": "Butun video tezligi (1.0 = o'zgarmaydi, 1.08 = 8% tezroq). Ovoz ohangi o'zgarmaydi.",
     "remove_repeats": true,
