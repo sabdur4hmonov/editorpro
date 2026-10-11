@@ -218,6 +218,8 @@ def zoom_plan(style: dict, cuts: dict | None, base_dur: float) -> list:
         pos += length
     if len(bounds) < 2:
         bounds = [(0.0, base_dur)]
+    if style.get("_variety") and ML.variety_cfg(style)["enabled"]:
+        return ML.zoom_variety(style, bounds, punch, push, min_seg)[0]
     plan, level, flip = [], 1.0, False
     for i, (t0, t1) in enumerate(bounds):
         if i > 0 and (t1 - t0) >= min_seg:
@@ -384,6 +386,26 @@ def visual_cut_times(cuts: dict | None, elements: list) -> list:
     return sorted({round(t, 3) for t in times if t > 0})
 
 
+def variety_summary(style: dict, cap, element_moves: list, cuts, base_dur: float, work: Path) -> dict:
+    """Per video: count of each animation and the longest run of identical consecutive ones."""
+    import motion_language as ML
+    cues = [p["enter"] for p in (getattr(cap, "variety", None) or []) if p["enter"] != "explicit"]
+    z = style.get("zoom", {})
+    zoom_moves = []
+    if z.get("enabled", True) and cuts and len(cuts.get("keep", [])) > 1:
+        speed, pos, bounds = float(cuts.get("speed", 1) or 1), 0.0, []
+        for seg in cuts["keep"]:
+            length = (float(seg["end"]) - float(seg["start"])) / speed
+            bounds.append((pos, pos + length)); pos += length
+        zoom_moves = ML.zoom_variety(style, bounds, float(z.get("punch_in", 1.12)), float(z.get("slow_push", .03)),
+                                     float(z.get("min_segment", .8)))[1]
+    other = sorted(element_moves + zoom_moves)
+    rep = {"plan": style["_variety"], "captions": ML.variety_report(cues), "motion": ML.variety_report([m for _, _, m in other]),
+           "caption_rows": getattr(cap, "variety", None), "motion_rows": other}
+    C.write_json(rep, work / "motion_variety_report.json")
+    return {"captions": rep["captions"], "motion": rep["motion"]}
+
+
 def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = None,
             words: list | None = None, cuts: dict | None = None, elements_file: Path | None = None,
             music: Path | None = None, nvenc: bool | None = None, stills: list | None = None,
@@ -406,6 +428,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     brand_dir = C.brand_dir(style)
     import motion_language as ML
     style = ML.choose(style,work)
+    style = ML.setup_variety(style, work)
     ctx = E.Ctx(style, brand_dir)
     mc = ML.config(style)
     M.SUBPIXEL = bool(mc["subpixel"])
@@ -421,6 +444,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     import energy_curve
     style, elements = energy_curve.prepare(video, words, cues, elements, style, work)
     ctx.style = style
+    elements, element_moves = ML.element_plan(style, elements)
 
     import studio
     precheck = studio.preflight(style, cues, elements, base_dur, validate_layers=False)
@@ -439,7 +463,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     ctx.anchor = face_in_output(meta, W, H, face, fit)
     plan = zoom_plan(style, cuts, base_dur)
     ctx.cut_times = visual_cut_times(cuts, elements)
-    zoom_ease = bool(mc["cuts"]["enabled"] and mc["cuts"]["zoom_ease"])
+    zoom_ease = bool(mc["cuts"]["enabled"] and mc["cuts"]["zoom_ease"]) or bool(style.get("_variety"))
     manual_zoom = [el for el in elements if el.get("type") == "zoom"]
     layers = build_layers(ctx, style, cues, words, elements, base_dur, total)
     behind = [layer for layer in layers if getattr(layer, "behind_person", False)]
@@ -660,6 +684,8 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         cap = next((layer for layer in layers if getattr(layer, 'el_type', '') == 'captions'), None)
         if cap is not None and cap.contrast:
             out_meta['caption_contrast'] = cap.contrast
+        if style.get('_variety'):
+            out_meta['variety'] = variety_summary(style, cap, element_moves, cuts, base_dur, work)
         if (work/'edit_plan.json').is_file():
             import quality_gate
             rendered_cuts = quality_gate.editorial_cut_times(cuts)

@@ -47,6 +47,7 @@
     "cuts": {"enabled": true, "offset_frames": 2, "match_direction": true, "zoom_ease": true},
     "scrim": {"enabled": true, "style": "soft", "max_alpha": 0.55, "min_contrast": 4.5},
     "motion_blur": {"enabled": false, "samples": 5, "min_px": 6, "shutter": 0.5},
+    "variety_plan": {"_izoh": "Har bo'lak/element rol va energiyaga qarab: imzo + 2-3 variant, ketma-ket <=3, bitta tur <=60%, seed bilan. docs/MOTION.md 'Variety'.", "enabled": true, "others": 3, "max_run": 3, "max_share": 0.6, "jitter_frames": 2, "ease_jitter": 0.03, "zoom_skip": 0.35, "zoom_range": [1.04, 1.10]},
     "choice": {}
   },
 

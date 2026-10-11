@@ -128,6 +128,15 @@ def evaluate(style, cues, elements, duration, plan, result=None, cut_times=None)
         else:
             add('drift_jitter_px', lint['drift_jitter_px'], targets.get('drift_jitter_px', .15),
                 method='mean |2nd difference| of slow drifts as placed; integer placement shows 1 px stair steps')
+    variety = result.get('variety')
+    if variety:  # mechanical repetition: run of identical animations <= 3, no type over 60 %
+        for key in ('captions', 'motion'):
+            rep = variety[key]
+            if rep['n'] >= 4:
+                add(f'{key}_variety_run', rep['longest_run'], targets.get('variety_max_run', 3),
+                    method=f'longest run of identical consecutive {key} animations; counts {rep["counts"]}')
+                add(f'{key}_variety_share', rep['max_share'], targets.get('variety_max_share', .6),
+                    method=f'largest single {key} animation share of {rep["n"]}')
     contrast = result.get('caption_contrast')
     if contrast:
         add('caption_contrast_min', min(c[2] for c in contrast) >= targets.get('caption_contrast', 4.5),

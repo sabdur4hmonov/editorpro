@@ -6,6 +6,7 @@ Elementlar ro'yxati elements.json da beriladi (AGENTS.md dagi jadvalga qarang).
 """
 from __future__ import annotations
 
+import copy
 import math
 import random
 import re
@@ -823,9 +824,42 @@ class Layer:
         mc=ML.config(self.ctx.style)
         return ML.duration(mc,key) if mc['enabled'] else legacy
 
+    mdx = mdy = 0.0           # variety move offset (px), read by sticker-like layers when they blit
+
+    def _move(self, t, start, end, move):
+        """Sticker entrance from the variety plan: (opacity, scale); offset goes to self.mdx/self.mdy."""
+        mc = ML.config(self.ctx.style); k = self.ctx.k
+        tin = min(ML.duration(mc, 'sticker'), max(.001, (end - start) * .4))
+        tout = min(max(ML.duration(mc, 'exit'), 5 / self.ctx.fps), max(.001, (end - start) * .3))
+        p = (t - start) / tin
+        out = 1 - M.clamp01(M.ease_in_out((t - (end - tout)) / tout))
+        op, scale, dx, dy = M.clamp01(p * 3), 1.0, 0.0, 0.0
+        side = .12 * self.ctx.W
+        if move == 'spring':
+            scale = .55 + .45 * M.spring(p, 11.0, .45)
+        elif move == 'pop':
+            scale = .7 + .3 * M.ease_back(p, 1.3)
+        elif move == 'slide_left':
+            dx, op = -(1 - M.ease_back(p, 1.1)) * side, M.clamp01(p * 2.5)
+        elif move == 'slide_right':
+            dx, op = (1 - M.ease_back(p, 1.1)) * side, M.clamp01(p * 2.5)
+        elif move == 'drop':
+            dy = -(1 - M.spring(p, 10.0, .5)) * 80 * k
+        elif move == 'rise':
+            dy, op = (1 - M.ease_out(p)) * 60 * k, M.ease_out(p)
+        else:                                   # fade_drift: soft fade with a slight upward drift over the life
+            op = M.ease_out(p)
+            dy = (1 - M.ease_out(p)) * 14 * k - 8 * k * M.clamp01((t - start) / max(.001, end - start))
+        self.mdx, self.mdy = dx, dy
+        return op * out, scale * (1 - .08 * (1 - out))
+
     def appear(self,t,start,end,tin=.42,tout=.14):
+        move=getattr(self,'enter_move',None)
+        if move: return self._move(t,start,end,move)
         mc=ML.config(self.ctx.style)
         if not mc['enabled']: return appear(t,start,end,tin,tout)
+        ease=getattr(self,'ease_mode',None)
+        if ease: mc=dict(mc,easing=dict(mc['easing'],enter=ease))
         key=getattr(self,'motion_kind','sticker')
         tin=min(ML.duration(mc,key),max(.001,(end-start)*.4))
         tout=min(ML.duration(mc,'exit'),max(.001,(end-start)*.3))
@@ -869,9 +903,23 @@ class CaptionLayer(Layer):
             sentence_start = not prev or prev[-1:] in ".!?\u2026"
             self.items.append({"start": cue["start"], "end": end, "text": text, "cue": dict(cue, text=text),
                                "block": None, "times": None, "cfg": self._cue_cfg(name, opts, cue), "tail": 0.0,
-                               "sentence_start": sentence_start})
+                               "sentence_start": sentence_start, "explicit": bool({"anim", "anim_main"} & set(opts)),
+                               "raw": cue["text"]})
             self.items[-1]["tail"] = RichBlock.tail(self.items[-1]["cfg"])
         self.words, self._word_times = words, S.word_times
+        self.variety = ML.caption_plan(ctx.style, [{"text": it["raw"], "start": it["start"]} for it in self.items], ctx.fps)
+        for item, plan in zip(self.items, self.variety or []):
+            cfg = item["cfg"]
+            if item["explicit"] or not cfg.get("_motion"):
+                plan["enter"] = "explicit"
+                continue
+            mcv = copy.deepcopy(cfg["_motion"])
+            mcv["overshoot"] = float(mcv["overshoot"]) * plan["ease_k"]
+            mcv["spring"] = dict(mcv["spring"], omega=float(mcv["spring"]["omega"]) * plan["ease_k"])
+            item["cfg"] = dict(cfg, animation=plan["enter"], anim_main=plan["enter"], anim_sub=plan["sub"],
+                               exit=plan["exit"], emphasis=plan["emphasis"], _motion=mcv,
+                               anim_ms=max(3000 / ctx.fps, float(cfg.get("anim_ms", 260)) + plan["jitter_ms"]))
+            item["tail"] = RichBlock.tail(item["cfg"])
         mc = ML.config(ctx.style)
         self.scrim_cfg = mc["scrim"] if mc["scrim"]["enabled"] else None
         self.contrast: list = []                    # (cue start, measured contrast, scrim alpha)
@@ -1187,6 +1235,12 @@ class BrollLayer(Layer):
             raise C.MontajError(f"broll.mode noto'g'ri: {self.mode!r}. Mumkin: full, split")
         mc=ML.config(ctx.style)
         self.fade = float(el.get("fade", ML.duration(mc,'transition') if mc['enabled'] else 0.0))
+        self.transition = el.get("transition")              # variety plan: cut / push / mask / flash / fade
+        if self.transition not in (None, "cut", "push", "mask", "flash", "fade"):
+            raise C.MontajError(f"broll.transition: cut, push, mask, flash, fade (hozir {self.transition!r}).")
+        if self.transition == "cut":
+            self.fade = 0.0
+        self.tdir = 1 if float(el.get("transition_dir", 1)) >= 0 else -1
         self.offset = float(el.get("offset", 0.0))
         # namuna 15: b-roll oq-qora va biroz qoraytirilgan (ustidagi subtitr o'qilishi uchun).
         # grade elementi (z=0) b-roll'dan oldin chiziladi, shuning uchun bu sozlamalar shu yerda.
@@ -1261,10 +1315,41 @@ class BrollLayer(Layer):
             canvas = np.concatenate([top, content[:H - half]], axis=0)
             canvas[half - 2:half + 2] = 255
             content = canvas
-        if op >= 0.997:
+        if self.transition in ("push", "mask", "flash"):
+            self._transition(frame, content, t)
+        elif op >= 0.997:
             frame[:] = content
         else:
             frame[:] = (frame.astype(np.float32) * (1 - op) + content.astype(np.float32) * op).astype(np.uint8)
+
+    def _transition(self, frame, content, t):
+        """Quick push (slides in from a side), iris mask reveal, or a cut with a short white flash."""
+        H, W = frame.shape[:2]
+        T = max(5 / self.ctx.fps, 0.2)
+        p_in, p_out = M.ease_in_out((t - self.start) / T), M.ease_in_out((t - (self.end - T)) / T)
+        if self.transition == "flash":
+            frame[:] = content
+            a = .6 * (1 - M.clamp01((t - self.start) / (5 / self.ctx.fps)))
+            if a > .003:
+                frame[:] = (frame.astype(np.float32) * (1 - a) + 255 * a).astype(np.uint8)
+            return
+        if self.transition == "push":
+            off = int(round(((1 - p_in) - p_out) * W * self.tdir))
+            if off == 0:
+                frame[:] = content
+            elif off > 0:
+                frame[:, off:] = content[:, :W - off]
+            else:
+                frame[:, :W + off] = content[:, -off:]
+            return
+        r = M.clamp01(p_in) * (1 - M.clamp01(p_out)) * math.hypot(W, H) / 2
+        if r >= math.hypot(W, H) / 2 - 1:
+            frame[:] = content
+            return
+        mask = np.zeros((H, W), np.uint8)
+        cv2.circle(mask, (W // 2, int(H * self.ctx.anchor[1])), int(r), 255, -1, lineType=cv2.LINE_AA)
+        m = (mask.astype(np.float32) / 255)[..., None]
+        frame[:] = (frame.astype(np.float32) * (1 - m) + content.astype(np.float32) * m).astype(np.uint8)
 
     def close(self) -> None:
         if self.reader:
@@ -1360,7 +1445,7 @@ class ImageLayer(Layer):
                 scale *= 1 + self.push * M.ease_in_out((t - self.start) / max(.001, self.end - self.start))
             elif t - self.start > 1.0:
                 scale *= M.breathe(t - self.start)   # uzoq turgan rasm sekin "nafas oladi"
-        M.blit(frame, spr, self.cx, self.cy, opacity=op * self.opacity, scale=scale, anchor=(0, 0))
+        M.blit(frame, spr, self.cx + self.mdx, self.cy + self.mdy, opacity=op * self.opacity, scale=scale, anchor=(0, 0))
 
     def close(self) -> None:
         if self.reader:
@@ -1873,7 +1958,7 @@ class EmojiLayer(Layer):
         if len(self.sprites) > 1:
             pos = (math.sin((t - self.start) * 2 * math.pi / 1.5) + 1) / 2
             spr = self.sprites[min(len(self.sprites) - 1, int(round(pos * (len(self.sprites) - 1))))]
-        M.blit(frame, spr, self.cx, self.cy, opacity=op, scale=scale * M.breathe(t - self.start, 0.02, 1.8),
+        M.blit(frame, spr, self.cx + self.mdx, self.cy + self.mdy, opacity=op, scale=scale * M.breathe(t - self.start, 0.02, 1.8),
                anchor=(0, 0))
 
 
@@ -1943,7 +2028,7 @@ class IconLayer(Layer):
         if self.bg == "glass":
             M.glass(frame, int(self.cx - size / 2), int(self.cy - size / 2), size, size, self.radius, opacity=op,
                     blur=20 * self.ctx.k, tint_alpha=0.18)
-        M.blit(frame, self.spr, self.cx, self.cy, opacity=op,
+        M.blit(frame, self.spr, self.cx + self.mdx, self.cy + self.mdy, opacity=op,
                scale=scale * M.breathe(t - self.start, 0.012, 2.4), anchor=(0, 0))
         if self.label:
             p = M.clamp01((t - self.start - 0.12) / 0.25)
@@ -3047,6 +3132,10 @@ def build_elements(ctx: Ctx, elements: list, total: float) -> list:
                 layer=ELEMENT_TYPES[kind](ctx, el)
             layer.ctx=ctx
             layer.el_ref, layer.el_type = f"{n}:{kind}", kind
+            if el.get("enter"):
+                layer.enter_move = str(el["enter"])
+            if el.get("ease_mode"):
+                layer.ease_mode = str(el["ease_mode"])
             layer.motion_kind={'follow':'follow','label':'label','panel':'label','title':'title','text':'title','group':'label','hero':'hero'}.get(kind,'sticker')
             layers.append(layer)
         except C.MontajError as exc:

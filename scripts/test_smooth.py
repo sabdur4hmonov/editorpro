@@ -71,5 +71,88 @@ class CutAudioTests(unittest.TestCase):
             self.assertGreater(dips['crossfade'], -4)      # overlap: room tone continuous
 
 
+def _vstyle(seed=7):
+    import motion_language as ML
+    st = C.load_style(); st['video'].update(width=360, height=640, fps=25)
+    st['motion']['choice'] = {'enter': 'slide_overshoot', 'sub': 'mask_up', 'emphasis': 'underline_draw'}
+    st['_variety'] = {'signature': 'slide_overshoot', 'others': ['mask_up', 'spring_pop', 'scale_blur'], 'sticker': 'spring',
+                      'sticker_others': ['slide_left', 'fade_drift', 'pop'], 'transition': 'push', 'transition_others': ['cut', 'mask'],
+                      'emphasis': 'underline_draw', 'seed': seed}
+    return st
+
+
+class VarietyTests(unittest.TestCase):
+    CUES = ['bu **muhim** gap', 'oddiy gap', 'yana **asosiy** ibora', '!!90%!! bemorlar', 'nega shunday?', 'oddiy davom',
+            'yana *katta* so‘z', 'tinch gap', '**natija** ko‘rinadi', 'oxirgi *urg‘u*', 'birinchi qadam', 'ikkinchi qadam']
+
+    def plan(self, seed=7):
+        import motion_language as ML
+        return ML.caption_plan(_vstyle(seed), [{'text': t, 'start': 2 + i * 1.5} for i, t in enumerate(self.CUES)], 25)
+
+    def test_caption_plan_is_varied_bounded_and_reproducible(self):
+        import motion_language as ML
+        a, b = self.plan(), self.plan()
+        self.assertEqual(a, b)                                            # same video re-renders identically
+        rep = ML.variety_report([p['enter'] for p in a])
+        self.assertLessEqual(rep['longest_run'], 3)
+        self.assertLessEqual(rep['max_share'], .6)
+        self.assertGreaterEqual(len(rep['counts']), 3)
+        num = a[3]
+        self.assertEqual((num['role'], num['enter'] in ML.STRONG, num['emphasis']), ('number', True, 'pop_overshoot'))
+        self.assertTrue(all(abs(p['jitter_ms']) <= 2 * 1000 / 25 + 1e-6 and abs(p['ease_k'] - 1) <= .03 for p in a))
+
+    def test_legacy_styles_have_no_plan(self):
+        import motion_language as ML
+        st = C.load_style(); st['motion'].pop('variety_plan', None)
+        self.assertIsNone(ML.caption_plan(st, [{'text': 'a', 'start': 0}], 25))
+        els = [{'type': 'image', 'start': 0, 'end': 2, 'file': 'x.png'}]
+        self.assertEqual(ML.element_plan(st, els), (els, []))
+
+    def test_elements_moves_alternate_and_respect_explicit(self):
+        import motion_language as ML
+        els = [{'type': 'image', 'start': i, 'end': i + .8, 'file': 'x.png'} for i in range(9)]
+        els += [{'type': 'broll', 'start': 10 + 2 * i, 'end': 11 + 2 * i, 'file': 'b.mp4'} for i in range(6)]
+        els.append({'type': 'broll', 'start': 30, 'end': 31, 'file': 'b.mp4', 'fade': 0})
+        out, moves = ML.element_plan(_vstyle(), els)
+        st = [m for _, k, m in moves if k == 'image']
+        self.assertLessEqual(ML.variety_report(st)['longest_run'], 3)
+        slides = [m for m in st if m.startswith('slide')]
+        self.assertTrue(all(x != y for x, y in zip(slides, slides[1:])))
+        self.assertNotIn('transition', out[-1])
+        self.assertGreaterEqual(len({m for _, k, m in moves if k == 'broll'}), 2)
+
+    def test_zoom_variety_eased_varied_some_none(self):
+        import motion_language as ML
+        bounds = [(i * 2.0, i * 2.0 + 2.0) for i in range(12)]
+        plan, moves = ML.zoom_variety(_vstyle(), bounds, 1.12, .03, .8)
+        kinds = [m for _, _, m in moves]
+        self.assertIn('none', kinds)
+        levels = [z1 for t0, t1, z0, z1 in plan if z0 == 1.0 and z1 > 1.0]
+        self.assertTrue(levels and all(1.04 <= z <= 1.10 for z in levels) and len(set(levels)) > 1)
+        self.assertLessEqual(ML.variety_report(['in' if k != 'none' else k for k in kinds])['longest_run'], 3)
+
+    def test_caption_layer_applies_per_cue_plan_and_gate_warns(self):
+        import elements as E, quality_gate as QG
+        ctx = E.Ctx(_vstyle())
+        cap = E.CaptionLayer(ctx, [{'start': 2 + i * 1.5, 'end': 3.2 + i * 1.5, 'text': t} for i, t in enumerate(self.CUES)], None, 30)
+        self.assertGreaterEqual(len({it['cfg']['anim_main'] for it in cap.items}), 3)
+        bad = {'captions': {'n': 10, 'counts': {'a': 10}, 'longest_run': 10, 'max_share': 1.0},
+               'motion': {'n': 4, 'counts': {'a': 2, 'b': 2}, 'longest_run': 1, 'max_share': .5}}
+        rows = {r['key']: r['status'] for r in QG.evaluate(C.load_style(), [], [], 10, {}, {'checks': [], 'variety': bad})['measurements']}
+        self.assertEqual((rows['captions_variety_run'], rows['captions_variety_share'], rows['motion_variety_run']), ('fail', 'fail', 'pass'))
+
+    def test_broll_transitions_draw(self):
+        import elements as E
+        with tempfile.TemporaryDirectory(dir=C.TEMP_DIR) as td:
+            img = Path(td) / 'b.png'
+            import cv2; cv2.imwrite(str(img), np.full((640, 360, 3), 200, np.uint8))
+            ctx = E.Ctx(_vstyle())
+            for tr in ('push', 'mask', 'flash'):
+                layer = E.build_elements(ctx, [{'type': 'broll', 'start': 0, 'end': 2, 'file': str(img), 'transition': tr}], 3)[0]
+                early, late = (np.zeros((640, 360, 3), np.uint8) for _ in range(2))
+                layer.draw(early, .08); layer.draw(late, 1.0)
+                self.assertGreater(int(np.abs(late.astype(int) - early.astype(int)).sum()), 1000, tr)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)
