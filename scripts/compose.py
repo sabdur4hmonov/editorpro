@@ -386,6 +386,14 @@ def visual_cut_times(cuts: dict | None, elements: list) -> list:
     return sorted({round(t, 3) for t in times if t > 0})
 
 
+def grain_filter(style: dict) -> str:
+    """Light temporal luma grain against banding in flat gradients (video.grain 0..6; absent/0: none)."""
+    g = float(style.get("video", {}).get("grain", 0) or 0)
+    if not 0 <= g <= 6:
+        raise C.MontajError("video.grain: 0..6 (1-2 yengil).")
+    return f",noise=c0s={g:g}:c0f=t+u" if g > 0 and not style.get("_draft") else ""
+
+
 def variety_summary(style: dict, cap, element_moves: list, cuts, base_dur: float, work: Path) -> dict:
     """Per video: count of each animation and the longest run of identical consecutive ones."""
     import motion_language as ML
@@ -600,7 +608,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
             enc_cmd = [ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
                        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", C.fps_expr(fps), "-i", "-",
                        "-i", str(wav), "-map", "0:v", "-map", "1:a",
-                       "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p"]
+                       "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p" + grain_filter(style)]
             enc_cmd += R.encoder_args(style, want_nvenc) + [
                 "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
                 "-c:a", "aac", "-b:a", str(style["audio"].get("bitrate", "192k")),

@@ -207,5 +207,15 @@ class ReadingTests(unittest.TestCase):
         self.assertTrue(C.words_to_cues(tagged, dict(base, min_on_screen=.7, max_cps=20))[0]['text'].startswith('{caps}'))
 
 
+class EncodeTests(unittest.TestCase):
+    def test_grain_only_when_asked(self):
+        import compose
+        self.assertEqual(compose.grain_filter({'video': {}}), '')
+        self.assertEqual(compose.grain_filter({'video': {'grain': 2}}), ',noise=c0s=2:c0f=t+u')
+        self.assertEqual(compose.grain_filter({'video': {'grain': 2}, '_draft': True}), '')
+        st = C.load_style()
+        self.assertTrue(st['video']['crf'] <= 17 and st['video']['preset'] == 'slow')
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)

@@ -9,8 +9,9 @@
     "fps": "source",
     "fit": "auto",
     "codec": "libx264",
-    "crf": 20,
-    "preset": "medium",
+    "crf": 17,
+    "preset": "slow",
+    "grain": 2,
     "use_nvenc": false,
     "nvenc_cq": 21
   },
