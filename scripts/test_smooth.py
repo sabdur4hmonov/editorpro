@@ -236,5 +236,23 @@ class RoomToneTests(unittest.TestCase):
             self.assertLess(abs(res[True][0] - res[True][1]), 6)     # filled at room-tone level
 
 
+class CutMatchTests(unittest.TestCase):
+    def test_jump_cut_brightness_eases(self):
+        import compose
+        cuts = {'keep': [{'start': 0, 'end': 1}, {'start': 2, 'end': 3}]}
+        jumps = {}
+        for on in (False, True):
+            m = compose.CutMatch({'look': {'match_cuts': on}}, cuts, 25)
+            levels = []
+            for i in range(50):
+                f = np.full((64, 36, 3), 100 if i < 25 else 108, np.uint8)
+                levels.append(float((m.apply(f, i) if m.on else f).mean()))
+            jumps[on] = levels[25] - levels[24]
+            if on:
+                self.assertAlmostEqual(levels[-1], 108, delta=1)        # back to its own level
+        self.assertEqual(jumps[False], 8)
+        self.assertLess(abs(jumps[True]), 2)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)

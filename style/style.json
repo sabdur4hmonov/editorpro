@@ -219,6 +219,8 @@
   "look": {
     "_izoh": "Rang ishlovi (color grade). preset: off | natural | warm | cool | punchy | film. Ixtiyoriy qo'shimchalar: contrast, saturation, brightness, gamma, warmth (-1..1), sharpen (0..1.5), vignette (0..1), grain (0..12), lut (.cube fayl yo'li).",
     "enabled": true,
+    "match_cuts": false,
+    "match_seconds": 0.6,
     "preset": "natural"
   },
 

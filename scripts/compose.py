@@ -386,6 +386,35 @@ def visual_cut_times(cuts: dict | None, elements: list) -> list:
     return sorted({round(t, 3) for t in times if t > 0})
 
 
+class CutMatch:
+    """look.match_cuts (off by default): at an editorial jump cut the new shot starts at the previous shot's
+    brightness (gain 0.9-1.1) and eases back to its own level over look.match_seconds (0.6 s)."""
+
+    def __init__(self, style: dict, cuts: dict | None, fps: float):
+        look = style.get("look", {}) or {}
+        self.on = bool(look.get("match_cuts")) and bool(cuts)
+        self.span = max(1, int(round(float(look.get("match_seconds", .6)) * fps)))
+        import quality_gate
+        self.cuts = {int(round(t * fps)) for t in (quality_gate.editorial_cut_times(cuts) or [])} if self.on else set()
+        self.prev, self.active = None, None
+
+    def apply(self, frame: np.ndarray, index: int) -> np.ndarray:
+        level = float(frame[::8, ::8].mean())
+        if index in self.cuts and self.prev:
+            self.active = (index, min(1.1, max(.9, self.prev / max(level, 1.0))))
+        out = frame
+        if self.active:
+            c, g = self.active
+            p = M.ease_in_out((index - c) / self.span)
+            gain = g ** (1 - p)
+            if p >= 1:
+                self.active = None
+            elif abs(gain - 1) > .002:
+                out = cv2.convertScaleAbs(frame, alpha=gain)
+        self.prev = float(out[::8, ::8].mean())
+        return out
+
+
 def grain_filter(style: dict) -> str:
     """Light temporal luma grain against banding in flat gradients (video.grain 0..6; absent/0: none)."""
     g = float(style.get("video", {}).get("grain", 0) or 0)
@@ -483,7 +512,11 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         import face_safety
         monitor = face_safety.FaceMonitor(ctx, layers, style)
 
+    match = CutMatch(style, cuts, fps)
+
     def render_frame(frame: np.ndarray, t: float, index: int | None = None) -> np.ndarray:
+        if match.on and index is not None and t < base_dur:
+            frame = match.apply(frame, index)
         tracer = M.TRACE
         if tracer is not None:
             tracer.begin_frame(index if index is not None else int(round(t * fps)))
