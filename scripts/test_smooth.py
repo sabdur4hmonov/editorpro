@@ -309,5 +309,38 @@ class TraceIsPassiveTests(unittest.TestCase):
         self.assertTrue(np.array_equal(*outs))
 
 
+class EditorRulesTests(unittest.TestCase):
+    def test_rules_apply_to_shared_style_only(self):
+        import feedback
+        self.assertEqual(feedback.parse_rule('motion.min_exit_frames=6'), ('motion.min_exit_frames', 6))
+        self.assertEqual(feedback.parse_rule('captions.accent=#FF0000'), ('captions.accent', '#FF0000'))
+        with self.assertRaises(C.MontajError):
+            feedback.parse_rule('bad key=1')
+        with tempfile.TemporaryDirectory(dir=C.TEMP_DIR) as td:
+            (Path(td) / 'style').mkdir()
+            C.write_json({'rules': [{'key': 'motion.min_exit_frames', 'value': 7}]}, Path(td) / 'style/rules.json')
+            old = C.ROOT
+            try:
+                C.ROOT = Path(td)
+                self.assertEqual(C.load_style()['motion']['min_exit_frames'], 7)
+                snap = Path(td) / 'snapshot.json'
+                C.write_json(json.loads(C.STYLE_PATH.read_text(encoding='utf-8')), snap)
+                self.assertNotEqual(C.load_style(snap)['motion'].get('min_exit_frames'), 7)   # approved snapshot untouched
+            finally:
+                C.ROOT = old
+
+
+class OutputHoldTests(unittest.TestCase):
+    def test_rendered_file_holds_found(self):
+        import quality_gate as QG
+        with tempfile.TemporaryDirectory(dir=C.TEMP_DIR) as td:
+            a, b = Path(td) / 'a.mp4', Path(td) / 'b.mp4'
+            subprocess.run([C.need_tool('ffmpeg'), '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=180x320:rate=25', '-t', '3',
+                            '-pix_fmt', 'yuv420p', '-crf', '12', str(a)], check=True)
+            subprocess.run([C.need_tool('ffmpeg'), '-v', 'error', '-y', '-i', str(a), '-vf', 'fps=30', '-pix_fmt', 'yuv420p', '-crf', '12', str(b)], check=True)
+            self.assertEqual(QG.output_holds(a, 25), [])
+            self.assertGreaterEqual(len(QG.output_holds(b, 30)), 8)       # every 6th repeated; detector is conservative
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)

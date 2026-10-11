@@ -14,6 +14,7 @@ existing histories (local during parallel work). Reuse cached transcripts/featur
 
 Read `docs/MOTION.md`: shared motion, per-video `motion_override`, recorded choice, glyph
 warnings, timecoded filmstrips for labels/price/follow and aligned before/after sheets.
+Variety of label/sticker/b-roll moves and the smoothness check run by default; report SMOOTH warnings.
 After subtitle approval, show compose's subtle/stronger mixes and cue sheets/waveforms.
 The user judges sound and motion; do not claim technical meters prove taste. Parallel shared
 history/learning waits until idle. Migration: `docs/NEW_LAPTOP.md`; GPU paths are untested here.

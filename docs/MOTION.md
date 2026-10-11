@@ -172,3 +172,16 @@ Lint bayroqlari: `short` (<4 kadr), `linear`, `velocity_jump`, `all_at_once` (�
 tezlik (kadr 4x ushlanadi, interpolyatsiya yo'q) + animatsiya atrofida 12 kadr. Yoqilgan render
 `motion_lint.json` yozadi va gate'ga `motion_lint_flags_per_min`, `drift_jitter_px` qo'shadi.
 Lint o'lchov, did emas: chizish/wipe markazi harakat hisoblanmaydi; sound/motion tasdig'i foydalanuvchida.
+
+## Variety va silliqlik (smoothness)
+
+`motion.variety_plan` (yangi videolar): video uchun bitta imzo kirish + 2-3 boshqa (kamida bitta kuchli, bitta
+yumshoq). Har subtitr bo'lagi roli: hook, number, question, list, key, hero, calm; energiya egri chizig'i
+cho'qqida kuchli (spring/overshoot), sokin joyda yumshoq. Ketma-ket <=3, bitta tur <=60%, ±2 kadr / ±3% easing seed bilan.
+Elementlar: stikerlar (spring/pop/slide chap-o'ng navbat/drop/rise/fade_drift), b-roll o'tishi (cut/push/mask/flash/fade),
+panel/label/list/stat easing, rasm push/pull, kesish zoomi 104-110% ease, ba'zi kesishda zoom yo'q. Aniq berilgan
+maydon (`anim`, `fade`, `transition`, `{anim=...}`) ustun. Hisobot: `motion_variety_report.json`; tanlov
+`motion_variety.json`; brend tarixi `temp/.motion_history/<brend>_variety.json`.
+
+Silliqlik tekshiruvi har renderda: `smoothness.json` (takror kadr, kesish ovozi, subtitr kechikishi, drift, lint,
+bir xillik). Diagnostika vositalari: `temp/smooth/diag.py`, `passthrough.py` (effektsiz kadr xaritasi).

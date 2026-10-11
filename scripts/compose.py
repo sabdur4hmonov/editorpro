@@ -737,9 +737,10 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
         smooth = quality_gate.smoothness(
             fps, C.source_fps(meta)[0], hashes, wav, quality_gate.editorial_cut_times(cuts) or [], cues, words,
             dict(lint_full.get('summary', {}), flag_rows=lint_full.get('flags', [])) if lint_full else None,
-            out_meta.get('variety'), [it['cfg'].get('anim_main', it['cfg'].get('animation')) for it in cap.items] if cap else None)
+            out_meta.get('variety'), [it['cfg'].get('anim_main', it['cfg'].get('animation')) for it in cap.items] if cap else None,
+            out_path)
         C.write_json(dict(smooth, video=str(out_path)), work / "smoothness.json")
-        out_meta['smoothness'] = {k: smooth[k] for k in ('held_frames', 'drift_jitter_px', 'warnings')}
+        out_meta['smoothness'] = {k: smooth[k] for k in ('held_frames', 'output_holds', 'drift_jitter_px', 'warnings')}
         out_meta['smoothness'].update(cuts=smooth['cuts'], caption_lag=smooth['caption_lag'], fps=fps, source_fps=smooth['source_fps'])
         for w in smooth['warnings']:
             C.warn("SMOOTH: " + w)

@@ -377,6 +377,24 @@ Sahna chiqishi, intervyu, konsert kabi "tayyor ovozli" videolarda effektni kam i
   parallel umumiy tarixga yozma. Token tejash: cached transcript/features/reportlarni qayta ishlat,
   faqat tanlangan family/format hujjatini o‘qi, kod o‘zgarsa tegishli sinovni ishlat; natijani taxmin qilma.
 
+### Silliqlik (smoothness) — har renderda
+
+- `video.fps: "source"`: chiqish = manba fps (25 -> 25). 25->30 takror kadr (har 6-kadr "tutilish") taqiqlangan.
+  VFR/g'alati fps bir marta, kirishda eng yaqin standartga. Draft ham manba fps da (faqat o'lcham kichik).
+- Kesish: `cut.crossfade_ms` 20 ms equal-power crossfade (nolga fade yo'q, xona shovqini uzilmaydi);
+  oraliq ovoz ALAC (`cut.intermediate_audio`), AAC faqat oxirida bir marta. `audio.room_tone`: raqamli sukunat yo'q.
+- Final: CRF 17 slow + `video.grain` 2 (banding). `motion.min_exit_frames` 5; subtitr kesishdan 2 kadr keyin;
+  `subtitles.min_on_screen` 0.7 s / `max_cps` 20 qisqa bo'laklarni qo'shni bilan birlashtiradi (so'z vaqti o'zgarmaydi).
+- `motion.variety_plan`: har bo'lak/element rol + energiya bo'yicha (imzo + 2-3 variant, ketma-ket <=3, bitta tur <=60%,
+  seed bilan bir xil qayta render, brend tarixi). `look.match_cuts` ixtiyoriy (default o'chiq).
+- Compose har renderdan keyin `temp/<nom>/smoothness.json` yozadi va `SMOOTH:` ogohlantirishlarini vaqt kodi bilan
+  chiqaradi (takror kadr, kesishdagi ovoz teshigi/klik, subtitr kechikishi, drift titrashi, lint, bir xillik);
+  quality gate'ga qatorlar qo'shiladi. Ogohlantirishni foydalanuvchiga ayt, "silliq" deb da'vo qilma: muharrir hal qiladi.
+- Muharrir vaqt kodli izohi: `feedback.py add "matn" --at 12.3,40 --editor NOM [--brand B]`; takrorlanadigan
+  bo'lsa `--rule motion.min_exit_frames=6` → `style/rules.json` yoki `brands/<b>/rules.json`, keyingi render amal qiladi
+  (tasdiqlangan per-video stilga tegmaydi).
+- Tasdiqlangan per-video stillar (raqamli fps) aynan avvalgidek chiziladi; texnik qayta render faqat yangi nom bilan (`_v25`).
+
 ### Motion va ovoz dalili (Sprint 1)
 
 - `docs/MOTION.md` ni o'qi: umumiy `motion`, brend `style.motion`, per-video `motion_override`.

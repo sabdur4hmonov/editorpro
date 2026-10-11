@@ -24,6 +24,7 @@ temp/<video>/ and per-video style.json, records milestones with handoff.py set -
 Project HOLAT.md remains project-wide. See docs/PARALLEL.md.
 
 1. Read `AGENTS.md` sections "Uslub va brendlar" and "Yangi mijoz (brend) qo'shish".
+   Repeatable editor notes become brand rules: `feedback.py add "..." --at T --brand NOM --rule key=value`.
 2. Collect what exists; never invent brand facts. Needed: brand name, logo (transparent PNG),
    main colour, Instagram handle. Optional: font files, music, reference reels in
    `samples/<brand>/`, product/office photos for `brands/<brand>/assets/`.

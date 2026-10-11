@@ -323,6 +323,9 @@ def load_style(path: str | Path | None = None, brand: str | None = None) -> dict
     for section in ("captions", "zoom", "logo", "endcard", "sfx"):
         if not isinstance(style.get(section), dict):
             style[section] = {}
+    shared = p.resolve() == STYLE_PATH.resolve()      # rules from editors' notes: shared style only, never a
+    if shared:                                        # per-video snapshot of an approved video
+        style = apply_rules(style, ROOT / "style" / "rules.json")
 
     name = (brand if brand is not None else style.get("brand") or "").strip()
     style["_brand"], style["_brand_dir"] = "", ""
@@ -342,6 +345,22 @@ def load_style(path: str | Path | None = None, brand: str | None = None) -> dict
             raise MontajError(f"{bfile}: \"style\" obyekt bo'lishi kerak.")
         style = deep_merge(style, over)
         style["_brand"], style["_brand_dir"] = name, str(bfile.parent)
+        if shared:
+            style = apply_rules(style, bfile.parent / "rules.json")
+    return style
+
+
+def apply_rules(style: dict, path: Path) -> dict:
+    """rules.json: {"rules": [{"key": "motion.min_exit_frames", "value": 6, "note": ..., "at": [...]}, ...]}."""
+    if not path.is_file():
+        return style
+    for rule in read_json(path).get("rules", []):
+        node, keys = {}, str(rule["key"]).split(".")
+        cur = node
+        for k in keys[:-1]:
+            cur = cur.setdefault(k, {})
+        cur[keys[-1]] = rule["value"]
+        style = deep_merge(style, node)
     return style
 
 

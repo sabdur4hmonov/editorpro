@@ -9,6 +9,8 @@ argument-hint: "<video path or clip folder> [brand] [script.txt]"
 Read `docs/MOTION.md`: shared durations/easing, per-video `motion_override`, six new word
 entrances, emphasis/paired exits, persisted `motion_choice.json`, Uzbek glyph warnings.
 Use timecoded `review_tools.py filmstrip` for motion and aligned `ab` for before/after.
+Variety (per-cue role + energy, signature + 2-3 others, run <= 3) and the per-render smoothness check are on by
+default (`docs/MOTION.md`, AGENTS "Silliqlik"); explicit `{anim=...}` tags still win. Report SMOOTH warnings.
 After text approval, show compose's subtle/stronger mixes with cue sheets/waveforms; let the
 user judge motion and sound. Keep parallel history/learning in your own job until idle.
 Migration and untested GPU paths: `docs/NEW_LAPTOP.md`; no unapproved installs/downloads.

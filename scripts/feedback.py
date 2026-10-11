@@ -47,8 +47,51 @@ def read_notes(brand: str | None = None) -> list:
     return out
 
 
-def add(text: str, brand: str | None = None, video: str | None = None) -> Path:
+def parse_rule(text: str) -> tuple:
+    """"motion.min_exit_frames=6" -> ("motion.min_exit_frames", 6); JSON values, otherwise a string."""
+    import json
+    key, sep, raw = str(text).partition("=")
+    key = key.strip()
+    if not sep or not key or any(not part.isidentifier() for part in key.split(".")):
+        raise C.MontajError(f"Qoida KALIT=QIYMAT bo'lsin (masalan motion.min_exit_frames=6): {text!r}")
+    try:
+        return key, json.loads(raw)
+    except ValueError:
+        return key, raw.strip()
+
+
+def add_rules(rules: list, note: str, brand: str | None, at: list | None, video: str | None) -> Path:
+    """Repeatable editor note -> rule the next render follows (style/rules.json or brands/<b>/rules.json).
+    Applied by common.load_style to the shared/brand style only; approved per-video styles never change."""
+    path = (C.BRANDS_DIR / brand / "rules.json") if brand else (C.ROOT / "style" / "rules.json")
+    path_for(brand)
+    data = C.read_json(path) if path.is_file() else {"rules": []}
+    for text in rules:
+        key, value = parse_rule(text)
+        data["rules"] = [r for r in data["rules"] if r["key"] != key] + [
+            {"key": key, "value": value, "note": note, "at": at or [], "video": Path(video).name if video else None,
+             "date": time.strftime("%Y-%m-%d")}]
+    C.write_json(data, path)
+    test = C.load_style(None, brand)                # the rule must load; a broken value fails here, not at render
+    for text in rules:
+        key, value = parse_rule(text)
+        cur = test
+        for k in key.split("."):
+            cur = cur[k]
+        if cur != value:
+            raise C.MontajError(f"Qoida qo'llanmadi: {key}")
+    return path
+
+
+def add(text: str, brand: str | None = None, video: str | None = None, at: list | None = None,
+        editor: str | None = None, rules: list | None = None) -> Path:
     text = " ".join(str(text).split())
+    if at:
+        text = "[" + ", ".join(C.fmt_time(float(t)) for t in at) + "] " + text
+    if editor:
+        text = f"{text} — muharrir: {editor}"
+    if rules:
+        text = f"{text} (qoida: {'; '.join(rules)})"
     if not text:
         raise C.MontajError("Fikr matni bo'sh.")
     path = path_for(brand)
@@ -77,11 +120,17 @@ def main() -> int:
     a.add_argument("text")
     a.add_argument("--brand", help="Brend nomi (berilmasa umumiy)")
     a.add_argument("--video", help="Qaysi video haqida (ixtiyoriy)")
+    a.add_argument("--at", help="Vaqt kodlari, soniya: 12.3,45 (muharrir izohi)")
+    a.add_argument("--editor", help="Izoh muallifi (muharrir nomi)")
+    a.add_argument("--rule", action="append", help="Takrorlanadigan izohni qoidaga aylantirish: motion.min_exit_frames=6")
     s = sub.add_parser("show", help="Eslatmalarni ko'rsatish")
     s.add_argument("--brand")
     args = ap.parse_args()
     if args.cmd == "add":
-        C.info(f"Saqlandi: {add(args.text, args.brand, args.video)}")
+        at = [float(x) for x in args.at.split(",") if x.strip()] if args.at else None
+        C.info(f"Saqlandi: {add(args.text, args.brand, args.video, at, args.editor, args.rule)}")
+        if args.rule:
+            C.info(f"Qoida yozildi (keyingi render shunga amal qiladi): {add_rules(args.rule, args.text, args.brand, at, args.video)}")
         return 0
     if args.brand:
         path_for(args.brand)
