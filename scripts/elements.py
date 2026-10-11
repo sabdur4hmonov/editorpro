@@ -586,8 +586,11 @@ class RichBlock:
         exit_mode, exit_dur = str(cfg.get("exit", "fade")), max(0.001, float(cfg.get("exit_ms", 100)) / 1000.0)
         out_blur, sink, exit_dx = 0.0, 0.0, 0.0
         mc = cfg.get("_motion")
+        min_exit = (mc or ML.config(self.ctx.style)).get('min_exit_frames')
         if mc:
             exit_dur = min(exit_dur, life * .3)
+            if min_exit:   # never vanish in 2 frames, even on a short cue
+                exit_dur = max(exit_dur, min(float(min_exit) / self.ctx.fps, life * .45))
             q = ML.curve((t - (end - exit_dur)) / exit_dur, mc, 'exit')
             out = 1.0 - M.clamp01(q)
             vx, vy = cfg.get('exit_vec') or (0.0, 1.0)
@@ -605,6 +608,8 @@ class RichBlock:
         elif exit_mode == "none":
             out = 1.0 if t < end else 0.0
         else:                                         # fade: tugashidan oldin tez so'nadi va biroz cho'kadi
+            if min_exit:
+                exit_dur = max(exit_dur, min(float(min_exit) / self.ctx.fps, life * .45))
             out = clamp_exit(t, end, exit_dur)
             sink = (1 - out) * 8 * k
         if out <= 0.003:
@@ -863,6 +868,8 @@ class Layer:
         key=getattr(self,'motion_kind','sticker')
         tin=min(ML.duration(mc,key),max(.001,(end-start)*.4))
         tout=min(ML.duration(mc,'exit'),max(.001,(end-start)*.3))
+        if mc.get('min_exit_frames'):
+            tout=max(tout,min(float(mc['min_exit_frames'])/self.ctx.fps,(end-start)*.45))
         p=(t-start)/tin; out=1-M.clamp01(ML.curve((t-(end-tout))/tout,mc,'exit'))
         import energy_curve
         intensity=energy_curve.value(self.ctx.style,start,'caption_intensity')

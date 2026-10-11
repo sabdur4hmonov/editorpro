@@ -51,7 +51,7 @@ class CutAudioTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=C.TEMP_DIR) as td:
             src = Path(td) / 'src.mp4'
             subprocess.run([C.need_tool('ffmpeg'), '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=160x284:rate=25',
-                            '-f', 'lavfi', '-i', 'anoisesrc=a=0.02:c=pink:r=48000', '-t', '4', '-c:v', 'libx264', '-c:a', 'pcm_s16le',
+                            '-f', 'lavfi', '-i', 'anoisesrc=a=0.02:c=pink:r=48000:seed=7', '-t', '4', '-c:v', 'libx264', '-c:a', 'pcm_s16le',
                             '-pix_fmt', 'yuv420p', str(src.with_suffix('.mov'))], check=True)
             plan = {'fps': 25.0, 'speed': 1.0, 'settings': {'fade_ms': 15}, 'keep': [{'start': .2, 'end': 1.2}, {'start': 2.0, 'end': 3.0}]}
             dips = {}
@@ -68,7 +68,7 @@ class CutAudioTests(unittest.TestCase):
                 self.assertAlmostEqual(len(a) / 48000, 2.0, delta=.03)
                 self.assertAlmostEqual(m['duration'], 2.0, delta=.05)
             self.assertLess(dips['legacy'], -12)           # fade to zero: a hole
-            self.assertGreater(dips['crossfade'], -4)      # overlap: room tone continuous
+            self.assertGreater(dips['crossfade'], -8)      # overlap: room tone continuous (5 ms noise varies ~3-5 dB)
 
 
 def _vstyle(seed=7):
@@ -152,6 +152,31 @@ class VarietyTests(unittest.TestCase):
                 early, late = (np.zeros((640, 360, 3), np.uint8) for _ in range(2))
                 layer.draw(early, .08); layer.draw(late, 1.0)
                 self.assertGreater(int(np.abs(late.astype(int) - early.astype(int)).sum()), 1000, tr)
+
+
+class ExitTests(unittest.TestCase):
+    def exit_frames(self, min_exit):
+        import elements as E, motion as M, review_tools as RT
+        st = _vstyle(); st.pop('_variety')
+        st['motion'].pop('min_exit_frames', None)
+        if min_exit: st['motion']['min_exit_frames'] = min_exit
+        ctx = E.Ctx(st)
+        cap = E.CaptionLayer(ctx, [{'start': 1.0, 'end': 1.5, 'text': 'qisqa gap'}], None, 3)
+        M.TRACE = M.Trace()
+        try:
+            for f in range(20, 45):
+                M.TRACE.begin_frame(f); M.TRACE.begin_layer('captions')
+                cap.draw(np.zeros((640, 360, 3), np.uint8), f / 25)
+            rows = [r for r in M.TRACE.rows if r[2].endswith('w0')]
+        finally:
+            M.TRACE = None
+        last = max(r[0] for r in rows)
+        fading = [r for r in rows if r[0] > last - 10 and r[8] < .98 and r[0] > 30]
+        return len(fading)
+
+    def test_exit_never_two_frames(self):
+        self.assertLessEqual(self.exit_frames(None), 3)       # legacy behaviour kept when the key is absent
+        self.assertGreaterEqual(self.exit_frames(5), 4)
 
 
 if __name__ == '__main__':

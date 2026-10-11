@@ -44,6 +44,7 @@
     "variety": true,
     "_polish_izoh": "Yangi videolar uchun (A/B gate yaxshiroq): subpixel, kesish sinxroni, adaptiv scrim. motion_blur faqat punchy presetda yoki qo'lda. docs/MOTION.md 'Motion polish'.",
     "subpixel": true,
+    "min_exit_frames": 5,
     "cuts": {"enabled": true, "offset_frames": 2, "match_direction": true, "zoom_ease": true},
     "scrim": {"enabled": true, "style": "soft", "max_alpha": 0.55, "min_contrast": 4.5},
     "motion_blur": {"enabled": false, "samples": 5, "min_px": 6, "shutter": 0.5},
