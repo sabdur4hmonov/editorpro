@@ -674,7 +674,9 @@ class RichBlock:
                 spr = g["spr"]
                 part = M.Sprite(np.ascontiguousarray(spr.pix[:, :max(1, int(round(spr.w * p)))]), spr.ox, spr.oy)
                 put(part, g["bx"] + shift(self.words[g["words"][0]]), g["by"], tag=f'mark{gi}')
-        fps = 25.0
+        # flicker steps one pattern entry per output frame (timeline rate); numeric legacy styles keep the
+        # old 40 ms (25 fps) step so approved renders do not change
+        fps = self.ctx.fps if self.ctx.style.get("video", {}).get("_fps_from") else 25.0
         for i, w in enumerate(self.words):
             t0 = t_of(i)
             current_word = w

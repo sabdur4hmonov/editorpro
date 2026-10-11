@@ -254,5 +254,19 @@ class CutMatchTests(unittest.TestCase):
         self.assertLess(abs(jumps[True]), 2)
 
 
+class FlickerTests(unittest.TestCase):
+    def test_flicker_follows_the_timeline_rate(self):
+        import elements as E
+        def pattern(st):
+            ctx = E.Ctx(st); fps = ctx.fps
+            cap = E.CaptionLayer(ctx, [{'start': 0, 'end': 2, 'text': '{clean,anim=flicker}salom'}], None, 3)
+            return [int(np.asarray(cap.draw(f := np.zeros((640, 360, 3), np.uint8), i / fps) or f).max() > 200) for i in range(1, 8)]
+        new = C.resolve_fps(_vstyle(), meta={'fps': 30.0, 'r_fps': 30.0}); new['video']['fps'] = 30.0
+        new.pop('_variety'); new['video']['_fps_from'] = 'source'
+        legacy = copy.deepcopy(new); legacy['video'].pop('_fps_from')
+        self.assertEqual(pattern(new)[:5], [0, 0, 1, 0, 0])      # FLICKER 1,.28,.28,1,.28,.28 frame by frame
+        self.assertNotEqual(pattern(new), pattern(legacy))
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)
