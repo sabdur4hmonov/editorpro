@@ -57,6 +57,32 @@ class RemotionTests(unittest.TestCase):
             a.write_bytes(b'1234');b.write_bytes(b'5678');a.with_suffix('.trace.json').write_text('[]')
             result=R.prune_cache(tmp,[b],4)
             self.assertFalse(a.exists());self.assertFalse(a.with_suffix('.trace.json').exists());self.assertTrue(b.exists());self.assertEqual(result['bytes'],4)
+    def test_real_missing_uzbek_glyph_uses_present_font(self):
+        import motion,glyph_audit
+        fonts=motion.Fonts([C.ROOT/'style/fonts']);font=fonts.get('Caveat',50,700)
+        self.assertIn('ʻ',glyph_audit.missing(font.primary.path))
+        fallback=font.character_font('ʻ');self.assertNotEqual(str(font.primary.path),str(fallback.path))
+        self.assertEqual(glyph_audit.missing(fallback.path,'ʻ'),[])
+    def test_scratch_cleanup_preserves_active_and_manual_files(self):
+        with tempfile.TemporaryDirectory(dir=C.TEMP_DIR) as tmp:
+            root=Path(tmp)/'remotion';folder=root/'public/assets';folder.mkdir(parents=True)
+            active=folder/('a'*64+'.png');old=folder/('b'*64+'.png');manual=folder/'manual.png'
+            for p in (active,old,manual):p.write_bytes(b'1234')
+            R.clean_scratch(root,dict(elements=[dict(file='assets/'+active.name)]))
+            self.assertTrue(active.exists());self.assertFalse(old.exists());self.assertTrue(manual.exists())
+            with self.assertRaises(C.MontajError):R.clean_scratch(Path(tmp),{})
+    def test_conservative_face_geometry(self):
+        import remotion_qa
+        self.assertEqual(remotion_qa.face_rect_cover((0,0,100,100),[dict(x=150,y=0,w=10,h=10)]),0)
+        self.assertEqual(remotion_qa.face_rect_cover((0,0,100,100),[dict(x=50,y=0,w=100,h=100)]),.5)
+    def test_quality_gate_uses_measured_browser_caption(self):
+        import quality_gate
+        result=dict(caption_metrics=dict(font_sizes_pct_h=[5],centres_y=[.99],centres_x=[.5],method='Measured DOM'),
+                    face_safety=dict(verification='measured',max_cover=0),checks=[('export','ok','')],audio=dict(additions=False),fps=60,remotion_enter_frames=20)
+        gate=quality_gate.evaluate(C.load_style(),[],[dict(type='broll',start=1,end=2)],2,dict(quality_targets=dict(caption_size_pct_h=[3,8],caption_position_y=[.5,.8],entrance_frames_30fps=[9,11])),result,[])
+        rows={r['key']:r for r in gate['measurements']}
+        self.assertEqual(rows['caption_size_pct_h']['status'],'pass');self.assertEqual(rows['caption_position_y']['status'],'fail')
+        self.assertEqual(rows['entrance_frames_30fps']['value'],10);self.assertEqual(rows['entrance_frames_30fps']['status'],'pass')
 
 if __name__=='__main__':
     result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(RemotionTests))

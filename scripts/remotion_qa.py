@@ -4,6 +4,41 @@ import json, math
 from pathlib import Path
 import common as C
 
+def face_rect_cover(face,boxes):
+    """Conservative occupied DOM rectangles; includes transparent glyph-box space."""
+    x0,y0,x1,y1=face;area=max(1,(x1-x0)*(y1-y0))
+    return min(1,sum(max(0,min(x1,b['x']+b['w'])-max(x0,b['x']))*
+                     max(0,min(y1,b['y']+b['h'])-max(y0,b['y'])) for b in boxes)/area)
+
+def face_checks(props,traces,public,style):
+    import cv2,face_safety
+    from types import SimpleNamespace
+    mon=face_safety.FaceMonitor(SimpleNamespace(W=props['width'],H=props['height'],fps=props['fps']),[],style)
+    cap=cv2.VideoCapture(str(Path(public)/props['video']));last=None;checked=faces=0;maximum=0;violations=[]
+    excluded={e['id'] for e in props['elements'] if e['type'] in ('broll','scene','remotion_scene')}
+    unknown=any(e['type']=='remotion_scene' for e in props['elements'])
+    for row in sorted({r['frame']:r for r in traces}.values(),key=lambda r:r['frame']):
+        ok,frame=cap.read()
+        if ok:last=frame
+        if last is None:break
+        boxes=[b for b in row['boxes'] if b['opacity']>=.01 and b['id'] not in excluded]
+        if not boxes or row['frame']>=props['videoFrames']:continue
+        # A fully opaque full-frame replacement intentionally removes the speaker.
+        if any(e['type']=='broll' and e.get('mode','full')=='full' and e['startFrame']+props['motion']['enterFrames']<=row['frame']<e['endFrame'] for e in props['elements']):continue
+        checked+=1
+        if mon.det is None:continue
+        face=mon._face(last[...,::-1])
+        if face is None:continue
+        faces+=1
+        for face in [face]+mon.extra_boxes:
+            covered=face_rect_cover(face,boxes);maximum=max(maximum,covered)
+            if covered>mon.limit:violations.append(dict(frame=row['frame'],at=row['frame']/props['fps'],cover=covered))
+    cap.release()
+    verification='unverified_custom_scene' if unknown else 'measured' if mon.det is not None and faces else 'unverified_no_face'
+    return dict(method='Per active frame: YuNet on normalized speaker, expanded face box vs actual visible DOM rectangles. Conservative upper bound; NOT native changed-pixel coverage. Full opaque b-roll intentionally replaces speaker.',
+                verification=verification,detector_available=mon.det is not None,frames_checked=checked,frames_with_face=faces,
+                max_cover=maximum,limit=mon.limit,violations=violations,ok=verification=='measured' and not violations)
+
 def output_checks(video,props,folder,cuts=None):
     import quality_gate as Q
     folder=Path(folder);fps=props['fps'];meta=C.ffprobe_info(video)

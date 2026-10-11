@@ -62,6 +62,30 @@ def prune_cache(enginework,active,limit):
     if size>limit:C.warn('Active visual segments exceed cache budget; retained for this delivery')
     return dict(bytes=size,removed=removed,limit_bytes=limit)
 
+def clean_scratch(enginework,props):
+    """Retain active media; remove our obsolete normalized copies and built browser bundle."""
+    root=Path(enginework).resolve()
+    if root.name!='remotion' or not C.is_inside(root,C.TEMP_DIR):raise C.MontajError('Scratch cleanup outside current job/remotion refused')
+    refs=set()
+    def walk(value):
+        if isinstance(value,dict):
+            for v in value.values():walk(v)
+        elif isinstance(value,list):
+            for v in value:walk(v)
+        elif isinstance(value,str) and value.startswith('assets/'):refs.add(value)
+    walk(props);removed=0
+    for path in (root/'public/assets').glob('*'):
+        if path.is_file() and re.fullmatch(r'[a-f0-9]{64}\.[a-z0-9]+',path.name) and 'assets/'+path.name not in refs:
+            path.unlink();removed+=1
+    for path in root.glob('*.mp4'):
+        if re.fullmatch(r'(broll_)?[a-f0-9]{64}\.mp4',path.name) and 'assets/'+digest(path)+'.mp4' not in refs:
+            path.unlink();removed+=1
+    bundle=root/'bundle'
+    if bundle.is_dir():
+        try:shutil.rmtree(bundle)
+        except OSError as error:C.warn(f'Owned bundle cleanup deferred: {error}')
+    return removed
+
 def asset(path,work,brand=None):
     path=Path(path)
     if not path.is_absolute():
@@ -129,10 +153,14 @@ def elements_plan(elements,style,work,W,H,fps,cfg):
         if typ in ('callout','title','text'): out['text']=C.strip_markup(el.get('text',''));out['backing']=typ=='callout'
         if typ in ('image','broll'):
             media=el['file']
+            if typ=='image' and Path(media).suffix.lower() in ('.mp4','.mov','.webm','.mkv'):
+                raise C.MontajError('Video image overlay needs native motion; Remotion image currently requires a still. Use broll for opaque footage.')
             if typ=='broll' and Path(media).suffix.lower() in ('.mp4','.mov','.webm','.mkv'):
                 source=Path(media)
                 if not source.is_absolute():source=next((r/source for r in (C.brand_dir(style),C.ROOT) if r and (r/source).is_file()),C.ROOT/source)
                 C.need_file(source,'B-roll')
+                if C.ffprobe_info(source).get('alpha'):
+                    raise C.MontajError('Alpha b-roll must use native motion compositor; conversion must not silently remove alpha')
                 key=hashlib.sha256(f'{digest(source)}:{W}:{H}:{fps}:{cfg["fps_conversion"]}'.encode()).hexdigest()
                 media=Path(work)/'remotion'/('broll_'+key+'.mp4')
                 if not media.exists():normalize_media(source,media,W,H,fps,cfg['fps_conversion'])
@@ -151,11 +179,12 @@ def elements_plan(elements,style,work,W,H,fps,cfg):
         planned.append(out)
     return planned
 
-def normalize_media(video,dest,W,H,fps,mode):
+def normalize_media(video,dest,W,H,fps,mode,grade=''):
     src=C.ffprobe_info(video)
     mismatch=abs(src['fps']-fps)>.01
     if mismatch and mode=='reject': raise C.MontajError(f'Source {src["fps"]} -> {fps} needs interpolation; fps_conversion reject')
     vf=f'scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1'
+    if grade:vf+=','+grade
     if mismatch:
         vf+=f',minterpolate=fps={fps}:mi_mode={mode}'
         C.warn(f'FPS {src["fps"]:g}->{fps}; {mode} interpolation. Blend may ghost; MCI may warp. Human review required.')
@@ -216,11 +245,19 @@ def compose(video,out,style,srt=None,words=None,cuts=None,elements_file=None,mus
     shift=int(digest(video)[:8],16)%len(cfg['animation_cycle'])
     cfg['animation_cycle']=cfg['animation_cycle'][shift:]+cfg['animation_cycle'][:shift]
     caps,fonts,family=caption_plan(cues,words,style,W,H,fps,cfg)
-    font=fonts.get(family,74,700);fallback=fonts.get('Oswald',74,700)
-    local_fonts={family:asset(font.primary.path,work),'Oswald':asset(fallback.primary.path,work)}
-    key=hashlib.sha256(json.dumps(dict(source=digest(video),W=W,H=H,fps=fps,mode=cfg['fps_conversion']),sort_keys=True).encode()).hexdigest()
+    fallback_family='Inter' if family.lower()!='inter' else 'Oswald'
+    font=fonts.get(family,74,700);fallback=fonts.get(fallback_family,74,700)
+    local_fonts={family:asset(font.primary.path,work),fallback_family:asset(fallback.primary.path,work)}
+    yuv_grade,lut=native.look_filters(style,C.brand_dir(style));grade=','.join(s for s in (yuv_grade,lut) if s)
+    lut_sha=None
+    if style.get('look',{}).get('lut'):
+        lp=Path(style['look']['lut'])
+        roots=(C.brand_dir(style),C.ROOT)
+        resolved=lp if lp.is_absolute() else next((r/lp for r in roots if r and (r/lp).is_file()),C.ROOT/lp)
+        lut_sha=digest(C.need_file(resolved,'LUT'))
+    key=hashlib.sha256(json.dumps(dict(source=digest(video),W=W,H=H,fps=fps,mode=cfg['fps_conversion'],grade=grade,lut_sha=lut_sha),sort_keys=True).encode()).hexdigest()
     mediafile=enginework/(key+'.mp4')
-    if not mediafile.is_file(): normalize_media(video,mediafile,W,H,fps,cfg['fps_conversion'])
+    if not mediafile.is_file(): normalize_media(video,mediafile,W,H,fps,cfg['fps_conversion'],grade)
     total=source['duration']+(style.get('endcard',{}).get('duration',2.2) if style.get('endcard',{}).get('enabled') else 0)
     planned=elements_plan(elements,style,work,W,H,fps,cfg)
     logo=style.get('logo',{})
@@ -239,7 +276,7 @@ def compose(video,out,style,srt=None,words=None,cuts=None,elements_file=None,mus
         link=next((e for e in transitions if e['type']=='broll' and e['startFrame']<=caption['startFrame']<e['endFrame']),None)
         if link:caption['transitionGroup']=link['id']
     props=dict(width=W,height=H,fps=fps,durationInFrames=round(total*fps),video=asset(mediafile,work),videoFrames=round(source['duration']*fps),
-               font=family,fallback='Oswald',fonts=local_fonts,color=style.get('captions',{}).get('color','#FFFFFF'),
+               font=family,fallback=fallback_family,fonts=local_fonts,color=style.get('captions',{}).get('color','#FFFFFF'),
                accent=style.get('captions',{}).get('accent','#F4BE4F'),motion=motion,safe=style['platform']['safe'],
                captions=caps,elements=planned,transitions=transitions,trace=True)
     total=props['durationInFrames']/fps
@@ -250,6 +287,7 @@ def compose(video,out,style,srt=None,words=None,cuts=None,elements_file=None,mus
     job=dict(props=props,browser=str(browser),concurrency=cfg['concurrency'],scale=cfg['supersample'],cache=str(enginework/'segments'),publicDir=str(public),
              segmentFrames=round(cfg['segment_sec']*fps),result=str(enginework/'render-result.json'))
     def run_job():
+        C.write_json(props,enginework/'props.json')
         C.write_json(job,enginework/'job.json')
         logfile=enginework/'renderer.log'
         with logfile.open('w',encoding='utf-8') as log:
@@ -296,23 +334,44 @@ def compose(video,out,style,srt=None,words=None,cuts=None,elements_file=None,mus
     concat.write_text('\n'.join("file '"+str(Path(p).resolve()).replace('\\','/').replace("'","'\\''")+"'" for p in result['segments']),encoding='utf-8')
     staging=enginework/'delivery.mp4'
     C.run([C.need_tool('ffmpeg'),'-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',concat,'-i',wav,
-           '-map','0:v:0','-map','1:a:0','-vf',f'scale={W}:{H}:flags=lanczos,format=yuv420p','-c:v','libx264',
+           '-map','0:v:0','-map','1:a:0','-vf',f'scale={W}:{H}:flags=lanczos,format=yuv420p'+native.grain_filter(style),'-c:v','libx264',
            '-crf',str(23 if draft else max(16,min(18,int(style['video'].get('crf',17))))),'-preset','veryfast' if draft else 'slow',
            '-threads','2','-c:a','aac','-b:a','192k','-t',str(total),'-movflags','+faststart',staging],check=True)
     meta,problems=C.verify_video(staging,W,H,total,need_audio=True)
     if problems: raise C.MontajError('Remotion final verification: '+'; '.join(problems))
     import remotion_qa
     output_qa=remotion_qa.output_checks(staging,props,qa_dir,cuts)
+    safety=remotion_qa.face_checks(props,result['traces'],public,style)
+    C.write_json(safety,qa_dir/'face_safety.json');C.write_json(safety,work/'face_safety.json')
+    if safety['violations']:output_qa['warnings'].append(f'Face rectangle overlap: {safety["violations"][:4]}')
+    elif not safety['ok']:output_qa['warnings'].append('Face safety '+safety['verification']+'; review using native compositor')
     qa.update(output=output_qa,segments=result['report'],fps_conversion=cfg['fps_conversion'] if abs(source['fps']-fps)>.01 else 'native')
     qa['cache']=prune_cache(enginework,result['segments'],cfg['cache_max_gb']*1024**3)
     C.write_json(qa,qa_dir/'report.json');(qa_dir/'report.md').write_text(remotion_qa.markdown(qa),encoding='utf-8')
+    if output_qa['warnings']:
+        raise C.MontajError('Output QA needs review; cannot infer a safe repair: '+'; '.join(output_qa['warnings'])+f'; report {qa_dir}; previous final retained')
+    meta=C.ffprobe_info(staging);meta.update(notes=output_qa['warnings'],checks=native.check_export(staging,style,meta),audio=dict(audio_mix.LAST_REPORT),qa=str(qa_dir/'report.md'),draft=draft,face_safety=safety)
+    loudness_row=next((r for r in meta['checks'] if r[0]=='Balandlik'),None)
+    if loudness_row:meta['integrated_lufs']=float(loudness_row[2].split()[0])
+    meta['remotion_enter_frames']=motion['enterFrames']
+    hold_boxes=[b for t in result['traces'] for b in t['boxes'] if b['role']=='caption' and b['phase']=='hold' and b['opacity']>=.01]
+    meta['caption_metrics']=dict(font_sizes_pct_h=[w['size']/H*100 for c in props['captions'] for w in c['words']],
+        centres_y=[(b['y']+b['h']/2)/H for b in hold_boxes],centres_x=[(b['x']+b['w']/2)/W for b in hold_boxes],
+        method='Remotion CSS font sizes / output height; median visible word DOM centres in hold phase, NOT native caption fitting or ink boxes')
+    if (work/'edit_plan.json').is_file():
+        gate=quality_gate.evaluate(style,cues,elements,total,C.read_json(work/'edit_plan.json'),meta,quality_gate.editorial_cut_times(cuts))
+        C.write_json(gate,work/'quality_gate.json');(work/'quality_gate.md').write_text(quality_gate.markdown(gate),encoding='utf-8')
+        meta['quality_gate']=gate
+        if not draft and style.get('quality',{}).get('enforce_final') and gate['status']!='measured_pass':
+            raise C.MontajError('Final quality gate: '+gate['status']+'; '+str(work/'quality_gate.md'))
     shutil.copyfile(staging,out);staging.unlink();concat.unlink(missing_ok=True)
-    meta=C.ffprobe_info(out);meta.update(notes=output_qa['warnings'],checks=native.check_export(out,style,meta),audio=dict(audio_mix.LAST_REPORT),qa=str(qa_dir/'report.md'),draft=draft)
+    meta.update(C.ffprobe_info(out))
     if style.get('sfx',{}).get('enabled') and style.get('sfx',{}).get('mixes'):
         import sound_design
         meta['mixes']=sound_design.alternate_mixes(video,out,work,style,total,elements,cues,words,music,C.brand_dir(style),dict(audio_mix.LAST_REPORT))
     for scratch in (enginework/'exact_audio.wav',enginework/'audio'/'final_audio.wav'):
         scratch.unlink(missing_ok=True)
+    clean_scratch(enginework,props)
     C.info(f"REMOTION QA: {qa['measured_frames']} frames, {len(qa['errors'])} errors; {len(output_qa['warnings'])} output warnings")
     return meta
 

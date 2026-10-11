@@ -76,29 +76,35 @@ def evaluate(style, cues, elements, duration, plan, result=None, cut_times=None)
     add('calm_stretch', calm >= min(duration, targets.get('calm_stretch_s', 0)), method=f'longest span without added graphic {calm:.3f}s; captions/source motion can remain')
     first = min([c['start'] for c in cues] + [el['start'] for el in visual if el.get('text') or any(i.get('text') for i in el.get('items', []))], default=None)
     add('hook_text_s', first, targets.get('hook_text_s'), method='first planned text onset; spoken/practical hook still needs editorial review')
-    ctx = E.Ctx(style, C.brand_dir(style))
-    cap = E.CaptionLayer(ctx, cues, None, duration)
     sizes, ys, xs = [], [], []
-    for item in cap.items:
-        cap._prepare(item)
-        b = item['block']; cx, cy = cap._center(b, item['cfg'])
-        sizes += [s/ctx.H*100 for s in b.line_sizes]
-        ys.append(cy/ctx.H); xs.append(cx/ctx.W)
-    cap.close()
+    measured_caption=(result or {}).get('caption_metrics')
+    if measured_caption:
+        sizes=measured_caption['font_sizes_pct_h'];ys=measured_caption['centres_y'];xs=measured_caption['centres_x']
+    else:
+        ctx = E.Ctx(style, C.brand_dir(style))
+        cap = E.CaptionLayer(ctx, cues, None, duration)
+        for item in cap.items:
+            cap._prepare(item)
+            b = item['block']; cx, cy = cap._center(b, item['cfg'])
+            sizes += [s/ctx.H*100 for s in b.line_sizes]
+            ys.append(cy/ctx.H); xs.append(cx/ctx.W)
+    if not measured_caption:cap.close()
     add('caption_size_pct_h', sorted(sizes)[len(sizes)//2] if sizes else None,
-        targets.get('caption_size_pct_h'), method='median actual fitted font line size / render height; NOT ink bbox or unidentified reference font')
+        targets.get('caption_size_pct_h'), method=measured_caption.get('method') if measured_caption else 'median actual fitted font line size / render height; NOT ink bbox or unidentified reference font')
     pos = targets.get('caption_position_y')
     if pos is not None:
-        add('caption_position_y', sorted(ys)[len(ys)//2] if ys else None, pos, method='actual fitted caption centres')
+        add('caption_position_y', sorted(ys)[len(ys)//2] if ys else None, pos, method=measured_caption.get('method') if measured_caption else 'actual fitted caption centres')
     mc = ML.config(style)
     frame_lengths = []
     for el in visual:
         key = 'hero' if el['type']=='hero' else ('label' if el['type'] in ('group', 'label', 'card') else 'sticker')
         seconds = float(el.get('duration', ML.duration(mc, key)))
         frame_lengths.append(seconds*30)
+    if visual and (result or {}).get('remotion_enter_frames'):
+        frame_lengths=[result['remotion_enter_frames']*30/result['fps'] for _ in visual]
     if frame_lengths:
         add('entrance_frames_30fps', sorted(frame_lengths)[len(frame_lengths)//2],
-            targets.get('entrance_frames_30fps'), method='configured entrance seconds × 30; output native frame counts recorded separately; no claim of exact source easing')
+            targets.get('entrance_frames_30fps'), method='Remotion shared enter clock, DOM trace in qa/report.md; actual frames rescaled to 30fps' if (result or {}).get('remotion_enter_frames') else 'configured entrance seconds × 30; output native frame counts recorded separately; no claim of exact source easing')
     else:
         rows.append(dict(key='entrance_frames_30fps',value=None,target=targets.get('entrance_frames_30fps'),
                          status='not_applicable',hard=False,method='No added graphics: no graphic entrance exists to measure. Caption entrances still require filmstrip review.'))
@@ -109,7 +115,7 @@ def evaluate(style, cues, elements, duration, plan, result=None, cut_times=None)
     verified = safety.get('verification') == 'measured' or safety.get('frames_with_face', 0)>0
     add('face_coverage', safety.get('max_cover') if verified else None,
         targets.get('max_face_cover', .03), hard=True,
-        method='EVERY overlaid frame, YuNet expanded box changed-pixel share; low-contrast overlays and missed faces remain limitations')
+        method=safety.get('method','EVERY overlaid frame, YuNet expanded box changed-pixel share; low-contrast overlays and missed faces remain limitations'))
     add('export', all(r[1]!='xato' for r in result['checks']) if result.get('checks') else None, hard=True,
         method='ffprobe/platform actual render checks')
     audio = result.get('audio', {})

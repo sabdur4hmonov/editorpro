@@ -64,6 +64,7 @@ const Graphic:React.FC<{el:any;p:TimelineProps}> = ({el,p})=>{
     scale:a.scale,rotate:`${(el.rotate??0)+(1-e.enter)*(el.rotateFrom??0)}deg`,
     transform:'translate(-50%, -50%)',fontFamily:`"${el.font??p.font}", "${p.fallback}"`,
     color:el.color??p.color,fontSize:el.size??64,textAlign:'center',fontWeight:el.weight??700,
+    filter:p.motion.blur.enabled?`blur(${Math.min(p.motion.blur.intensity,Math.abs(1-e.enter+e.out)*p.motion.blur.intensity)}px)`:undefined,
     borderRadius:el.radius??20,overflow:'hidden'};
   const attr={'data-motion-id':el.id,'data-role':'graphic','data-safe-required':['title','text','callout','lower_third','list','panel','stat','follow'].includes(el.type)?'true':'false','data-phase':f<el.startFrame+p.motion.enterFrames?'enter':f>=el.endFrame?'exit':'hold'};
   if(el.type==='image') return <div {...attr} style={style}><Img src={media(el.file)} style={{width:'100%',display:'block'}}/></div>;
