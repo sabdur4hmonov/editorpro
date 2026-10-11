@@ -356,3 +356,14 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
 - 6s pass-through30→0takror; championship final AAC kesish teshigi−18.2…−11.0→−0.4…+5.4dB. Saqlangan doktor4/5 RGB3nuqtada farq0; bu v25 bit-identical degani emas.
 - Doktor3/4/5 eski b-rolllarida3/15/31takror nomzodi qoldi. Nilem09 SRT mask_up/slide override'lari bor: global choice barcha animatsiya sanog'i emas. Cheklovlar yashirilmadi.
 - Muharrir sahifasi temp/smooth/finish/report.html:7juftlik,25%kliplar,strips,vaqtlar,loglar. Eski input/video notes/approved stillar saqlandi; ritm/ovoz tasdig'i muharrirda.
+
+
+## 2026-10-12 — Remotion opt-in timeline / smoothness
+
+User confirmed Claude idle and authorized shared code. Preserved other video notes, input/samples/.env; no installs/GPU tests.58files/57hash study inventory (reuse42hash-matched reports +15new overviews). Do not invent event duration from a missing end field: cached animations sometimes record a frame observation window only. docs/style-analysis.md marks that distinction and uncertainty.
+
+Shared7nonlinear curves, soft/snappy/bouncy, floating positions; fixed word layouts retain approved starts, Uzbek apostrophe clusters and local glyph fallback. Pipeline --engine remotion opts into full timeline; old native/ASS remains. New brand template brands/_template. DOM QA waits for fonts and actual browser layout; box padding and asymmetric safe margins are real constraints, not relaxed checks. PCM post-normalization can end50–80ms short: flush filter buffers before exact frame-grid trim, no time stretch.
+
+Doctor5 approved10.9s demo:1080x1920/30fps/328frames,1499DOM rectangles,0errors/output warnings,261active faceframes with0conservative rectangle overlap. Old full baseline9repeat proxy/1.196px native drift/face4–8% warnings. Metrics differ; never equate DOM rectangle coverage to changed-pixel coverage or say professional quality was automatically proven. Blend25->30 may ghost; human review required.
+
+Cache proof: late graphic change2hits/1miss; restored3hits. Concurrency2,4ssegments,2GiBcache and owned scratch cleanup. Cold full Remotion slower than native:~155.5s visual render vs29s native, QA/encode extra.60fps+blur2s draft22.9s;30default.13suites205tests +isolated selftest45/45, TypeScript/easing pass; production note guard unchanged. Unsupported/custom/alpha cases are explicit native fallbacks, not silent conversion. Details and artifacts docs/REMOTION_PROOF.md and MOTION_LIMITATIONS.md. No perceptual/audio taste claims.

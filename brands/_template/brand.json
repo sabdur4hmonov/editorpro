@@ -1,0 +1,11 @@
+{
+  "name": "Fill in the client brand",
+  "_izoh": "Copy this folder to brands/<name>. Ask for actual colours/fonts/logo; these are placeholders. Old _shablon remains supported.",
+  "style": {
+    "captions": {"engine": "remotion", "font": "Inter", "color": "#FFFFFF", "accent": "#F4BE4F", "position_y": 0.65, "size_main": 74},
+    "remotion": {"fps": 30, "concurrency": 2, "preset": "soft", "animation_cycle": ["slide", "wipe", "pop"], "fps_conversion": "blend", "supersample": 1, "blur": {"enabled": false, "intensity": 2}},
+    "logo": {"file": "", "width": 0.2, "position": "top"},
+    "endcard": {"enabled": false, "duration": 2.2, "text": "", "handle": "", "button": "Obuna bo‘ling"},
+    "audio": {"music_file": "", "voice_margin_db": 10, "bitrate": "192k"}
+  }
+}

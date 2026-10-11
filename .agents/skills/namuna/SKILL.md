@@ -201,3 +201,19 @@ Use `card`, `canvas`, `trajectory`, `layout_morph`, optional stroke relief per `
 These are 2D/2.5D tools; exact 3D/folds/custom pen strokes remain external work, not a claimed match.
 Never reuse sample logos, footage, music or fonts in output. Check actual approved words, faces and safe zones;
 preserve calm answers instead of forcing new graphics every3s. Show native filmstrips and paired audio cues.
+
+
+## Opt-in Remotion timeline
+
+For new supported talking-head edits select `--engine remotion`; preserve approved legacy jobs.
+For a new Remotion edit read `docs/how-to-use.md`, `docs/style-analysis.md` and
+`docs/MOTION_LIMITATIONS.md`. Use pipeline `--engine remotion`; cutting, Whisper and
+subtitle approval remain unchanged. Preserve approved words and fixed phrase layouts.
+Use shared nonlinear easing, sub-pixel coordinates and matching 0.2-0.5s transition clocks.
+CPU concurrency2; blur/supersampling/60fps are optional and require measured review.
+Inspect every render's `temp/<job>/qa/<export>/report.md` and every-third-frame transition
+sheets. Unknown is not pass; max3 safe retries, no weakened checks. Show A/B evidence.
+Unsupported native/alpha graphics stop explicitly: use standalone Remotion overlays + native motion.
+Custom remotion_scene face geometry is unverified in the full timeline; do not claim a pass.
+Keep source-fps native jobs unchanged; Remotion blend/MCI interpolation needs human review.
+No new installs/downloads without permission; clean only the current job's scratch/cache.

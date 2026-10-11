@@ -16,6 +16,15 @@
     "nvenc_cq": 21
   },
 
+  "remotion": {
+    "_izoh": "Opt-in --engine remotion; FFmpeg/Whisper va tasdiqlangan native flow saqlanadi.",
+    "fps": 30, "concurrency": 2, "preset": "soft",
+    "animation_cycle": ["slide", "wipe", "pop"],
+    "fps_conversion": "blend", "supersample": 1,
+    "blur": {"enabled": false, "intensity": 2},
+    "segment_sec": 4, "qa_attempts": 3, "cache_max_gb": 2
+  },
+
   "preview": {
     "_izoh": "Faqat --draft: kichik qoralama, final sozlamalari o'zgarmaydi. Subtitrli video baribir tasdiq talab qiladi.",
     "height": 640,

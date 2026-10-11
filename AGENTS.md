@@ -607,8 +607,7 @@ ffprobe -v error -show_entries format=duration:stream=codec_type,width,height,r_
 - FFmpeg 7+ da uzun filtr grafigi `-/filter_complex fayl` orqali beriladi (eski
   `-filter_complex_script` FFmpeg 9 da olib tashlangan): `common.run_ffmpeg_graph`.
 - Eski dvigatelda (ASS) Windows yo'lidagi `:` va `\` muammosi `common.filter_path` da hal qilingan.
-- Remotion bu loyihada yo'q. Maxsus sahna kerak bo'lsa `docs/REMOTION_PROMPT.md` bo'yicha
-  qo'shiladi va natijasi shaffof video sifatida ustiga qo'yiladi.
+- Remotion o'rnatilgan: `--engine remotion` opt-in timeline; eski native motion/ASS va shaffof overlay yo'li saqlanadi. `docs/how-to-use.md` va `docs/MOTION_LIMITATIONS.md`.
 - Tashqi skill o'rnatishdan oldin `docs/SKILLS_AUDIT.md` ni o'qi va foydalanuvchidan so'ra.
 
 ## 41 namuna va motion design (solo style study)
@@ -623,3 +622,28 @@ ffprobe -v error -show_entries format=duration:stream=codec_type,width,height,r_
   easing/font/isolated SFX/true3D noma’lum bo‘lsa null va honest limitation.
 - Claude limit holatida bu sessiyada foydalanuvchi Codex solo shared build/tests/commitni aniq ruxsat berdi;
   bu kelajakdagi parallel ish cheklovini bekor qilmaydi. Oldingi video notes saqlandi.
+
+
+## Remotion timeline: ikkala agent uchun
+
+- `docs/style-analysis.md` barcha mavjud namunalar inventari; `docs/how-to-use.md` buyruqlari.
+  Eski FFmpeg/Whisper kesish, matn tasdiqi, native motion/ASS saqlanadi. Yangi engine opt-in;
+  tasdiqlangan videoni avtomatik qayta dizayn qilma. Yangi supported talking-head jobda
+  `--engine remotion` tanla; legacy/unsupported grafik bo‘lsa native yo‘l va uning QA sini ishlat.
+- Remotion har position/scale/opacity/rotation interpolationni `remotion/src/easing.mjs`
+  yoki `motion.ts` orqali o'tkazadi. Linear faqat progress/time mapping kabi constant-speed ishlar.
+  Pixel koordinatasini integerga yaxlitlama; frame/indexni yaxlitlash bundan alohida.
+- Brand `style.remotion` / per-video `remotion`: soft/snappy/bouncy, enter/exit 0.2-0.5s;
+  footage va text umumiy transition clock, outgoing exit davomida incoming enter.
+  Whisper word start/end saqlanadi, butun gap layouti oldindan band qilinadi. o'/g'/apostrophe ajralmaydi.
+- CPU: concurrency2 (ko'pi bilan3), default30fps;60fps va2x faqat o'lchangan render vaqti bilan.
+  Native source-fps qoidasi qoladi; Remotion mismatched source uchun blend/mci/reject tanlovi aniq.
+  Oddiy25->30 duplicate fps conversion yo'q; blend ghost/MCI warp inson ko'rigida tekshiriladi.
+- Har yangi render `temp/<job>/qa/<export>/report.md`: real DOM/safe area/word onset/jitter,
+  final frame PTS/count/hold proxy/audio va har3-kadr transition sheets. Unknown pass emas.
+  Caption/text geometry xatolari to'xtaydi; max3 xavfsiz auto repair, check yumshatilmaydi.
+  Inson ritm, ovoz didi, yuz va semantic sifati filmstrip/draftda tasdiqlaydi; agent "silliq" deb taxmin qilmaydi.
+- Local fonts + character fallback; `remotion/motion_choice.json` seed/preset/cycle saqlaydi.
+  Unsupported native graphic aniq xato; silent drop yo'q. Custom remotion_scene face geometry unverified: production standalone overlay/native yo‘li.
+- Cache faqat o'z job/remotion ichida; active segment saqlanadi, eski segmentlar2GiB budgetga tozalanadi.
+  Staging/concat/audio scratch muvaffaqiyatdan keyin o'chadi;30GiB free disk warning. Boshqa jobga tegma.
