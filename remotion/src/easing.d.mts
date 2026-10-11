@@ -1,0 +1,11 @@
+export function clamp(p:number):number;
+export function easeOutCubic(p:number):number;
+export function easeInOutCubic(p:number):number;
+export function easeInOutQuart(p:number):number;
+export function easeOutExpo(p:number):number;
+export function easeOutBack(p:number):number;
+export function spring(p:number, config?:Record<string,number>):number;
+export const PRESETS:Record<string,{curve:string;enter:number;exit:number;damping:number;stiffness:number}>;
+export const CURVES:Record<string,(p:number,config?:Record<string,number>)=>number>;
+export function eased(p:number,name?:string,config?:Record<string,number>):number;
+export function lerp(a:number,b:number,p:number,name?:string,config?:Record<string,number>):number;

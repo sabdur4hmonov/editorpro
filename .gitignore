@@ -30,3 +30,9 @@ assets/sfx/_inbox/
 assets/sfx/_unsorted/
 assets/sfx/**/real__*
 brands/**/sfx/real__*
+# Remotion source is tracked; generated media, dependency/runtime and job assets stay local.
+remotion/node_modules/
+remotion/out/
+remotion/public/job/
+remotion/public/fonts/
+remotion/.cache/
