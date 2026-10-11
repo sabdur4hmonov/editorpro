@@ -78,7 +78,7 @@ def main() -> int:
     ap.add_argument("--music", help="Fon musiqa fayli")
     ap.add_argument("--brand", help="Brend nomi (brands/<nom>/brand.json): shrift, rang, logotip, oxirgi kadr")
     ap.add_argument("--elements", help="Grafik elementlar fayli (standart: temp/<nom>/elements.json, bo'lsa)")
-    ap.add_argument("--engine", choices=["motion", "ass", "off"],
+    ap.add_argument("--engine", choices=["motion", "remotion", "ass", "off"],
                     help="Subtitr dvigateli (style.json: captions.engine ni almashtiradi)")
     ap.add_argument("--stills", help="Render qilmasdan, shu vaqtlardagi kadrlarni rasm qilib ko'rsat: 1.5,4,9")
     ap.add_argument("--draft", action="store_true", help="Kichik qoralama; subtitr tasdiqi baribir talab qilinadi")
@@ -96,9 +96,9 @@ def main() -> int:
     if args.engine:
         style["captions"]["engine"] = args.engine
     engine = str(style["captions"].get("engine", "motion")).lower()
-    if engine not in ("motion", "ass", "off"):
-        raise C.MontajError(f"captions.engine noto'g'ri: {engine!r}. Mumkin: motion, ass, off.")
-    if args.draft and engine != "motion":
+    if engine not in ("motion", "remotion", "ass", "off"):
+        raise C.MontajError(f"captions.engine noto'g'ri: {engine!r}. Mumkin: motion, remotion, ass, off.")
+    if args.draft and engine not in ("motion", "remotion"):
         raise C.MontajError("--draft hozir motion dvigateli bilan ishlaydi.")
     if args.language:
         style["whisper"]["language"] = args.language
@@ -305,7 +305,7 @@ def main() -> int:
         C.info("TAYYORLANDI: nutq/subtitr yo'q, render bajarilmadi.")
         return 0
     if args.stills:
-        if engine != "motion":
+        if engine not in ("motion", "remotion"):
             raise C.MontajError("--stills faqat motion dvigateli bilan ishlaydi (captions.engine: motion).")
         import compose as CP
         try:
@@ -371,7 +371,7 @@ def main() -> int:
 
     # ---- 4. render
     music = Path(args.music) if args.music else None
-    if engine == "motion":
+    if engine in ("motion", "remotion"):
         t = step("4/4 Render (motion: zoom, subtitr animatsiyasi, elementlar)")
         import compose as CP
         words_file = work / "cut.words.json"
@@ -388,15 +388,15 @@ def main() -> int:
     render_style = CP.draft_style(style) if args.draft else style
     C.info(f"  O'lcham:     {meta['width']}x{meta['height']} (kutilgan {render_style['video']['width']}x{render_style['video']['height']})")
     C.info(f"  Davomiylik:  {meta['duration']:.2f}s (asl video {src['duration']:.2f}s"
-           + (", oxirgi kadr qo'shilgan" if style.get("endcard", {}).get("enabled") and engine == "motion" else "") + ")")
+           + (", oxirgi kadr qo'shilgan" if style.get("endcard", {}).get("enabled") and engine in ("motion", "remotion") else "") + ")")
     C.info(f"  FPS:         {meta['fps']:g}")
     C.info(f"  Ovoz:        {'bor' if meta['has_audio'] else 'YOQ'} ({meta['acodec']}, {meta['sample_rate']} Hz)")
     C.info(f"  Hajm:        {meta['size_bytes'] / 1e6:.1f} MB")
-    if engine == "motion":
+    if engine in ("motion", "remotion"):
         CP.print_report(meta, style)
     # ishlatilgan stok/AI rasmlar uchun mualliflik ro'yxati
     credits = []
-    if elements_file and engine == "motion":
+    if elements_file and engine in ("motion", "remotion"):
         import images as IM
         credits = IM.collect_credits(elements_file, C.brand_dir(style))
         if credits:

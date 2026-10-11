@@ -452,6 +452,10 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     trace=(t0, t1): faqat o'lchov - shu oraliq kadrlari chiziladi (kodlanmaydi), har blit geometriyasi
     qaytariladi (review_tools lint). Render natijasiga ta'sir qilmaydi.
     """
+    if str(style.get('captions', {}).get('engine', '')).lower() == 'remotion':
+        import remotion_engine
+        return remotion_engine.compose(video, out_path, style, srt, words, cuts, elements_file,
+                                       music, nvenc, stills, stills_out, draft, trace)
     video = C.need_file(video, "Video")
     meta = C.ffprobe_info(video)
     style = C.resolve_fps(style, meta=meta)
