@@ -145,7 +145,7 @@ class Ctx:
     def __init__(self, style: dict, brand_dir: Path | None = None):
         self.style = style
         self.W, self.H = int(style["video"]["width"]), int(style["video"]["height"])
-        self.fps = float(style["video"]["fps"])
+        self.fps = C.fps_of(style)
         self.k = self.H / 1920.0                     # o'lchamlar 1920 balandlik uchun berilgan
         self.brand_dir = Path(brand_dir) if brand_dir else None
         font_dirs = []

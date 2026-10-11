@@ -66,7 +66,7 @@ def gather(style,elements,cues,words,brand_dir=None):
         if kind=='card' and el.get('active_at') is not None:events.append((float(el['active_at']),'label'))
         if kind in ('label','group'): events.extend((float(i.get('at',start)),'label') for i in el.get('items',[]))
         if kind=='follow': events.append((start+float(el.get('tap',1.3)),'follow_tap'))
-    fps=float(style['video']['fps']); lead=int(cfg.get('lead_frames',3))
+    fps=C.fps_of(style); lead=int(cfg.get('lead_frames',3))
     if not 2<=lead<=3: raise C.MontajError('sfx.lead_frames must be 2 or 3.')
     density=int(cfg.get('max_per_10_sec',3))
     if density<1: raise C.MontajError('sfx.max_per_10_sec must be positive.')

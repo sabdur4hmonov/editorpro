@@ -165,7 +165,7 @@ def conform_source(source,fps,work,end=None):
 
 def export(video,source,cuts,style,subs,words,elements,work):
     work=C.guard_output(work); work.mkdir(parents=True,exist_ok=True)
-    fps=style['video']['fps']; timecode(0,fps)
+    style=C.resolve_fps(style,video); fps=style['video']['fps']; timecode(0,fps)
     offset,tc_note=source_offset(source,fps)
     listing=cut_list(cuts['keep'],fps,offset,cuts.get('speed',1))
     if not listing: raise C.MontajError('Editor export requires at least one source cut')

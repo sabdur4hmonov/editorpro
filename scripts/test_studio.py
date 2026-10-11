@@ -33,11 +33,14 @@ def cli(name, *args, expected=0):
 
 class Rules(unittest.TestCase):
     def test_draft_preserves_final_style(self):
-        original = C.load_style()
+        # F12: a draft keeps the source frame rate (25 in -> 25 out); only size/encode get cheaper
+        original = C.resolve_fps(C.load_style(), meta={"fps": 25.0, "r_fps": 25.0})
         before = copy.deepcopy(original)
         draft = compose.draft_style(original)
         self.assertEqual(original, before)
-        self.assertEqual((draft["video"]["width"], draft["video"]["height"], draft["video"]["fps"]), (360, 640, 15))
+        self.assertEqual((draft["video"]["width"], draft["video"]["height"], draft["video"]["fps"]), (360, 640, 25))
+        legacy = dict(original, video=dict(original["video"], fps=30), preview=dict(original["preview"], fps=15))
+        self.assertEqual(compose.draft_style(legacy)["video"]["fps"], 15)          # old per-video styles unchanged
 
     def test_preflight_finds_semantic_risks_and_structural_errors(self):
         style = C.load_style()

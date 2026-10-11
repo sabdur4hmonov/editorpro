@@ -109,6 +109,7 @@ def render(video: Path, out_path: Path, style: dict, subs_ass: Path | None = Non
            music: Path | None = None, nvenc: bool | None = None) -> dict:
     """Yakuniy render. Natija haqida ma'lumot (ffprobe) qaytaradi."""
     video = C.need_file(video, "Video")
+    style = C.resolve_fps(style, video)
     out_path = C.guard_output(out_path, video)
     meta = C.ffprobe_info(video)
     if not meta["has_video"]:

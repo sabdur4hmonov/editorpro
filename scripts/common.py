@@ -4,6 +4,7 @@ Bu faylni boshqa skriptlar import qiladi. O'zi alohida ishga tushirilmaydi.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
@@ -348,6 +349,53 @@ def brand_dir(style: dict) -> Path | None:
     return Path(style["_brand_dir"]) if style.get("_brand_dir") else None
 
 
+STANDARD_FPS = (24000 / 1001, 24.0, 25.0, 30000 / 1001, 30.0, 50.0, 60000 / 1001, 60.0)
+
+
+def source_fps(meta: dict) -> tuple:
+    """Output rate for video.fps "source": the clip's own constant rate, never a 25->30 duplication.
+
+    VFR (avg != nominal) or an odd rate converts ONCE, at the input, to the nearest standard rate.
+    """
+    avg = float(meta.get("fps") or 0)
+    nominal = float(meta.get("r_fps") or avg or 0)
+    vfr = bool(avg and nominal and abs(avg - nominal) > 0.01)
+    base = (nominal if vfr else avg or nominal) or 30.0       # VFR: the camera's nominal rate
+    near = min(STANDARD_FPS, key=lambda s: abs(s - base))
+    if not vfr and abs(near - base) < 0.01:
+        return near, "source"
+    return near, "vfr->nearest" if vfr else "odd->nearest"
+
+
+def resolve_fps(style: dict, video=None, meta: dict | None = None) -> dict:
+    """Copy of style with numeric video.fps; numeric values (approved per-video styles) pass through."""
+    v = style.get("video", {})
+    if str(v.get("fps", "")).lower() != "source":
+        return style
+    meta = meta or ffprobe_info(video)
+    out = copy.deepcopy(style)
+    out["video"]["fps"], out["video"]["_fps_from"] = source_fps(meta)
+    if str(out.get("preview", {}).get("fps", "")).lower() == "source":
+        out["preview"]["fps"] = out["video"]["fps"]
+    return out
+
+
+def fps_of(style: dict, default: float = 30.0) -> float:
+    """Numeric fps; an unresolved "source" (no video known yet) falls back to default."""
+    try:
+        return float(style["video"]["fps"])
+    except (KeyError, TypeError, ValueError):
+        return default
+
+
+def fps_expr(fps: float) -> str:
+    """ffmpeg rate text: NTSC rates as exact fractions (29.97 would drift against 30000/1001)."""
+    for num in (24000, 30000, 60000):
+        if abs(fps - num / 1001) < 0.002:
+            return f"{num}/1001"
+    return f"{fps:g}"
+
+
 def style_get(style: dict, section: str, key: str):
     """style.json dan qiymat oladi, yo'q bo'lsa qaysi kalit yo'qligini aytadi."""
     try:
@@ -558,7 +606,8 @@ def ffprobe_info(path: str | Path) -> dict:
         out.update(pix_fmt=v.get("pix_fmt"), color_space=v.get("color_space"),
                    color_transfer=v.get("color_transfer"), color_range=v.get("color_range"))
         out.update(width=w, height=h, rotation=rotation, vcodec=v.get("codec_name"),
-                   fps=round(_rate(v.get("avg_frame_rate")) or _rate(v.get("r_frame_rate")), 3))
+                   fps=round(_rate(v.get("avg_frame_rate")) or _rate(v.get("r_frame_rate")), 3),
+                   r_fps=round(_rate(v.get("r_frame_rate")) or _rate(v.get("avg_frame_rate")), 3))
     if a:
         out.update(acodec=a.get("codec_name"), sample_rate=int(_f(a.get("sample_rate"))),
                    channels=int(a.get("channels", 0)))

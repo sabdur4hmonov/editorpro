@@ -148,7 +148,7 @@ def build_plan(video: Path, style: dict, words: list | None = None,
     if not meta["has_video"]:
         raise C.MontajError(f"Faylda video oqimi yo'q: {video}")
     duration = meta["duration"]
-    fps = float(C.style_get(style, "video", "fps"))
+    fps = float(C.style_get(C.resolve_fps(style, meta=meta), "video", "fps"))
     noise = float(silence_db if silence_db is not None else cut.get("silence_db", -35))
     min_sil = float(min_silence if min_silence is not None else cut.get("min_silence", 0.45))
     padding = float(cut.get("padding", 0.1))
@@ -239,6 +239,16 @@ def print_plan(plan: dict) -> None:
 
 # ---------------------------------------------------------------- qo'llash
 
+def segment_frames(keep: list, out_fps: float) -> list:
+    """[(first source frame, frame count)] per kept segment by cumulative rounding (no A/V drift)."""
+    acc, frames = 0.0, []
+    for seg in keep:
+        a = round(acc * out_fps)
+        acc += seg["end"] - seg["start"]
+        frames.append((round(seg["start"] * out_fps), round(acc * out_fps) - a))
+    return frames
+
+
 def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
                force_file_graph: bool = False) -> Path:
     """Rejani qo'llaydi: bo'laklarni kesib, yumshoq o'tish bilan ulab, bitta fayl qiladi."""
@@ -247,7 +257,10 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
         raise C.MontajError("Kesishdan keyin hech narsa qolmadi. silence_db ni pasaytiring (masalan -45).")
     out_path = C.guard_output(out_path, video)
     meta = C.ffprobe_info(video)
-    fps = plan["fps"]
+    fps = plan["fps"]                                   # boundary grid of the plan (seconds stay as planned)
+    out_fps = float(C.resolve_fps(style, meta=meta)["video"]["fps"])
+    if str(style.get("video", {}).get("fps", "")).lower() != "source":
+        out_fps = float(style["video"]["fps"]) if "fps" in style.get("video", {}) else fps
     fade = max(0.0, float(plan["settings"].get("fade_ms", 15)) / 1000.0)
     # chegaralar kadr to'riga yaxlitlanadi (qo'lda tahrirlangan reja uchun ham)
     keep = [{"start": round(k["start"] * fps) / fps, "end": round(k["end"] * fps) / fps} for k in keep]
@@ -255,14 +268,18 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
     if not keep:
         raise C.MontajError("Rejadagi bo'laklar bir kadrdan ham qisqa.")
     n = len(keep)
-    parts = [f"[0:v]fps={fps:g},split={n}" + "".join(f"[vs{i}]" for i in range(n))]
+    parts = [f"[0:v]fps={C.fps_expr(out_fps)},split={n}" + "".join(f"[vs{i}]" for i in range(n))]
+    # video frames per segment by cumulative rounding: audio keeps the planned seconds, the picture never
+    # drifts more than half an output frame and nothing accumulates (plan grid == output rate: exact frames)
+    frames = segment_frames(keep, out_fps)
     if meta["has_audio"]:
         parts.append(f"[0:a]aresample=48000,asplit={n}" + "".join(f"[as{i}]" for i in range(n)))
     for i, seg in enumerate(keep):
         s, e = seg["start"], seg["end"]
         d = e - s
         # fps filtridan keyin vaqt birligi 1 kadr, shuning uchun chegaralar aniq kadrga tushadi
-        parts.append(f"[vs{i}]trim=start={s:.6f}:end={e:.6f},setpts=PTS-STARTPTS[v{i}]")
+        f0, nf = frames[i]
+        parts.append(f"[vs{i}]trim=start_frame={f0}:end_frame={f0 + nf},setpts=PTS-STARTPTS[v{i}]")
         if meta["has_audio"]:
             f = min(fade, d / 4)
             chain = f"[as{i}]atrim=start={s:.6f}:end={e:.6f},asetpts=PTS-STARTPTS"
@@ -277,7 +294,7 @@ def apply_plan(video: Path, plan: dict, out_path: Path, style: dict,
     else:
         parts.append("".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0{vlab}")
     if fast:  # butun videoni tezlashtirish/sekinlashtirish (ovoz balandligi o'zgarmaydi)
-        parts.append(f"[vc]setpts=PTS/{speed:.4f},fps={fps:g}[vout]")
+        parts.append(f"[vc]setpts=PTS/{speed:.4f},fps={C.fps_expr(out_fps)}[vout]")
         if meta["has_audio"]:
             parts.append(f"[ac]atempo={speed:.4f}[aout]")
     graph = ";\n".join(parts)

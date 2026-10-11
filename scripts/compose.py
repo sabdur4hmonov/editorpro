@@ -40,13 +40,15 @@ def draft_style(style: dict) -> dict:
     """Qoralama uchun nusxa: nisbat saqlanadi, final sozlamalariga tegilmaydi."""
     out = copy.deepcopy(style)
     cfg = out.get("preview", {})
-    height, fps = int(cfg.get("height", 640)), float(cfg.get("fps", 15))
+    fps_cfg = cfg.get("fps", 15)
+    # "source": the draft keeps the output (source) rate; only size and encode get cheaper
+    height, fps = int(cfg.get("height", 640)), float(C.fps_of(out) if str(fps_cfg).lower() == "source" else fps_cfg)
     if not 240 <= height <= 1080 or height % 2 or not 1 <= fps <= 60:
         raise C.MontajError("preview.height: 240..1080 juft son, preview.fps: 1..60 bo'lishi kerak.")
     v = out["video"]
     height = min(height, int(v["height"]))
     width = max(2, round(int(v["width"]) * height / int(v["height"]) / 2) * 2)
-    v.update(width=width, height=height, fps=min(fps, float(v["fps"])),
+    v.update(width=width, height=height, fps=min(fps, C.fps_of(out)),
              crf=int(cfg.get("crf", 28)), preset=str(cfg.get("preset", "ultrafast")))
     out["_draft"] = True
     return out
@@ -122,6 +124,7 @@ def look_filters(style: dict, brand_dir: Path | None) -> tuple[str, str]:
 
 def fit_graph(meta: dict, style: dict, face: dict | None, brand_dir: Path | None = None) -> tuple[str, str]:
     """ffmpeg filtr grafigi: manba -> W x H, rgb24. (grafik, tanlangan usul) qaytaradi."""
+    style = C.resolve_fps(style, meta=meta)
     v = style["video"]
     W, H = int(C.style_get(style, "video", "width")), int(C.style_get(style, "video", "height"))
     if W % 2 or H % 2:
@@ -155,7 +158,7 @@ def fit_graph(meta: dict, style: dict, face: dict | None, brand_dir: Path | None
         else:
             matrix = "bt601"
         rng = "pc" if (meta.get("color_range") or "").lower() in ("pc", "jpeg", "full") else "tv"
-    pre += f"fps={fps:g}"
+    pre += f"fps={C.fps_expr(fps)}"
     if fit in ("crop", "face"):
         cw, ch, x, y = crop_window(meta, W, H, face if fit == "face" or face else None)
         body = f"{pre},crop={cw}:{ch}:{x}:{y},scale={W}:{H}:flags=lanczos"
@@ -391,9 +394,10 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     qaytariladi (review_tools lint). Render natijasiga ta'sir qilmaydi.
     """
     video = C.need_file(video, "Video")
+    meta = C.ffprobe_info(video)
+    style = C.resolve_fps(style, meta=meta)
     if draft:
         style = draft_style(style)
-    meta = C.ffprobe_info(video)
     if not meta["has_video"]:
         raise C.MontajError(f"Faylda video oqimi yo'q: {video}")
     W, H = int(style["video"]["width"]), int(style["video"]["height"])
@@ -570,7 +574,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
                                    stdout=subprocess.PIPE, stderr=dlog, stdin=subprocess.DEVNULL, bufsize=size,
                                    cwd=str(C.ROOT))
             enc_cmd = [ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
-                       "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", f"{fps:g}", "-i", "-",
+                       "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", C.fps_expr(fps), "-i", "-",
                        "-i", str(wav), "-map", "0:v", "-map", "1:a",
                        "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p"]
             enc_cmd += R.encoder_args(style, want_nvenc) + [

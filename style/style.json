@@ -6,7 +6,7 @@
     "_izoh": "fit: crop (to'ldirib kesadi) | face (yuz atrofidan kesadi) | pad (qora hoshiya) | blur (xira fon) | auto (vertikalga yaqin bo'lsa crop; gorizontal bo'lsa yuz topilsa face, topilmasa blur)",
     "width": 1080,
     "height": 1920,
-    "fps": 30,
+    "fps": "source",
     "fit": "auto",
     "codec": "libx264",
     "crf": 20,
@@ -18,7 +18,7 @@
   "preview": {
     "_izoh": "Faqat --draft: kichik qoralama, final sozlamalari o'zgarmaydi. Subtitrli video baribir tasdiq talab qiladi.",
     "height": 640,
-    "fps": 15,
+    "fps": "source",
     "crf": 28,
     "preset": "ultrafast"
   },

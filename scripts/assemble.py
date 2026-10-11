@@ -187,6 +187,10 @@ def _voiceover(item: dict, style: dict, work: Path, idx: int) -> float:
 
 
 def build(source: str | Path, style: dict) -> dict:
+    if str(style.get("video", {}).get("fps", "")).lower() == "source":   # first clip decides the rate
+        data, base, _ = load_manifest(Path(source))
+        first = next(iter(validate(data, base)), None)
+        style = C.resolve_fps(style, first["path"]) if first else dict(style, video=dict(style["video"], fps=30.0))
     """Asosiy video yig'adi. Qaytaradi: {"video": Path, "protect": [(s, e)], "segments": [...]}."""
     source = Path(source)
     if not source.exists():
