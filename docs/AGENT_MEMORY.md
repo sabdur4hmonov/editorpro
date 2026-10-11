@@ -350,3 +350,9 @@ Restoran promo (namuna 20, `docs/PROMO.md`, `/promo` skilli):
 - `review_tools.py lint/slowmo`: blit trace'dan bayroqlar va curve PNG. Edge-anchored wipe markazi harakat emas; 1 px zinapoya `pixel_steps`, short emas. Cue onset kesishda, so'z reveal emas.
 - Motion blur render narxi 12 s qismda shovqindan kichik; default o'chiq (punchy preset yoqadi). Emphasis extra (pop_overshoot/colour_flash/shake) faqat aniq tanlanganda: variety fingerprint o'zgarmaydi.
 - Yangi elementlar: calendar, panel, logo_sting, mask_reveal, image `push`. pil_sprite origin = markaz (calendar xatosi shundan edi).
+
+## 2026-10-11 — Codex — Claude limitidan keyin smoothness yakuni
+- Kod 6286c6c saqlandi; 14 suite o'tdi; oldingi43/43 isolated selftestning71skripti SHA256 bilan mos. Xato muhitlar/checklar o'zgarmasdan qayta tekshirildi; docs/SMOOTHNESS.md.
+- 6s pass-through30→0takror; championship final AAC kesish teshigi−18.2…−11.0→−0.4…+5.4dB. Saqlangan doktor4/5 RGB3nuqtada farq0; bu v25 bit-identical degani emas.
+- Doktor3/4/5 eski b-rolllarida3/15/31takror nomzodi qoldi. Nilem09 SRT mask_up/slide override'lari bor: global choice barcha animatsiya sanog'i emas. Cheklovlar yashirilmadi.
+- Muharrir sahifasi temp/smooth/finish/report.html:7juftlik,25%kliplar,strips,vaqtlar,loglar. Eski input/video notes/approved stillar saqlandi; ritm/ovoz tasdig'i muharrirda.
