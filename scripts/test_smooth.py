@@ -217,5 +217,24 @@ class EncodeTests(unittest.TestCase):
         self.assertTrue(st['video']['crf'] <= 17 and st['video']['preset'] == 'slow')
 
 
+class RoomToneTests(unittest.TestCase):
+    def test_tail_silence_becomes_room_tone(self):
+        import audio_mix
+        with tempfile.TemporaryDirectory(dir=C.TEMP_DIR) as td:
+            src = Path(td) / 'v.mov'
+            subprocess.run([C.need_tool('ffmpeg'), '-v', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=gray:s=160x284:r=25',
+                            '-f', 'lavfi', '-i', 'anoisesrc=a=0.01:c=pink:r=48000:seed=3', '-t', '3', '-map', '0:v', '-map', '1:a',
+                            '-c:v', 'libx264', '-c:a', 'pcm_s16le', '-shortest', str(src)], check=True)
+            res = {}
+            for on in (False, True):
+                st = C.load_style(); st['audio']['room_tone'] = on; st['sfx']['enabled'] = False; st['audio']['music_file'] = ''
+                out = Path(td) / f'a{int(on)}.wav'
+                audio_mix.build_audio(src, out, st, 4.0, None, [], None)
+                a = _audio(out)
+                res[on] = (_db(a[int(3.2 * 48000):int(3.6 * 48000)]), _db(a[int(1.5 * 48000):int(2.5 * 48000)]))
+            self.assertLess(res[False][0], -80)                      # legacy: exact digital silence
+            self.assertLess(abs(res[True][0] - res[True][1]), 6)     # filled at room-tone level
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=1)

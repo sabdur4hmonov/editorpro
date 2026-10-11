@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+import numpy as np
 import common as C
 import render as R
 
@@ -88,8 +89,66 @@ def voice_margin(voice_wav: Path, add_wav: Path) -> float | None:
     return float(np.percentile(v[both] - a[both], 5))
 
 
+def fill_room_tone(path: Path, min_ms: float = 10.0, fade_ms: float = 30.0, tail_fade_s: float = 0.25) -> dict:
+    """Digital silence (runs of exact zeros, e.g. apad after the source audio ended) becomes room tone.
+
+    The tone is the quietest non-silent second of this same track, looped with crossfades; the file
+    end fades out over tail_fade_s. Returns what was filled (seconds) for the report.
+    """
+    import wave
+    with wave.open(str(path), "rb") as w:
+        ch, sw, sr, n = w.getnchannels(), w.getsampwidth(), w.getframerate(), w.getnframes()
+        x = np.frombuffer(w.readframes(n), np.int16).reshape(-1, ch).astype(np.float32)
+    if sw != 2 or len(x) < sr:
+        return {"filled_s": 0.0}
+    zero = np.all(np.abs(x) <= 1, axis=1).astype(np.int8)          # <= 1 LSB: dithered digital silence too
+    d = np.diff(np.r_[0, zero, 0]); starts, ends = np.where(d == 1)[0], np.where(d == -1)[0]
+    runs = [(s, e) for s, e in zip(starts, ends) if (e - s) * 1000 / sr >= min_ms]
+    if not runs:
+        return {"filled_s": 0.0}
+    win = sr                                                # quietest real (non-zero) second = room tone
+    rms = [(float(np.sqrt(np.mean(x[i:i + win] ** 2))), i) for i in range(0, len(x) - win, sr // 4)
+           if zero[i:i + win].mean() < .01]
+    if not rms:
+        return {"filled_s": 0.0}
+    tone = x[min(rms)[1]:min(rms)[1] + win]
+    xf = max(1, int(fade_ms * sr / 1000))
+    ramp = np.sin(np.linspace(0, np.pi / 2, xf))[:, None]
+    filled = 0
+    for s, e in runs:
+        length = e - s
+        reps = int(np.ceil(length / (win - xf))) + 1
+        loop = tone.copy()
+        for _ in range(reps):                                   # seamless loop: crossfade each repeat
+            nxt = tone.copy(); nxt[:xf] = loop[-xf:] * ramp[::-1] + tone[:xf] * ramp
+            loop = np.concatenate([loop[:-xf], nxt])
+        seg = loop[:length].copy()
+        k = min(xf, length // 2)
+        seg[:k] *= ramp[:k] if k == xf else np.linspace(0, 1, k)[:, None]
+        if e < len(x):
+            seg[-k:] *= ramp[:k][::-1] if k == xf else np.linspace(1, 0, k)[:, None]
+        x[s:e] = seg; filled += length
+    tail = int(tail_fade_s * sr)
+    if runs[-1][1] >= len(x) and tail < len(x):
+        x[-tail:] *= np.linspace(1, 0, tail)[:, None]
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(ch); w.setsampwidth(2); w.setframerate(sr)
+        w.writeframes(np.clip(np.round(x), -32768, 32767).astype(np.int16).tobytes())
+    return {"filled_s": round(filled / sr, 3), "runs": len(runs)}
+
+
 def build_audio(video: Path, out_wav: Path, style: dict, total: float, music: Path | None = None,
                 sfx: list | None = None, brand_dir: Path | None = None) -> Path:
+    """Ovozni yig'adi; audio.room_tone bo'lsa raqamli sukunat xona shovqini bilan to'ldiriladi."""
+    global LAST_REPORT
+    out = _build_audio(video, out_wav, style, total, music, sfx, brand_dir)
+    if style.get("audio", {}).get("room_tone"):
+        LAST_REPORT = dict(LAST_REPORT, room_tone=fill_room_tone(Path(out)))
+    return out
+
+
+def _build_audio(video: Path, out_wav: Path, style: dict, total: float, music: Path | None = None,
+                 sfx: list | None = None, brand_dir: Path | None = None) -> Path:
     """Ovozni yig'ib WAV ga yozadi. sfx: [{"at": soniya, "name": nom, "volume_db": son}].
 
     Tartib ("nutq birinchi"):
