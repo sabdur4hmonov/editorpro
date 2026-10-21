@@ -39,9 +39,11 @@ The preview is five 3.5s excerpts, 540x960/30fps, without subtitles/audio. ProRe
 is decoded and checked against detected expanded YuNet boxes on every active excerpt frame.
 That does not prove full-video safety, caption timing, audio balance or user rhythm approval.
 
-The original 158-word transcript is cached and unapproved. Never rerun Whisper or burn it in
-on the strength of this engineering demo. Follow the single approval packet, then render full
-draft and stronger/subtle audio, then await draft approval for final.
+The original 158-word transcript is cached. The engineering demo alone did not authorize a full
+subtitle export. Later, the user explicitly requested the complete captioned edit with speech/SFX
+before taste review (2026-10-21); `temp/usa_lawyer/v2/authorization.md` records that instruction.
+It supersedes the earlier wait for this job, without claiming uncertain spellings were verified.
+Never rerun Whisper over the preserved originals.
 
 Supporting source study: [Apple continuity/springs](https://developer.apple.com/videos/play/wwdc2023/10158/),
 [School of Motion lesson transcript](https://schoolofmotion.com/blog/intro-to-the-graph-editor-in-after-effects),
@@ -51,3 +53,34 @@ local reference frames and the publisher's lesson transcript were inspected inst
 The resumed real format plan also exposed `_setups` expecting four values from the five-value
 `_faces` row (x/y/w/h/yaw). `scripts/formats.py` now uses the first four for its mask;
 `test_background_setups_accept_detector_boxes_with_yaw` reproduces that failure with two backgrounds.
+
+## Full-edit revision after user feedback
+
+The user rejected removal of the small secondary line. For persistent information, keep title,
+subtitle and icon in every state and retain the card's width/height through entry, hold and exit.
+The USA-lawyer revision uses opacity plus a small vertical move, without a compact morph.
+
+`type: paper_explainer` adds an original opaque explanatory scene, rendered with the same
+standalone overlay renderer. Props: `title`, `subtitle`, optional `eyebrow`/`number`, and
+`kind: calendar | flow | record | form`. It requires root/scene duration in frames and a theme.
+The title and secondary line remain present; local Inter and deterministic staged spring clocks
+produce fractional placement. The calendar illustrates six elapsed months; flow shows
+Qaytish → CBP → Izoh. Document drawings are schematic, not official form reproductions.
+Do not reuse those semantic labels for unrelated footage without changing the component.
+
+Opaque scenes enter native compose as full b-roll; transparent continuity cards enter as image
+overlays so the native per-frame face measurement remains active. Give each element its actual
+entry `duration` (including an already-rendered entrance), rather than measuring an unused
+global sticker default. Technical scores do not establish professional taste or sound approval.
+
+A verified continuous applied cut list has no audio joins to meter. The gate now marks only
+that exact case as not applicable; missing cut evidence and unmetered existing joins remain
+unknown. `test_audio_joins_na_only_for_verified_empty_cut_list` protects this distinction.
+
+The native retry also isolates each caption's scrim under its own trace identity: adjacent
+sentences are separate surfaces, rather than a single object teleporting between box sizes.
+`motion.resting_snap: false` is an opt-in for continuously fractional placement at rest and
+during fades. It avoids a final rounding hop after a slow move; the default remains `true`
+to preserve previously approved pixel-sharp resting frames. Motion-polish regressions cover
+both the default and opt-out. The revision uses authored fade/blur/mask entrances, rather
+than legacy `rise` (whose fixed spring/amplitude does not use `captions.rise_px`).

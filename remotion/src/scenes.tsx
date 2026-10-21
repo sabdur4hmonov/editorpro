@@ -1,4 +1,5 @@
-// Overlay scene library. Every scene is transparent (no background) and is placed by fractions of the frame.
+// Overlay scene library, positioned in frame fractions. Most scenes are transparent;
+// paper_explainer intentionally replaces the full background and is composited as opaque b-roll.
 // What our Python engine cannot do and these add: real CSS 3D (folds, page turns, extruded type with perspective),
 // sampled motion blur (CameraMotionBlur / Trail), SVG stroke drawing, crisp spring kinetic type.
 import React from 'react';
@@ -257,3 +258,5 @@ Object.assign(SCENES, {card_wall: CardWallScene, pills: PillsScene, relief: Reli
 
 import {ContinuityCard} from './ContinuityCard';
 SCENES.continuity_card = ContinuityCard;
+import {PaperExplainer} from './PaperExplainer';
+SCENES.paper_explainer = PaperExplainer;

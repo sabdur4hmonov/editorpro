@@ -14,3 +14,5 @@ Foydalanuvchi bergan fikrlar. Har montajdan oldin o'qiladi. Yangi fikr: `python 
 - 2026-10-08: B-roll va rasmlar gapga aniq mos bo'lsin: yuz yaqin kadri 'nafas yetishmovchiligi'ni ko'rsatmaydi, ingalyator kislorod emas; mos klip bo'lmasa qo'yilmaydi (doktor 2).
 - 2026-10-08: Oq xalat/och fonda yalpiz va oq matn o'qilmaydi: qahramon so'z qizil, kontursiz, porlashsiz, yumshoq soya va subtitr ortida yumshoq qorong'i gradiyent (doktor 2).
 - 2026-10-09: Sprint 1 mix tanlovi: Stronger — kuchliroq. Keyingi videolarda stronger standart; nutq margin qoidasi saqlansin.
+- 2026-10-21: USA lawyer: kartochka ostidagi kichik izohni morph paytida yo'qotma, katta sarlavha yolg'iz qolmasin. Oldingi sinov smooth emas. Uch Apple animatsiya va asosiy referensni to'liq o'rganib, montajni nutq va SFX bilan to'liq ko'rsat. Foydalanuvchi tugagan videoni ko'rib baholaydi. — muharrir: user (video: usa lawyer.MP4)
+- 2026-10-21: USA lawyer: real b-roll ham qo'yilsin; oq fondagi tushuntiruvchi motionlar referensga moslansin. 76 soniyalik videoda har xillik va mazmunli animatsiyalar bo'lsin, zerikarli bir xil kartochka takrorlanmasin. — muharrir: user (video: usa lawyer.MP4)

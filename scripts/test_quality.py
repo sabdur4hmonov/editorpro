@@ -140,6 +140,16 @@ class FaceTests(unittest.TestCase):
             self.assertNotIn('object',h);self.assertEqual(h['count'],1)
 
 class GateTests(unittest.TestCase):
+    def test_audio_joins_na_only_for_verified_empty_cut_list(self):
+        result={'smoothness':{'held_frames':0,'source_fps':30,'fps':30,'cuts':[],'caption_lag':[]}}
+        for cuts, expected in (([], 'not_applicable'), (None, 'unknown'), ([2], 'unknown')):
+            with self.subTest(cuts=cuts):
+                r=Q.evaluate(style(),[dict(start=0,end=10,text='qon')],[],10,
+                             {'style_group':'C_interview_testimonial'},result,cuts)
+                states={x['key']:x['status'] for x in r['measurements']}
+                self.assertEqual(states['cut_audio_holes'],expected)
+                self.assertEqual(states['face_coverage'],'unknown')
+
     def test_applied_native_cut_plan_uses_output_time_and_speed(self):
         self.assertEqual(Q.editorial_cut_times({'keep':[{'start':5,'end':9},{'start':15,'end':21}], 'speed':2}),[2])
         self.assertEqual(Q.editorial_cut_times({'keep':[{'start':0,'end':9}]}),[])

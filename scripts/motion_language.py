@@ -8,8 +8,8 @@ ENTRANCES=('spring_pop','slide_overshoot','scale_blur','typewriter','mask_up','l
 EMPHASIS=('scale_punch','colour_sweep','underline_draw','box_wipe')
 # Explicit-only emphasis (variety keeps picking from EMPHASIS so saved choices stay reproducible).
 EMPHASIS_EXTRA=('pop_overshoot','colour_flash','shake')
-# Render-quality switches added after approved jobs: absent/False keeps every legacy frame identical.
-NEW_KEYS=('subpixel','motion_blur','cuts','scrim','zoom_strength','preset','durations_frames','_polish_izoh','variety_plan','min_exit_frames')
+# Per-job render switches retain their documented legacy defaults when absent.
+NEW_KEYS=('subpixel','resting_snap','motion_blur','cuts','scrim','zoom_strength','preset','durations_frames','_polish_izoh','variety_plan','min_exit_frames')
 SCRIM_STYLES=('soft','band','box')
 # Per-brand presets: brand.json style.motion.preset; explicit motion keys still win.
 PRESETS={
@@ -26,7 +26,7 @@ DEFAULTS={'enabled':False,'speed':'medium','scales':{'fast':.75,'medium':1.,'slo
  'stagger':{'word_ms':35,'letter_ms':24,'max_total_ms':180},
  'pairs':{'spring_pop':'scale_down','slide_overshoot':'slide_out','scale_blur':'blur','typewriter':'fade','mask_up':'mask_down','letter_cascade':'fade'},
  'blur':{'enabled':False,'max_px':3},'variety':True,'choice':{},
- 'subpixel':False,'motion_blur':{'enabled':False,'samples':5,'min_px':6,'shutter':.5},
+ 'subpixel':False,'resting_snap':True,'motion_blur':{'enabled':False,'samples':5,'min_px':6,'shutter':.5},
  'cuts':{'enabled':False,'offset_frames':2,'match_direction':True,'zoom_ease':True},
  'scrim':{'enabled':False,'style':'soft','max_alpha':.55,'min_contrast':4.5},'zoom_strength':None,'preset':None}
 
@@ -40,6 +40,7 @@ def config(style):
     if preset is not None and preset not in PRESETS: raise C.MontajError(f"motion.preset: {', '.join(PRESETS)}")
     cfg=C.deep_merge(copy.deepcopy(DEFAULTS),PRESETS.get(preset,{}))
     cfg=C.deep_merge(cfg,over)
+    if not isinstance(cfg['resting_snap'],bool):raise C.MontajError('motion.resting_snap: true | false.')
     frames=cfg.get('durations_frames') or {}
     if frames:
         fps=float(style.get('video',{}).get('fps',30))

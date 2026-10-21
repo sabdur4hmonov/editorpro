@@ -1008,7 +1008,9 @@ class CaptionLayer(Layer):
         spr = cache[seg]
         if spr is not None:
             op = M.clamp01((t - item["start"]) / 0.12) * clamp_exit(t, item["end"] + item["tail"], 0.14)
-            M.blit(frame, spr, 0, 0, opacity=op, tag="scrim")
+            # Each cue owns a different surface. A shared tag falsely connects neighbouring
+            # cue boxes into one moving object when their fitted widths/positions change.
+            M.blit(frame, spr, 0, 0, opacity=op, tag=f"{block.tag}scrim")
 
     def _cue_cfg(self, name, opts: dict, cue: dict) -> dict:
         if name is None and not opts:

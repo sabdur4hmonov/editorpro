@@ -68,6 +68,19 @@ class LintTests(unittest.TestCase):
 
 
 class RenderTests(unittest.TestCase):
+    def test_adjacent_caption_scrims_have_distinct_trace_identity(self):
+        st=style(scrim={'enabled':True,'max_alpha':.9})
+        ctx=E.Ctx(st)
+        cap=E.CaptionLayer(ctx,[{'start':0,'end':1,'text':'bir'},
+                              {'start':1,'end':2,'text':'uzunroq ikkinchi gap'}],None,2)
+        M.TRACE=M.Trace()
+        for f,t in ((15,.5),(45,1.5)):
+            M.TRACE.begin_frame(f);M.TRACE.begin_layer('captions')
+            cap.draw(np.full((640,360,3),220,np.uint8),t)
+        tags={r[2] for r in M.TRACE.rows if r[2].endswith('scrim')}
+        self.assertEqual(tags,{'c0:scrim','c1:scrim'})
+        cap.close()
+
     def tearDown(self):
         M.SUBPIXEL, M.TRACE = False, None
 
@@ -100,6 +113,16 @@ class RenderTests(unittest.TestCase):
             M.blit(fr, spr, 10.4, 10, tag='s')
         self.assertEqual(int(fr[..., 0].max()), 255)
         self.assertEqual(sorted(set(np.unique(fr[..., 0]).tolist())), [0, 255])
+
+    def test_fractional_rest_opt_out_does_not_snap_after_motion_or_during_fade(self):
+        M.SUBPIXEL, M.TRACE = True, M.Trace(resting_snap=False)
+        spr=M.Sprite(np.full((10,10,4),255,np.uint8))
+        for f,x in enumerate((10.1,10.25,10.4,10.4,10.4)):
+            M.TRACE.begin_frame(f);M.TRACE.begin_layer('t')
+            M.blit(np.zeros((30,30,3),np.uint8),spr,x,10.2,opacity=1-f*.1,tag='s')
+        centres=[r[3] for r in M.TRACE.rows]
+        self.assertEqual(centres[-3:],[15.4,15.4,15.4])
+        self.assertTrue(ML.config(style())['resting_snap'])
 
     def test_motion_blur_smears_fast_moves_only(self):
         spr = M.rounded_rect_sprite(10, 30, 0, (255, 255, 255, 255))

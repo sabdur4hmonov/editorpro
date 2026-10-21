@@ -138,7 +138,11 @@ def evaluate(style, cues, elements, duration, plan, result=None, cut_times=None)
     if smooth:  # permanent smoothness check (measured after the render)
         add('held_frames', smooth['held_frames'], 0, method=f"isolated repeats of the decoded picture, {smooth['source_fps']:g} -> {smooth['fps']:g} fps")
         bad = [r for r in smooth['cuts'] if (r['hole_db'] is not None and r['hole_db'] < SMOOTH_LIMITS['cut_hole_db']) or r['click'] > SMOOTH_LIMITS['cut_click']]
-        add('cut_audio_holes', len(bad) if smooth['cuts'] else None, 0, method='5 ms dip at the cut minus the same dip 60 ms earlier in the pause (hole), sample step (click)')
+        if cut_times == [] and not smooth['cuts']:
+            rows.append(dict(key='cut_audio_holes', value=None, target=None, status='not_applicable', hard=False,
+                             method='Verified applied cut plan contains no audio joins; continuous original audio.'))
+        else:
+            add('cut_audio_holes', len(bad) if smooth['cuts'] else None, 0, method='5 ms dip at the cut minus the same dip 60 ms earlier in the pause (hole), sample step (click)')
         late = [r for r in smooth['caption_lag'] if not SMOOTH_LIMITS['caption_early_ms'] <= r['lag_ms'] <= SMOOTH_LIMITS['caption_late_ms']]
         add('caption_lag', len(late) if smooth['caption_lag'] else None, 0, method='cue onset vs its first spoken word, -150..+80 ms')
     variety = result.get('variety')

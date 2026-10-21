@@ -232,8 +232,8 @@ class Trace:
     blur: {'samples': n, 'min_px': speed, 'shutter': 0..1} enables directional multi-sample motion blur.
     """
 
-    def __init__(self, blur: dict | None = None, record: bool = True):
-        self.blur, self.record = blur, record
+    def __init__(self, blur: dict | None = None, record: bool = True, resting_snap: bool = True):
+        self.blur, self.record, self.resting_snap = blur, record, resting_snap
         self.frame, self.layer, self.calls = -10, '', 0
         self.rows, self.prev, self.cur = [], {}, {}
 
@@ -322,8 +322,9 @@ def blit(frame: np.ndarray, spr: Sprite, x: float, y: float, opacity: float = 1.
             key = trace.key(tag)
             raw = (left + spr.w * s1 / 2, top + spr.h * s1 / 2)
             old = trace.prev.get(key)
-            # a resting sprite stays pixel-sharp; only moving/scaling ones get fractional placement
-            if not scaled and old is not None and abs(old[0] - raw[0]) < 1e-3 and abs(old[1] - raw[1]) < 1e-3:
+            # Legacy default keeps rest pixel-sharp; opt-out preserves fractional placement
+            # across the move/rest/fade boundary without a rounding hop.
+            if trace.resting_snap and not scaled and old is not None and abs(old[0] - raw[0]) < 1e-3 and abs(old[1] - raw[1]) < 1e-3:
                 left, top = round(left), round(top)
             velocity = trace.add(key, left + spr.w * s1 / 2, top + spr.h * s1 / 2, spr.w * s1, spr.h * s1,
                                  scale, opacity, raw)

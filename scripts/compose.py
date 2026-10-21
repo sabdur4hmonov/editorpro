@@ -475,7 +475,7 @@ def compose(video: Path, out_path: Path | None, style: dict, srt: Path | None = 
     M.SUBPIXEL = bool(mc["subpixel"])
     blur_cfg = mc["motion_blur"] if mc["motion_blur"]["enabled"] else None
     # a record-only trace never changes pixels; it feeds motion lint and the smoothness check of every render
-    M.TRACE = M.Trace(blur_cfg) if (trace or M.SUBPIXEL or blur_cfg or not stills) else None
+    M.TRACE = M.Trace(blur_cfg, resting_snap=mc['resting_snap']) if (trace or M.SUBPIXEL or blur_cfg or not stills) else None
 
     base_dur = meta["duration"]
     end_cfg = style.get("endcard", {})
