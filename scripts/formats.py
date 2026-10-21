@@ -88,7 +88,9 @@ def _setups(frames: np.ndarray, faces: list, thr: float = 0.35) -> int:
     hists = []
     for f, fs in zip(frames, faces):
         mask = np.full((h, w), 255, np.uint8)
-        for (x, y, fw, fh) in fs:
+        for face in fs:
+            # _faces returns (x, y, width, height, yaw); yaw is irrelevant to the mask.
+            x, y, fw, fh = face[:4]
             cv2.rectangle(mask, (int(x - fw), int(y - fh * .5)), (int(x + 2 * fw), h), 0, -1)
         hsv = cv2.cvtColor(f, cv2.COLOR_BGR2HSV)
         hist = cv2.calcHist([hsv], [0, 1, 2], mask, [8, 4, 4], [0, 180, 0, 256, 0, 256])

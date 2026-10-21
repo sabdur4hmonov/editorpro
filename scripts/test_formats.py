@@ -50,6 +50,17 @@ class SchemaTests(unittest.TestCase):
 
 
 class DetectTests(unittest.TestCase):
+    def test_background_setups_accept_detector_boxes_with_yaw(self):
+        frames = np.zeros((6, 80, 64, 3), dtype=np.uint8)
+        frames[:3, :, :, 2] = 220
+        frames[3:, :, :, 0] = 220
+        # Actual _faces output includes a fifth yaw field. It must not break
+        # background measurement or become part of its geometry.
+        faces = [[(27., 15., 8., 12., -.4 + i*.1)] for i in range(6)]
+        self.assertEqual(F._setups(frames, faces), 2)
+        legacy = [[face[:4] for face in row] for row in faces]
+        self.assertEqual(F._setups(frames, faces), F._setups(frames, legacy))
+
     def test_reference_examples_ranked_first(self):
         ref = C.read_json(REF)["features"]
         hits = sum(F.detect(ref[k])["ranked"][0]["format"] == v for k, v in LABELS.items())

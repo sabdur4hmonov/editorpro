@@ -63,17 +63,17 @@ const shell = path.join(HERE, 'node_modules', '.remotion', 'chrome-headless-shel
 const haveShell = fs.existsSync(shell) && fs.readdirSync(shell).some((d) => !d.endsWith('.zip') && !d.endsWith('.lock'));
 const chrome = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const browser = haveShell ? [] : (fs.existsSync(chrome) ? [`--browser-executable=${chrome}`] : []);
-const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+// Execute the already-installed CLI directly: no shell parsing, npx lookup or implicit install.
+const cli = path.join(HERE, 'node_modules', '@remotion', 'cli', 'remotion-cli.js');
+if (!fs.existsSync(cli)) throw new Error('Installed Remotion CLI missing; install requires user approval.');
 fs.mkdirSync(path.dirname(path.resolve(outFile)), {recursive: true});
 const common = ['src/index.ts', 'Overlay', path.resolve(outFile), `--props=${resolved}`, '--gl=angle', ...browser];
 const cmd = still !== null
-  ? ['remotion', 'still', ...common, `--frame=${still}`]
-  : ['remotion', 'render', ...common, '--image-format=png', '--concurrency=2',
+  ? ['still', ...common, `--frame=${still}`]
+  : ['render', ...common, '--image-format=png', '--concurrency=2',
      ...(webm ? ['--codec=vp9', '--pixel-format=yuva420p'] : ['--codec=prores', '--prores-profile=4444', '--pixel-format=yuva444p10le'])];
 const t0 = Date.now();
-// shell is needed for npx.cmd on Windows; quote every argument because the project path has spaces
-const q = (a) => (/[\s"]/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a);
-const r = spawnSync(npx, cmd.map(q), {cwd: HERE, stdio: 'inherit', shell: true});
+const r = spawnSync(process.execPath, [cli, ...cmd], {cwd: HERE, stdio: 'inherit', shell: false, windowsHide: true});
 if (r.status !== 0) process.exit(r.status ?? 1);
 if (still === null) {
   const p = spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=pix_fmt,width,height,nb_frames',

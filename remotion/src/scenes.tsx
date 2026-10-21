@@ -254,3 +254,6 @@ SCENES.light_leak = LightLeakScene;
 import {BehindWordScene, CardWallScene, CtaScene, EndGridScene, PillsScene, PriceCardScene, ReliefScene, SheetsScene} from './editorial';
 Object.assign(SCENES, {card_wall: CardWallScene, pills: PillsScene, relief: ReliefScene, sheets: SheetsScene,
   price_card: PriceCardScene, cta: CtaScene, end_grid: EndGridScene, behind_word: BehindWordScene});
+
+import {ContinuityCard} from './ContinuityCard';
+SCENES.continuity_card = ContinuityCard;
